@@ -1,0 +1,56 @@
+﻿Name: SMZ3 Combo Randomizer
+MinTrackCount: 63
+MaxTrackCount: 120
+RequiredTracks:
+  - 99
+Remaps:
+  # Bosses
+  - OriginalTrackNumbers: 147,148,149,150,151,152,153,154,155,156,157,158
+    RemappedTrackNumbers: 121
+  # Castle Tower => Hyrule Castle
+  - OriginalTrackNumbers: 137
+    RemappedTrackNumbers: 116
+  # GT Ascent => Ganons Tower
+  - OriginalTrackNumbers: 159
+    RemappedTrackNumbers: 146
+  # Light World Post Pedestal => Light World
+  - OriginalTrackNumbers: 160
+    RemappedTrackNumbers: 102
+  # Dark World All Crystals => Dark World
+  - OriginalTrackNumbers: 161
+    RemappedTrackNumbers: 109
+  # Dark Woods => Dark Death Mountain
+  - OriginalTrackNumbers: 115
+    RemappedTrackNumbers: 113
+  # Pendant Theme => Light World Dungeons
+  - OriginalTrackNumbers: 117
+    RemappedTrackNumbers: 135,136,143
+    OnlyAddIfMissing: true
+  # Crystal Theme => Dark World Dungeons
+  - OriginalTrackNumbers: 122
+    RemappedTrackNumbers: 138,139,140,141,142,144,145
+    OnlyAddIfMissing: true
+Pairs:
+  4: 5 # Make sure intro songs go together
+Conversions:
+  - MSUType: A Link to the Past
+    DefaultModifier: 100
+    ManualRemaps:
+    - OriginalTrackNumbers: 15
+      RemappedTrackNumbers: 113
+    - OriginalTrackNumbers: 17
+      RemappedTrackNumbers: 135,136,143
+    - OriginalTrackNumbers: 22
+      RemappedTrackNumbers: 138,139,140,141,142,144,145
+    - OriginalTrackNumbers: 47,48,49,50,51,52,53,54,55,56,57,58
+      RemappedTrackNumbers: 121
+    - OriginalTrackNumbers: 59
+      RemappedTrackNumbers: 146
+    - OriginalTrackNumbers: 60
+      RemappedTrackNumbers: 102
+    - OriginalTrackNumbers: 61
+      RemappedTrackNumbers: 109
+    - OriginalTrackNumbers: 34
+      RemappedTrackNumbers: 99
+  - MSUType: Super Metroid
+    DefaultModifier: 0

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>0.1.0</FileVersion>
+    <PackageIcon>MSURandomizerIcon.ico</PackageIcon>
+    <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MSURandomizerLibrary\MSURandomizerLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="MSURandomizerIcon.ico" />
+    <Content Include="MSURandomizerIcon.ico" />
+    <Resource Include="MSURandomizerIcon.ico">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </Resource>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="MSUTypes\alttp.yaml" />
+    <None Remove="MSUTypes\sm.yaml" />
+    <None Remove="MSUTypes\smz3.yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MSUTypes\YamlFiles\alttp.yml" />
+    <EmbeddedResource Include="MSUTypes\YamlFiles\sm.yml" />
+    <EmbeddedResource Include="MSUTypes\YamlFiles\smz3.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WindowsAPICodePack" Version="7.0.1" />
+    <PackageReference Include="YamlDotNet" Version="12.2.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,5 @@
+﻿Name: Super Metroid
+MinTrackCount: 20
+MaxTrackCount: 30
+RequiredTracks:
+    - 30
