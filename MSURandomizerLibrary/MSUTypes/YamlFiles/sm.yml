@@ -2,4 +2,9 @@
 MinTrackCount: 20
 MaxTrackCount: 30
 RequiredTracks:
-    - 30
+  - 30
+Conversions:
+  - MSUType: SMZ3 Combo Randomizer
+    DefaultModifier: 0
+    MinimumTrackNumber: 1
+    MaximumTrackNumber: 30

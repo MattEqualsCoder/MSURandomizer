@@ -41,11 +41,27 @@ namespace MSURandomizerLibrary
 
         private void GeneratedButton_Click(object sender, RoutedEventArgs e)
         {
-            var generateOptionsWindow = new MSUCreateWindow(Options);
+            var generateOptionsWindow = new MSUCreateWindow(Options, true);
             generateOptionsWindow.ShowDialog();
             if (!generateOptionsWindow.Generate) return;
             Options.SelectedMSUs = MSUListView.SelectedItems.Cast<MSU>().Select(x => x.Name).ToList();
-            if (!MSURandomizerService.RandomizeMSU(Options, out var error))
+            if (!MSURandomizerService.ShuffleMSU(Options, out var error))
+            {
+                
+            }
+            else
+            {
+                OnRomGenerated?.Invoke(this, new MSURandomizerEventArgs(Options));
+            }
+        }
+        
+        private void RandomMSUButton_Click(object sender, RoutedEventArgs e)
+        {
+            var generateOptionsWindow = new MSUCreateWindow(Options, false);
+            generateOptionsWindow.ShowDialog();
+            if (!generateOptionsWindow.Generate) return;
+            Options.SelectedMSUs = MSUListView.SelectedItems.Cast<MSU>().Select(x => x.Name).ToList();
+            if (!MSURandomizerService.PickRandomMSU(Options, out var error))
             {
                 
             }

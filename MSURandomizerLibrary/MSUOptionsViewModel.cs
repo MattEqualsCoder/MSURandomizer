@@ -2,7 +2,7 @@
 
 namespace MSURandomizerLibrary;
 
-public class MSUOptionsViewModel: INotifyPropertyChanged
+internal class MSUOptionsViewModel: INotifyPropertyChanged
 {
     private readonly MSURandomizerOptions _options;
     

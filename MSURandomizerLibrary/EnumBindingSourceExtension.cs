@@ -3,7 +3,7 @@ using System.Windows.Markup;
 
 namespace MSURandomizerLibrary;
 
-public class EnumBindingSourceExtension : MarkupExtension
+internal class EnumBindingSourceExtension : MarkupExtension
 {
     private Type? _enumType;
 
@@ -16,7 +16,7 @@ public class EnumBindingSourceExtension : MarkupExtension
         EnumType = enumType;
     }
 
-    public Type? EnumType
+    private Type? EnumType
     {
         get => _enumType;
         set

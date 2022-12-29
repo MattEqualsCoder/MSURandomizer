@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MSURandomizerLibrary;
 
-public static class EnumerableExtensions
+internal static class EnumerableExtensions
 {
     public static T? Random<T>(this IEnumerable<T> source, Random rnd)
     {

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MSURandomizerLibrary"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="Create Shuffled MSU" Height="180" Width="350">
+        Title="Create Shuffled MSU" Height="180" Width="350" x:ClassModifier="internal">
     <Window.DataContext>
         <local:MSURandomizerOptions></local:MSURandomizerOptions>
     </Window.DataContext>
@@ -16,8 +16,9 @@
     <DockPanel Margin="0">
         <Border DockPanel.Dock="Bottom" Style="{StaticResource ResourceKey=BottomPanel}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="CancelButton" HorizontalAlignment="Center" Margin="0 0 10 0" Click="CancelButton_Click">Cancel</Button>
-                <Button x:Name="GenerateButton" HorizontalAlignment="Center" Click="GenerateButton_Click">Generate</Button>
+                <Button x:Name="CancelButton" HorizontalAlignment="Center" Margin="0 0 10 0" Click="CancelButton_Click">_Cancel</Button>
+                <Button x:Name="GenerateRomMSUButton" HorizontalAlignment="Center" Margin="0 0 10 0" Click="GenerateRomMSUButton_Click">Generate _Rom MSU</Button>
+                <Button x:Name="GenerateButton" HorizontalAlignment="Center" Click="GenerateButton_Click">_Generate MSU Folder</Button>
             </StackPanel>
         </Border>
         

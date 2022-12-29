@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MSURandomizerLibrary"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="Options" Height="175" Width="400">
+        Title="Options" Height="175" Width="400" x:ClassModifier="internal">
     <Window.DataContext>
         <local:MSURandomizerViewModel></local:MSURandomizerViewModel>
     </Window.DataContext>

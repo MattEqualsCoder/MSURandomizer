@@ -20,7 +20,7 @@ namespace MSURandomizerLibrary
     /// <summary>
     /// Interaction logic for MSUOptionsWindow.xaml
     /// </summary>
-    public partial class MSUOptionsWindow : Window
+    internal partial class MSUOptionsWindow : Window
     {
         private readonly MSUOptionsViewModel _viewModel;
         

@@ -2,6 +2,9 @@
 
 namespace MSURandomizerLibrary;
 
+/// <summary>
+/// Filter type for finding matching MSUs
+/// </summary>
 public enum MSUFilter
 {
     [Description("Compatible MSUs")]
