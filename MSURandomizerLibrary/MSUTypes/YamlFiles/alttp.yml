@@ -1,10 +1,31 @@
 ﻿Name: A Link to the Past
-MinTrackCount: 34
+MinTrackCount: 32
 MaxTrackCount: 61
 RequiredTracks:
     - 34
+Remaps:
+  # Bosses
+  - OriginalTrackNumbers: 21
+    RemappedTrackNumbers: 47,48,49,50,51,52,53,54,55,56,57,58
+    OnlyAddIfMissing: true
+  # Castle Tower => Hyrule Castle
+  - OriginalTrackNumbers: 16
+    RemappedTrackNumbers: 37
+    OnlyAddIfMissing: true
+  # GT Ascent => Ganons Tower
+  - OriginalTrackNumbers: 46
+    RemappedTrackNumbers: 59
+    OnlyAddIfMissing: true
+  # Pendant Theme => Light World Dungeons
+  - OriginalTrackNumbers: 17
+    RemappedTrackNumbers: 35,36,43
+    OnlyAddIfMissing: true
+  # Crystal Theme => Dark World Dungeons
+  - OriginalTrackNumbers: 22
+    RemappedTrackNumbers: 38,39,40,41,42,44,45,46,59
+    OnlyAddIfMissing: true
 Conversions:
-    - MSUType: SMZ3 Combo Randomizer
-      DefaultModifier: -100
-      MinimumTrackNumber: 101
-      MaximumTrackNumber: 200
+  - MSUType: SMZ3 Combo Randomizer
+    DefaultModifier: -100
+    MinimumTrackNumber: 101
+    MaximumTrackNumber: 200

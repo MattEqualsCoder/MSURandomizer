@@ -97,7 +97,7 @@ public static class MSURandomizerService
         if (!string.IsNullOrEmpty(error)) return false;
         
         var msus = _msus.Count == 0 ? GetMSUs(options, out _) : _msus;
-        msus = msus?.Where(x => options.SelectedMSUs?.Contains(x.Name) == true).ToList();
+        msus = msus?.Where(x => options.SelectedMSUs?.Contains(x.FileName) == true).ToList();
 
         var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes() : _msuTypes;
         var type = msuTypes.FirstOrDefault(x => x.Name == options.OutputType);
@@ -141,7 +141,7 @@ public static class MSURandomizerService
 
                 // If there are extended tracks that are missing in this particular MSU
                 // For example, this MSU does not have extended dungeon support
-                foreach (var (originalId, mappingIds) in optionalRemappings)
+                foreach (var (originalId, mappingIds) in optionalRemappings.Where(x => msu.PCMFiles.ContainsKey(x.Key)))
                 {
                     foreach (var otherId in mappingIds.Where(otherId => !msu.PCMFiles.ContainsKey(otherId)))
                     {
@@ -254,7 +254,7 @@ public static class MSURandomizerService
         if (!string.IsNullOrEmpty(error)) return false;
 
         var msus = _msus.Count == 0 ? GetMSUs(options, out _) : _msus;
-        msus = msus?.Where(x => options.SelectedMSUs?.Contains(x.Name) == true).ToList();
+        msus = msus?.Where(x => options.SelectedMSUs?.Contains(x.FileName) == true).ToList();
 
         var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes() : _msuTypes;
         var type = msuTypes.FirstOrDefault(x => x.Name == options.OutputType);
@@ -387,7 +387,13 @@ public static class MSURandomizerService
         if (validPcmFiles.Count == 0) return null;
         var msuType = msuTypes.FirstOrDefault(x => x.Matches(validPcmFiles));
         return new MSU
-            { Name = msuName, MSUPath = msuFile, PCMFiles = validPcmFiles, Type = msuType };
+        {
+            FileName = msuName, 
+            MSUPath = msuFile, 
+            PCMFiles = validPcmFiles, 
+            Type = msuType,
+            FolderName = new DirectoryInfo(directory).Name
+        };
     }
 
     private static bool MatchesFilter(MSU msu, string? typeName, MSUFilter filter)
@@ -440,7 +446,7 @@ public static class MSURandomizerService
     private static string ValidateOptions(MSURandomizerOptions options)
     {
         var msus = _msus.Count == 0 ? GetMSUs(options, out _) : _msus;
-        msus = msus?.Where(x => options.SelectedMSUs?.Contains(x.Name) == true).ToList();
+        msus = msus?.Where(x => options.SelectedMSUs?.Contains(x.FileName) == true).ToList();
         if (msus == null || msus.Count == 0)
         {
             return "No selected MSUs found";

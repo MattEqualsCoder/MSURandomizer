@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MSURandomizerLibrary"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="Options" Height="175" Width="400" x:ClassModifier="internal">
+        Title="Options" Height="200" Width="400" x:ClassModifier="internal">
     <Window.DataContext>
         <local:MSURandomizerViewModel></local:MSURandomizerViewModel>
     </Window.DataContext>
@@ -38,6 +38,7 @@
             </Grid>
             
             <CheckBox Margin="0 5 0 3" IsChecked="{Binding OpenFolderOnCreate, Mode=TwoWay}">Open folder after creating MSU</CheckBox>
+            <CheckBox Margin="0 5 0 3" IsChecked="{Binding UseFolderNames, Mode=TwoWay}">Display folder names instead of MSU names</CheckBox>
         </StackPanel>
     </DockPanel>
 </Window>

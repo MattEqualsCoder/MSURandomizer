@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 
 namespace MSURandomizerLibrary;
 
@@ -56,7 +57,10 @@ internal class MSURandomizerViewModel: INotifyPropertyChanged
         }
     }
 
-    public IEnumerable<MSU> VisibleMSUs => MSURandomizerService.ApplyFilter(MSUs, Options).OrderBy(x => x.Name);
+    public Visibility ShowMSUName => Options.UseFolderNames ? Visibility.Collapsed : Visibility.Visible;
+    public Visibility ShowFolderName => Options.UseFolderNames ? Visibility.Visible : Visibility.Collapsed;
+
+    public IEnumerable<MSU> VisibleMSUs => MSURandomizerService.ApplyFilter(MSUs, Options).OrderBy(x => Options.UseFolderNames ? x.FolderName : x.FileName);
 
     private bool _canGenerate;
 
@@ -68,6 +72,13 @@ internal class MSURandomizerViewModel: INotifyPropertyChanged
             _canGenerate = value;
             OnPropertyChanged(nameof(CanGenerate));
         }
+    }
+
+    public void UpdateDisplayNames()
+    {
+        OnPropertyChanged(nameof(ShowMSUName));
+        OnPropertyChanged(nameof(ShowFolderName));
+        OnPropertyChanged(nameof(VisibleMSUs));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

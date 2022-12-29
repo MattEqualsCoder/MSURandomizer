@@ -30,6 +30,12 @@ internal class MSUOptionsViewModel: INotifyPropertyChanged
             OnPropertyChanged(nameof(Directory));
         }
     }
+
+    public bool UseFolderNames
+    {
+        get => _options.UseFolderNames;
+        set => _options.UseFolderNames = value;
+    }
     
     public event PropertyChangedEventHandler? PropertyChanged;
     private void OnPropertyChanged(string? propertyName = null)

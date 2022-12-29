@@ -52,8 +52,6 @@
                 <Button Grid.Column="2" Margin="5 0 5 0" Name="SelectAllButton" Click="SelectAllButton_OnClick" Width="80" VerticalAlignment="Bottom">Select All</Button>
                 <Button Grid.Column="3" Margin="5 0 0 0" Name="SelectNoneButton" Click="SelectNoneButton_OnClick" Width="80" VerticalAlignment="Bottom">Select None</Button>
                 
-                
-                
             </Grid>
         </Border>
         <ListView ItemsSource="{Binding VisibleMSUs}" SelectionMode="Multiple" Name="MSUListView" Grid.Row="1" SelectionChanged="MSUListView_OnSelectionChanged">
@@ -64,7 +62,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Name}" TextWrapping="NoWrap" Grid.Column="0"/>
+                        <TextBlock Text="{Binding FileName}" TextWrapping="NoWrap" Grid.Column="0" Visibility="{Binding ElementName=MSUListView, Path=DataContext.ShowMSUName, Mode=OneWay}" />
+                        <TextBlock Text="{Binding FolderName}" TextWrapping="NoWrap" Grid.Column="0" Visibility="{Binding ElementName=MSUListView, Path=DataContext.ShowFolderName, Mode=OneWay}" />
                         <TextBlock Text="{Binding TypeName}" TextWrapping="NoWrap" Grid.Column="1" TextAlignment="Right"/>
                     </Grid>
                 </DataTemplate>

@@ -44,7 +44,7 @@ namespace MSURandomizerLibrary
             var generateOptionsWindow = new MSUCreateWindow(Options, true);
             generateOptionsWindow.ShowDialog();
             if (!generateOptionsWindow.Generate) return;
-            Options.SelectedMSUs = MSUListView.SelectedItems.Cast<MSU>().Select(x => x.Name).ToList();
+            Options.SelectedMSUs = MSUListView.SelectedItems.Cast<MSU>().Select(x => x.FileName).ToList();
             if (!MSURandomizerService.ShuffleMSU(Options, out var error))
             {
                 
@@ -60,7 +60,7 @@ namespace MSURandomizerLibrary
             var generateOptionsWindow = new MSUCreateWindow(Options, false);
             generateOptionsWindow.ShowDialog();
             if (!generateOptionsWindow.Generate) return;
-            Options.SelectedMSUs = MSUListView.SelectedItems.Cast<MSU>().Select(x => x.Name).ToList();
+            Options.SelectedMSUs = MSUListView.SelectedItems.Cast<MSU>().Select(x => x.FileName).ToList();
             if (!MSURandomizerService.PickRandomMSU(Options, out var error))
             {
                 
@@ -98,6 +98,7 @@ namespace MSURandomizerLibrary
             var optionsWindow = new MSUOptionsWindow(Options);
             optionsWindow.ShowDialog();
             OnSettingsUpdated?.Invoke(this, new MSURandomizerEventArgs(Options));
+            _viewModel.UpdateDisplayNames();
             if (initDirectory == Options.Directory) return;
             Reload();
         }
@@ -119,7 +120,7 @@ namespace MSURandomizerLibrary
             if (Options.SelectedMSUs == null) return;
             foreach (var selectedMSUName in Options.SelectedMSUs)
             {
-                MSUListView.SelectedItems.Add(msus.First(x => x.Name == selectedMSUName));
+                MSUListView.SelectedItems.Add(msus.First(x => x.FileName == selectedMSUName));
             }
         }
     }
