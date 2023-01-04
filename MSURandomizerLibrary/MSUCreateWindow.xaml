@@ -25,7 +25,11 @@
         <StackPanel Orientation="Vertical" Margin="11">
             <TextBlock Margin="0 0 0 3">MSU Name</TextBlock>
             <TextBox Margin="0 0 0 3" Padding="3" Text="{Binding Name, Mode=TwoWay}"></TextBox>
-            <CheckBox Margin="0 3 0 3" IsChecked="{Binding AvoidDuplicates, Mode=TwoWay}">Avoid duplicates</CheckBox>
+            <CheckBox Margin="0 3 0 3" 
+                      Name="AvoidDuplicatesCheckBox"
+                      IsChecked="{Binding AvoidDuplicates, Mode=TwoWay}" 
+                      ToolTip="In situations where an MSU does not have extended support and has tracks duplicated to fill the spots, avoid the same track being used twice. For example, don't use the same pendant dungeon theme from a non-extended MSU twice."
+                      >Avoid duplicate tracks if possible</CheckBox>
         </StackPanel>
     </DockPanel>
 </Window>

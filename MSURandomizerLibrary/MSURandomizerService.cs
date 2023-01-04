@@ -101,20 +101,17 @@ public static class MSURandomizerService
 
         var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes() : _msuTypes;
         var type = msuTypes.FirstOrDefault(x => x.Name == options.OutputType);
-        
+
         var outputData = GetOutputData(options);
         var outputFolder = outputData.folder;
         var outputFileName = outputData.fileName;
         
         var pcmFiles = new Dictionary<int, List<string>>();
 
-        var requiredRemappings = GetRemapDictionary(type!.Remaps?.Where(x => !x.OnlyAddIfMissing));
-        var optionalRemappings = GetRemapDictionary(type.Remaps?.Where(x => x.OnlyAddIfMissing));
-        var conversionTypes = type.Conversions?.ToDictionary(x => x.MSUType, x => x) ??
-                              new Dictionary<string, MSUConversion>();
+        var remappings = GetRemapDictionary(type!.Remaps);
+        var conversionTypes = type.Conversions?.ToDictionary(x => x.MSUType, x => x);
         var conversionRemappings =
-            type.Conversions?.ToDictionary(x => x.MSUType, x => GetRemapDictionary(x.ManualRemaps)) ??
-            new Dictionary<string, Dictionary<int, List<int>>>();
+            type.Conversions?.ToDictionary(x => x.MSUType, x => GetRemapDictionary(x.ManualRemaps));
 
         // Loop through all MSUs to collect all of the PCMs for each 
         foreach (var msu in msus!)
@@ -122,59 +119,48 @@ public static class MSURandomizerService
             // If this MSU is an exact type match, copy over the PCM ids as-is or do remappings
             if (msu.Type != null && msu.Type.Name == type.Name)
             {
+                var msuPcmIds = msu.PCMFiles.Select(x => x.Key).ToHashSet();
+                
                 foreach (var (id, path) in msu.PCMFiles)
                 {
+                    // Copy the exact file
                     if (!pcmFiles.ContainsKey(id)) pcmFiles.Add(id, new List<string>());
                     pcmFiles[id].Add(path);
 
-                    // If there are tracks that should be mapped because they are additional unused tracks
-                    // For example, the extra boss themes in SMZ3
-                    if (requiredRemappings.ContainsKey(id))
-                    {
-                        foreach (var otherId in requiredRemappings[id])
-                        {
-                            if (!pcmFiles.ContainsKey(otherId)) pcmFiles.Add(otherId, new List<string>());
-                            pcmFiles[otherId].Add(path);    
-                        }
-                    }
-                }
+                    if (!remappings.ContainsKey(id)) continue;
+                    var pcmRemapping = remappings[id];
 
-                // If there are extended tracks that are missing in this particular MSU
-                // For example, this MSU does not have extended dungeon support
-                foreach (var (originalId, mappingIds) in optionalRemappings.Where(x => msu.PCMFiles.ContainsKey(x.Key)))
-                {
-                    foreach (var otherId in mappingIds.Where(otherId => !msu.PCMFiles.ContainsKey(otherId)))
+                    // Perform remaps
+                    foreach (var otherId in pcmRemapping.mappedIds.Where(otherId => !msuPcmIds.Contains(otherId) || !pcmRemapping.optional))
                     {
                         if (!pcmFiles.ContainsKey(otherId)) pcmFiles.Add(otherId, new List<string>());
-                        pcmFiles[otherId].Add(msu.PCMFiles[originalId]);
+                        pcmFiles[otherId].Add(path);
                     }
                 }
-
             }
             // If this MSU is in the accepted conversions, copy over PCMs that have found conversions
-            else if (msu.Type != null && conversionTypes.ContainsKey(msu.TypeName))
+            else if (msu.Type != null && conversionTypes?.ContainsKey(msu.TypeName) == true)
             {
                 var conversion = conversionTypes[msu.TypeName];
-                var mappings = conversionRemappings[msu.TypeName];
+                var conversionMapping = conversionRemappings?[msu.TypeName];
+                var msuPcmIds = msu.PCMFiles.Select(x => x.Key + conversion.DefaultModifier).ToHashSet();
 
-                foreach (var (originalId, path) in msu.PCMFiles)
+                foreach (var (originalId, path) in msu.PCMFiles.Where(x => x.Key >= conversion.MinimumTrackNumber && x.Key <= conversion.MaximumTrackNumber))
                 {
-                    if (originalId < conversion.MinimumTrackNumber ||
-                        originalId > conversion.MaximumTrackNumber) continue;
+                    var id = originalId + conversion.DefaultModifier;
                     
-                    if (mappings.ContainsKey(originalId))
+                    // Copy the exact file
+                    if (!pcmFiles.ContainsKey(id)) pcmFiles.Add(id, new List<string>());
+                    pcmFiles[id].Add(msu.PCMFiles[originalId]);
+                    
+                    if (conversionMapping == null || conversionMapping.ContainsKey(originalId) == false) continue;
+                    var pcmRemapping = conversionMapping[originalId];
+                    
+                    // Perform remaps
+                    foreach (var otherId in pcmRemapping.mappedIds.Where(otherId => !msuPcmIds.Contains(otherId) || !pcmRemapping.optional))
                     {
-                        foreach (var otherId in mappings[originalId])
-                        {
-                            if (!pcmFiles.ContainsKey(otherId)) pcmFiles.Add(otherId, new List<string>());
-                            pcmFiles[otherId].Add(msu.PCMFiles[originalId]);
-                        }
-                    }
-                    else
-                    {
-                        var otherId = originalId + conversion.DefaultModifier;
                         if (!pcmFiles.ContainsKey(otherId)) pcmFiles.Add(otherId, new List<string>());
-                        pcmFiles[otherId].Add(msu.PCMFiles[originalId]);
+                        pcmFiles[otherId].Add(path);
                     }
                 }
             }
@@ -209,7 +195,7 @@ public static class MSURandomizerService
 
             // If there are any pairs of PCM files that should go together
             // For example, the intro songs for Super Metroid
-            if (type.Pairs?.ContainsKey(pcmIndex) == true)
+            if (type.Pairs?.ContainsKey(pcmIndex) == true && path.Contains($"-{pcmIndex}.pcm"))
             {
                 var newIndex = type.Pairs[pcmIndex];
                 path = path.Replace($"-{pcmIndex}.pcm", $"-{newIndex}.pcm");
@@ -266,8 +252,7 @@ public static class MSURandomizerService
         var conversionTypes = type!.Conversions?.ToDictionary(x => x.MSUType, x => x) ??
                               new Dictionary<string, MSUConversion>();
         var conversionRemappings =
-            type.Conversions?.ToDictionary(x => x.MSUType, x => GetRemapDictionary(x.ManualRemaps)) ??
-            new Dictionary<string, Dictionary<int, List<int>>>();
+            type.Conversions?.ToDictionary(x => x.MSUType, x => GetRemapDictionary(x.ManualRemaps));
         var msuOptions = new List<Dictionary<int, string>>();
         
         // Loop through all MSUs to collect all of the PCMs for each 
@@ -284,24 +269,23 @@ public static class MSURandomizerService
             else if (msu.Type != null && conversionTypes.ContainsKey(msu.TypeName))
             {
                 var conversion = conversionTypes[msu.TypeName];
-                var mappings = conversionRemappings[msu.TypeName];
+                var conversionMapping = conversionRemappings?[msu.TypeName];
+                var msuPcmIds = msu.PCMFiles.Select(x => x.Key + conversion.DefaultModifier).ToHashSet();
 
-                foreach (var (originalId, path) in msu.PCMFiles)
+                foreach (var (originalId, path) in msu.PCMFiles.Where(x => x.Key >= conversion.MinimumTrackNumber && x.Key <= conversion.MaximumTrackNumber))
                 {
-                    if (originalId < conversion.MinimumTrackNumber ||
-                        originalId > conversion.MaximumTrackNumber) continue;
+                    var id = originalId + conversion.DefaultModifier;
                     
-                    if (mappings.ContainsKey(originalId))
+                    // Copy the exact file
+                    msuPcms[id] = path;
+                    
+                    if (conversionMapping == null || conversionMapping.ContainsKey(originalId) == false) continue;
+                    var pcmRemapping = conversionMapping[originalId];
+                    
+                    // Perform remaps
+                    foreach (var otherId in pcmRemapping.mappedIds.Where(otherId => !msuPcmIds.Contains(otherId)))
                     {
-                        foreach (var otherId in mappings[originalId])
-                        {
-                            msuPcms[otherId] = path;
-                        }
-                    }
-                    else
-                    {
-                        var otherId = originalId + conversion.DefaultModifier;
-                        msuPcms[otherId] = path;
+                        msuPcms[id] = path;
                     }
                 }
             }
@@ -425,9 +409,9 @@ public static class MSURandomizerService
             File.Copy(originalPath, pcmPath);
     }
 
-    private static Dictionary<int, List<int>> GetRemapDictionary(IEnumerable<MSUTrackRemapping>? remappings)
+    private static Dictionary<int, (bool optional, List<int> mappedIds)> GetRemapDictionary(IEnumerable<MSUTrackRemapping>? remappings)
     {
-        var toReturn = new Dictionary<int, List<int>>();
+        var toReturn = new Dictionary<int, (bool required, List<int> mappedIds)>();
 
         if (remappings == null) return toReturn;
 
@@ -435,8 +419,9 @@ public static class MSURandomizerService
         {
             foreach (var originalTrackNumber in remap.OriginalTrackNumbersList)
             {
-                if (!toReturn.ContainsKey(originalTrackNumber)) toReturn.Add(originalTrackNumber, new List<int>());
-                toReturn[originalTrackNumber].AddRange(remap.RemappedTrackNumbersList);
+                if (toReturn.ContainsKey(originalTrackNumber))
+                    throw new InvalidOperationException($"{originalTrackNumber} is mapped twice");
+                toReturn[originalTrackNumber] = (remap.OnlyAddIfMissing, remap.RemappedTrackNumbersList);
             }
         }
 

@@ -2,27 +2,39 @@
 MinTrackCount: 32
 MaxTrackCount: 61
 RequiredTracks:
-    - 34
+  - 34
 Remaps:
-  # Bosses
-  - OriginalTrackNumbers: 21
-    RemappedTrackNumbers: 47,48,49,50,51,52,53,54,55,56,57,58
+  # Light World => Light World 2
+  - OriginalTrackNumbers: 2
+    RemappedTrackNumbers: 60
+    OnlyAddIfMissing: true
+  # Dark World => Dark World 2
+  - OriginalTrackNumbers: 9
+    RemappedTrackNumbers: 61
+    OnlyAddIfMissing: true
+  # Dark Death Mounta => Dark Woods
+  - OriginalTrackNumbers: 13
+    RemappedTrackNumbers: 15
     OnlyAddIfMissing: true
   # Castle Tower => Hyrule Castle
   - OriginalTrackNumbers: 16
     RemappedTrackNumbers: 37
     OnlyAddIfMissing: true
-  # GT Ascent => Ganons Tower
-  - OriginalTrackNumbers: 46
-    RemappedTrackNumbers: 59
-    OnlyAddIfMissing: true
   # Pendant Theme => Light World Dungeons
   - OriginalTrackNumbers: 17
     RemappedTrackNumbers: 35,36,43
     OnlyAddIfMissing: true
+  # Bosses
+  - OriginalTrackNumbers: 21
+    RemappedTrackNumbers: 47,48,49,50,51,52,53,54,55,56,57,58
+    OnlyAddIfMissing: true
   # Crystal Theme => Dark World Dungeons
   - OriginalTrackNumbers: 22
     RemappedTrackNumbers: 38,39,40,41,42,44,45,46,59
+    OnlyAddIfMissing: true
+  # GT Ascent => Ganons Tower
+  - OriginalTrackNumbers: 46
+    RemappedTrackNumbers: 59
     OnlyAddIfMissing: true
 Conversions:
   - MSUType: SMZ3 Combo Randomizer

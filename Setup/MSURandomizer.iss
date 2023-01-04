@@ -4,7 +4,7 @@
 #include "CodeDependencies.iss"
 
 #define MyAppName "MSU Randomizer"
-#define MyAppVersion "0.9.0"
+#define MyAppVersion "0.9.1"
 #define MyAppPublisher "MattEqualsCoder"
 #define MyAppURL "https://github.com/MattEqualsCoder"
 #define MyAppExeName "MSURandomizer.exe"
