@@ -12,10 +12,10 @@ A multi game MSU randomizer originally created for the [SMZ3 Cas' Randomizer](ht
 - Automatic combining of extended and not-extended MSUs
 - Converting between different MSU types
 - Creating a new MSU folder or creating an MSU off of an already created rom
+- Custom user MSU types for other games
 
 ## Planned Features
 
-- Allow user creation of MSU type config files for other games
 - Support for multiple MSU folders
 
 ### Credits & Thanks

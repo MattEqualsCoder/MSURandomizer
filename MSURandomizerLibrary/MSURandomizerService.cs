@@ -38,7 +38,7 @@ public static class MSURandomizerService
             return null;
         }
         
-        var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes() : _msuTypes;
+        var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes(options) : _msuTypes;
         var directories = Directory.GetDirectories(options.Directory);
         var msuList = new List<MSU>();
         foreach (var directory in directories)
@@ -62,7 +62,7 @@ public static class MSURandomizerService
     /// Gets a list of all identified MSU types
     /// </summary>
     /// <returns></returns>
-    public static List<MSUType> GetMSUTypes()
+    public static List<MSUType> GetMSUTypes(MSURandomizerOptions options)
     {
         var assembly = Assembly.GetExecutingAssembly();
         var resources = assembly.GetManifestResourceNames();
@@ -78,6 +78,25 @@ public static class MSURandomizerService
             using var reader = new StreamReader(resourceStream);
             var msuType = deserializer.Deserialize<MSUType>(reader.ReadToEnd());
             types.Add(msuType);
+        }
+
+        // If a config file is passed in, load all yaml/yml files there
+        if (!string.IsNullOrEmpty(options.MsuTypeConfigPath))
+        {
+            var directory = new DirectoryInfo(options.MsuTypeConfigPath);
+            if (directory.Exists)
+            {
+                foreach (var file in directory.EnumerateFiles()
+                             .Where(f => f.Extension.EndsWith("yml") || f.Extension.EndsWith("yaml")))
+                {
+                    using var fileStream = File.OpenRead(file.FullName);
+                    using var reader = new StreamReader(fileStream);
+                    var msuType = deserializer.Deserialize<MSUType>(reader.ReadToEnd());
+                    var oldType = types.FirstOrDefault(x => x.Name == msuType.Name);
+                    if (oldType != null) types.Remove(oldType);
+                    types.Add(msuType);
+                }
+            }
         }
 
         _msuTypes = types;
@@ -99,7 +118,7 @@ public static class MSURandomizerService
         var msus = _msus.Count == 0 ? GetMSUs(options, out _) : _msus;
         msus = msus?.Where(x => options.SelectedMSUs?.Contains(x.FileName) == true).ToList();
 
-        var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes() : _msuTypes;
+        var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes(options) : _msuTypes;
         var type = msuTypes.FirstOrDefault(x => x.Name == options.OutputType);
 
         var outputData = GetOutputData(options);
@@ -112,6 +131,7 @@ public static class MSURandomizerService
         var conversionTypes = type.Conversions?.ToDictionary(x => x.MSUType, x => x);
         var conversionRemappings =
             type.Conversions?.ToDictionary(x => x.MSUType, x => GetRemapDictionary(x.ManualRemaps));
+        var anyPerfectMatch = false;
 
         // Loop through all MSUs to collect all of the PCMs for each 
         foreach (var msu in msus!)
@@ -119,6 +139,7 @@ public static class MSURandomizerService
             // If this MSU is an exact type match, copy over the PCM ids as-is or do remappings
             if (msu.Type != null && msu.Type.Name == type.Name)
             {
+                anyPerfectMatch = true;
                 var msuPcmIds = msu.PCMFiles.Select(x => x.Key).ToHashSet();
                 
                 foreach (var (id, path) in msu.PCMFiles)
@@ -225,6 +246,10 @@ public static class MSURandomizerService
         options.CreatedMSUPath = msuPath;
 
         error = null;
+        if (!anyPerfectMatch)
+        {
+            error = "None of the selected MSUs exactly match the requested MSU type. Some tracks could be missing.";
+        }
         return true;
     }
 
@@ -242,7 +267,7 @@ public static class MSURandomizerService
         var msus = _msus.Count == 0 ? GetMSUs(options, out _) : _msus;
         msus = msus?.Where(x => options.SelectedMSUs?.Contains(x.FileName) == true).ToList();
 
-        var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes() : _msuTypes;
+        var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes(options) : _msuTypes;
         var type = msuTypes.FirstOrDefault(x => x.Name == options.OutputType);
 
         var outputData = GetOutputData(options);
@@ -253,7 +278,7 @@ public static class MSURandomizerService
                               new Dictionary<string, MSUConversion>();
         var conversionRemappings =
             type.Conversions?.ToDictionary(x => x.MSUType, x => GetRemapDictionary(x.ManualRemaps));
-        var msuOptions = new List<Dictionary<int, string>>();
+        var msuOptions = new List<(MSU msu, Dictionary<int, string> tracks)>();
         
         // Loop through all MSUs to collect all of the PCMs for each 
         foreach (var msu in msus!)
@@ -298,17 +323,17 @@ public static class MSURandomizerService
                 }
             }
 
-            msuOptions.Add(msuPcms);
+            msuOptions.Add((msu, msuPcms));
         }
 
         var random = new Random(System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, int.MaxValue));
-        var pickedMsu = msuOptions.Random(random) ?? msuOptions.First();
-        
+        var pickedMsu = msuOptions.Random(random);
+            
         var pcmPath = Path.Combine(outputFolder, $"{outputFileName}-<id>.pcm");
         var msuPath = Path.Combine(outputFolder, $"{outputFileName}.msu");
         var pickedPcms = new Dictionary<int, string>();
 
-        foreach (var (index, path) in pickedMsu)
+        foreach (var (index, path) in pickedMsu.tracks)
         {
             pickedPcms.Add(index, path);
             CreatePCMFile(pcmPath, path, index);
@@ -330,8 +355,11 @@ public static class MSURandomizerService
         options.CreatedMSUPath = msuPath;
 
         error = null;
+        if (type.Name != pickedMsu.msu.TypeName)
+        {
+            error = "Randomly selected MSU type does not match requested type. Some tracks could be missing.";
+        }
         return true;
-
     }
 
     /// <summary>
@@ -342,7 +370,7 @@ public static class MSURandomizerService
     /// <returns>The list of matching MSUs</returns>
     public static IEnumerable<MSU> ApplyFilter(IEnumerable<MSU> msus, MSURandomizerOptions options)
     {
-        return msus.Where(x => MatchesFilter(x, options.OutputType, options.Filter));
+        return msus.Where(x => MatchesFilter(x, options.OutputType, options.Filter, options));
     }
 
     /// <summary>
@@ -352,9 +380,9 @@ public static class MSURandomizerService
     /// <param name="outputType">The type of MSU that is being generated as output</param>
     /// <param name="filter">The filter to apply</param>
     /// <returns>The list of matching MSUs</returns>
-    public static IEnumerable<MSU> ApplyFilter(IEnumerable<MSU> msus, MSUType outputType, MSUFilter filter)
+    public static IEnumerable<MSU> ApplyFilter(IEnumerable<MSU> msus, MSUType outputType, MSUFilter filter, MSURandomizerOptions options)
     {
-        return msus.Where(x => MatchesFilter(x, outputType.Name, filter));
+        return msus.Where(x => MatchesFilter(x, outputType.Name, filter, options));
     }
     
     private static MSU? LoadMSU(string directory, string msuFile, List<MSUType> msuTypes)
@@ -380,7 +408,7 @@ public static class MSURandomizerService
         };
     }
 
-    private static bool MatchesFilter(MSU msu, string? typeName, MSUFilter filter)
+    private static bool MatchesFilter(MSU msu, string? typeName, MSUFilter filter, MSURandomizerOptions options)
     {
         switch (filter)
         {
@@ -391,7 +419,7 @@ public static class MSURandomizerService
             default:
             {
                 if (msu.Type?.Name == typeName) return true;
-                var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes() : _msuTypes;
+                var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes(options) : _msuTypes;
                 var type = msuTypes.FirstOrDefault(x => x.Name == typeName);
                 return (type?.Conversions?.Any(x => x.MSUType == msu.Type?.Name) == true);
             }
@@ -437,7 +465,7 @@ public static class MSURandomizerService
             return "No selected MSUs found";
         }
 
-        var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes() : _msuTypes;
+        var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes(options) : _msuTypes;
         var type = msuTypes.FirstOrDefault(x => x.Name == options.OutputType);
         if (type == null)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,10 +48,14 @@ namespace MSURandomizerLibrary
             Options.SelectedMSUs = MSUListView.SelectedItems.Cast<MSU>().Select(x => x.FileName).ToList();
             if (!MSURandomizerService.ShuffleMSU(Options, out var error))
             {
-                
+                MessageBox.Show(error, "Error");
             }
             else
             {
+                if (!string.IsNullOrEmpty(error))
+                {
+                    MessageBox.Show(error, "Warning");
+                }
                 OnRomGenerated?.Invoke(this, new MSURandomizerEventArgs(Options));
             }
         }
@@ -63,10 +68,14 @@ namespace MSURandomizerLibrary
             Options.SelectedMSUs = MSUListView.SelectedItems.Cast<MSU>().Select(x => x.FileName).ToList();
             if (!MSURandomizerService.PickRandomMSU(Options, out var error))
             {
-                
+                MessageBox.Show(error, "Error");
             }
             else
             {
+                if (!string.IsNullOrEmpty(error))
+                {
+                    MessageBox.Show(error, "Warning");
+                }
                 OnRomGenerated?.Invoke(this, new MSURandomizerEventArgs(Options));
             }
         }
@@ -112,15 +121,25 @@ namespace MSURandomizerLibrary
             }
             _viewModel.MSUs = msus;
             
-            var msuTypes = MSURandomizerService.GetMSUTypes();
-            if (string.IsNullOrEmpty(Options.OutputType) || msuTypes.All(x => x.Name != Options.OutputType))
-                Options.OutputType = msuTypes.First().Name;
-            _viewModel.MSUTypes = msuTypes.Select(x => x.Name).ToList();
+            var msuTypes = MSURandomizerService.GetMSUTypes(Options);
+
+            if (string.IsNullOrEmpty(Options.ForcedMsuType))
+            {
+                if (string.IsNullOrEmpty(Options.OutputType) || msuTypes.All(x => x.Name != Options.OutputType))
+                    Options.OutputType = msuTypes.First().Name;
+                _viewModel.MSUTypes = msuTypes.Select(x => x.Name).ToList();
+            }
+            else
+            {
+                Options.OutputType = Options.ForcedMsuType;
+                _viewModel.MSUTypes = new List<string> { Options.ForcedMsuType };
+            }
             
             if (Options.SelectedMSUs == null) return;
             foreach (var selectedMSUName in Options.SelectedMSUs)
             {
-                MSUListView.SelectedItems.Add(msus.First(x => x.FileName == selectedMSUName));
+                var msu = msus.FirstOrDefault(x => x.FileName == selectedMSUName);
+                if (msu != null) MSUListView.SelectedItems.Add(msu);
             }
         }
     }

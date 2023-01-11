@@ -21,6 +21,8 @@ namespace MSURandomizer
                 .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
             var options = LoadOptions();
+            var msuTypePath = Environment.ExpandEnvironmentVariables("%LocalAppData%\\MSURandomizer\\configs");
+            options.MsuTypeConfigPath = msuTypePath;
             DataContext = _viewModel = new MainWindowViewModel() { Options = options };
             InitializeComponent();
         }

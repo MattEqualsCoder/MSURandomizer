@@ -19,6 +19,9 @@ namespace MSURandomizerLibrary
             DataContext = Options = options;
             Title = shuffledMsuWindow ? "Create Shuffled MSU" : "Pick Random MSU";
             AvoidDuplicatesCheckBox.Visibility = shuffledMsuWindow ? Visibility.Visible : Visibility.Collapsed;
+            GenerateRomMSUButton.Visibility = string.IsNullOrEmpty(Options.ForcedMsuType)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         private void GenerateButton_Click(object sender, RoutedEventArgs e)

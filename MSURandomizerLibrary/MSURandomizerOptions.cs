@@ -16,5 +16,8 @@ public class MSURandomizerOptions
     public List<string>? SelectedMSUs { get; set; }
     public string? CreatedMSUPath { get; set; }
     public string? RomPath { get; set; }
+    public string? MsuTypeConfigPath { get; set; }
     public bool UseFolderNames;
+    public string? ForcedMsuType { get; set; }
+    public bool AllowMSUFolderChange { get; set; } = true;
 }

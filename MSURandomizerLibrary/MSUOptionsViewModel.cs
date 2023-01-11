@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Windows;
 
 namespace MSURandomizerLibrary;
 
@@ -36,6 +37,8 @@ internal class MSUOptionsViewModel: INotifyPropertyChanged
         get => _options.UseFolderNames;
         set => _options.UseFolderNames = value;
     }
+
+    public Visibility ShowMsuFolder => _options.AllowMSUFolderChange ? Visibility.Visible : Visibility.Collapsed;
     
     public event PropertyChangedEventHandler? PropertyChanged;
     private void OnPropertyChanged(string? propertyName = null)

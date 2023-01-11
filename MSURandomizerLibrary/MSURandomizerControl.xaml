@@ -30,7 +30,7 @@
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Vertical" Visibility="{Binding ShowMSUType}">
                     <TextBlock>Output MSU Type</TextBlock>
                     <ComboBox 
                         Margin="0 0 5 0" 

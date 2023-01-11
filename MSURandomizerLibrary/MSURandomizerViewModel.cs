@@ -32,6 +32,7 @@ internal class MSURandomizerViewModel: INotifyPropertyChanged
             OnPropertyChanged(nameof(SelectedMsuType));
             OnPropertyChanged(nameof(MSUTypes));
             OnPropertyChanged(nameof(VisibleMSUs));
+            OnPropertyChanged(nameof(ShowMSUType));
         }
     }
         
@@ -59,6 +60,9 @@ internal class MSURandomizerViewModel: INotifyPropertyChanged
 
     public Visibility ShowMSUName => Options.UseFolderNames ? Visibility.Collapsed : Visibility.Visible;
     public Visibility ShowFolderName => Options.UseFolderNames ? Visibility.Visible : Visibility.Collapsed;
+
+    public Visibility ShowMSUType =>
+        string.IsNullOrEmpty(Options.ForcedMsuType) ? Visibility.Visible : Visibility.Collapsed;
 
     public IEnumerable<MSU> VisibleMSUs => MSURandomizerService.ApplyFilter(MSUs, Options).OrderBy(x => Options.UseFolderNames ? x.FolderName : x.FileName);
 
