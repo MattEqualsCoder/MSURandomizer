@@ -1,8 +1,8 @@
 ﻿Name: SMZ3 Combo Randomizer
 MinTrackCount: 55
-MaxTrackCount: 100
+MaxTrackCount: 105
 RequiredTracks:
-  - 99
+  - 102
   - 131
 Remaps:
   # Super Metroid Extended Boss Theme 1 (Ridley, Draygon)

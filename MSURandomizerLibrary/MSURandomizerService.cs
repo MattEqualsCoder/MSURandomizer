@@ -79,7 +79,11 @@ public static class MSURandomizerService
             var msuType = deserializer.Deserialize<MSUType>(reader.ReadToEnd());
             types.Add(msuType);
         }
-
+        
+#if DEBUG
+        _msuTypes = types;
+        return types;
+#else
         // If a config file is passed in, load all yaml/yml files there
         if (!string.IsNullOrEmpty(options.MsuTypeConfigPath))
         {
@@ -102,6 +106,8 @@ public static class MSURandomizerService
         _msuTypes = types;
 
         return types;
+#endif
+        
     }
 
     /// <summary>
@@ -379,6 +385,7 @@ public static class MSURandomizerService
     /// <param name="msus">The list of MSUs</param>
     /// <param name="outputType">The type of MSU that is being generated as output</param>
     /// <param name="filter">The filter to apply</param>
+    /// <param name="options"></param>
     /// <returns>The list of matching MSUs</returns>
     public static IEnumerable<MSU> ApplyFilter(IEnumerable<MSU> msus, MSUType outputType, MSUFilter filter, MSURandomizerOptions options)
     {
@@ -397,7 +404,20 @@ public static class MSURandomizerService
             validPcmFiles.Add(num, pcmFile);
         }
         if (validPcmFiles.Count == 0) return null;
-        var msuType = msuTypes.FirstOrDefault(x => x.Matches(validPcmFiles));
+        
+        // Find all MSU types that match
+        // If there are more than one, then check for PCM files that are set to loop/not loop and find one that matches
+        MSUType? msuType;
+        var validMsuTypes = msuTypes.Where(x => x.Matches(validPcmFiles));
+        if (validMsuTypes.Count() > 1)
+        {
+            msuType = validMsuTypes.FirstOrDefault(x => x.MatchesOnPCMLoops(validPcmFiles));
+        }
+        else
+        {
+            msuType = validMsuTypes.FirstOrDefault();
+        }
+        
         return new MSU
         {
             FileName = msuName, 
@@ -502,6 +522,11 @@ public static class MSURandomizerService
             options.RomPath = null;
             return (file.DirectoryName ?? "", outputFileName);
         }
+    }
+
+    public static bool DoesPCMLoop(string fileName)
+    {
+        return File.ReadAllBytes(fileName).Skip(4).Take(4).Any(x => x != 0);
     }
 
 }

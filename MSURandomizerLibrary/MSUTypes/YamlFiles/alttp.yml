@@ -3,6 +3,8 @@ MinTrackCount: 32
 MaxTrackCount: 61
 RequiredTracks:
   - 34
+RequiredNonLoopTracks:
+  - 33
 Remaps:
   # Light World => Light World 2
   - OriginalTrackNumbers: 2

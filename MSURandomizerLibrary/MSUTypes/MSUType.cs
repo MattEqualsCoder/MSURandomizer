@@ -8,6 +8,8 @@ namespace MSURandomizerLibrary.MSUTypes
         public required int MinTrackCount { get; set; }
         public required int MaxTrackCount { get; set; }
         public required IEnumerable<int> RequiredTracks { get; set; }
+        public IEnumerable<int>? RequiredLoopTracks { get; set; }
+        public IEnumerable<int>? RequiredNonLoopTracks { get; set; }
         public IEnumerable<MSUTrackRemapping>? Remaps { get; set; }
         public IDictionary<int, int>? Pairs { get; set; }
         public IEnumerable<MSUConversion>? Conversions { get; set; }
@@ -19,6 +21,27 @@ namespace MSURandomizerLibrary.MSUTypes
             {
                 if (!pcmFiles.ContainsKey(requiredTrack)) return false;
             }
+            return true;
+        }
+
+        public bool MatchesOnPCMLoops(Dictionary<int, string> pcmFiles)
+        {
+            if (RequiredLoopTracks != null)
+            {
+                foreach (var track in RequiredLoopTracks)
+                {
+                    if (pcmFiles.ContainsKey(track) && !MSURandomizerService.DoesPCMLoop(pcmFiles[track])) return false;
+                }
+            }
+            
+            if (RequiredNonLoopTracks != null)
+            {
+                foreach (var track in RequiredNonLoopTracks)
+                {
+                    if (pcmFiles.ContainsKey(track) && MSURandomizerService.DoesPCMLoop(pcmFiles[track])) return false;
+                }
+            }
+
             return true;
         }
     }
