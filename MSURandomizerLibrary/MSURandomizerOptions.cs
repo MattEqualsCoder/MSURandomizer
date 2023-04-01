@@ -12,6 +12,8 @@ public class MSURandomizerOptions
     public string? OutputType { get; set; }
     public MSUFilter Filter { get; set; } = MSUFilter.Compatible;
     public bool AvoidDuplicates { get; set; }
+    public bool AllowContinuousReshuffle { get; set; } = true;
+    public bool ContinuousReshuffle { get; set; }
     public bool OpenFolderOnCreate { get; set; }
     public List<string>? SelectedMSUs { get; set; }
     public string? CreatedMSUPath { get; set; }
@@ -20,4 +22,5 @@ public class MSURandomizerOptions
     public bool UseFolderNames;
     public string? ForcedMsuType { get; set; }
     public bool AllowMSUFolderChange { get; set; } = true;
+    public bool DeleteFolder { get; set; } = true;
 }

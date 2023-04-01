@@ -215,7 +215,7 @@ public static class MSURandomizerService
             if (placedIndexes.Contains(pcmIndex) || !pcmFiles.ContainsKey(pcmIndex)) continue;
             var path = pcmFiles[pcmIndex].Where(x => !options.AvoidDuplicates || !usedPaths.Contains(x))
                 .Random(random) ?? pcmFiles[pcmIndex].First();
-            CreatePCMFile(pcmPath, path, pcmIndex);
+            
             pickedPcms.Add(pcmIndex, path);
             placedIndexes.Add(pcmIndex);
             usedPaths.Add(path);
@@ -227,16 +227,24 @@ public static class MSURandomizerService
                 var newIndex = type.Pairs[pcmIndex];
                 path = path.Replace($"-{pcmIndex}.pcm", $"-{newIndex}.pcm");
                 if (!File.Exists(path)) continue;
-                CreatePCMFile(pcmPath, path, newIndex);
+                
                 pickedPcms.Add(newIndex, path);
                 placedIndexes.Add(newIndex);
                 usedPaths.Add(path);
             }
         }
 
+        foreach (var (pcmIndex, songPath) in pickedPcms)
+        {
+            CreatePCMFile(pcmPath, songPath, pcmIndex);
+        }
+
         var msuPath = Path.Combine(outputFolder, $"{outputFileName}.msu");
         
-        using (File.Create(msuPath)) {}
+        if (!File.Exists(msuPath))
+        {
+            using (File.Create(msuPath)) { }
+        }
 
         var output = pickedPcms
             .OrderBy(x => x.Key)
@@ -407,16 +415,8 @@ public static class MSURandomizerService
         
         // Find all MSU types that match
         // If there are more than one, then check for PCM files that are set to loop/not loop and find one that matches
-        MSUType? msuType;
         var validMsuTypes = msuTypes.Where(x => x.Matches(validPcmFiles));
-        if (validMsuTypes.Count() > 1)
-        {
-            msuType = validMsuTypes.FirstOrDefault(x => x.MatchesOnPCMLoops(validPcmFiles));
-        }
-        else
-        {
-            msuType = validMsuTypes.FirstOrDefault();
-        }
+        var msuType = validMsuTypes.Count() > 1 ? validMsuTypes.FirstOrDefault(x => x.MatchesOnPCMLoops(validPcmFiles)) : validMsuTypes.FirstOrDefault();
         
         return new MSU
         {
@@ -449,7 +449,17 @@ public static class MSURandomizerService
     private static void CreatePCMFile(string pcmPath, string originalPath, int pcmIndex)
     {
         pcmPath = pcmPath.Replace("<id>", pcmIndex.ToString());
-        if (File.Exists(pcmPath)) File.Delete(pcmPath);
+        if (File.Exists(pcmPath))
+        {
+            try
+            {
+                File.Delete(pcmPath);
+            }
+            catch
+            {
+                return;
+            }
+        }
         
         if (pcmPath.StartsWith(originalPath.Substring(0,1)))
             NativeMethods.CreateHardLink(pcmPath, originalPath, IntPtr.Zero);
@@ -511,7 +521,17 @@ public static class MSURandomizerService
         if (string.IsNullOrEmpty(options.RomPath))
         {
             var outputFolder = Path.Combine(options.Directory!, options.Name);
-            if (Directory.Exists(outputFolder)) Directory.Delete(outputFolder, true);
+            if (Directory.Exists(outputFolder))
+            {
+                if (options.DeleteFolder)
+                {
+                    Directory.Delete(outputFolder, true);
+                }
+                else
+                {
+                    return (outputFolder, options.Name);
+                }
+            }
             Directory.CreateDirectory(outputFolder);
             return (outputFolder, options.Name);
         }

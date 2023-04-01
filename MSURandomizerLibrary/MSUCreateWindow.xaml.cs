@@ -22,6 +22,10 @@ namespace MSURandomizerLibrary
             GenerateRomMSUButton.Visibility = string.IsNullOrEmpty(Options.ForcedMsuType)
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+            ContinousReshuffleCheckBox.Visibility = shuffledMsuWindow && options.AllowContinuousReshuffle
+                ? Visibility.Visible 
+                : Visibility.Collapsed;
+            options.ContinuousReshuffle = options.ContinuousReshuffle && shuffledMsuWindow;
         }
 
         private void GenerateButton_Click(object sender, RoutedEventArgs e)

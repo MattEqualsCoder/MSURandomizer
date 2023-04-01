@@ -46,6 +46,7 @@ namespace MSURandomizerLibrary
             generateOptionsWindow.ShowDialog();
             if (!generateOptionsWindow.Generate) return;
             Options.SelectedMSUs = MSUListView.SelectedItems.Cast<MSU>().Select(x => x.FileName).ToList();
+            var romPath = Options.RomPath;
             if (!MSURandomizerService.ShuffleMSU(Options, out var error))
             {
                 MessageBox.Show(error, "Error");
@@ -57,6 +58,11 @@ namespace MSURandomizerLibrary
                     MessageBox.Show(error, "Warning");
                 }
                 OnRomGenerated?.Invoke(this, new MSURandomizerEventArgs(Options));
+                if (Options.ContinuousReshuffle)
+                {
+                    var continuousReshuffleWindow = new MSUContinuousShuffleWindow(Options, romPath);
+                    continuousReshuffleWindow.ShowDialog();
+                }
             }
         }
         
