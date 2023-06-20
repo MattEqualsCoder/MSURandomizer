@@ -39,18 +39,16 @@ public static class MSURandomizerService
         }
         
         var msuTypes = _msuTypes.Count == 0 ? GetMSUTypes(options) : _msuTypes;
-        var directories = Directory.GetDirectories(options.Directory);
+        var msuFiles = Directory.EnumerateFiles(options.Directory, "*.msu", SearchOption.AllDirectories);
         var msuList = new List<MSU>();
-        foreach (var directory in directories)
+        foreach (var msuFile in msuFiles)
         {
+            var directory = Path.GetDirectoryName(msuFile);
+            var filename = Path.GetFileName(msuFile);
+            if (directory == null) continue;
             if (File.Exists(Path.Combine(directory, "msu-randomizer-output.txt"))) continue;
-            var msus = Directory.EnumerateFiles(directory, "*.msu");
-            foreach (var msuFile in msus)
-            {
-                var msu = LoadMSU(directory, msuFile, msuTypes);
-                if (msu != null) msuList.Add(msu);
-            }
-
+            var msu = LoadMSU(directory, filename, msuTypes);
+            if (msu != null) msuList.Add(msu);
         }
 
         error = null;
@@ -136,7 +134,7 @@ public static class MSURandomizerService
         var remappings = GetRemapDictionary(type!.Remaps);
         var conversionTypes = type.Conversions?.ToDictionary(x => x.MSUType, x => x);
         var conversionRemappings =
-            type.Conversions?.ToDictionary(x => x.MSUType, x => GetRemapDictionary(x.ManualRemaps));
+            type.Conversions?.ToDictionary(x => x.MSUType, x => GetRemapDictionary(x.ManualRemaps, x.RangedModifiers));
         var anyPerfectMatch = false;
 
         // Loop through all MSUs to collect all of the PCMs for each 
@@ -150,14 +148,18 @@ public static class MSURandomizerService
                 
                 foreach (var (id, path) in msu.PCMFiles)
                 {
+                    var hasConversion = remappings.TryGetValue(id, out var pcmRemapping);
+                    var skipOriginal = hasConversion && pcmRemapping.skipOriginal;
+                    
                     // Copy the exact file
-                    if (!pcmFiles.ContainsKey(id)) pcmFiles.Add(id, new List<string>());
-                    pcmFiles[id].Add(path);
-
-                    if (!remappings.ContainsKey(id)) continue;
-                    var pcmRemapping = remappings[id];
+                    if (!skipOriginal)
+                    {
+                        if (!pcmFiles.ContainsKey(id)) pcmFiles.Add(id, new List<string>());
+                        pcmFiles[id].Add(path);    
+                    }
 
                     // Perform remaps
+                    if (!hasConversion) continue;
                     foreach (var otherId in pcmRemapping.mappedIds.Where(otherId => !msuPcmIds.Contains(otherId) || !pcmRemapping.optional))
                     {
                         if (!pcmFiles.ContainsKey(otherId)) pcmFiles.Add(otherId, new List<string>());
@@ -166,9 +168,8 @@ public static class MSURandomizerService
                 }
             }
             // If this MSU is in the accepted conversions, copy over PCMs that have found conversions
-            else if (msu.Type != null && conversionTypes?.ContainsKey(msu.TypeName) == true)
+            else if (msu.Type != null && conversionTypes?.TryGetValue(msu.TypeName, out var conversion) is true)
             {
-                var conversion = conversionTypes[msu.TypeName];
                 var conversionMapping = conversionRemappings?[msu.TypeName];
                 var msuPcmIds = msu.PCMFiles.Select(x => x.Key + conversion.DefaultModifier).ToHashSet();
 
@@ -176,19 +177,27 @@ public static class MSURandomizerService
                 {
                     var id = originalId + conversion.DefaultModifier;
                     
-                    // Copy the exact file
-                    if (!pcmFiles.ContainsKey(id)) pcmFiles.Add(id, new List<string>());
-                    pcmFiles[id].Add(msu.PCMFiles[originalId]);
+                    (bool optional, List<int> mappedIds, bool skipOriginal) pcmRemapping = new();
+                    var hasConversion = conversionMapping?.TryGetValue(originalId, out pcmRemapping);
+                    var skipOriginal = hasConversion == true && pcmRemapping.skipOriginal;
                     
-                    if (conversionMapping == null || conversionMapping.ContainsKey(originalId) == false) continue;
-                    var pcmRemapping = conversionMapping[originalId];
+                    // Copy the exact file
+                    if (!skipOriginal)
+                    {
+                        if (!pcmFiles.ContainsKey(id)) pcmFiles.Add(id, new List<string>());
+                        pcmFiles[id].Add(msu.PCMFiles[originalId]);
+                    }
                     
                     // Perform remaps
-                    foreach (var otherId in pcmRemapping.mappedIds.Where(otherId => !msuPcmIds.Contains(otherId) || !pcmRemapping.optional))
+                    if (hasConversion == true && pcmRemapping.mappedIds != null)
                     {
-                        if (!pcmFiles.ContainsKey(otherId)) pcmFiles.Add(otherId, new List<string>());
-                        pcmFiles[otherId].Add(path);
+                        foreach (var otherId in pcmRemapping.mappedIds.Where(otherId => !msuPcmIds.Contains(otherId) || !pcmRemapping.optional))
+                        {
+                            if (!pcmFiles.ContainsKey(otherId)) pcmFiles.Add(otherId, new List<string>());
+                            pcmFiles[otherId].Add(path);
+                        }
                     }
+                    
                 }
             }
             // Else it's unsupported, so just copy the PCMs 1 to 1
@@ -291,7 +300,7 @@ public static class MSURandomizerService
         var conversionTypes = type!.Conversions?.ToDictionary(x => x.MSUType, x => x) ??
                               new Dictionary<string, MSUConversion>();
         var conversionRemappings =
-            type.Conversions?.ToDictionary(x => x.MSUType, x => GetRemapDictionary(x.ManualRemaps));
+            type.Conversions?.ToDictionary(x => x.MSUType, x => GetRemapDictionary(x.ManualRemaps, x.RangedModifiers));
         var msuOptions = new List<(MSU msu, Dictionary<int, string> tracks)>();
         
         // Loop through all MSUs to collect all of the PCMs for each 
@@ -305,9 +314,8 @@ public static class MSURandomizerService
                 msuPcms = msu.PCMFiles;
             }
             // If this MSU is in the accepted conversions, copy over PCMs that have found conversions
-            else if (msu.Type != null && conversionTypes.ContainsKey(msu.TypeName))
+            else if (msu.Type != null && conversionTypes.TryGetValue(msu.TypeName, out var conversion))
             {
-                var conversion = conversionTypes[msu.TypeName];
                 var conversionMapping = conversionRemappings?[msu.TypeName];
                 var msuPcmIds = msu.PCMFiles.Select(x => x.Key + conversion.DefaultModifier).ToHashSet();
 
@@ -315,16 +323,23 @@ public static class MSURandomizerService
                 {
                     var id = originalId + conversion.DefaultModifier;
                     
+                    (bool optional, List<int> mappedIds, bool skipOriginal) pcmRemapping = new();
+                    var hasConversion = conversionMapping?.TryGetValue(originalId, out pcmRemapping);
+                    var skipOriginal = hasConversion == true && pcmRemapping.skipOriginal;
+                    
                     // Copy the exact file
-                    msuPcms[id] = path;
-                    
-                    if (conversionMapping == null || conversionMapping.ContainsKey(originalId) == false) continue;
-                    var pcmRemapping = conversionMapping[originalId];
-                    
-                    // Perform remaps
-                    foreach (var otherId in pcmRemapping.mappedIds.Where(otherId => !msuPcmIds.Contains(otherId)))
+                    if (!skipOriginal)
                     {
                         msuPcms[id] = path;
+                    }
+                    
+                    // Perform remaps
+                    if (hasConversion == true && pcmRemapping.mappedIds != null)
+                    {
+                        foreach (var otherId in pcmRemapping.mappedIds.Where(otherId => !msuPcmIds.Contains(otherId) || !pcmRemapping.optional))
+                        {
+                            msuPcms[id] = path;
+                        }
                     }
                 }
             }
@@ -467,21 +482,34 @@ public static class MSURandomizerService
             File.Copy(originalPath, pcmPath);
     }
 
-    private static Dictionary<int, (bool optional, List<int> mappedIds)> GetRemapDictionary(IEnumerable<MSUTrackRemapping>? remappings)
+    private static Dictionary<int, (bool optional, List<int> mappedIds, bool skipOriginal)> GetRemapDictionary(IEnumerable<MSUTrackRemapping>? remappings, IEnumerable<MSUTrackRangedModifier>? rangedModifiers = null)
     {
-        var toReturn = new Dictionary<int, (bool required, List<int> mappedIds)>();
+        var toReturn = new Dictionary<int, (bool required, List<int> mappedIds, bool skipOriginal)>();
 
-        if (remappings == null) return toReturn;
-
-        foreach (var remap in remappings)
+        if (remappings != null)
         {
-            foreach (var originalTrackNumber in remap.OriginalTrackNumbersList)
+            foreach (var remap in remappings)
             {
-                if (toReturn.ContainsKey(originalTrackNumber))
-                    throw new InvalidOperationException($"{originalTrackNumber} is mapped twice");
-                toReturn[originalTrackNumber] = (remap.OnlyAddIfMissing, remap.RemappedTrackNumbersList);
+                foreach (var originalTrackNumber in remap.OriginalTrackNumbersList)
+                {
+                    if (toReturn.ContainsKey(originalTrackNumber))
+                        throw new InvalidOperationException($"{originalTrackNumber} is mapped twice");
+                    toReturn[originalTrackNumber] = (remap.OnlyAddIfMissing, remap.RemappedTrackNumbersList, remap.SkipOriginalIfConversionExists);
+                }
             }
         }
+
+        if (rangedModifiers != null)
+        {
+            foreach (var remapDetails in rangedModifiers)
+            {
+                for (int i = remapDetails.MinimumTrackNumber; i <= remapDetails.MaximumTrackNumber; i++)
+                {
+                    toReturn[i] = (remapDetails.OnlyAddIfMissing, new List<int> { i + remapDetails.Modifier }, remapDetails.SkipOriginalIfConversionExists);
+                }
+            }
+        }
+        
 
         return toReturn;
     }
@@ -546,7 +574,11 @@ public static class MSURandomizerService
 
     public static bool DoesPCMLoop(string fileName)
     {
-        return File.ReadAllBytes(fileName).Skip(4).Take(4).Any(x => x != 0);
+        using var fileStream = File.OpenRead(fileName);
+        var bytes = new byte[4];
+        fileStream.Seek(4, SeekOrigin.Begin);
+        fileStream.Read(bytes, 0, 4);
+        return bytes.Any(x => x != 0);
     }
 
 }

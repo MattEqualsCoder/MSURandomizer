@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace MSURandomizerLibrary.MSUTypes
 {
@@ -8,6 +9,7 @@ namespace MSURandomizerLibrary.MSUTypes
         public required int MinTrackCount { get; set; }
         public required int MaxTrackCount { get; set; }
         public required IEnumerable<int> RequiredTracks { get; set; }
+        public IEnumerable<int>? IllegalTracks { get; set; }
         public IEnumerable<int>? RequiredLoopTracks { get; set; }
         public IEnumerable<int>? RequiredNonLoopTracks { get; set; }
         public IEnumerable<MSUTrackRemapping>? Remaps { get; set; }
@@ -21,6 +23,15 @@ namespace MSURandomizerLibrary.MSUTypes
             {
                 if (!pcmFiles.ContainsKey(requiredTrack)) return false;
             }
+
+            if (IllegalTracks != null)
+            {
+                foreach (var illegalTrack in IllegalTracks)
+                {
+                    if (pcmFiles.ContainsKey(illegalTrack)) return false;
+                }
+            }
+            
             return true;
         }
 

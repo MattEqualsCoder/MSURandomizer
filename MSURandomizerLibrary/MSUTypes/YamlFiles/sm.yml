@@ -2,9 +2,9 @@
 MinTrackCount: 20
 MaxTrackCount: 40
 RequiredTracks:
-  - 30
-RequiredLoopTracks:
-  - 33
+  - 30 # SM Credits
+RequiredNonLoopTracks:
+  - 30 # SM Credits
 Pairs:
   4: 5 # Make sure intro songs go together
   22: 23 # Tension/Incoming and Boss Theme

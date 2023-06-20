@@ -2,9 +2,9 @@
 MinTrackCount: 32
 MaxTrackCount: 61
 RequiredTracks:
-  - 34
+  - 34 # Z3 credits
 RequiredNonLoopTracks:
-  - 33
+  - 33 # Epilogue
 Remaps:
   # Light World => Light World 2
   - OriginalTrackNumbers: 2

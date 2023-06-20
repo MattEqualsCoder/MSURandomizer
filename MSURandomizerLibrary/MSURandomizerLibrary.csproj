@@ -16,6 +16,7 @@
     <EmbeddedResource Include="MSUTypes\YamlFiles\alttp.yml" />
     <EmbeddedResource Include="MSUTypes\YamlFiles\sm.yml" />
     <EmbeddedResource Include="MSUTypes\YamlFiles\smz3.yml" />
+    <EmbeddedResource Include="MSUTypes\YamlFiles\smz3_legacy.yml" />
   </ItemGroup>
 
   <ItemGroup>
