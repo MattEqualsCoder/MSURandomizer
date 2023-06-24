@@ -3,6 +3,8 @@ MinTrackCount: 55
 MaxTrackCount: 105
 RequiredTracks:
   - 101 # Samus Aran fanfare
+  - 33
+  - 130
 IllegalTracks:
   - 141 # One more than Super Metroid Game Over track
 RequiredNonLoopTracks:
@@ -113,7 +115,7 @@ Conversions:
       OnlyAddIfMissing: true
   - MSUType: Super Metroid
     DefaultModifier: 100
-  - MSUType: SMZ3 Combo Randomizer Legacy
+  - MSUType: SMZ3 Classic (Metroid First)
     DefaultModifier: 0
     RangedModifiers: 
     - MinimumTrackNumber: 1

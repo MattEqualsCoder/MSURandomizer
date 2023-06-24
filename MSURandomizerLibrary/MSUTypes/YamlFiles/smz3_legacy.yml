@@ -1,8 +1,10 @@
-﻿Name: SMZ3 Combo Randomizer Legacy
+﻿Name: SMZ3 Classic (Metroid First)
 MinTrackCount: 55
 MaxTrackCount: 105
 RequiredTracks:
   - 102 # Z3 light world theme
+  - 30
+  - 133
 IllegalTracks:
   - 41 # One more than Super Metroid Game Over track
 RequiredNonLoopTracks:

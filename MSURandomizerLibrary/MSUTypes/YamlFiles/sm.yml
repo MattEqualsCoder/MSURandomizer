@@ -10,6 +10,10 @@ Pairs:
   22: 23 # Tension/Incoming and Boss Theme
 Conversions:
   - MSUType: SMZ3 Combo Randomizer
+    DefaultModifier: -100
+    MinimumTrackNumber: 100
+    MaximumTrackNumber: 140
+  - MSUType: SMZ3 Classic (Metroid First)
     DefaultModifier: 0
     MinimumTrackNumber: 1
     MaximumTrackNumber: 40

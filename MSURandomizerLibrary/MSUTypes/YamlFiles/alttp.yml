@@ -40,6 +40,10 @@ Remaps:
     OnlyAddIfMissing: true
 Conversions:
   - MSUType: SMZ3 Combo Randomizer
+    DefaultModifier: 0
+    MinimumTrackNumber: 1
+    MaximumTrackNumber: 63
+  - MSUType: SMZ3 Classic (Metroid First)
     DefaultModifier: -100
     MinimumTrackNumber: 101
-    MaximumTrackNumber: 200
+    MaximumTrackNumber: 163
