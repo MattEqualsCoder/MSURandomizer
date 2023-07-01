@@ -113,14 +113,14 @@ internal class MsuTypeService : IMsuTypeService
             PairedTrack = x.PairedTrack,
             IsExtended = x.IsExtended,
             NonLooping = x.NonLooping,
-            IsOptional = x.IsOptional || x.IsExtended
+            IsIgnored = x.IsIgnored || x.IsExtended
         });
 
         return new MsuType()
         {
             Name = config.Name,
             Tracks = tracks,
-            RequiredTrackNumbers = tracks.Where(x => !x.IsOptional).Select(x => x.Number).ToHashSet(),
+            RequiredTrackNumbers = tracks.Where(x => !x.IsIgnored).Select(x => x.Number).ToHashSet(),
             ValidTrackNumbers = tracks.Select(x => x.Number).ToHashSet()
         };
     }

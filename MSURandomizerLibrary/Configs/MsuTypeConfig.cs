@@ -32,7 +32,7 @@ internal class MsuTypeConfig
             foreach (var track in Tracks.Extended)
             {
                 track.IsExtended = true;
-                track.IsOptional = true;
+                track.IsIgnored = true;
                 FullTrackList.Add(track);
             }
         }
@@ -72,7 +72,7 @@ internal class MsuTypeConfig
                     Fallback = track.Fallback,
                     IsUnused = track.IsUnused,
                     IsExtended = track.IsExtended,
-                    IsOptional = track.IsOptional || copy.OptionalTracks.Contains(track.Num + copy.Modifier) || track.IsExtended
+                    IsIgnored = track.IsIgnored || copy.IgnoredTracks.Contains(track.Num + copy.Modifier) || track.IsExtended
                 });
             }
         }
@@ -116,8 +116,8 @@ internal class MsuTypeConfigTrack
     [JsonPropertyName("unused")]
     public bool IsUnused { get; set; }
     
-    [JsonPropertyName("optional")]
-    public bool IsOptional { get; set; }
+    [JsonPropertyName("ignore")]
+    public bool IsIgnored { get; set; }
     
     [JsonPropertyName("pair")]
     public int PairedTrack { get; set; }
@@ -134,6 +134,6 @@ internal class MsuTypeConfigCopy
     [JsonPropertyName("modifier")]
     public int Modifier { get; set; }
 
-    [JsonPropertyName("optional")] 
-    public ICollection<int> OptionalTracks { get; set; } = new List<int>();
+    [JsonPropertyName("ignore")] 
+    public ICollection<int> IgnoredTracks { get; set; } = new List<int>();
 }

@@ -8,5 +8,5 @@ public class MsuTypeTrack
     public int PairedTrack { get; init; }
     public bool IsExtended { get; init; }
     public bool NonLooping { get; init; }
-    public bool IsOptional { get; init; }
+    public bool IsIgnored { get; init; }
 }
