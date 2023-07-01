@@ -1,0 +1,139 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
+
+namespace MSURandomizerLibrary.Configs;
+
+internal class MsuTypeConfig
+{
+    [JsonPropertyName("meta"), JsonRequired]
+    public MsuTypeConfigMeta Meta { get; set; } = null!;
+    
+    [JsonPropertyName("tracks"), JsonRequired]
+    public MsuTypeConfigTracks Tracks { get; set; } = null!;
+    
+    [JsonPropertyName("copy")]
+    public ICollection<MsuTypeConfigCopy>? Copy { get; set; }
+
+    [JsonIgnore] public string Name => Meta.Name;
+    
+    [JsonIgnore]
+    public string? Path { get; set; }
+
+    [JsonIgnore] public bool CanCopy => Copy?.Any() == true;
+
+    [JsonIgnore] public List<MsuTypeConfigTrack> FullTrackList { get; set; } = new List<MsuTypeConfigTrack>();
+
+    public IEnumerable<MsuTypeConfigTrack> DetermineBasicTracksNumbers()
+    {
+        FullTrackList.AddRange(Tracks.Basic);
+        if (Tracks.Extended != null)
+        {
+            foreach (var track in Tracks.Extended)
+            {
+                track.IsExtended = true;
+                track.IsOptional = true;
+                FullTrackList.Add(track);
+            }
+        }
+
+        var currentTrackNumber = 1;
+        foreach (var track in FullTrackList)
+        {
+            if (track.Num > 0)
+            {
+                currentTrackNumber = track.Num + 1;
+            }
+            else
+            {
+                track.Num = currentTrackNumber;
+                currentTrackNumber++;
+            }
+        }
+
+        return FullTrackList;
+    }
+
+    public IEnumerable<MsuTypeConfigTrack> ApplyCopiedTracks(IEnumerable<MsuTypeConfig> configs)
+    {
+        if (Copy?.Any() != true) return FullTrackList;
+        foreach (var copy in Copy)
+        {
+            var configToCopyFrom = configs.FirstOrDefault(x => x.Path == copy.Msu);
+            if (configToCopyFrom == null) continue;
+            foreach (var track in configToCopyFrom.FullTrackList)
+            {
+                FullTrackList.Add(new MsuTypeConfigTrack()
+                {
+                    Num = track.Num + copy.Modifier,
+                    Title = track.Title,
+                    Name = track.Name,
+                    NonLooping = track.NonLooping,
+                    Fallback = track.Fallback,
+                    IsUnused = track.IsUnused,
+                    IsExtended = track.IsExtended,
+                    IsOptional = track.IsOptional || copy.OptionalTracks.Contains(track.Num + copy.Modifier) || track.IsExtended
+                });
+            }
+        }
+
+        return FullTrackList;
+    }
+}
+
+internal class MsuTypeConfigMeta
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = "";
+}
+
+internal class MsuTypeConfigTracks
+{
+    [JsonPropertyName("basic"), JsonRequired]
+    public ICollection<MsuTypeConfigTrack> Basic { get; set; } = null!;
+    
+    [JsonPropertyName("extended")]
+    public ICollection<MsuTypeConfigTrack>? Extended { get; set; }
+}
+
+internal class MsuTypeConfigTrack
+{
+    [JsonPropertyName("num")]
+    public int Num { get; set; }
+    
+    [JsonPropertyName("title")]
+    public string Title { get; set; } = "";
+    
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = "";
+    
+    [JsonPropertyName("nonlooping")]
+    public bool NonLooping { get; set; }
+    
+    [JsonPropertyName("fallback")]
+    public int Fallback { get; set; }
+    
+    [JsonPropertyName("unused")]
+    public bool IsUnused { get; set; }
+    
+    [JsonPropertyName("optional")]
+    public bool IsOptional { get; set; }
+    
+    [JsonPropertyName("pair")]
+    public int PairedTrack { get; set; }
+    
+    [JsonIgnore]
+    public bool IsExtended { get; set; }
+}
+
+internal class MsuTypeConfigCopy
+{
+    [JsonPropertyName("msu"), JsonRequired]
+    public string Msu { get; set; } = "";
+    
+    [JsonPropertyName("modifier")]
+    public int Modifier { get; set; }
+
+    [JsonPropertyName("optional")] 
+    public ICollection<int> OptionalTracks { get; set; } = new List<int>();
+}

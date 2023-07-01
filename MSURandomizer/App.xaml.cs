@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MSURandomizerLibrary.Services;
 
 namespace MSURandomizer
 {
@@ -33,9 +34,15 @@ namespace MSURandomizer
                         options.MaxRollingFiles = 5;
                     });
                 })
+                .ConfigureServices(services =>
+                {
+                    services.AddMsuRandomizerServices();
+                })
                 .Start();
-
+            
             _logger = _host.Services.GetRequiredService<ILogger<App>>();
+            _host.Services.GetRequiredService<IMsuTypeService>().LoadMsuTypes(@"G:\Source\Randomizers\ALttPMSUShuffler\resources");
+            _host.Services.GetRequiredService<IMsuLookupService>().LookupMsus(@"D:\Games\SMZ3\SMZ3MSUs");
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
         
