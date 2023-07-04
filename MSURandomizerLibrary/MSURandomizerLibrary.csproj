@@ -13,17 +13,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="MSUTypes\YamlFiles\alttp.yml" />
-    <EmbeddedResource Include="MSUTypes\YamlFiles\sm.yml" />
-    <EmbeddedResource Include="MSUTypes\YamlFiles\smz3.yml" />
-    <EmbeddedResource Include="MSUTypes\YamlFiles\smz3_legacy.yml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="WindowsAPICodePack" Version="7.0.1" />
     <PackageReference Include="YamlDotNet" Version="12.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="MSUList.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace MSURandomizerLibrary.Configs;
+namespace MsuRandomizerLibrary.Configs;
 
 internal class MsuTypeConfig
 {
@@ -17,7 +17,6 @@ internal class MsuTypeConfig
 
     [JsonIgnore] public string Name => Meta.Name;
     
-    [JsonIgnore]
     public string? Path { get; set; }
 
     [JsonIgnore] public bool CanCopy => Copy?.Any() == true;
@@ -59,7 +58,7 @@ internal class MsuTypeConfig
         if (Copy?.Any() != true) return FullTrackList;
         foreach (var copy in Copy)
         {
-            var configToCopyFrom = configs.FirstOrDefault(x => x.Path == copy.Msu);
+            var configToCopyFrom = configs.FirstOrDefault(x => x.Path == copy.Msu || x.Name == copy.Msu);
             if (configToCopyFrom == null) continue;
             foreach (var track in configToCopyFrom.FullTrackList)
             {
@@ -72,6 +71,7 @@ internal class MsuTypeConfig
                     Fallback = track.Fallback,
                     IsUnused = track.IsUnused,
                     IsExtended = track.IsExtended,
+                    PairedTrack = track.PairedTrack + copy.Modifier,
                     IsIgnored = track.IsIgnored || copy.IgnoredTracks.Contains(track.Num + copy.Modifier) || track.IsExtended
                 });
             }

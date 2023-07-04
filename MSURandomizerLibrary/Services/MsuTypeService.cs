@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using MSURandomizerLibrary.Configs;
+using MsuRandomizerLibrary.Configs;
 
-namespace MSURandomizerLibrary.Services;
+namespace MsuRandomizerLibrary.Services;
 
 internal class MsuTypeService : IMsuTypeService
 {
@@ -17,11 +18,37 @@ internal class MsuTypeService : IMsuTypeService
         _logger = logger;
     }
 
-    public IReadOnlyCollection<MsuType> MsuTypes => _msuTypes;
-
-    public void LoadMsuTypes(string directory)
+    public void LoadMsuTypesFromStream(Stream stream)
     {
         _msuTypes.Clear();
+        using var reader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true);
+        var contents = reader.ReadToEnd();
+        
+        var configs = JsonSerializer.Deserialize<List<MsuTypeConfig>>(contents);
+        
+        if (configs == null)
+        {
+            throw new InvalidOperationException("Unable to parse MSU types from stream");
+        }
+
+        foreach (var data in configs)
+        {
+            data.DetermineBasicTracksNumbers();
+        }
+        
+        FinalizeConfigs(configs);
+    }
+
+    public IReadOnlyCollection<MsuType> MsuTypes => _msuTypes;
+
+    public void LoadMsuTypesFromDirectory(string directory)
+    {
+        _msuTypes.Clear();
+        
+        if (!Directory.Exists(directory))
+        {
+            throw new FileNotFoundException($"MSU type directory {directory} not found");
+        }
         
         var configs = new List<MsuTypeConfig>();
         foreach (var file in Directory.EnumerateFiles(directory, "tracks.json", SearchOption.AllDirectories))
@@ -47,7 +74,12 @@ internal class MsuTypeService : IMsuTypeService
             data.DetermineBasicTracksNumbers();
             configs.Add(data);
         }
-        
+
+        FinalizeConfigs(configs);
+    }
+
+    private void FinalizeConfigs(IEnumerable<MsuTypeConfig> configs)
+    {
         foreach (var config in configs)
         {
             // Copy tracks from other configs
@@ -56,7 +88,7 @@ internal class MsuTypeService : IMsuTypeService
                 config.ApplyCopiedTracks(configs);
             }
 
-            var type = ConvertMSUTypeConfig(config);
+            var type = ConvertMsuTypeConfig(config);
             _msuTypes.Add(type);
             _logger.LogInformation("MSU type {ConfigName} found with {TrackCount} tracks", config.Meta.Name, config.FullTrackList.Count);
         }
@@ -72,7 +104,7 @@ internal class MsuTypeService : IMsuTypeService
             var msuType = _msuTypes.First(x => x.Name == config.Name);
             foreach (var copyDetails in config.Copy!)
             {
-                var otherConfig = configs.First(x => x.Path == copyDetails.Msu);
+                var otherConfig = configs.First(x => x.Path == copyDetails.Msu || x.Name == copyDetails.Msu);
                 var otherMsuType = _msuTypes.First(x => x.Name == otherConfig.Name);
                 msuType.Conversions[otherMsuType] = x => x + copyDetails.Modifier;
                 otherMsuType.Conversions[msuType] = x => x - copyDetails.Modifier;
@@ -103,11 +135,11 @@ internal class MsuTypeService : IMsuTypeService
         };
     }
 
-    private MsuType ConvertMSUTypeConfig(MsuTypeConfig config)
+    private MsuType ConvertMsuTypeConfig(MsuTypeConfig config)
     {
         var tracks = config.FullTrackList.Where(x => !x.IsUnused).Select(x => new MsuTypeTrack()
         {
-            Name = x.Name,
+            Name = string.IsNullOrWhiteSpace(x.Title) ? x.Name : x.Title,
             Number = x.Num,
             Fallback = x.Fallback,
             PairedTrack = x.PairedTrack,

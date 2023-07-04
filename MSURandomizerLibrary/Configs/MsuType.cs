@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MSURandomizerLibrary.Configs;
+namespace MsuRandomizerLibrary.Configs;
 
 public class MsuType
 {
@@ -10,4 +10,9 @@ public class MsuType
     public required HashSet<int> ValidTrackNumbers { get; init; }
     public required IEnumerable<MsuTypeTrack> Tracks { get; init; }
     public Dictionary<MsuType, Conversion> Conversions = new();
+
+    public bool IsCompatibleWith(MsuType type)
+    {
+        return Conversions.ContainsKey(type) || Name == type.Name;
+    }
 }

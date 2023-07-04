@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
 
-namespace MSURandomizerLibrary;
+namespace MsuRandomizerLibrary;
 
 /// <summary>
 /// Filter type for finding matching MSUs
 /// </summary>
-public enum MSUFilter
+public enum MsuFilter
 {
     [Description("Compatible MSUs")]
     Compatible,

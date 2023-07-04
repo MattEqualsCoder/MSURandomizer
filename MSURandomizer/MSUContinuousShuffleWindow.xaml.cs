@@ -4,7 +4,7 @@ using System.Windows;
 using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.Serialization;
 
-namespace MSURandomizerLibrary
+namespace MsuRandomizerLibrary
 {
     /// <summary>
     /// Interaction logic for MSUContinuousShuffleWindow.xaml
@@ -49,9 +49,9 @@ namespace MSURandomizerLibrary
 
             _options.RomPath = _romPath;
 
-            UpdateText(!MSURandomizerService.ShuffleMSU(_options, out var error)
+            /*UpdateText(!MSURandomizerService.ShuffleMSU(_options, out var error)
                 ? "Error while reshuffling"
-                : $"Last Reshuffle: {DateTime.Now:h\\:mm tt}");
+                : $"Last Reshuffle: {DateTime.Now:h\\:mm tt}");*/
         }
 
         private void UpdateText(string text)

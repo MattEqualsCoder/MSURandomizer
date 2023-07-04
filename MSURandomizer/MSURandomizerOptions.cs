@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MSURandomizerLibrary;
+namespace MsuRandomizerLibrary;
 
 /// <summary>
 /// Class with all options for MSU generation
@@ -10,7 +10,7 @@ public class MSURandomizerOptions
     public string? Directory { get; set; }
     public string Name { get; set; } = "RandomizedMSU";
     public string? OutputType { get; set; }
-    public MSUFilter Filter { get; set; } = MSUFilter.Compatible;
+    public MsuFilter Filter { get; set; } = MsuFilter.Compatible;
     public bool AvoidDuplicates { get; set; }
     public bool AllowContinuousReshuffle { get; set; } = true;
     public bool ContinuousReshuffle { get; set; }

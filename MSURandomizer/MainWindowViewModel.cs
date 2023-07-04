@@ -1,4 +1,4 @@
-﻿using MSURandomizerLibrary;
+﻿using MsuRandomizerLibrary;
 
 namespace MSURandomizer;
 

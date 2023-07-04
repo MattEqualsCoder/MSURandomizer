@@ -1,11 +1,25 @@
 ﻿using System.Collections.Generic;
-using MSURandomizerLibrary.Configs;
+using System.IO;
+using MsuRandomizerLibrary.Configs;
 
-namespace MSURandomizerLibrary.Services;
+namespace MsuRandomizerLibrary.Services;
 
 public interface IMsuTypeService
 {
-    public void LoadMsuTypes(string directory);
+    /// <summary>
+    /// Loads all MSU types from a directory
+    /// </summary>
+    /// <param name="directory">The directory to load from</param>
+    public void LoadMsuTypesFromDirectory(string directory);
+    
+    /// <summary>
+    /// Loads all MSU types from a stream for a file to parse
+    /// </summary>
+    /// <param name="stream">The stream to load from</param>
+    public void LoadMsuTypesFromStream(Stream stream);
 
+    /// <summary>
+    /// The collection of MSU types previously loaded
+    /// </summary>
     public IReadOnlyCollection<MsuType> MsuTypes { get; }
 }

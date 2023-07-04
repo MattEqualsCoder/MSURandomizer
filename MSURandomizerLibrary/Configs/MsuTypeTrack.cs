@@ -1,4 +1,4 @@
-﻿namespace MSURandomizerLibrary.Configs;
+﻿namespace MsuRandomizerLibrary.Configs;
 
 public class MsuTypeTrack
 {

@@ -3,7 +3,7 @@ using System.Windows;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
-namespace MSURandomizerLibrary
+namespace MsuRandomizerLibrary
 {
     /// <summary>
     /// Interaction logic for GenerateOptionsWindow.xaml

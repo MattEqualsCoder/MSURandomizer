@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
-using MSURandomizerLibrary;
+using MsuRandomizerLibrary;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -33,13 +33,14 @@ namespace MSURandomizer
                 "MSURandomizer");
             Directory.CreateDirectory(basePath);
             return Path.Combine(basePath, "options.yml");
+            
         }
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            MsuRandomizerControl.Options = _viewModel.Options;
+            /*MsuRandomizerControl.Options = _viewModel.Options;
             MsuRandomizerControl.OnRomGenerated += (o, args) => SaveOptions(args.Options);
-            MsuRandomizerControl.OnSettingsUpdated += (o, args) => SaveOptions(args.Options);
+            MsuRandomizerControl.OnSettingsUpdated += (o, args) => SaveOptions(args.Options);*/
         }
 
         private MSURandomizerOptions LoadOptions()
@@ -66,6 +67,17 @@ namespace MSURandomizer
         {
             var yaml = _serializer.Serialize(options);
             File.WriteAllText(GetConfigPath(), yaml);
+        }
+
+        private void RandomMSUButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var msus = MsuList.SelectedMsus;
+        }
+
+        public MsuList MsuList
+        {
+            get;
+            set;
         }
     }
 }
