@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using MsuRandomizerLibrary.Configs;
+using MSURandomizerLibrary.Configs;
 
-namespace MsuRandomizerLibrary;
+namespace MSURandomizerLibrary;
 
 /// <summary>
 /// Interaction logic for MSURandomizerControl.xaml
@@ -21,18 +21,21 @@ public partial class MsuList : UserControl
         viewModel.MsuListUpdated += ViewModelOnMsuListUpdated;
     }
 
-    private void ViewModelOnMsuListUpdated(object? sender, MsuLookupEventArgs e)
+    private void ViewModelOnMsuListUpdated(object? sender, MsuListEventArgs e)
     {
         if (_previouslyLoaded) return;
-        _previouslyLoaded = true;
-        MsuListView.UnselectAll();
-        foreach (var msu in MsuListView.Items.Cast<Msu>())
+        Dispatcher.Invoke(() =>
         {
-            if (_viewModel.SelectedMsuPaths.Contains(msu?.Path ?? ""))
+            _previouslyLoaded = true;
+            MsuListView.UnselectAll();
+            foreach (var msu in MsuListView.Items.Cast<Msu>())
             {
-                MsuListView.SelectedItems.Add(msu);
+                if (_viewModel.SelectedMsuPaths.Contains(msu?.Path ?? ""))
+                {
+                    MsuListView.SelectedItems.Add(msu);
+                }
             }
-        }
+        });
     }
 
     public SelectionMode SelectionMode
@@ -41,7 +44,7 @@ public partial class MsuList : UserControl
         set => _viewModel.SelectionMode = value;
     }
 
-    public MsuType TargetMsuType
+    public MsuType? TargetMsuType
     {
         get => _viewModel.MsuType;
         set => _viewModel.MsuType = value;
@@ -63,5 +66,10 @@ public partial class MsuList : UserControl
 
     private void MsuList_OnLoaded(object sender, RoutedEventArgs e)
     {
+    }
+
+    private void MsuListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        
     }
 }

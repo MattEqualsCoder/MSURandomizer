@@ -4,19 +4,19 @@ using System.Windows;
 using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.Serialization;
 
-namespace MsuRandomizerLibrary
+namespace MsuRandomizer
 {
     /// <summary>
     /// Interaction logic for MSUContinuousShuffleWindow.xaml
     /// </summary>
-    public partial class MSUContinuousShuffleWindow : Window
+    public partial class MsuContinuousShuffleWindow : Window
     {
         private const int Duration = 1 * 60 * 1000;
-        private readonly MSURandomizerOptions _options;
+        private readonly MsuRandomizerOptions _options;
         private readonly Timer _reshuffleTimer;
         private readonly string? _romPath;
 
-        public MSUContinuousShuffleWindow(MSURandomizerOptions options, string? romPath)
+        public MsuContinuousShuffleWindow(MsuRandomizerOptions options, string? romPath)
         {
             InitializeComponent();
 
@@ -28,9 +28,9 @@ namespace MsuRandomizerLibrary
                 .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
 
-            _options = deserializer.Deserialize<MSURandomizerOptions>(serializer.Serialize(options));
+            _options = deserializer.Deserialize<MsuRandomizerOptions>(serializer.Serialize(options));
             _options.OpenFolderOnCreate = false;
-            _options.DeleteFolder = false;
+            //_options.DeleteFolder = false;
             _romPath = romPath;
             _reshuffleTimer = new Timer(Duration);
             _reshuffleTimer.Elapsed += OnTimedEvent;
@@ -47,7 +47,7 @@ namespace MsuRandomizerLibrary
         {
             UpdateText("Reshuffling...");
 
-            _options.RomPath = _romPath;
+            //_options.RomPath = _romPath;
 
             /*UpdateText(!MSURandomizerService.ShuffleMSU(_options, out var error)
                 ? "Error while reshuffling"

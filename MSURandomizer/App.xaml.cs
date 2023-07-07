@@ -12,8 +12,9 @@ using System.Windows.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MsuRandomizerLibrary;
-using MsuRandomizerLibrary.Services;
+using MsuRandomizer;
+using MSURandomizerLibrary;
+using MSURandomizerLibrary.Services;
 
 namespace MSURandomizer
 {
@@ -40,15 +41,31 @@ namespace MSURandomizer
                 })
                 .ConfigureServices(services =>
                 {
+                    services.AddSingleton<MsuRandomizerOptionsFactory>();
+                    services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<MsuRandomizerOptionsFactory>().GetOptions());
                     services.AddMsuRandomizerServices();
+                    services.AddSingleton<MsuRandomizerService>();
+                    services.AddScoped<MainWindow>();
+                    services.AddScoped<MsuOptionsWindow>();
                 })
                 .Start();
             
             _logger = _host.Services.GetRequiredService<ILogger<App>>();
-            //_host.Services.GetRequiredService<IMsuTypeService>().LoadMsuTypesFromDirectory(@"D:\Source\ALttPMSUShuffler\resources");
-            _host.Services.GetRequiredService<IMsuTypeService>().LoadMsuTypesFromStream( new FileStream(@"D:\Desktop\smz3_tracks.json", FileMode.Open));
+            _host.Services.GetRequiredService<MsuRandomizerService>();
+            _host.Services.GetRequiredService<IMsuTypeService>().LoadMsuTypesFromDirectory(@"G:\Source\Randomizers\ALttPMSUShuffler\resources");
             _host.Services.GetRequiredService<IMsuSettingsService>().InitializeSettingsService(Environment.ExpandEnvironmentVariables("%LocalAppData%\\MSURandomizer\\msu-settings.yml"));
+            
+            
+            Task.Run(() =>
+            {
+                _host.Services.GetRequiredService<IMsuLookupService>().LookupMsus(@"D:\Games\SMZ3\SMZ3MSUs");
+            });
+            
+            _host.Services.GetRequiredService<MainWindow>().ShowDialog();
+            
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            
+            
         }
         
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -77,33 +94,23 @@ namespace MSURandomizer
 
         private void App_OnActivated(object? sender, EventArgs e)
         {
-            if (_initialized) return;
+            /*if (_initialized) return;
             _initialized = true;
-
-            var app = sender as App;
-            if (app?.MainWindow is not MainWindow mainWindow) return;
             
-            var msuType = _host.Services.GetRequiredService<IMsuTypeService>().MsuTypes.First(x => x.Name == "Super Metroid / A Link to the Past Combination Randomizer Legacy");
+            var app = sender as App;
+            if (app?.MainWindow is not MainWindow mainWindow || _host == null) return;
+            
 
-            var msuList = app._host!.Services.GetRequiredService<MsuList>();
-            msuList.SelectionMode = SelectionMode.Multiple;
-            msuList.TargetMsuType = msuType;
-            msuList.MsuFilter = MsuFilter.Compatible;
-            msuList.SelectedMsuPaths = new List<string>()
-            {
-                @"E:\SMZ3\MSUs\Sonic\SMZ3_Sonic.msu",
-                @"E:\SMZ3\MSUs\RetroPC\RPC-LTTP-MSU.msu"
-            };
+            var start = DateTime.Now;
+            var msuType = _host.Services.GetRequiredService<IMsuTypeService>().MsuTypes.First(x => x.Name == "Super Metroid");
+            var end = DateTime.Now;
+            var typeLookupDuration = (end - start).TotalSeconds;
+
+            var msuList = app._host!.Services.GetRequiredService<IMsuUiFactory>().CreateMsuList(msuType, MsuFilter.Compatible, SelectionMode.Multiple);
             mainWindow.MsuList = msuList;
             mainWindow.MainGrid.Children.Add(msuList);
+            */
             
-            app._host.Services.GetRequiredService<IMsuLookupService>().LookupMsus(@"E:\SMZ3\MSUs");
-
-            var msu = _host.Services.GetRequiredService<IMsuLookupService>().Msus.FirstOrDefault();
-            var availableMsus = _host.Services.GetRequiredService<IMsuLookupService>().Msus.ToList();
-            var convertedMsu = _host.Services.GetRequiredService<IMsuSelectorService>().CreateShuffledMsu(availableMsus, msuType, @"E:\SMZ3\MSUs\Test\");
-            
-            app._host.Services.GetRequiredService<IMsuSettingsService>().UpdateMsuSettings(msu, new() { Name = "Test", Creator = "Vivelin", MsuPath = msu.Path});
         }
     }
 }

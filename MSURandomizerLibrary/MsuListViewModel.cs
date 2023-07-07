@@ -4,10 +4,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
-using MsuRandomizerLibrary.Configs;
-using MsuRandomizerLibrary.Services;
+using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Services;
 
-namespace MsuRandomizerLibrary;
+namespace MSURandomizerLibrary;
 
 public sealed class MsuListViewModel : INotifyPropertyChanged
 {
@@ -17,11 +17,15 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
     
     public MsuListViewModel(IMsuLookupService msuLookupService)
     {
+        if (msuLookupService.Status == MsuLoadStatus.Loaded)
+        {
+            _allMsus = msuLookupService.Msus;
+        }
         msuLookupService.OnMsuLookupComplete += MsuLookupServiceOnOnMsuLookupComplete;
     }
 
-    public IReadOnlyCollection<Msu> AvailableMsus =>
-        _allMsus.Where(x => _msuFilter == MsuFilter.All || (_msuFilter == MsuFilter.Compatible && x.MsuType?.IsCompatibleWith(_msuType) == true) || x?.MsuTypeName == _msuType.Name).ToList();
+    public IReadOnlyCollection<Msu> AvailableMsus => _msuType == null ? new List<Msu>() :
+        _allMsus.Where(x => _msuFilter == MsuFilter.All || (_msuFilter == MsuFilter.Compatible && x.MsuType?.IsCompatibleWith(_msuType) == true) || x.MsuTypeName == _msuType.Name).ToList();
 
     private IReadOnlyCollection<Msu> _allMsus = new List<Msu>();
 
@@ -43,9 +47,9 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
         set => SetField(ref _selectionMode, value);
     }
 
-    private MsuType _msuType;
+    private MsuType? _msuType;
 
-    public MsuType MsuType
+    public MsuType? MsuType
     {
         get => _msuType;
         set
@@ -75,15 +79,15 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
         set => _defaultMsus = value;
     }
 
-    private void MsuLookupServiceOnOnMsuLookupComplete(object? sender, MsuLookupEventArgs e)
+    private void MsuLookupServiceOnOnMsuLookupComplete(object? sender, MsuListEventArgs e)
     {
         AllMsus = e.Msus;
-        MsuListUpdated?.Invoke(this, new MsuLookupEventArgs(e.Msus));
+        MsuListUpdated?.Invoke(this, new MsuListEventArgs(e.Msus));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public event EventHandler<MsuLookupEventArgs>? MsuListUpdated;
+    public event EventHandler<MsuListEventArgs>? MsuListUpdated;
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {

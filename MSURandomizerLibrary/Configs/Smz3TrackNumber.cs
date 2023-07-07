@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MsuRandomizerLibrary.Configs;
+namespace MSURandomizerLibrary.Configs;
 
 /// <summary>
 /// Specifies the item categories for an item type.

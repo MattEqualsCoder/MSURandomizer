@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace MsuRandomizerLibrary.Services;
+namespace MSURandomizerLibrary.Services;
 
 public static class MsuRandomizerServiceExtensions
 {
@@ -13,6 +13,7 @@ public static class MsuRandomizerServiceExtensions
         services.AddSingleton<IMsuSelectorService, MsuSelectorService>();
         services.AddScoped<MsuListViewModel>();
         services.AddScoped<MsuList>();
+        services.AddSingleton<IMsuUiFactory, MsuUiFactory>();
         return services;
     }
 }

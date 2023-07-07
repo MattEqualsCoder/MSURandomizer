@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Markup;
 
-namespace MsuRandomizerLibrary;
+namespace MSURandomizerLibrary;
 
 internal class EnumBindingSourceExtension : MarkupExtension
 {

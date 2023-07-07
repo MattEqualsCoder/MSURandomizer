@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace MsuRandomizerLibrary;
+namespace MSURandomizerLibrary;
 
 internal static class NativeMethods
 {

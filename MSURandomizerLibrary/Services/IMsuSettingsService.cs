@@ -1,6 +1,6 @@
-﻿using MsuRandomizerLibrary.Configs;
+﻿using MSURandomizerLibrary.Configs;
 
-namespace MsuRandomizerLibrary.Services;
+namespace MSURandomizerLibrary.Services;
 
 public interface IMsuSettingsService
 {

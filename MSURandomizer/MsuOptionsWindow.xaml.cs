@@ -2,16 +2,16 @@
 using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
-namespace MsuRandomizerLibrary
+namespace MsuRandomizer
 {
     /// <summary>
     /// Interaction logic for MSUOptionsWindow.xaml
     /// </summary>
-    internal partial class MSUOptionsWindow : Window
+    internal partial class MsuOptionsWindow : Window
     {
         //private readonly MSUOptionsViewModel _viewModel;
         
-        public MSUOptionsWindow(MSURandomizerOptions options)
+        public MsuOptionsWindow(MsuRandomizerOptions options)
         {
             InitializeComponent();
             //DataContext = _viewModel = new MSUOptionsViewModel(options);

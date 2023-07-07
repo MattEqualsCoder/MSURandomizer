@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using MsuRandomizerLibrary.Configs;
+using MSURandomizerLibrary.Configs;
 
-namespace MsuRandomizerLibrary.Services;
+namespace MSURandomizerLibrary.Services;
 
 public interface IMsuTypeService
 {

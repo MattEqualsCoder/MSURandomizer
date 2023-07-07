@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using MsuRandomizerLibrary.Configs;
+using MSURandomizerLibrary.Configs;
 
-namespace MsuRandomizerLibrary;
+namespace MSURandomizerLibrary;
 
 /// <summary>
 /// Event args for when the MSURandomizer has either updated the options
 /// or generated a new MSU
 /// </summary>
-public class MsuLookupEventArgs : EventArgs
+public class MsuListEventArgs : EventArgs
 {
-    public MsuLookupEventArgs(IReadOnlyCollection<Msu> msus)
+    public MsuListEventArgs(IReadOnlyCollection<Msu> msus)
     {
         Msus = msus;
     }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using MsuRandomizerLibrary.Configs;
+using MSURandomizerLibrary.Configs;
 
-namespace MsuRandomizerLibrary.Services;
+namespace MSURandomizerLibrary.Services;
 
 public class MsuSelectorService : IMsuSelectorService
 {
@@ -30,33 +30,51 @@ public class MsuSelectorService : IMsuSelectorService
         return SaveMsu(convertedMsu, outputPath);
     }
 
-    public Msu PickRandomMsu(ICollection<Msu> msus, MsuType msuType, string outputPath)
+    public Msu PickRandomMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, bool emptyFolder = true)
     {
         if (!msus.Any())
         {
             throw new InvalidOperationException("No MSUs were passed in");
         }
+        if (string.IsNullOrWhiteSpace(outputPath))
+        {
+            throw new InvalidOperationException("No output path specified");
+        }
         var convertedMsu = ConvertMsus(msus, msuType).Random(_random)!;
+        if (emptyFolder)
+        {
+            EmptyFolder(Path.GetDirectoryName(outputPath)!);
+        }
         return SaveMsu(convertedMsu, outputPath);
     }
 
-    public Msu CreateShuffledMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, Msu? prevMsu = null)
+    public Msu CreateShuffledMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, Msu? prevMsu = null, bool emptyFolder = true, bool avoidDuplicates = true)
     {
+        if (!msus.Any())
+        {
+            throw new InvalidOperationException("No MSUs were passed in");
+        }
+        if (string.IsNullOrWhiteSpace(outputPath))
+        {
+            throw new InvalidOperationException("No output path specified");
+        }
         var convertedMsu = ConvertMsus(msus, msuType);
         var tracks = convertedMsu.SelectMany(x => x.ValidTracks).ToList();
         var selectedTracks = new List<Track>();
+        var selectedPaths = new List<string>();
         foreach (var msuTypeTrack in msuType.Tracks)
         {
             if (selectedTracks.Any(x => x.Number == msuTypeTrack.Number))
             {
                 continue;
             }
-            var track = tracks.Where(x => x.Number == msuTypeTrack.Number).Random(_random);
+            var track = tracks.Where(x => x.Number == msuTypeTrack.Number && (!avoidDuplicates || !selectedPaths.Contains(x.Path))).Random(_random);
             if (track == null)
             {
                 continue;
             }
             selectedTracks.Add(track);
+            selectedPaths.Add(track.Path);
 
             if (msuTypeTrack.PairedTrack > 0 && selectedTracks.All(x => x.Number != msuTypeTrack.PairedTrack))
             {
@@ -64,8 +82,14 @@ public class MsuSelectorService : IMsuSelectorService
                 if (pairedTrack != null)
                 {
                     selectedTracks.Add(pairedTrack);
+                    selectedPaths.Add(pairedTrack.Path);
                 }
             }
+        }
+        
+        if (emptyFolder)
+        {
+            EmptyFolder(Path.GetDirectoryName(outputPath)!);
         }
 
         return SaveMsu(new Msu()
@@ -232,5 +256,41 @@ public class MsuSelectorService : IMsuSelectorService
             NativeMethods.CreateHardLink(destination, source, IntPtr.Zero);
         else
             File.Copy(source, destination);
+    }
+
+    private void EmptyFolder(string path)
+    {
+        if (!Directory.Exists(path))
+        {
+            return;
+        }
+        
+        var dir = new DirectoryInfo(path);
+
+        foreach(var fi in dir.GetFiles())
+        {
+            try
+            {
+                fi.Delete();
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation(e, "Unable to delete file {Path}", fi.FullName);
+            }
+        }
+
+        foreach (var di in dir.GetDirectories())
+        {
+            EmptyFolder(di.FullName);
+
+            try
+            {
+                di.Delete();
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation(e, "Unable to delete folder {Path}", di.FullName);
+            }
+        }
     }
 }

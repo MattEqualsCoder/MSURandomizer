@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
-using MsuRandomizerLibrary;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
+using System.Windows.Controls;
+using MsuRandomizer;
+using MSURandomizerLibrary;
+using MSURandomizerLibrary.Services;
 
 namespace MSURandomizer
 {
@@ -12,19 +14,17 @@ namespace MSURandomizer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ISerializer _serializer;
-        private MainWindowViewModel _viewModel;
+        public new readonly MsuRandomizerOptions DataContext;
         
-        public MainWindow()
+        public MainWindow(IMsuUiFactory uiFactory, IMsuTypeService msuTypeService, MsuRandomizerOptions options)
         {
-            _serializer = new SerializerBuilder()
-                .WithNamingConvention(PascalCaseNamingConvention.Instance)
-                .Build();
-            var options = LoadOptions();
-            var msuTypePath = Environment.ExpandEnvironmentVariables("%LocalAppData%\\MSURandomizer\\configs");
-            options.MsuTypeConfigPath = msuTypePath;
-            DataContext = _viewModel = new MainWindowViewModel() { Options = options };
+            DataContext = options;
             InitializeComponent();
+            MsuList = uiFactory.CreateMsuList(msuTypeService.MsuTypes.First(x => x.Name == "Super Metroid"), MsuFilter.Compatible, SelectionMode.Multiple);
+            if (MsuList != null)
+            {
+                MainGrid.Children.Add(MsuList);    
+            }
         }
         
         private static string GetConfigPath()
@@ -33,7 +33,6 @@ namespace MSURandomizer
                 "MSURandomizer");
             Directory.CreateDirectory(basePath);
             return Path.Combine(basePath, "options.yml");
-            
         }
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
@@ -43,41 +42,37 @@ namespace MSURandomizer
             MsuRandomizerControl.OnSettingsUpdated += (o, args) => SaveOptions(args.Options);*/
         }
 
-        private MSURandomizerOptions LoadOptions()
-        {
-            var optionsPath = GetConfigPath();
-            
-            if (!File.Exists(optionsPath))
-            {
-                var options = new MSURandomizerOptions();
-                SaveOptions(options);
-                return options;
-            }
-            else
-            {
-                var deserializer = new DeserializerBuilder()
-                    .WithNamingConvention(PascalCaseNamingConvention.Instance)
-                    .Build();
-                var yaml = File.ReadAllText(optionsPath);
-                return deserializer.Deserialize<MSURandomizerOptions>(yaml);
-            }
-        }
-
-        private void SaveOptions(MSURandomizerOptions options)
-        {
-            var yaml = _serializer.Serialize(options);
-            File.WriteAllText(GetConfigPath(), yaml);
-        }
-
         private void RandomMSUButton_OnClick(object sender, RoutedEventArgs e)
         {
+            if (MsuList == null) return;
             var msus = MsuList.SelectedMsus;
+            var window = new MsuCreateWindow(DataContext, false);
+            if (window.ShowDialog() != true) return;
+            var msuType = MsuRandomizerService.Instance.GetMsuType("Super Metroid");
+            MsuRandomizerService.Instance.PickRandomMsu(msus, msuType!, DataContext);
         }
 
-        public MsuList MsuList
+        public MsuList? MsuList
         {
             get;
             set;
+        }
+
+        private void GeneratedButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (MsuList == null) return;
+            var msus = MsuList.SelectedMsus;
+            var window = new MsuCreateWindow(DataContext, true);
+            if (window.ShowDialog() != true) return;
+            var msuType = MsuRandomizerService.Instance.GetMsuType("Super Metroid");
+            MsuRandomizerService.Instance.CreateShuffledMsu(msus, msuType!, DataContext);
+        }
+
+        private void OptionsButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var window = new MsuOptionsWindow(DataContext);
+            if (window.ShowDialog() != true) return;
+            DataContext.SaveOptions();
         }
     }
 }

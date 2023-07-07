@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MsuRandomizerLibrary.Configs;
+namespace MSURandomizerLibrary.Configs;
 
 public class MsuDetailsGeneric : MsuDetails
 {

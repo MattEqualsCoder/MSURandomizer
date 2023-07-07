@@ -1,4 +1,4 @@
-﻿namespace MsuRandomizerLibrary.Configs;
+﻿namespace MSURandomizerLibrary.Configs;
 
 public class MsuDetailsSmz3 : MsuDetails
 {

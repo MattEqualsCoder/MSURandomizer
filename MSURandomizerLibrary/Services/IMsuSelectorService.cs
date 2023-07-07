@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using MsuRandomizerLibrary.Configs;
+using MSURandomizerLibrary.Configs;
 
-namespace MsuRandomizerLibrary.Services;
+namespace MSURandomizerLibrary.Services;
 
 public interface IMsuSelectorService
 {
     public Msu AssignMsu(Msu msu, MsuType msuType, string outputPath);
 
-    public Msu PickRandomMsu(ICollection<Msu> msus, MsuType msuType, string outputPath);
+    public Msu PickRandomMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, bool emptyFolder = true);
 
-    public Msu CreateShuffledMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, Msu? prevMsu = null);
+    public Msu CreateShuffledMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, Msu? prevMsu = null, bool emptyFolder = true, bool avoidDuplicates = true);
 
     public Msu ConvertMsu(Msu msu, MsuType msuType);
 

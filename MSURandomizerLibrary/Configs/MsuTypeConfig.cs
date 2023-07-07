@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace MsuRandomizerLibrary.Configs;
+namespace MSURandomizerLibrary.Configs;
 
 internal class MsuTypeConfig
 {

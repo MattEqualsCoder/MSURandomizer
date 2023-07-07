@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using MsuRandomizerLibrary.Configs;
+using MSURandomizerLibrary.Configs;
 
-namespace MsuRandomizerLibrary.Services;
+namespace MSURandomizerLibrary.Services;
 
 public interface IMsuLookupService
 {
@@ -25,5 +24,7 @@ public interface IMsuLookupService
 
     public IReadOnlyCollection<Msu> Msus { get; }
     
-    public event EventHandler<MsuLookupEventArgs>? OnMsuLookupComplete;
+    public MsuLoadStatus Status { get; set; }
+    
+    public event EventHandler<MsuListEventArgs>? OnMsuLookupComplete;
 }

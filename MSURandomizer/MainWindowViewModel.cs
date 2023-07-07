@@ -1,8 +1,8 @@
-﻿using MsuRandomizerLibrary;
+﻿using MsuRandomizer;
 
 namespace MSURandomizer;
 
 public class MainWindowViewModel
 {
-    public required MSURandomizerOptions Options { get; set; }
+    public required MsuRandomizerOptions Options { get; set; }
 }

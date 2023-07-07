@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace MsuRandomizerLibrary.Configs;
+namespace MSURandomizerLibrary.Configs;
 
 public class Msu
 {

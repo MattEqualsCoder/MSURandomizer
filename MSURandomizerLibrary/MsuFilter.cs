@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace MsuRandomizerLibrary;
+namespace MSURandomizerLibrary;
 
 /// <summary>
 /// Filter type for finding matching MSUs

@@ -4,7 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using YamlDotNet.Serialization;
 
-namespace MsuRandomizerLibrary.Configs;
+namespace MSURandomizerLibrary.Configs;
 
 public class MsuDetailsTrack
 {

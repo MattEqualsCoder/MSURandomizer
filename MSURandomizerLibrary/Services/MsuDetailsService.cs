@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
-using MsuRandomizerLibrary.Configs;
+using MSURandomizerLibrary.Configs;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace MsuRandomizerLibrary.Services;
+namespace MSURandomizerLibrary.Services;
 
 public class MsuDetailsService : IMsuDetailsService
 {

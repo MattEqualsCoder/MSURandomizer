@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using MsuRandomizerLibrary.Configs;
+using MSURandomizerLibrary.Configs;
 
-namespace MsuRandomizerLibrary.Services;
+namespace MSURandomizerLibrary.Services;
 
 internal class MsuLookupService : IMsuLookupService
 {
@@ -25,16 +25,19 @@ internal class MsuLookupService : IMsuLookupService
     
     public IReadOnlyCollection<Msu> LookupMsus(string directory)
     {
+        
         if (!_msuTypeService.MsuTypes.Any())
         {
             throw new InvalidOperationException(
                 "No valid MSU Types found. Make sure to call IMsuTypeService.GetMsuTypes first.");
         }
 
+        Status = MsuLoadStatus.Loading;
         _msus = new List<Msu>();
         var msuFiles = Directory.EnumerateFiles(directory, "*.msu", SearchOption.AllDirectories);
         _msus = msuFiles.Select(x => LoadMsu(x)).Where(x => x != null).Cast<Msu>().ToList();
         OnMsuLookupComplete?.Invoke(this, new(_msus));
+        Status = MsuLoadStatus.Loaded;
         return _msus;
     }
 
@@ -249,5 +252,7 @@ internal class MsuLookupService : IMsuLookupService
             .FirstOrDefault();
     }
     
-    public event EventHandler<MsuLookupEventArgs>? OnMsuLookupComplete;
+    public event EventHandler<MsuListEventArgs>? OnMsuLookupComplete;
+    
+    public MsuLoadStatus Status { get; set; }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MsuRandomizerLibrary;
+namespace MSURandomizerLibrary;
 
 internal static class EnumerableExtensions
 {
