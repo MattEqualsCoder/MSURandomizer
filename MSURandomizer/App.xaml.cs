@@ -49,11 +49,13 @@ namespace MSURandomizer
                 throw new InvalidOperationException("Missing RandomizerSettings stream");
             }
 
-            string config;
+            var msuTypeFilePathOverride = "";
+            var userSettingsFilePathOverride = "";
             #if DEBUG
-            config = GetConfigDirectory();
+            msuTypeFilePathOverride = GetConfigDirectory();
+            userSettingsFilePathOverride = "%LocalAppData%\\MSURandomizer\\msu-user-settings-debug.yml";
             #endif
-            _host.Services.GetRequiredService<IMsuRandomizerInitializationService>().Initialize(settingsStream, config);
+            _host.Services.GetRequiredService<IMsuRandomizerInitializationService>().Initialize(settingsStream, msuTypeFilePathOverride, userSettingsFilePathOverride);
             _host.Services.GetRequiredService<MsuWindow>().Show();
         }
         

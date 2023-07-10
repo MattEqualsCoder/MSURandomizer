@@ -17,23 +17,23 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
         _serviceProvider = serviceProvider;
     }
     
-    public void Initialize(string randomizerSettingsPath, string msuTypeFilePathOverride = "")
+    public void Initialize(string randomizerSettingsPath, string msuTypeFilePathOverride = "", string userSettingsFilePathOverride = "")
     {
         var randomizerSettings = _msuAppSettingsService.Initialize(randomizerSettingsPath);
-        InitializeInternal(randomizerSettings, msuTypeFilePathOverride);
+        InitializeInternal(randomizerSettings, msuTypeFilePathOverride, userSettingsFilePathOverride);
     }
 
-    public void Initialize(Stream randomizerSettingsStream, string msuTypeFilePathOverride = "")
+    public void Initialize(Stream randomizerSettingsStream, string msuTypeFilePathOverride = "", string userSettingsFilePathOverride = "")
     {
         var randomizerSettings = _msuAppSettingsService.Initialize(randomizerSettingsStream);
-        InitializeInternal(randomizerSettings, msuTypeFilePathOverride);
+        InitializeInternal(randomizerSettings, msuTypeFilePathOverride, userSettingsFilePathOverride);
     }
 
-    private void InitializeInternal(MsuAppSettings msuAppSettings, string msuTypeFilePathOverride)
+    private void InitializeInternal(MsuAppSettings msuAppSettings, string msuTypeFilePathOverride, string userSettingsFilePathOverride)
     {
         var msuTypePath = string.IsNullOrWhiteSpace(msuTypeFilePathOverride)
             ? Environment.ExpandEnvironmentVariables(msuAppSettings.MsuTypeFilePath)
-            : msuTypeFilePathOverride;
+            : Environment.ExpandEnvironmentVariables(msuTypeFilePathOverride);
         var msuTypeService = _serviceProvider.GetRequiredService<IMsuTypeService>();
         if ((msuTypePath.ToLower().EndsWith(".yaml") || msuTypePath.ToLower().EndsWith(".yml")) && File.Exists(msuTypePath))
         {
@@ -44,8 +44,10 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
         {
             msuTypeService.LoadMsuTypes(msuTypePath);
         }
-        
-        var userOptionsPath = Environment.ExpandEnvironmentVariables(msuAppSettings.UserSettingsFilePath);
+
+        var userOptionsPath = string.IsNullOrWhiteSpace(userSettingsFilePathOverride)
+            ? Environment.ExpandEnvironmentVariables(msuAppSettings.UserSettingsFilePath)
+            : Environment.ExpandEnvironmentVariables(userSettingsFilePathOverride);
         var userOptionsService = _serviceProvider.GetRequiredService<IMsuUserOptionsService>();
         var userOptions = userOptionsService.Initialize(userOptionsPath);
         

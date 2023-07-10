@@ -4,7 +4,7 @@
 #include "CodeDependencies.iss"
 
 #define MyAppName "MSU Randomizer"
-#define MyAppVersion "0.9.6"
+#define MyAppVersion "0.9.7-beta.1"
 #define MyAppPublisher "MattEqualsCoder"
 #define MyAppURL "https://github.com/MattEqualsCoder"
 #define MyAppExeName "MSURandomizer.exe"
@@ -50,7 +50,7 @@ Source: "netcorecheck.exe"; Flags: dontcopy noencryption
 Source: "netcorecheck_x64.exe"; Flags: dontcopy noencryption
 Source: "..\MSURandomizer\bin\Release\net7.0-windows\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: Is64BitInstallMode;
 Source: "..\MSURandomizer\bin\Release\net7.0-windows\win-x86\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: "not Is64BitInstallMode";
-Source: "..\MSURandomizerLibrary\MSUTypes\YamlFiles\*"; DestDir: "{localappdata}\MSURandomizer\Configs"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\ConfigRepo\resources\snes\*"; Excludes: "*.txt,*.bps"; DestDir: "{localappdata}\MSURandomizer\Configs\snes"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
