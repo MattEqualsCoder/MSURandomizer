@@ -11,37 +11,61 @@ internal class MsuLookupService : IMsuLookupService
 {
     private readonly ILogger<MsuLookupService> _logger;
     private readonly IMsuTypeService _msuTypeService;
-    private readonly IMsuSettingsService _msuSettingsService;
+    private readonly MsuUserOptions _msuUserOptions;
     private readonly IMsuDetailsService _msuDetailsService;
+    private readonly MsuAppSettings _msuAppSettings;
     private IReadOnlyCollection<Msu> _msus = new List<Msu>();
 
-    public MsuLookupService(ILogger<MsuLookupService> logger, IMsuTypeService msuTypeService, IMsuSettingsService msuSettingsService, IMsuDetailsService msuDetailsService)
+    public MsuLookupService(ILogger<MsuLookupService> logger, IMsuTypeService msuTypeService, MsuUserOptions msuUserOptions, IMsuDetailsService msuDetailsService, MsuAppSettings msuAppSettings)
     {
         _logger = logger;
         _msuTypeService = msuTypeService;
-        _msuSettingsService = msuSettingsService;
+        _msuUserOptions = msuUserOptions;
         _msuDetailsService = msuDetailsService;
+        _msuAppSettings = msuAppSettings;
     }
-    
-    public IReadOnlyCollection<Msu> LookupMsus(string directory)
+
+    public IReadOnlyCollection<Msu> LookupMsus()
     {
-        
+        return LookupMsus(_msuUserOptions.DefaultMsuPath, _msuUserOptions.MsuTypePaths);
+    }
+
+    public IReadOnlyCollection<Msu> LookupMsus(string? defaultDirectory, Dictionary<MsuType, string>? msuTypeDirectories = null)
+    {
         if (!_msuTypeService.MsuTypes.Any())
         {
             throw new InvalidOperationException(
                 "No valid MSU Types found. Make sure to call IMsuTypeService.GetMsuTypes first.");
         }
 
+        _logger.LogInformation("MSU lookup started");
         Status = MsuLoadStatus.Loading;
-        _msus = new List<Msu>();
-        var msuFiles = Directory.EnumerateFiles(directory, "*.msu", SearchOption.AllDirectories);
-        _msus = msuFiles.Select(x => LoadMsu(x)).Where(x => x != null).Cast<Msu>().ToList();
-        OnMsuLookupComplete?.Invoke(this, new(_msus));
+        var msus = new List<Msu>();
+        
+        if (Directory.Exists(defaultDirectory))
+        {
+            var msuFiles = Directory.EnumerateFiles(defaultDirectory, "*.msu", SearchOption.AllDirectories);
+            msus.AddRange(msuFiles.Select(x => LoadMsu(x)).Where(x => x != null).Cast<Msu>());    
+        }
+        
+        if (msuTypeDirectories != null)
+        {
+            foreach (var msuTypeDirectory in msuTypeDirectories)
+            {
+                if (!Directory.Exists(msuTypeDirectory.Value)) continue;
+                var msuFiles = Directory.EnumerateFiles(msuTypeDirectory.Value, "*.msu", SearchOption.AllDirectories);
+                msus.AddRange(msuFiles.Select(x => LoadMsu(x, msuTypeDirectory.Key)).Where(x => x != null).Cast<Msu>());   
+            }
+        }
+
+        _msus = msus;
+        _logger.LogInformation("MSU lookup complete");
         Status = MsuLoadStatus.Loaded;
+        OnMsuLookupComplete?.Invoke(this, new(_msus));
         return _msus;
     }
 
-    public Msu? LoadMsu(string msuPath, MsuType? msuType = null)
+    public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null)
     {
         var directory = new FileInfo(msuPath).Directory!.FullName;
 
@@ -52,23 +76,20 @@ internal class MsuLookupService : IMsuLookupService
         
         var baseName = Path.GetFileName(msuPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var pcmFiles = Directory.EnumerateFiles(directory, $"{baseName}-*.pcm", SearchOption.AllDirectories).ToList();
-        var msuSettings = _msuSettingsService.GetMsuSettings(msuPath);
+        var msuSettings = _msuUserOptions.GetMsuSettings(msuPath);
 
-        if (msuType == null && !string.IsNullOrWhiteSpace(msuSettings.MsuType))
-        {
-            msuType = _msuTypeService.MsuTypes.FirstOrDefault(x => x.Name == msuSettings.MsuType);
-        }
-
-        msuType ??= GetMsuType(baseName, pcmFiles);
+        var msuType = GetMsuType(baseName, pcmFiles, msuTypeFilter);
         
         _logger.LogInformation("MSU {Name} found as MSU Type {Type}", baseName, msuType?.Name ?? "Unknown");
 
         Msu msu;
-
+        
+        // If it's an unknown MSU type, simply load the details as is
         if (msuType == null)
         {
             msu = LoadUnknownMsu(msuPath, directory, baseName, pcmFiles);
         }
+        // Check if there's a YAML file associated with the MSU to pull MSU and track information from
         else if (File.Exists(directory + Path.DirectorySeparatorChar + baseName + ".yml"))
         {
             msu = LoadDetailedMsu(msuPath, directory, baseName, msuType, pcmFiles,
@@ -79,6 +100,7 @@ internal class MsuLookupService : IMsuLookupService
             msu = LoadDetailedMsu(msuPath, directory, baseName, msuType, pcmFiles,
                 directory + Path.DirectorySeparatorChar + baseName + ".yaml");
         }
+        // Otherwise load it using the details from the MSU type
         else
         {
             msu = LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles);
@@ -140,8 +162,6 @@ internal class MsuLookupService : IMsuLookupService
     
     private Msu LoadUnknownMsu(string msuPath, string directory, string baseName, IEnumerable<string> pcmFiles)
     {
-        _logger.LogInformation("Loading Unknown MSU {MsuPath}{Sep}{Name}.msu", directory, Path.DirectorySeparatorChar, baseName);
-
         var tracks = pcmFiles
             .Select(x =>
                 Path.GetFileName(x).Replace($"{baseName}-", "").Replace(".pcm", "", StringComparison.OrdinalIgnoreCase))
@@ -219,7 +239,7 @@ internal class MsuLookupService : IMsuLookupService
         };
     }
 
-    private MsuType? GetMsuType(string baseName, IEnumerable<string> pcmFiles)
+    private MsuType? GetMsuType(string baseName, IEnumerable<string> pcmFiles, MsuType? msuTypeFilter = null)
     {
         var trackNumbers = pcmFiles
             .Select(x =>
@@ -228,28 +248,44 @@ internal class MsuLookupService : IMsuLookupService
             .Select(int.Parse)
             .ToHashSet();
         
-        var matchingMsus = new List<(MsuType Type, float RequiredConfidence, float AllConfidence)>();
-
-        foreach (var msuType in _msuTypeService.MsuTypes)
+        var matchingMsus = new List<(MsuType Type, float Confidence, int ValidTracks)>();
+        
+        var allowedMsuTypes = _msuTypeService.MsuTypes.ToList();
+        if (msuTypeFilter != null && !_msuAppSettings.Smz3MsuTypes.Contains(msuTypeFilter.Name))
+        {
+            allowedMsuTypes = allowedMsuTypes.Where(x => x.IsCompatibleWith(msuTypeFilter)).ToList();
+        }
+        
+        foreach (var msuType in allowedMsuTypes)
         {
             if (trackNumbers.Count > msuType.ValidTrackNumbers.Count)
             {
                 continue;
             }
             var requiredConfidence = 1.0f * msuType.RequiredTrackNumbers.Intersect(trackNumbers).Count() / msuType.RequiredTrackNumbers.Count;
-            if (requiredConfidence <= 0.85)
+            var allConfidence = 1.0f * msuType.ValidTrackNumbers.Intersect(trackNumbers).Count() / msuType.ValidTrackNumbers.Count;
+            var confidence = Math.Max(requiredConfidence, allConfidence);
+            if (confidence <= .85)
             {
                 continue;
             }
-            var allConfidence = 1.0f * msuType.ValidTrackNumbers.Intersect(trackNumbers).Count() / msuType.ValidTrackNumbers.Count;
-            matchingMsus.Add((msuType, requiredConfidence, allConfidence));
+            var validTracks = msuType.ValidTrackNumbers.Intersect(trackNumbers).Count();
+            matchingMsus.Add((msuType, confidence, validTracks));
         }
-
-        return matchingMsus
-            .OrderByDescending(x => x.Type.Name is "Super Metroid" or "The Legend of Zelda: A Link to the Past")
-            .ThenByDescending(x => (x.RequiredConfidence + x.AllConfidence) / 2)
+        
+        var matchedType = matchingMsus
+            .OrderByDescending(x => _msuAppSettings.Smz3MsuTypes.Contains(x.Type.Name))
+            .ThenByDescending(x => x.Confidence)
+            .ThenByDescending(x => x.ValidTracks)
             .Select(x => x.Type)
             .FirstOrDefault();
+        
+        if (msuTypeFilter != null && matchedType != null && !matchedType.IsCompatibleWith(msuTypeFilter))
+        {
+            return null;
+        }
+
+        return matchedType;
     }
     
     public event EventHandler<MsuListEventArgs>? OnMsuLookupComplete;

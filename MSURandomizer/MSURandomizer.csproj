@@ -30,25 +30,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="settings.yaml" />
+    <EmbeddedResource Include="settings.yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
-      <XamlRuntime>Wpf</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="MsuCreateWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <XamlRuntime>Wpf</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="MsuContinuousShuffleWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <XamlRuntime>Wpf</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="MsuOptionsWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <XamlRuntime>Wpf</XamlRuntime>
-      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
 

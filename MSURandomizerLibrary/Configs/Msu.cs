@@ -18,4 +18,13 @@ public class Msu
     public string FullName => DisplayName + (string.IsNullOrWhiteSpace(DisplayCreator) ? "" : $" by {DisplayCreator}");
     public string MsuTypeName => string.IsNullOrWhiteSpace(MsuType?.Name) ? "Unknown" : MsuType.Name;
     public ICollection<Track> ValidTracks => Tracks.Where(x => Settings.AllowAltTracks || !x.IsAlt).ToList();
+    public int NumUniqueTracks => Tracks.Select(x => x.Path).Distinct().Count();
+
+    public bool MatchesFilter(MsuFilter filter, MsuType type, string? path)
+    {
+        return (filter == MsuFilter.All ||
+                (filter == MsuFilter.Compatible && MsuType?.IsCompatibleWith(type) == true) ||
+                (filter == MsuFilter.Exact && MsuType?.IsExactMatchWith(type) == true)) &&
+               (string.IsNullOrEmpty(path) || Path.StartsWith(path));
+    }
 }

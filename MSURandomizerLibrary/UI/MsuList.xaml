@@ -1,31 +1,44 @@
-﻿<UserControl x:Class="MSURandomizerLibrary.MsuList"
+﻿<UserControl x:Class="MSURandomizerLibrary.UI.MsuList"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:msuRandomizerLibrary="clr-namespace:MSURandomizerLibrary"
+             xmlns:ui="clr-namespace:MSURandomizerLibrary.UI"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Loaded="MsuList_OnLoaded"
              Background="White">
     <UserControl.DataContext>
-        <msuRandomizerLibrary:MsuListViewModel></msuRandomizerLibrary:MsuListViewModel>
+        <ui:MsuListViewModel></ui:MsuListViewModel>
     </UserControl.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <ListView ItemsSource="{Binding AvailableMsus}" SelectionMode="{Binding SelectionMode}" Name="MsuListView" Grid.Row="0" SelectionChanged="MsuListView_OnSelectionChanged">
+        <ListView ItemsSource="{Binding AvailableMsus, Mode=OneTime}" SelectionMode="{Binding SelectionMode}" Name="MsuListView" Grid.Row="0" SelectionChanged="MsuListView_OnSelectionChanged">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Vertical">
-                        <Grid Margin="3">
+                        <Grid Margin="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{Binding FullName}" TextWrapping="NoWrap" Grid.Column="0" TextAlignment="Left"/>
                             <TextBlock Text="{Binding MsuTypeName}" TextWrapping="NoWrap" Grid.Column="1" TextAlignment="Right"/>
+                        </Grid>
+                        <Grid Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Path}" TextWrapping="NoWrap" Grid.Column="0" FontSize="10" Foreground="DimGray" TextAlignment="Left"/>
+                            <StackPanel Orientation="Horizontal" Grid.Column="1" >
+                                <TextBlock Text="{Binding NumUniqueTracks}" TextWrapping="NoWrap" FontSize="10" Foreground="DimGray" TextAlignment="Right"/>
+                                <TextBlock Text=" Tracks" TextWrapping="NoWrap" FontSize="10" Foreground="DimGray" TextAlignment="Right"/>
+                            </StackPanel>
+                            
                         </Grid>
                     </StackPanel>
                 </DataTemplate>

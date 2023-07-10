@@ -16,6 +16,7 @@ public class Track
         Album = album;
         Url = url;
         IsAlt = isAlt;
+        OriginalPath = path;
     }
     
     public Track(Track other, int? number = null, string? path = null, string? trackName = null)
@@ -31,6 +32,7 @@ public class Track
         MsuName = other.MsuName;
         MsuCreator = other.MsuCreator;
         Url = other.Url;
+        OriginalPath = other.OriginalPath;
     }
     
     public string TrackName { get; set; }
@@ -43,6 +45,7 @@ public class Track
     public string? Artist { get; set; }
     public string? Album { get; set; } 
     public string? Url { get; set; }
+    public string? OriginalPath { get; set; }
     public bool IsAlt { get; set; }
     
     public string GetDisplayText()

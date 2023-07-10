@@ -13,12 +13,14 @@ namespace MSURandomizerLibrary.Services;
 public class MsuDetailsService : IMsuDetailsService
 {
     private readonly ILogger<MsuDetailsService> _logger;
-    private ISerializer _serializer;
-    private IDeserializer _deserializer;
+    private readonly MsuAppSettings _msuAppSettings;
+    private readonly ISerializer _serializer;
+    private readonly IDeserializer _deserializer;
 
-    public MsuDetailsService(ILogger<MsuDetailsService> logger)
+    public MsuDetailsService(ILogger<MsuDetailsService> logger, MsuAppSettings msuAppSettings)
     {
         _logger = logger;
+        _msuAppSettings = msuAppSettings;
         _serializer = new SerializerBuilder()
             .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitDefaults)
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
@@ -40,6 +42,7 @@ public class MsuDetailsService : IMsuDetailsService
         {
             var trackNumber = track.TrackNumber ?? 0;
             
+            // If there's no alt data for the track, simply load the base PCM file as the track
             if (!track.HasAltTrackData)
             {
                 var pcmFilePath = $"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm";
@@ -58,6 +61,8 @@ public class MsuDetailsService : IMsuDetailsService
                     url: string.IsNullOrWhiteSpace(track.Url) ? msuDetails.Url : track.Url
                 ));
             }
+            // If there are alt tracks, we need to determine which file is which in case they've been swapped
+            // manually or via script file
             else
             {
                 var basePcm = $"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm";
@@ -92,6 +97,8 @@ public class MsuDetailsService : IMsuDetailsService
     {
         var tracks = new List<MsuDetailsTrack>();
         
+        // For SMZ3 specific YAML files, we need to get the tracks by property and get the track number from the 
+        // property attributes based on if it's Metroid or Zelda first
         foreach (var prop in typeof(MsuDetailsTrackList).GetProperties())
         {
             if (prop.GetValue(msuDetailsSmz3.Tracks) is not MsuDetailsTrack track)
@@ -122,7 +129,9 @@ public class MsuDetailsService : IMsuDetailsService
             return null;
         }
 
-        if (msuType.Name.StartsWith("Super Metroid / A Link to the Past Combination Randomizer") && yamlText.Contains("light_world") && yamlText.Contains("samus_fanfare"))
+        // The YAML can come in the form of SMZ3 specific and a generic format. Try to detect which format it's in
+        // and deserialize it accordingly
+        if ((msuType.Name == _msuAppSettings.Smz3MsuTypeName || msuType.Name == _msuAppSettings.Smz3LegacyMsuTypeName) && yamlText.Contains("light_world") && yamlText.Contains("samus_fanfare"))
         {
             return ParseSmz3MsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText);
         }

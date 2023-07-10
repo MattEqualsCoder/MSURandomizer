@@ -85,6 +85,12 @@ internal class MsuTypeConfigMeta
 {
     [JsonPropertyName("name")]
     public string Name { get; set; } = "";
+
+    [JsonPropertyName("selectable")]
+    public bool? Selectable { get; set; } = true;
+    
+    [JsonPropertyName("exactmatches")]
+    public ICollection<string> ExactMatches { get; set; } = new List<string>();
 }
 
 internal class MsuTypeConfigTracks

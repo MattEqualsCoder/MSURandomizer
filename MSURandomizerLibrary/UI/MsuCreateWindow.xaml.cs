@@ -2,33 +2,35 @@
 using System.Windows;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using MSURandomizerLibrary.Configs;
 
-namespace MsuRandomizer;
+namespace MSURandomizerLibrary.UI;
 
 /// <summary>
 /// Interaction logic for GenerateOptionsWindow.xaml
 /// </summary>
 internal partial class MsuCreateWindow : Window
 {
-    public new readonly MsuRandomizerOptions DataContext;
-    private readonly bool _shuffledMsuWindow = false;
+    public new readonly MsuUserOptions DataContext;
+    private MsuRandomizationStyle _randomizationStyle;
 
-    public MsuCreateWindow(MsuRandomizerOptions model, bool shuffledMsuWindow)
+    public MsuCreateWindow(MsuUserOptions model, MsuRandomizationStyle randomizationStyle)
     {
+        _randomizationStyle = randomizationStyle;
         InitializeComponent();
         DataContext = model;
-        _shuffledMsuWindow = shuffledMsuWindow;
-        Title = shuffledMsuWindow ? "Create Shuffled MSU" : "Pick Random MSU";
-        AvoidDuplicatesCheckBox.Visibility = shuffledMsuWindow ? Visibility.Visible : Visibility.Collapsed;
-        ContinousReshuffleCheckBox.Visibility = shuffledMsuWindow
-            ? Visibility.Visible 
-            : Visibility.Collapsed;
+        Title = "MSU Generation Details";
+        OpenFolderOnCreateCheckBox.IsEnabled = randomizationStyle != MsuRandomizationStyle.Continuous;
+        AvoidDuplicatesCheckBox.IsEnabled = randomizationStyle != MsuRandomizationStyle.Single;
+        OpenFolderOnCreateCheckBox.IsChecked = model.OpenFolderOnCreate;
+        AvoidDuplicatesCheckBox.IsChecked = model.AvoidDuplicates;
     }
 
-    private void GenerateButton_Click(object sender, RoutedEventArgs e)
+    private void GenerateFolderButton_Click(object sender, RoutedEventArgs e)
     {
         var value = OpenFolderDialog();
         if (string.IsNullOrEmpty(value)) return;
+        DataContext.OutputRomPath = null;
         DataContext.OutputFolderPath = value;
         Generate();
     }
@@ -43,14 +45,16 @@ internal partial class MsuCreateWindow : Window
         var value = OpenFileDialog();
         if (string.IsNullOrEmpty(value)) return;
         DataContext.OutputRomPath = value;
+        DataContext.OutputFolderPath = null;
         Generate();
     }
 
     private void Generate()
     {
+        DataContext.RandomizationStyle = _randomizationStyle;
         DataContext.Name = NameTextBox.Text;
-        DataContext.AvoidDuplicates = !_shuffledMsuWindow && AvoidDuplicatesCheckBox.IsChecked == true;
-        DataContext.ContinuousReshuffle = !_shuffledMsuWindow && ContinousReshuffleCheckBox.IsChecked == true;
+        DataContext.OpenFolderOnCreate = OpenFolderOnCreateCheckBox.IsChecked == true;
+        DataContext.AvoidDuplicates = AvoidDuplicatesCheckBox.IsChecked == true;
         DialogResult = true;
         Close();
     }

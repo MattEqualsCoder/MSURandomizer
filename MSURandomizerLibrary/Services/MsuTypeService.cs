@@ -12,13 +12,15 @@ internal class MsuTypeService : IMsuTypeService
 {
     private readonly ILogger<MsuTypeService> _logger;
     private readonly List<MsuType> _msuTypes = new();
+    private readonly MsuAppSettings _msuAppSettings;
 
-    public MsuTypeService(ILogger<MsuTypeService> logger)
+    public MsuTypeService(ILogger<MsuTypeService> logger, MsuAppSettings randomizerMsuAppSettings)
     {
         _logger = logger;
+        _msuAppSettings = randomizerMsuAppSettings;
     }
 
-    public void LoadMsuTypesFromStream(Stream stream)
+    public void LoadMsuTypes(Stream stream)
     {
         _msuTypes.Clear();
         using var reader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true);
@@ -41,7 +43,7 @@ internal class MsuTypeService : IMsuTypeService
 
     public IReadOnlyCollection<MsuType> MsuTypes => _msuTypes;
 
-    public void LoadMsuTypesFromDirectory(string directory)
+    public void LoadMsuTypes(string directory)
     {
         _msuTypes.Clear();
         
@@ -77,6 +79,11 @@ internal class MsuTypeService : IMsuTypeService
 
         FinalizeConfigs(configs);
     }
+    
+    public MsuType? GetMsuType(string? name)
+    {
+        return MsuTypes.FirstOrDefault(x => x.Name == name);
+    }
 
     private void FinalizeConfigs(IEnumerable<MsuTypeConfig> configs)
     {
@@ -101,18 +108,27 @@ internal class MsuTypeService : IMsuTypeService
         // Create conversions from the copy part of the configs
         foreach (var config in configs.Where(x => x.CanCopy))
         {
-            var msuType = _msuTypes.First(x => x.Name == config.Name);
+            var msuName = _msuAppSettings.GetMsuName(config.Name);
+            var msuType = _msuTypes.First(x => x.Name == msuName);
             foreach (var copyDetails in config.Copy!)
             {
                 var otherConfig = configs.First(x => x.Path == copyDetails.Msu || x.Name == copyDetails.Msu);
-                var otherMsuType = _msuTypes.First(x => x.Name == otherConfig.Name);
+                var otherMsuType = _msuTypes.First(x => x.Name == _msuAppSettings.GetMsuName(otherConfig.Name));
                 msuType.Conversions[otherMsuType] = x => x + copyDetails.Modifier;
                 otherMsuType.Conversions[msuType] = x => x - copyDetails.Modifier;
             }
+
+            foreach (var exactMatch in config.Meta.ExactMatches)
+            {
+                var otherConfig = configs.First(x => x.Path == exactMatch || x.Name == exactMatch);
+                var otherMsuType = _msuTypes.First(x => x.Name == _msuAppSettings.GetMsuName(otherConfig.Name));
+                msuType.ExactMatches.Add(otherMsuType);
+                otherMsuType.ExactMatches.Add(msuType);
+            }
         }
 
-        var smz3 = _msuTypes.First(x => x.Name == "Super Metroid / A Link to the Past Combination Randomizer");
-        var smz3Old = _msuTypes.First(x => x.Name == "Super Metroid / A Link to the Past Combination Randomizer Legacy");
+        var smz3 = _msuTypes.First(x => x.Name == _msuAppSettings.Smz3MsuTypeName);
+        var smz3Old = _msuTypes.First(x => x.Name == _msuAppSettings.Smz3LegacyMsuTypeName);
         
         smz3.Conversions[smz3Old] = x =>
         {
@@ -150,7 +166,8 @@ internal class MsuTypeService : IMsuTypeService
 
         return new MsuType()
         {
-            Name = config.Name,
+            Name = _msuAppSettings.GetMsuName(config.Name),
+            Selectable = config.Meta.Selectable != false,
             Tracks = tracks,
             RequiredTrackNumbers = tracks.Where(x => !x.IsIgnored).Select(x => x.Number).ToHashSet(),
             ValidTrackNumbers = tracks.Select(x => x.Number).ToHashSet()

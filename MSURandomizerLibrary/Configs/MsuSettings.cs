@@ -2,7 +2,17 @@
 
 public class MsuSettings
 {
-    public required string MsuPath { get; set; }
+    public MsuSettings()
+    {
+        MsuPath = "";
+    }
+    
+    public MsuSettings(string path)
+    {
+        MsuPath = path;
+    }
+    
+    public string MsuPath { get; set; }
     public string? MsuType { get; set; }
     public bool AllowAltTracks { get; set; } = true;
     public string? Name { get; set; }

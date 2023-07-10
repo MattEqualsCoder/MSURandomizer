@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -12,13 +13,19 @@ public class MsuSelectorService : IMsuSelectorService
     private readonly ILogger<MsuSelectorService> _logger;
     private readonly Random _random;
     private readonly IMsuDetailsService _msuDetailsService;
+    private readonly IMsuTypeService _msuTypeService;
+    private readonly IMsuLookupService _msuLookupService;
+    private readonly IMsuUserOptionsService _msuUserOptionsService;
 
-    public MsuSelectorService(ILogger<MsuSelectorService> logger, IMsuDetailsService msuDetailsService)
+    public MsuSelectorService(ILogger<MsuSelectorService> logger, IMsuDetailsService msuDetailsService, IMsuTypeService msuTypeService, IMsuLookupService msuLookupService, IMsuUserOptionsService msuUserOptionsService)
     {
         _logger = logger;
         _msuDetailsService = msuDetailsService;
+        _msuTypeService = msuTypeService;
+        _msuLookupService = msuLookupService;
+        _msuUserOptionsService = msuUserOptionsService;
         _random = new Random(System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, int.MaxValue));
-        for (int i = 0; i < 10; i++)
+        for (var i = 0; i < 10; i++)
         {
             _random.Next();
         }
@@ -30,34 +37,188 @@ public class MsuSelectorService : IMsuSelectorService
         return SaveMsu(convertedMsu, outputPath);
     }
 
-    public Msu PickRandomMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, bool emptyFolder = true)
+    public Msu PickRandomMsu(bool emptyFolder = true)
+    {
+        var msuUserOptions = _msuUserOptionsService.MsuUserOptions;
+        
+        if (msuUserOptions.SelectedMsus == null || !msuUserOptions.SelectedMsus.Any())
+        {
+            _logger.LogError("No selected MSUs");
+            throw new InvalidOperationException("No selected MSUs");
+        }
+        
+        if (string.IsNullOrEmpty(msuUserOptions.OutputMsuType))
+        {
+            _logger.LogError("No output MSU type selected");
+            throw new InvalidOperationException("No output MSU type selected");
+        }
+        
+        var msus = _msuLookupService.Msus
+            .Where(x => msuUserOptions.SelectedMsus?.Contains(x.Path) == true)
+            .ToList();
+
+        if (!msus.Any())
+        {
+            _logger.LogError("No valid MSUs selected");
+            throw new InvalidOperationException("No valid MSUs selected");
+        }
+        
+        var msuType = _msuTypeService.GetMsuType(msuUserOptions.OutputMsuType);
+
+        if (msuType == null)
+        {
+            _logger.LogError("Invalid MSU type");
+            throw new InvalidOperationException("Invalid MSU type");
+        }
+        
+        var path = !string.IsNullOrEmpty(msuUserOptions.OutputFolderPath) 
+            ? Path.Combine(msuUserOptions.OutputFolderPath, $"{msuUserOptions.Name}.msu") 
+            : msuUserOptions.OutputRomPath ?? "";
+
+        return PickRandomMsu(msus, msuType, path, emptyFolder, msuUserOptions.OpenFolderOnCreate);
+    }
+
+    public Msu PickRandomMsu(ICollection<string> msuPaths, string msuTypeName, string outputPath, bool emptyFolder = true,
+        bool openFolder = false)
+    {
+        if (msuPaths.Any())
+        {
+            _logger.LogError("No selected MSUs");
+            throw new InvalidOperationException("No selected MSUs");
+        }
+        
+        var msus = _msuLookupService.Msus
+            .Where(x => msuPaths.Contains(x.Path))
+            .ToList();
+
+        if (!msus.Any())
+        {
+            _logger.LogError("No valid MSUs selected");
+            throw new InvalidOperationException("No valid MSUs selected");
+        }
+        
+        var msuType = _msuTypeService.GetMsuType(msuTypeName);
+
+        if (msuType == null)
+        {
+            _logger.LogError("Invalid MSU type");
+            throw new InvalidOperationException("Invalid MSU type");
+        }
+
+        return PickRandomMsu(msus, msuType, outputPath, emptyFolder, openFolder);
+    }
+
+    public Msu PickRandomMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, bool emptyFolder = true, bool openFolder = false)
     {
         if (!msus.Any())
         {
             throw new InvalidOperationException("No MSUs were passed in");
         }
+        
         if (string.IsNullOrWhiteSpace(outputPath))
         {
             throw new InvalidOperationException("No output path specified");
         }
+        
         var convertedMsu = ConvertMsus(msus, msuType).Random(_random)!;
         if (emptyFolder)
         {
             EmptyFolder(Path.GetDirectoryName(outputPath)!);
         }
-        return SaveMsu(convertedMsu, outputPath);
+        
+        var msu = SaveMsu(convertedMsu, outputPath);
+        
+        if (openFolder)
+        {
+            OpenMsuDirectory(msu);
+        }
+
+        return msu;
     }
 
-    public Msu CreateShuffledMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, Msu? prevMsu = null, bool emptyFolder = true, bool avoidDuplicates = true)
+    public Msu CreateShuffledMsu(Msu? prevMsu = null, bool emptyFolder = true)
+    {
+        var msuUserOptions = _msuUserOptionsService.MsuUserOptions;
+        
+        if (msuUserOptions.SelectedMsus == null || !msuUserOptions.SelectedMsus.Any())
+        {
+            _logger.LogError("No selected MSUs");
+            throw new InvalidOperationException("No selected MSUs");
+        }
+        
+        if (string.IsNullOrEmpty(msuUserOptions.OutputMsuType))
+        {
+            _logger.LogError("No output MSU type selected");
+            throw new InvalidOperationException("No output MSU type selected");
+        }
+        
+        var msus = _msuLookupService.Msus
+            .Where(x => msuUserOptions.SelectedMsus?.Contains(x.Path) == true)
+            .ToList();
+        
+        if (!msus.Any())
+        {
+            _logger.LogError("No valid MSUs selected");
+            throw new InvalidOperationException("No valid MSUs selected");
+        }
+        
+        var msuType = _msuTypeService.GetMsuType(msuUserOptions.OutputMsuType);
+
+        if (msuType == null)
+        {
+            _logger.LogError("Invalid MSU type");
+            throw new InvalidOperationException("Invalid MSU type");
+        }
+        
+        var path = !string.IsNullOrEmpty(msuUserOptions.OutputFolderPath) 
+            ? Path.Combine(msuUserOptions.OutputFolderPath, $"{msuUserOptions.Name}.msu") 
+            : msuUserOptions.OutputRomPath ?? "";
+
+        return CreateShuffledMsu(msus, msuType, path, prevMsu, emptyFolder, msuUserOptions.AvoidDuplicates, msuUserOptions.OpenFolderOnCreate);
+    }
+
+    public Msu CreateShuffledMsu(ICollection<string> msuPaths, string msuTypeName, string outputPath,
+        Msu? prevMsu = null, bool emptyFolder = true, bool avoidDuplicates = true, bool openFolder = false)
+    {
+        if (msuPaths.Any())
+        {
+            _logger.LogError("No selected MSUs");
+            throw new InvalidOperationException("No selected MSUs");
+        }
+        
+        var msus = _msuLookupService.Msus
+            .Where(x => msuPaths.Contains(x.Path))
+            .ToList();
+
+        if (!msus.Any())
+        {
+            _logger.LogError("No valid MSUs selected");
+            throw new InvalidOperationException("No valid MSUs selected");
+        }
+        
+        var msuType = _msuTypeService.GetMsuType(msuTypeName);
+
+        if (msuType == null)
+        {
+            _logger.LogError("Invalid MSU type");
+            throw new InvalidOperationException("Invalid MSU type");
+        }
+
+        return CreateShuffledMsu(msus, msuType, outputPath, prevMsu, emptyFolder, avoidDuplicates, openFolder);
+    }
+
+    public Msu CreateShuffledMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, Msu? prevMsu = null, bool emptyFolder = true, bool avoidDuplicates = true, bool openFolder = false)
     {
         if (!msus.Any())
         {
             throw new InvalidOperationException("No MSUs were passed in");
         }
+        
         if (string.IsNullOrWhiteSpace(outputPath))
         {
             throw new InvalidOperationException("No output path specified");
         }
+        
         var convertedMsu = ConvertMsus(msus, msuType);
         var tracks = convertedMsu.SelectMany(x => x.ValidTracks).ToList();
         var selectedTracks = new List<Track>();
@@ -68,7 +229,13 @@ public class MsuSelectorService : IMsuSelectorService
             {
                 continue;
             }
-            var track = tracks.Where(x => x.Number == msuTypeTrack.Number && (!avoidDuplicates || !selectedPaths.Contains(x.Path))).Random(_random);
+            var possibleTracks = tracks.Where(x => x.Number == msuTypeTrack.Number);
+            if (avoidDuplicates && possibleTracks.Any(x => !selectedPaths.Contains(x.Path)))
+            {
+                possibleTracks = possibleTracks.Where(x => !selectedPaths.Contains(x.Path));
+            }
+
+            var track = possibleTracks.Random(_random);
             if (track == null)
             {
                 continue;
@@ -92,7 +259,7 @@ public class MsuSelectorService : IMsuSelectorService
             EmptyFolder(Path.GetDirectoryName(outputPath)!);
         }
 
-        return SaveMsu(new Msu()
+        var msu = SaveMsu(new Msu()
         {
             MsuType = msuType,
             Name = "Shuffled MSU",
@@ -106,6 +273,13 @@ public class MsuSelectorService : IMsuSelectorService
                 MsuPath = ""
             }
         }, outputPath, prevMsu);
+
+        if (openFolder)
+        {
+            OpenMsuDirectory(msu);
+        }
+
+        return msu;
     }
 
     public Msu SaveMsu(Msu msu, string outputPath, Msu? prevMsu = null)
@@ -233,7 +407,7 @@ public class MsuSelectorService : IMsuSelectorService
     {
         var output = tracks
             .OrderBy(x => x.Number)
-            .Select(x => $"{x.Number}: {x.GetDisplayText()}");
+            .Select(x => $"{x.Number}: {x.OriginalPath}");
         
         File.WriteAllLines(path, output);
     }
@@ -265,32 +439,28 @@ public class MsuSelectorService : IMsuSelectorService
             return;
         }
         
-        var dir = new DirectoryInfo(path);
-
-        foreach(var fi in dir.GetFiles())
+        foreach(var filePath in Directory.EnumerateFiles(path, "*.msu").Concat(Directory.EnumerateFiles(path, "*.pcm")))
         {
             try
             {
-                fi.Delete();
+                File.Delete(filePath);
+                if (filePath.EndsWith(".msu") && File.Exists(filePath.Replace(".msu", ".yml")))
+                {
+                    File.Delete(filePath.Replace(".msu", ".yml"));
+                }
             }
             catch (Exception e)
             {
-                _logger.LogInformation(e, "Unable to delete file {Path}", fi.FullName);
+                _logger.LogWarning(e, "Unable to delete file {Path}", filePath);
             }
         }
+    }
 
-        foreach (var di in dir.GetDirectories())
-        {
-            EmptyFolder(di.FullName);
-
-            try
-            {
-                di.Delete();
-            }
-            catch (Exception e)
-            {
-                _logger.LogInformation(e, "Unable to delete folder {Path}", di.FullName);
-            }
-        }
+    private void OpenMsuDirectory(Msu msu)
+    {
+        if (!File.Exists(msu.Path)) return;
+        var directory = new FileInfo(msu.Path).DirectoryName;
+        if (Directory.Exists(directory))
+            Process.Start("explorer.exe", directory);
     }
 }

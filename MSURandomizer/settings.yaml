@@ -1,0 +1,14 @@
+MsuNameOverrides:
+  "Super Metroid / A Link to the Past Combination Randomizer Legacy": "SMZ3 Classic (Metroid First)"
+  "Super Metroid / A Link to the Past Combination Randomizer": "SMZ3 Combo Randomizer"
+  "Teenage Mutant Ninja Turtles: Turtles in Time": "TMNT: Turtles in Time"
+  "The Legend of Zelda: A Link to the Past": "A Link to the Past"
+Smz3MsuTypes:
+  - SMZ3 Classic (Metroid First)
+  - SMZ3 Combo Randomizer
+  - A Link to the Past
+  - Super Metroid
+Smz3MsuTypeName: "SMZ3 Combo Randomizer"
+Smz3LegacyMsuTypeName: "SMZ3 Classic (Metroid First)"
+UserSettingsFilePath: "%LocalAppData%\\MSURandomizer\\msu-user-settings.yml"
+MsuTypeFilePath: "G:\\Source\\Randomizers\\ALttPMSUShuffler\\resources"

@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
 
-namespace MSURandomizerLibrary;
+namespace MSURandomizerLibrary.UI;
 
 public sealed class MsuListViewModel : INotifyPropertyChanged
 {
@@ -25,7 +25,7 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
     }
 
     public IReadOnlyCollection<Msu> AvailableMsus => _msuType == null ? new List<Msu>() :
-        _allMsus.Where(x => _msuFilter == MsuFilter.All || (_msuFilter == MsuFilter.Compatible && x.MsuType?.IsCompatibleWith(_msuType) == true) || x.MsuTypeName == _msuType.Name).ToList();
+        _allMsus.Where(x => _msuFilter == null || x.MatchesFilter(_msuFilter.Value, _msuType, _basePath)).ToList();
 
     private IReadOnlyCollection<Msu> _allMsus = new List<Msu>();
 
@@ -36,6 +36,8 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
         {
             SetField(ref _allMsus, value);
             OnPropertyChanged(nameof(AvailableMsus));
+            MsuListUpdated?.Invoke(this, new MsuListEventArgs(value));
+            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus));
         }
     }
 
@@ -56,38 +58,57 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
         {
             SetField(ref _msuType, value);
             OnPropertyChanged(nameof(AvailableMsus));
+            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus));
         }
     }
 
-    private MsuFilter _msuFilter;
+    private MsuFilter? _msuFilter;
 
-    public MsuFilter MsuFilter
+    public MsuFilter? MsuFilter
     {
         get => _msuFilter;
         set
         {
             SetField(ref _msuFilter, value);
             OnPropertyChanged(nameof(AvailableMsus));
+            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus));
         }
     }
 
-    private ICollection<string> _defaultMsus = new List<string>();
-    
+    private ICollection<string> _selectedMsuPaths = new List<string>();
+
     public ICollection<string> SelectedMsuPaths
     {
-        get => _defaultMsus;
-        set => _defaultMsus = value;
+        get => _selectedMsuPaths;
+        set
+        {
+            SetField(ref _selectedMsuPaths, value);
+            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus));
+        }
     }
 
+    private string? _basePath;
+
+    public string? BasePath
+    {
+        get => _basePath;
+        set
+        {
+            SetField(ref _basePath, value);
+            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus));
+        }
+    }
+    
     private void MsuLookupServiceOnOnMsuLookupComplete(object? sender, MsuListEventArgs e)
     {
         AllMsus = e.Msus;
-        MsuListUpdated?.Invoke(this, new MsuListEventArgs(e.Msus));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public event EventHandler<MsuListEventArgs>? MsuListUpdated;
+    
+    public event EventHandler<MsuListEventArgs>? AvailableMsusUpdated;
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
