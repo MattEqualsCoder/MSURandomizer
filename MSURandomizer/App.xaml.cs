@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +16,7 @@ namespace MSURandomizer
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         private IHost? _host;
         private ILogger<App>? _logger;
@@ -46,7 +48,12 @@ namespace MSURandomizer
             {
                 throw new InvalidOperationException("Missing RandomizerSettings stream");
             }
-            _host.Services.GetRequiredService<IMsuRandomizerInitializationService>().Initialize(settingsStream);
+
+            string config;
+            #if DEBUG
+            config = GetConfigDirectory();
+            #endif
+            _host.Services.GetRequiredService<IMsuRandomizerInitializationService>().Initialize(settingsStream, config);
             _host.Services.GetRequiredService<MsuWindow>().Show();
         }
         
@@ -73,5 +80,18 @@ namespace MSURandomizer
 
             Process.Start(startInfo);
         }
+        
+        #if DEBUG
+        public string GetConfigDirectory()
+        {
+            var directory = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (directory != null && !directory.GetFiles("*.sln").Any())
+            {
+                directory = directory.Parent;
+            }
+
+            return directory != null ? Path.Combine(directory.FullName, "ConfigRepo", "resources") : "";
+        }
+        #endif
     }
 }

@@ -15,7 +15,6 @@ namespace MSURandomizerLibrary.UI;
 /// </summary>
 public partial class MsuContinuousShuffleWindow
 {
-    private const int Duration = 1 * 10 * 1000;
     private readonly Timer _reshuffleTimer;
     private readonly IMsuSelectorService _msuSelectorService;
 
@@ -25,10 +24,10 @@ public partial class MsuContinuousShuffleWindow
     private readonly MsuType? _msuType;
     private readonly bool _avoidDuplicates;
 
-    public MsuContinuousShuffleWindow(IMsuUserOptionsService msuUserOptionsService, IMsuSelectorService msuSelectorService, ILogger<MsuContinuousShuffleWindow> logger, IMsuLookupService msuLookupService, IMsuTypeService msuTypeService)
+    public MsuContinuousShuffleWindow(IMsuUserOptionsService msuUserOptionsService, IMsuSelectorService msuSelectorService, ILogger<MsuContinuousShuffleWindow> logger, IMsuLookupService msuLookupService, IMsuTypeService msuTypeService, MsuAppSettings appSettings)
     {
         _msuSelectorService = msuSelectorService;
-
+        
         InitializeComponent();
 
         var msuUserOptions = msuUserOptionsService.MsuUserOptions;
@@ -75,9 +74,8 @@ public partial class MsuContinuousShuffleWindow
 
         _avoidDuplicates = msuUserOptions.AvoidDuplicates;
             
-        _reshuffleTimer = new Timer(Duration);
+        _reshuffleTimer = new Timer(TimeSpan.FromSeconds(appSettings.ContinuousReshuffleSeconds));
         _reshuffleTimer.Elapsed += OnTimedEvent;
-        _reshuffleTimer.Interval = Duration;
         _reshuffleTimer.Start();
     }
 

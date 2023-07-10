@@ -11,6 +11,7 @@ public class MsuAppSettings
 
     public string UserSettingsFilePath { get; set; } = "";
     public string MsuTypeFilePath { get; set; } = "";
+    public int ContinuousReshuffleSeconds { get; set; } = 60;
 
     public string GetMsuName(string msuName)
     {

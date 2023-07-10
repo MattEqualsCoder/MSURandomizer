@@ -17,21 +17,23 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
         _serviceProvider = serviceProvider;
     }
     
-    public void Initialize(string randomizerSettingsPath)
+    public void Initialize(string randomizerSettingsPath, string msuTypeFilePathOverride = "")
     {
         var randomizerSettings = _msuAppSettingsService.Initialize(randomizerSettingsPath);
-        InitializeInternal(randomizerSettings);
+        InitializeInternal(randomizerSettings, msuTypeFilePathOverride);
     }
 
-    public void Initialize(Stream randomizerSettingsStream)
+    public void Initialize(Stream randomizerSettingsStream, string msuTypeFilePathOverride = "")
     {
         var randomizerSettings = _msuAppSettingsService.Initialize(randomizerSettingsStream);
-        InitializeInternal(randomizerSettings);
+        InitializeInternal(randomizerSettings, msuTypeFilePathOverride);
     }
 
-    private void InitializeInternal(MsuAppSettings msuAppSettings)
+    private void InitializeInternal(MsuAppSettings msuAppSettings, string msuTypeFilePathOverride)
     {
-        var msuTypePath = Environment.ExpandEnvironmentVariables(msuAppSettings.MsuTypeFilePath);
+        var msuTypePath = string.IsNullOrWhiteSpace(msuTypeFilePathOverride)
+            ? Environment.ExpandEnvironmentVariables(msuAppSettings.MsuTypeFilePath)
+            : msuTypeFilePathOverride;
         var msuTypeService = _serviceProvider.GetRequiredService<IMsuTypeService>();
         if ((msuTypePath.ToLower().EndsWith(".yaml") || msuTypePath.ToLower().EndsWith(".yml")) && File.Exists(msuTypePath))
         {

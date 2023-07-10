@@ -37,6 +37,7 @@ public class MsuMsuAppSettingsService : IMsuAppSettingsService
     {
         var deserializer = new DeserializerBuilder()
             .WithNamingConvention(PascalCaseNamingConvention.Instance)
+            .IgnoreUnmatchedProperties()
             .Build();
         _settings = deserializer.Deserialize<MsuAppSettings>(yamlText);
     }

@@ -11,11 +11,13 @@ public interface IMsuRandomizerInitializationService
     /// Initializes required MSU randomizer services
     /// </summary>
     /// <param name="randomizerSettingsPath">File path to the MSU randomizer settings file</param>
-    public void Initialize(string randomizerSettingsPath);
-    
+    /// <param name="msuTypeFilePathOverride">Override for the location of the MSU types</param>
+    public void Initialize(string randomizerSettingsPath, string msuTypeFilePathOverride = "");
+
     /// <summary>
     /// Initializes required MSU randomizer services
     /// </summary>
-    /// <param name="randomizerSettingsPath">Stream to the MSU randomizer settings file</param>
-    public void Initialize(Stream randomizerSettingsStream);
+    /// <param name="randomizerSettingsStream">Stream to the MSU randomizer settings file</param>
+    /// <param name="msuTypeFilePathOverride">Override for the location of the MSU types</param>
+    public void Initialize(Stream randomizerSettingsStream, string msuTypeFilePathOverride = "");
 }
