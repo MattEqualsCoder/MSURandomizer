@@ -52,11 +52,32 @@ public class MsuUserOptionsService : IMsuUserOptionsService
     }
 
     public MsuUserOptions MsuUserOptions => _options ?? throw new InvalidOperationException("User options not loaded");
-    
+
     public void Save()
     {
         if (_options == null) return;
         var yaml = _serializer.Serialize(_options);
         File.WriteAllText(_settingsFilePath, yaml);
+    }
+
+    public void SaveMsuSettings(Msu msu)
+    {
+        var previousSettings = MsuUserOptions.MsuSettings.FirstOrDefault(x => x.MsuPath == msu.Path);
+        
+        if (previousSettings == null && msu.Settings.HasSettings)
+        {
+            MsuUserOptions.MsuSettings.Add(msu.Settings);
+        }
+        else if (previousSettings != null && !msu.Settings.HasSettings)
+        {
+            MsuUserOptions.MsuSettings.Remove(previousSettings);
+        }
+        else if (previousSettings != null && previousSettings != msu.Settings)
+        {
+            MsuUserOptions.MsuSettings.Remove(previousSettings);
+            MsuUserOptions.MsuSettings.Add(msu.Settings);
+        }
+
+        Save();
     }
 }

@@ -79,6 +79,11 @@ internal class MsuTypeService : IMsuTypeService
 
         FinalizeConfigs(configs);
     }
+
+    public string GetMsuTypeName(MsuType? msuType)
+    {
+        return msuType?.Name ?? "Unknown";
+    }
     
     public MsuType? GetMsuType(string? name)
     {

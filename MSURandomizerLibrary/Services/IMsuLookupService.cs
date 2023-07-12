@@ -47,4 +47,10 @@ public interface IMsuLookupService
     /// Event fired off when the MSU lookup is completed
     /// </summary>
     public event EventHandler<MsuListEventArgs>? OnMsuLookupComplete;
+
+    /// <summary>
+    /// Function to reload an MSU with the latest settings
+    /// </summary>
+    /// <param name="msu">The MSU that was updated</param>
+    public void RefreshMsu(Msu msu);
 }

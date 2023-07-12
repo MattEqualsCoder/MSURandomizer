@@ -38,4 +38,10 @@ public interface IMsuUiFactory
     /// Displays the window that will reshuffle the MSU on an interval
     /// </summary>
     public void OpenContinousShuffleWindow();
+
+    /// <summary>
+    /// Opens the MSU details window for a given MSU
+    /// </summary>
+    /// <param name="msu">The MSU details to open the window for</param>
+    public void OpenMsuDetailsWindow(Msu msu);
 }

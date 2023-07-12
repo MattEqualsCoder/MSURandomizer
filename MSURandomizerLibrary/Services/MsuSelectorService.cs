@@ -324,7 +324,7 @@ public class MsuSelectorService : IMsuSelectorService
             track ??= msu.Tracks.First(x => x.Number == trackNumber);
             var source = track.Path;
             var destination = $"{outputDirectory}{Path.DirectorySeparatorChar}{outputFilename}-{trackNumber}.pcm";
-            var trackName = msu.MsuType?.Tracks.FirstOrDefault(x => x.Number == trackNumber)?.Name ?? track.TrackName;
+            var trackName = msu.SelectedMsuType?.Tracks.FirstOrDefault(x => x.Number == trackNumber)?.Name ?? track.TrackName;
             try
             {
                 CreatePcmFile(source, destination);
@@ -375,13 +375,13 @@ public class MsuSelectorService : IMsuSelectorService
 
     public Msu ConvertMsu(Msu msu, MsuType msuType)
     {
-        if (msu.MsuTypeName == msuType.Name && msu.Settings.AllowAltTracks)
+        if (msu.MsuTypeName == msuType.Name && !msu.Settings.AllowAltTracks)
         {
             return msu;
         }
 
-        var conversion = msu.MsuType != null && msuType.Conversions.ContainsKey(msu.MsuType!)
-            ? msuType.Conversions[msu.MsuType]
+        var conversion = msu.SelectedMsuType != null && msuType.Conversions.ContainsKey(msu.SelectedMsuType!)
+            ? msuType.Conversions[msu.SelectedMsuType]
             : x => x;
 
         var trackNumbers = msuType.ValidTrackNumbers;

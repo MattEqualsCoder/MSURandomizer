@@ -59,7 +59,7 @@ public partial class MsuWindow
             return;
         }
  
-        var availableMsuTypes = msus.Select(x => x.MsuType).Distinct().Where(x => x is { Selectable: true }).Cast<MsuType>();
+        var availableMsuTypes = msus.Select(x => x.SelectedMsuType).Distinct().Where(x => x is { Selectable: true }).Cast<MsuType>();
         MsuTypesComboBox.ItemsSource = availableMsuTypes.Select(x => x.Name).ToList();
         MsuTypesComboBox.IsEnabled = availableMsuTypes.Any();
         if (availableMsuTypes.Any(x => x.Name == DataContext.OutputMsuType))

@@ -21,7 +21,7 @@ public class Track
     
     public Track(Track other, int? number = null, string? path = null, string? trackName = null)
     {
-        TrackName = other.TrackName;
+        TrackName = trackName ?? other.TrackName;
         Number = number ?? other.Number;
         SongName = other.SongName;
         Path = path ?? other.Path;
@@ -48,10 +48,12 @@ public class Track
     public string? OriginalPath { get; set; }
     public bool IsAlt { get; set; }
     
-    public string GetDisplayText()
+    public string GetDisplayText(bool includeMsu = true)
     {
         var artist = string.IsNullOrWhiteSpace(Artist) ? "" : $" by {Artist}";
         var album = string.IsNullOrWhiteSpace(Album) ? "" : $" from album {Album}";
+        if (!includeMsu)
+            return $"{SongName}{artist}{album}";
         var creator = string.IsNullOrWhiteSpace(MsuCreator) ? "" : $" by {MsuCreator}";
         return $"{SongName}{artist}{album} from MSU Pack {MsuName}{creator}";
     }

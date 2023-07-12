@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Extensions.Logging;
+using System.Windows.Input;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibrary.UI;
 
@@ -13,17 +14,22 @@ namespace MSURandomizerLibrary.UI;
 /// </summary>
 public partial class MsuList : UserControl
 {
-    public new readonly MsuListViewModel DataContext;
+    private readonly IMsuUiFactory _msuUiFactory;
 
-    private ILogger _logger;
-    
-    public MsuList(MsuListViewModel viewModel, ILogger logger)
+    public MsuList(IMsuUiFactory msuUiFactory)
     {
-        _logger = logger;
-        DataContext = viewModel;
+        _msuUiFactory = msuUiFactory;
+        DataContext = new MsuListViewModel();
         InitializeComponent();
-        viewModel.MsuListUpdated += ViewModelOnMsuListUpdated;
-        viewModel.AvailableMsusUpdated += ViewModelOnAvailableMsusUpdated;
+    }
+    
+    public new MsuListViewModel DataContext { get; private set; }
+
+    public void SetDataContext(MsuListViewModel model)
+    {
+        DataContext = model;
+        model.MsuListUpdated += ViewModelOnMsuListUpdated;
+        model.AvailableMsusUpdated += ViewModelOnAvailableMsusUpdated;
         UpdateSelectedItems();
     }
 
@@ -46,7 +52,7 @@ public partial class MsuList : UserControl
         }
 
         MsuListView.SelectionMode = DataContext.SelectionMode;
-        MsuListView.ItemsSource = DataContext.AvailableMsus;
+        MsuListView.ItemsSource = DataContext.AvailableMsus.OrderBy(x => x.Name);
         MsuListView.UnselectAll();
         if (SelectionMode == SelectionMode.Multiple)
         {
@@ -131,5 +137,18 @@ public partial class MsuList : UserControl
     private void MsuListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         SelectedMsusUpdated?.Invoke(this, new MsuListEventArgs(MsuListView.SelectedItems.Cast<Msu>().ToList()));
+    }
+
+    private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+    { 
+        if (sender is not MenuItem { Tag: Msu msu })
+            return;
+
+        _msuUiFactory.OpenMsuDetailsWindow(msu);
+    }
+
+    private void MsuListView_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        e.Handled = true;
     }
 }

@@ -16,11 +16,23 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <ListView ItemsSource="{Binding AvailableMsus, Mode=OneTime}" SelectionMode="{Binding SelectionMode}" Name="MsuListView" Grid.Row="0" SelectionChanged="MsuListView_OnSelectionChanged">
+        <ListView 
+            ItemsSource="{Binding AvailableMsus, Mode=OneTime}" 
+            SelectionMode="{Binding SelectionMode}" 
+            Name="MsuListView" 
+            Grid.Row="0" 
+            SelectionChanged="MsuListView_OnSelectionChanged"
+            PreviewMouseRightButtonDown="MsuListView_OnPreviewMouseRightButtonDown"
+        >
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Vertical">
-                        <Grid Margin="2">
+                    <StackPanel Orientation="Vertical" Margin="3">
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Open _Details" Tag="{Binding }" Click="MenuItem_OnClick"></MenuItem>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                        <Grid Margin="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
@@ -28,7 +40,7 @@
                             <TextBlock Text="{Binding FullName}" TextWrapping="NoWrap" Grid.Column="0" TextAlignment="Left"/>
                             <TextBlock Text="{Binding MsuTypeName}" TextWrapping="NoWrap" Grid.Column="1" TextAlignment="Right"/>
                         </Grid>
-                        <Grid Margin="2">
+                        <Grid Margin="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>

@@ -29,19 +29,14 @@ public class MsuUiFactory : IMsuUiFactory
     public MsuList CreateMsuList(SelectionMode selectionMode = SelectionMode.Multiple)
     {
         var userOptions = _msuUserOptionsService.MsuUserOptions;
-        var msuType = _msuTypeService.GetMsuType(userOptions.OutputMsuType);
-        if (msuType == null)
-        {
-            msuType = _msuTypeService.MsuTypes.First();
-        }
-
+        var msuType = _msuTypeService.GetMsuType(userOptions.OutputMsuType) ?? _msuTypeService.MsuTypes.First();
         return CreateMsuList(msuType, userOptions.Filter, selectionMode, userOptions.SelectedMsus);
     }
     
     public MsuList CreateMsuList(MsuType msuType, MsuFilter msuFilter, SelectionMode selectionMode,
         ICollection<string>? selectedMsuPaths = null)
     {
-        var viewModel = _serviceProvider.GetService<MsuListViewModel>();
+        var viewModel = _serviceProvider.GetRequiredService<MsuListViewModel>();
         if (viewModel == null)
         {
             throw new InvalidOperationException();
@@ -53,7 +48,10 @@ public class MsuUiFactory : IMsuUiFactory
         {
             viewModel.SelectedMsuPaths = selectedMsuPaths;
         }
-        return new MsuList(viewModel, _logger);
+
+        var msuList = _serviceProvider.GetRequiredService<MsuList>();
+        msuList.SetDataContext(viewModel);
+        return msuList;
     }
 
     public bool OpenUserSettingsWindow()
@@ -69,5 +67,19 @@ public class MsuUiFactory : IMsuUiFactory
         var window = _serviceProvider.GetRequiredService<MsuContinuousShuffleWindow>();
         if (window.ShowDialog() != true) return;
         _msuUserOptionsService.Save();
+    }
+
+    public void OpenMsuDetailsWindow(Msu msu)
+    {
+        var msuTypeNames = _msuTypeService.MsuTypes.OrderBy(x => x.Name).Select(x => x.Name).ToList();
+        msuTypeNames.Insert(0, _msuTypeService.GetMsuTypeName(null));
+        var viewModel = new MsuDetailsViewModel(msu, msuTypeNames);
+        var window = _serviceProvider.GetRequiredService<MsuDetailsWindow>();
+        window.ViewModel = viewModel;
+        if (window.ShowDialog() != true) return;
+        var msuType = _msuTypeService.GetMsuType(viewModel.MsuTypeName);
+        viewModel.ApplyChanges(msu, msuType);
+        _msuUserOptionsService.SaveMsuSettings(msu);
+        _msuLookupService.RefreshMsu(msu);
     }
 }

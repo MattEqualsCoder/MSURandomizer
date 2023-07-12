@@ -23,4 +23,10 @@ public interface IMsuUserOptionsService
     /// Saves the user settings to the YAML file specified on initialization
     /// </summary>
     public void Save();
+
+    /// <summary>
+    /// Saves the current state of the MSU's user settings
+    /// </summary>
+    /// <param name="msu">The MSU to save the settings for</param>
+    public void SaveMsuSettings(Msu msu);
 }

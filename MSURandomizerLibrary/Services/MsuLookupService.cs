@@ -77,8 +77,11 @@ internal class MsuLookupService : IMsuLookupService
         var baseName = Path.GetFileName(msuPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var pcmFiles = Directory.EnumerateFiles(directory, $"{baseName}-*.pcm", SearchOption.AllDirectories).ToList();
         var msuSettings = _msuUserOptions.GetMsuSettings(msuPath);
+        
+        msuSettings.MsuType = _msuTypeService.GetMsuType(msuSettings.MsuTypeName);
 
-        var msuType = GetMsuType(baseName, pcmFiles, msuTypeFilter);
+        var originalMsuType = GetMsuType(baseName, pcmFiles, msuTypeFilter);
+        var msuType = msuSettings.MsuType ?? originalMsuType;
         
         _logger.LogInformation("MSU {Name} found as MSU Type {Type}", baseName, msuType?.Name ?? "Unknown");
 
@@ -107,12 +110,8 @@ internal class MsuLookupService : IMsuLookupService
         }
 
         msu.Settings = msuSettings;
+        msu.MsuType = originalMsuType;
 
-        if (!string.IsNullOrWhiteSpace(msuSettings.Name))
-        {
-            msu.Name = msuSettings.Name;
-        }
-        
         return msu;
     }
 
@@ -144,7 +143,9 @@ internal class MsuLookupService : IMsuLookupService
             
             foreach (var innerTrackDetails in trackDetails.Where(x => x.Number == trackNumber))
             {
-                tracks.Add(new Track(innerTrackDetails, number: track.Number));
+                var trackName = msuType.Tracks.FirstOrDefault(x => x.Number == track.Number)?.Name ??
+                                innerTrackDetails.TrackName;
+                tracks.Add(new Track(innerTrackDetails, number: track.Number, trackName: trackName));
             }
         }
 
@@ -156,7 +157,8 @@ internal class MsuLookupService : IMsuLookupService
             Tracks = tracks,
             MsuType = msuType,
             Name = msuDetails.Name,
-            Creator = msuDetails.Creator
+            Creator = msuDetails.Creator,
+            HasDetails = true
         };
     }
     
@@ -182,7 +184,7 @@ internal class MsuLookupService : IMsuLookupService
             FileName = baseName,
             Path = msuPath,
             Tracks = tracks.ToList(),
-            Name = baseName
+            Name = baseName,
         };
     }
 
@@ -235,7 +237,7 @@ internal class MsuLookupService : IMsuLookupService
             Path = msuPath,
             Tracks = tracks,
             MsuType = msuType,
-            Name = baseName
+            Name = baseName,
         };
     }
 
@@ -290,5 +292,27 @@ internal class MsuLookupService : IMsuLookupService
     
     public event EventHandler<MsuListEventArgs>? OnMsuLookupComplete;
     
+    public void RefreshMsu(Msu msu)
+    {
+        Status = MsuLoadStatus.Loading;
+        
+        // Reload the MSU
+        var newMsu = LoadMsu(msu.Path);
+        if (newMsu == null)
+        {
+            _logger.LogInformation("Reloaded MSU for Path {Path} returned null", msu.Path);
+            throw new InvalidOperationException("Could not refresh MSU");
+        }
+        
+        // Remove the previous MSU, and add the new one
+        var msus = _msus.ToList();
+        msus.RemoveAll(x => x.Path == msu.Path);
+        msus.Add(newMsu);
+        _msus = msus;
+        
+        OnMsuLookupComplete?.Invoke(this, new MsuListEventArgs(_msus));
+        Status = MsuLoadStatus.Loaded;
+    }
+
     public MsuLoadStatus Status { get; set; }
 }

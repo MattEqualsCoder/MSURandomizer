@@ -103,7 +103,7 @@ public class MsuDetailsService : IMsuDetailsService
         {
             if (prop.GetValue(msuDetailsSmz3.Tracks) is not MsuDetailsTrack track)
             {
-                track = new MsuDetailsTrack();
+                continue;
             }
 
             var attribute = prop.GetCustomAttributes<Smz3TrackNumberAttribute>().First();
