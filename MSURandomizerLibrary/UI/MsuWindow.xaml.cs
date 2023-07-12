@@ -20,14 +20,16 @@ public partial class MsuWindow
     private readonly IMsuUserOptionsService _msuUserOptionsService;
     private readonly IMsuUiFactory _msuUiFactory;
     private readonly ILogger<MsuWindow> _logger;
+    private readonly MsuAppSettings _msuAppSettings;
         
-    public MsuWindow(ILogger<MsuWindow> logger, IMsuUiFactory uiFactory, IMsuLookupService msuLookupService, MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, IMsuSelectorService msuSelectorService, IMsuUserOptionsService msuUserOptionsService, IMsuUiFactory msuUiFactory)
+    public MsuWindow(ILogger<MsuWindow> logger, IMsuUiFactory uiFactory, IMsuLookupService msuLookupService, MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, IMsuSelectorService msuSelectorService, IMsuUserOptionsService msuUserOptionsService, IMsuUiFactory msuUiFactory, MsuAppSettings msuAppSettings)
     {
         DataContext = msuUserOptions;
         _msuTypeService = msuTypeService;
         _msuSelectorService = msuSelectorService;
         _msuUserOptionsService = msuUserOptionsService;
         _msuUiFactory = msuUiFactory;
+        _msuAppSettings = msuAppSettings;
         _msuLookupService = msuLookupService;
         _logger = logger;
         InitializeComponent();
@@ -60,6 +62,13 @@ public partial class MsuWindow
         }
  
         var availableMsuTypes = msus.Select(x => x.SelectedMsuType).Distinct().Where(x => x is { Selectable: true }).Cast<MsuType>();
+        
+        // If we have SMZ3 legacy, make sure SMZ3 is added to the dropdown
+        if (msus.Select(x => x.SelectedMsuType).Any(x => x is { Selectable: false} && x.Name == _msuAppSettings.Smz3LegacyMsuTypeName) && availableMsuTypes.All(x => x.Name != _msuAppSettings.Smz3MsuTypeName))
+        {
+            availableMsuTypes = availableMsuTypes.Append(_msuTypeService.GetMsuType(_msuAppSettings.Smz3MsuTypeName)!).OrderBy(x => x.Name);
+        }
+        
         MsuTypesComboBox.ItemsSource = availableMsuTypes.Select(x => x.Name).ToList();
         MsuTypesComboBox.IsEnabled = availableMsuTypes.Any();
         if (availableMsuTypes.Any(x => x.Name == DataContext.OutputMsuType))

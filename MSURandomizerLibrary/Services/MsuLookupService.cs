@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 
@@ -131,6 +132,7 @@ internal class MsuLookupService : IMsuLookupService
         {
             var trackNumber = track.Number;
             
+            // If this track was not found and it's extended, try to use the track that it's extending
             if (trackDetails.All(x => x.Number != trackNumber) && track.IsExtended)
             {
                 var currentTrack = track;
@@ -141,6 +143,7 @@ internal class MsuLookupService : IMsuLookupService
                 }
             }
             
+            // Find all tracks matching the found track number and add them
             foreach (var innerTrackDetails in trackDetails.Where(x => x.Number == trackNumber))
             {
                 var trackName = msuType.Tracks.FirstOrDefault(x => x.Number == track.Number)?.Name ??
@@ -202,6 +205,7 @@ internal class MsuLookupService : IMsuLookupService
         {
             var trackNumber = track.Number;
             
+            // If this is missing extended track, try to find the track it's extending until we find one
             if (!trackNumbers.Contains(trackNumber) && track.IsExtended)
             {
                 var currentTrack = track;
@@ -217,17 +221,45 @@ internal class MsuLookupService : IMsuLookupService
                 continue;
             }
 
+            var path = pcmFiles.First(x =>
+                x.Equals($"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm",
+                    StringComparison.OrdinalIgnoreCase));
+
+            // Add the base track
             tracks.Add(new Track
             (
                 trackName: msuType.Tracks.FirstOrDefault(x => x.Number == track.Number)?.Name ?? $"Track #{trackNumber}",
                 number: track.Number,
                 songName: $"Track #{trackNumber}",
-                path: pcmFiles.First(x =>
-                    x.Equals($"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm",
-                        StringComparison.OrdinalIgnoreCase)),
+                path: path,
                 msuPath: $"{directory}{Path.DirectorySeparatorChar}{baseName}.msu",
                 msuName: baseName
             ));
+
+            // See if there are any alt tracks to add
+            var alts = pcmFiles.Where(x => x != path && Regex.IsMatch(x, $"-{trackNumber}[^0-9]")).ToList();
+            if (!alts.Any()) continue;
+            
+            foreach (var alt in alts)
+            {
+                var relativePath = Path.GetRelativePath(directory, alt);
+                var altName = new FileInfo(alt).Name;
+                if (relativePath.Contains(Path.DirectorySeparatorChar))
+                {
+                    altName = relativePath.Substring(0, relativePath.IndexOf(Path.DirectorySeparatorChar));
+                }
+                
+                tracks.Add(new Track
+                (
+                    trackName: msuType.Tracks.FirstOrDefault(x => x.Number == track.Number)?.Name ?? $"Track #{trackNumber}",
+                    number: track.Number,
+                    songName: $"Track #{trackNumber} ({altName})",
+                    path: alt,
+                    msuPath: $"{directory}{Path.DirectorySeparatorChar}{baseName}.msu",
+                    msuName: baseName,
+                    isAlt: true
+                ));
+            }
         }
         
         return new Msu
