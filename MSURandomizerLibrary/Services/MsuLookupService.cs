@@ -347,4 +347,24 @@ internal class MsuLookupService : IMsuLookupService
     }
 
     public MsuLoadStatus Status { get; set; }
+
+    public ICollection<Msu> GetMsusByPath(ICollection<string>? paths)
+    {
+        if (paths == null)
+        {
+            return new List<Msu>();
+        }
+
+        return _msus.Where(x => paths.Contains(x.Path)).ToList();
+    }
+    
+    public Msu? GetMsuByPath(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return null;
+        }
+
+        return _msus.FirstOrDefault(x => x.Path == path);
+    }
 }

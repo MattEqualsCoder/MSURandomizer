@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Timers;
 using System.Windows;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibrary.UI;
@@ -17,13 +17,9 @@ public partial class MsuContinuousShuffleWindow
 {
     private readonly Timer _reshuffleTimer;
     private readonly IMsuSelectorService _msuSelectorService;
-
-    private readonly List<Msu> _msus;
+    private readonly MsuSelectorRequest _request;
     private Msu? _previousMsu;
-    private readonly string? _outputPath;
-    private readonly MsuType? _msuType;
-    private readonly bool _avoidDuplicates;
-
+    
     public MsuContinuousShuffleWindow(IMsuUserOptionsService msuUserOptionsService, IMsuSelectorService msuSelectorService, ILogger<MsuContinuousShuffleWindow> logger, IMsuLookupService msuLookupService, IMsuTypeService msuTypeService, MsuAppSettings appSettings)
     {
         _msuSelectorService = msuSelectorService;
@@ -44,35 +40,42 @@ public partial class MsuContinuousShuffleWindow
             throw new InvalidOperationException("No output MSU type selected");
         }
         
-        _msus = msuLookupService.Msus
+        var msus = msuLookupService.Msus
             .Where(x => msuUserOptions.SelectedMsus?.Contains(x.Path) == true)
             .ToList();
         
-        if (!_msus.Any())
+        if (!msus.Any())
         {
             logger.LogError("No valid MSUs selected");
             throw new InvalidOperationException("No valid MSUs selected");
         }
         
-        _msuType = msuTypeService.GetMsuType(msuUserOptions.OutputMsuType);
+        var msuType = msuTypeService.GetMsuType(msuUserOptions.OutputMsuType);
 
-        if (_msuType == null)
+        if (msuType == null)
         {
             logger.LogError("Invalid MSU type");
             throw new InvalidOperationException("Invalid MSU type");
         }
         
-        _outputPath = !string.IsNullOrEmpty(msuUserOptions.OutputFolderPath) 
+        var outputPath = !string.IsNullOrEmpty(msuUserOptions.OutputFolderPath) 
             ? Path.Combine(msuUserOptions.OutputFolderPath, $"{msuUserOptions.Name}.msu") 
             : msuUserOptions.OutputRomPath;
 
-        if (string.IsNullOrWhiteSpace(_outputPath))
+        if (string.IsNullOrWhiteSpace(outputPath))
         {
             logger.LogError("No output path");
             throw new InvalidOperationException("No output path");
         }
 
-        _avoidDuplicates = msuUserOptions.AvoidDuplicates;
+        _request = new MsuSelectorRequest()
+        {
+            Msus = msus,
+            OutputMsuType = msuType,
+            OutputPath = outputPath,
+            AvoidDuplicates = msuUserOptions.AvoidDuplicates,
+            OpenFolder = false
+        };
             
         _reshuffleTimer = new Timer(TimeSpan.FromSeconds(appSettings.ContinuousReshuffleSeconds));
         _reshuffleTimer.Elapsed += OnTimedEvent;
@@ -110,8 +113,24 @@ public partial class MsuContinuousShuffleWindow
     private void GenerateMsu()
     {
         UpdateText("Reshuffling...");
-        _previousMsu = _msuSelectorService.CreateShuffledMsu(_msus, _msuType!, _outputPath!, _previousMsu, false,
-            _avoidDuplicates);
-        UpdateText($"Last Reshuffle: {DateTime.Now:h\\:mm tt}");
+        _request.PrevMsu = _previousMsu;
+        var response = _msuSelectorService.CreateShuffledMsu(_request);
+        if (!string.IsNullOrWhiteSpace(response.Message))
+        {
+            if (response.Successful)
+            {
+                _previousMsu = response.Msu;
+                UpdateText($"Last Reshuffle: {DateTime.Now:h\\:mm tt}\nWarning: {response.Message}");
+            }
+            else
+            {
+                UpdateText($"Error: {response.Message}");
+            }
+        }
+        else 
+        {
+            _previousMsu = response.Msu;
+            UpdateText($"Last Reshuffle: {DateTime.Now:h\\:mm tt}");
+        }
     }
 }

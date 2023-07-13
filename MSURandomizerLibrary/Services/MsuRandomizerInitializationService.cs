@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Models;
 
 namespace MSURandomizerLibrary.Services;
 
@@ -17,45 +18,76 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
         _serviceProvider = serviceProvider;
     }
     
-    public void Initialize(string randomizerSettingsPath, string msuTypeFilePathOverride = "", string userSettingsFilePathOverride = "")
+    public void Initialize(MsuRandomizerInitializationRequest request)
     {
-        var randomizerSettings = _msuAppSettingsService.Initialize(randomizerSettingsPath);
-        InitializeInternal(randomizerSettings, msuTypeFilePathOverride, userSettingsFilePathOverride);
-    }
-
-    public void Initialize(Stream randomizerSettingsStream, string msuTypeFilePathOverride = "", string userSettingsFilePathOverride = "")
-    {
-        var randomizerSettings = _msuAppSettingsService.Initialize(randomizerSettingsStream);
-        InitializeInternal(randomizerSettings, msuTypeFilePathOverride, userSettingsFilePathOverride);
-    }
-
-    private void InitializeInternal(MsuAppSettings msuAppSettings, string msuTypeFilePathOverride, string userSettingsFilePathOverride)
-    {
-        var msuTypePath = string.IsNullOrWhiteSpace(msuTypeFilePathOverride)
-            ? Environment.ExpandEnvironmentVariables(msuAppSettings.MsuTypeFilePath)
-            : Environment.ExpandEnvironmentVariables(msuTypeFilePathOverride);
-        var msuTypeService = _serviceProvider.GetRequiredService<IMsuTypeService>();
-        if ((msuTypePath.ToLower().EndsWith(".yaml") || msuTypePath.ToLower().EndsWith(".yml")) && File.Exists(msuTypePath))
+        if (request.MsuAppSettingsStream == null && string.IsNullOrWhiteSpace(request.MsuAppSettingsPath))
         {
-            using var yamlFile = new FileStream(msuTypePath, FileMode.Open);
-            msuTypeService.LoadMsuTypes(yamlFile);
-        }
-        else
-        {
-            msuTypeService.LoadMsuTypes(msuTypePath);
+            throw new InvalidOperationException(
+                "Initialization requires either the MsuAppSettingsStream or MsuAppSettingsPath to be specified");
         }
 
-        var userOptionsPath = string.IsNullOrWhiteSpace(userSettingsFilePathOverride)
-            ? Environment.ExpandEnvironmentVariables(msuAppSettings.UserSettingsFilePath)
-            : Environment.ExpandEnvironmentVariables(userSettingsFilePathOverride);
-        var userOptionsService = _serviceProvider.GetRequiredService<IMsuUserOptionsService>();
-        var userOptions = userOptionsService.Initialize(userOptionsPath);
+        var appSettings = request.MsuAppSettingsStream == null
+            ? _msuAppSettingsService.Initialize(request.MsuAppSettingsPath!)
+            : _msuAppSettingsService.Initialize(request.MsuAppSettingsStream!);
+
+        if (appSettings == null)
+        {
+            throw new InvalidOperationException("Unable to initialize MSU Randomizer App Settings");
+        }
+
+        InitializeMsuTypes(request, appSettings);
+        var userOptions = InitializeUserOptions(request, appSettings);
         
         Task.Run(() =>
         {
             var msuLookupService = _serviceProvider.GetRequiredService<IMsuLookupService>();
             msuLookupService.LookupMsus(userOptions.DefaultMsuPath, userOptions.MsuTypePaths); 
         });
+    }
+
+    private void InitializeMsuTypes(MsuRandomizerInitializationRequest request, MsuAppSettings appSettings)
+    {
+        var msuTypeService = _serviceProvider.GetRequiredService<IMsuTypeService>();
+        if (request.MsuTypeConfigStream != null)
+        {
+            msuTypeService.LoadMsuTypes(request.MsuTypeConfigStream);
+        }
+        else
+        {
+            var msuTypePath = string.IsNullOrWhiteSpace(request.MsuTypeConfigPath)
+                ? appSettings.MsuTypeFilePath
+                : request.MsuTypeConfigPath;
+
+            if (string.IsNullOrWhiteSpace(msuTypePath))
+            {
+                throw new InvalidOperationException("Missing MSU Type configuration");
+            }
+            
+            if ((msuTypePath.ToLower().EndsWith(".yaml") || msuTypePath.ToLower().EndsWith(".yml")) && File.Exists(msuTypePath))
+            {
+                using var yamlFile = new FileStream(msuTypePath, FileMode.Open);
+                msuTypeService.LoadMsuTypes(yamlFile);
+            }
+            else
+            {
+                msuTypeService.LoadMsuTypes(msuTypePath);
+            }
+        }
+    }
+
+    private MsuUserOptions InitializeUserOptions(MsuRandomizerInitializationRequest request, MsuAppSettings msuAppSettings)
+    {
+        var basePath = string.IsNullOrWhiteSpace(request.UserOptionsPath)
+            ? msuAppSettings.UserOptionsFilePath
+            : request.UserOptionsPath;
         
+        if (string.IsNullOrWhiteSpace(basePath))
+        {
+            throw new InvalidOperationException("Missing User Settings Path configuration");
+        }
+        
+        var userOptionsPath = Environment.ExpandEnvironmentVariables(basePath);
+        var userOptionsService = _serviceProvider.GetRequiredService<IMsuUserOptionsService>();
+        return userOptionsService.Initialize(userOptionsPath);
     }
 }

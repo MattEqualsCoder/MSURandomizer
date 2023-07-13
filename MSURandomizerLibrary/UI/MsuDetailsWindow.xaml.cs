@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using MSURandomizerLibrary.Models;
 
 namespace MSURandomizerLibrary.UI;
 

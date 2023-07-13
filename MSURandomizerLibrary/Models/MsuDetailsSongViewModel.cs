@@ -1,6 +1,6 @@
 ﻿using MSURandomizerLibrary.Configs;
 
-namespace MSURandomizerLibrary.UI;
+namespace MSURandomizerLibrary.Models;
 
 public class MsuDetailsSongViewModel
 {

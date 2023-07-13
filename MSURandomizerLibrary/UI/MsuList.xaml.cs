@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibrary.UI;

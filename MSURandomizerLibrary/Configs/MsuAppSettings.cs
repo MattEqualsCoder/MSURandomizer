@@ -9,7 +9,7 @@ public class MsuAppSettings
     public string Smz3MsuTypeName { get; set; } = "";
     public string Smz3LegacyMsuTypeName { get; set; } = "";
 
-    public string UserSettingsFilePath { get; set; } = "";
+    public string UserOptionsFilePath { get; set; } = "";
     public string MsuTypeFilePath { get; set; } = "";
     public int ContinuousReshuffleSeconds { get; set; } = 60;
 

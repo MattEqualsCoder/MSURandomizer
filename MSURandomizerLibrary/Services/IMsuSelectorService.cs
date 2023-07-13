@@ -1,107 +1,95 @@
-﻿using System.Collections.Generic;
-using MSURandomizerLibrary.Configs;
+﻿using MSURandomizerLibrary.Models;
 
 namespace MSURandomizerLibrary.Services;
 
 /// <summary>
-/// Service for selecting MSUs
+/// Service for selecting, converting, and creating generated MSUs
 /// </summary>
 public interface IMsuSelectorService
 {
     /// <summary>
-    /// Copies an MSU to a path
+    /// Copies an MSU to a path as a given MSU type.
+    /// <br></br>
+    /// <para>Accepts the following request properties:</para>
+    /// <list type="bullet">
+    /// <item>Msu/MsuPath - The MSU or path of the MSU to assign</item>
+    /// <item>OutputMsuType/OutputMsuTypeName - The MSU type or name of the MSU type to assign the MSU to</item>
+    /// <item>OutputPath - Where to save the MSU to</item>
+    /// <item>EmptyFolder - If the output directory should be emptied of MSU related files</item>
+    /// <item>OpenFolder - If the output directory should be opened in Windows Explorer</item>
+    /// <item>PrevMsu - The previous MSU for pulling the last tracks from if a track can't be saved</item>
+    /// </list>
     /// </summary>
-    /// <param name="msu">The MSU to save</param>
-    /// <param name="msuType">The type to save the MSU as</param>
-    /// <param name="outputPath">The path to save the MSU to</param>
-    /// <returns>The saved MSU</returns>
-    public Msu AssignMsu(Msu msu, MsuType msuType, string outputPath);
-
-    /// <summary>
-    /// Picks a random MSU based on the user options
-    /// </summary>
-    /// <param name="emptyFolder">If all MSU related files should be deleted from the destination first</param>
-    /// <returns>The saved MSU</returns>
-    public Msu PickRandomMsu(bool emptyFolder = true);
-    
-    /// <summary>
-    /// Picks a random MSU from a list of provided MSUs
-    /// </summary>
-    /// <param name="msuPaths">The list of paths of the MSUs to pick from</param>
-    /// <param name="msuTypeName">The name of the MSU type to save the generated MSU as</param>
-    /// <param name="outputPath">The path to save the MSU to</param>
-    /// <param name="emptyFolder">If all MSU related files should be deleted from the destination first</param>
-    /// <param name="openFolder">If the folder should be opened in file explorer</param>
-    /// <returns>The saved MSU</returns>
-    public Msu PickRandomMsu(ICollection<string> msuPaths, string msuTypeName, string outputPath, bool emptyFolder = true, bool openFolder = false);
+    /// <returns>The response object with the saved MSU if successful</returns>
+    public MsuSelectorResponse AssignMsu(MsuSelectorRequest request);
 
     /// <summary>
     /// Picks a random MSU from a list of provided MSUs
+    /// <br></br>
+    /// <para>Accepts the following request properties:</para>
+    /// <list type="bullet">
+    /// <item>Msus/MsuPaths - The list of MSUs or paths of the MSUs to pick between</item>
+    /// <item>OutputMsuType/OutputMsuTypeName - The MSU type or name of the MSU type to be generated</item>
+    /// <item>OutputPath - Where to save the MSU to</item>
+    /// <item>EmptyFolder - If the output directory should be emptied of MSU related files</item>
+    /// <item>OpenFolder - If the output directory should be opened in Windows Explorer</item>
+    /// <item>PrevMsu - The previous MSU for pulling the last tracks from if a track can't be saved</item>
+    /// </list>
     /// </summary>
-    /// <param name="msus">The list of MSUs to pick from</param>
-    /// <param name="msuType">The type to save the generated MSU as</param>
-    /// <param name="outputPath">The path to save the MSU to</param>
-    /// <param name="emptyFolder">If all MSU related files should be deleted from the destination first</param>
-    /// <param name="openFolder">If the folder should be opened in file explorer</param>
-    /// <returns>The saved MSU</returns>
-    public Msu PickRandomMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, bool emptyFolder = true, bool openFolder = false);
+    /// <returns>The response object with the saved MSU if successful</returns>
+    public MsuSelectorResponse PickRandomMsu(MsuSelectorRequest request);
 
     /// <summary>
-    /// Creates a shuffled MSU based on the user options
-    /// </summary>
-    /// <param name="prevMsu">The previous generated MSU for to pull locked track information from</param>
-    /// <param name="emptyFolder">If all MSU related files should be deleted from the destination first</param>
-    /// <returns>The saved MSU</returns>
-    public Msu CreateShuffledMsu(Msu? prevMsu = null, bool emptyFolder = true);
-    
-    /// <summary>
     /// Creates a shuffled MSU from a list of provided MSUs
+    /// <br></br>
+    /// <para>Accepts the following request properties:</para>
+    /// <list type="bullet">
+    /// <item>Msus/MsuPaths - The list of MSUs or paths of the MSUs to pick between</item>
+    /// <item>OutputMsuType/OutputMsuTypeName - The MSU type or name of the MSU type to be generated</item>
+    /// <item>OutputPath - Where to save the MSU to</item>
+    /// <item>EmptyFolder - If the output directory should be emptied of MSU related files</item>
+    /// <item>OpenFolder - If the output directory should be opened in Windows Explorer</item>
+    /// <item>PrevMsu - The previous MSU for pulling the last tracks from if a track can't be saved</item>
+    /// </list>
     /// </summary>
-    /// <param name="msuPaths">The list of paths of the MSUs to pick from</param>
-    /// <param name="msuTypeName">The name of the MSU type to save the generated MSU as</param>
-    /// <param name="outputPath">The path to save the MSU to</param>
-    /// <param name="prevMsu">The previous generated MSU for to pull locked track information from</param>
-    /// <param name="emptyFolder">If all MSU related files should be deleted from the destination first</param>
-    /// <param name="avoidDuplicates">Avoid picking the same track multiple times, if possible</param>
-    /// <param name="openFolder">If the folder should be opened in file explorer</param>
-    /// <returns>The saved MSU</returns>
-    public Msu CreateShuffledMsu(ICollection<string> msuPaths, string msuTypeName, string outputPath, Msu? prevMsu = null, bool emptyFolder = true, bool avoidDuplicates = true, bool openFolder = false);
-    
-    /// <summary>
-    /// Creates a shuffled MSU from a list of provided MSUs
-    /// </summary>
-    /// <param name="msus">The list of MSUs to pick from</param>
-    /// <param name="msuType">The type to save the generated MSU as</param>
-    /// <param name="outputPath">The path to save the MSU to</param>
-    /// <param name="prevMsu">The previous generated MSU for to pull locked track information from</param>
-    /// <param name="emptyFolder">If all MSU related files should be deleted from the destination first</param>
-    /// <param name="avoidDuplicates">Avoid picking the same track multiple times, if possible</param>
-    /// <param name="openFolder">If the folder should be opened in file explorer</param>
-    /// <returns>The saved MSU</returns>
-    public Msu CreateShuffledMsu(ICollection<Msu> msus, MsuType msuType, string outputPath, Msu? prevMsu = null, bool emptyFolder = true, bool avoidDuplicates = true, bool openFolder = false);
+    /// <returns>The response object with the saved MSU if successful</returns>
+    public MsuSelectorResponse CreateShuffledMsu(MsuSelectorRequest request);
 
     /// <summary>
     /// Converts an MSU to a given MSU type
+    /// <br></br>
+    /// <para>Accepts the following request properties:</para>
+    /// <list type="bullet">
+    /// <item>Msu/MsuPath - The MSU or path of the MSU to convert</item>
+    /// <item>OutputMsuType/OutputMsuTypeName - The MSU type or name of the MSU type to convert the MSU to</item>
+    /// </list>
     /// </summary>
-    /// <param name="msu">The MSU to convert</param>
-    /// <param name="msuType">The type to convert the MSU to</param>
-    /// <returns>The converted MSU</returns>
-    public Msu ConvertMsu(Msu msu, MsuType msuType);
+    /// <returns>The response object with the converted MSU if successful</returns>
+    public MsuSelectorResponse ConvertMsu(MsuSelectorRequest request);
+    
+    /// <summary>
+    /// Converts a series of MSUs to a given MSU type
+    /// <para>Accepts the following request properties:</para>
+    /// <list type="bullet">
+    /// <item>Msus/MsuPaths - The list of MSUs or paths of the MSUs to convert</item>
+    /// <item>OutputMsuType/OutputMsuTypeName - The MSU type or name of the MSU type to convert the MSUs to</item>
+    /// </list>
+    /// </summary>
+    /// <returns>The response object with the converted MSUs if successful</returns>
+    public MsuSelectorResponse ConvertMsus(MsuSelectorRequest request);
 
     /// <summary>
     /// Saves an MSU to a given location
+    /// <br></br>
+    /// <para>Accepts the following request properties:</para>
+    /// <list type="bullet">
+    /// <item>Msu/MsuPath - The MSU or path of the MSU to assign</item>
+    /// <item>OutputPath - Where to save the MSU to</item>
+    /// <item>EmptyFolder - If the output directory should be emptied of MSU related files</item>
+    /// <item>OpenFolder - If the output directory should be opened in Windows Explorer</item>
+    /// <item>PrevMsu - The previous MSU for pulling the last tracks from if a track can't be saved</item>
+    /// </list>
     /// </summary>
-    /// <param name="msu">The MSU to save</param>
-    /// <param name="outputPath">The path to save the MSU to</param>
-    /// <param name="prevMsu">The previous generated MSU for to pull locked track information from</param>
-    /// <returns>The saved MSU</returns>
-    public Msu SaveMsu(Msu msu, string outputPath, Msu? prevMsu = null);
-
-    /// <summary>
-    /// Converts a series of MSUs to a given MSU type
-    /// </summary>
-    /// <param name="msus">The series of MSUs to convert</param>
-    /// <param name="msuType">The type to convert the MSUs to</param>
-    /// <returns>The collection of converted MSUs</returns>
-    public ICollection<Msu> ConvertMsus(ICollection<Msu> msus, MsuType msuType);
+    /// <returns>The response object with the saved MSU if successful</returns>
+    public MsuSelectorResponse SaveMsu(MsuSelectorRequest request);
 }

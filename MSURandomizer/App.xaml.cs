@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary;
+using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
 using MSURandomizerLibrary.UI;
 
@@ -49,13 +50,16 @@ namespace MSURandomizer
                 throw new InvalidOperationException("Missing RandomizerSettings stream");
             }
 
-            var msuTypeFilePathOverride = "";
-            var userSettingsFilePathOverride = "";
+            var msuInitializationRequest = new MsuRandomizerInitializationRequest
+            {
+                MsuAppSettingsStream = settingsStream
+            };
+
             #if DEBUG
-            msuTypeFilePathOverride = GetConfigDirectory();
-            userSettingsFilePathOverride = "%LocalAppData%\\MSURandomizer\\msu-user-settings-debug.yml";
+            msuInitializationRequest.MsuTypeConfigPath = GetConfigDirectory();
+            msuInitializationRequest.UserOptionsPath = "%LocalAppData%\\MSURandomizer\\msu-user-settings-debug.yml";
             #endif
-            _host.Services.GetRequiredService<IMsuRandomizerInitializationService>().Initialize(settingsStream, msuTypeFilePathOverride, userSettingsFilePathOverride);
+            _host.Services.GetRequiredService<IMsuRandomizerInitializationService>().Initialize(msuInitializationRequest);
             _host.Services.GetRequiredService<MsuWindow>().Show();
         }
         

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using MSURandomizerLibrary.Configs;
 
@@ -53,4 +54,18 @@ public interface IMsuLookupService
     /// </summary>
     /// <param name="msu">The MSU that was updated</param>
     public void RefreshMsu(Msu msu);
+
+    /// <summary>
+    /// Retrieves MSUs that match the given paths
+    /// </summary>
+    /// <param name="paths">The paths to search for</param>
+    /// <returns>The collection of found MSUS</returns>
+    public ICollection<Msu> GetMsusByPath(ICollection<string>? paths);
+    
+    /// <summary>
+    /// Retrieves an MSU that match the given path
+    /// </summary>
+    /// <param name="path">The path to search for</param>
+    /// <returns>The found MSU</returns>
+    public Msu? GetMsuByPath(string? path);
 }

@@ -4,10 +4,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:ui="clr-namespace:MSURandomizerLibrary.UI"
+        xmlns:models="clr-namespace:MSURandomizerLibrary.Models"
         mc:Ignorable="d"
         Title="{Binding Name}" Height="450" Width="800">
     <Window.DataContext>
-        <ui:MsuDetailsViewModel></ui:MsuDetailsViewModel>
+        <models:MsuDetailsViewModel></models:MsuDetailsViewModel>
     </Window.DataContext>
     <Window.Resources>
         <ResourceDictionary Source="../Themes/Generic.xaml" />

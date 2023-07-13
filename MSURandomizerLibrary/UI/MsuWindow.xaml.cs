@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibrary.UI;
@@ -118,7 +119,13 @@ public partial class MsuWindow
         
         DataContext.SelectedMsus = msus.Select(x => x.Path).ToList();
         _msuUserOptionsService.Save();
-        _msuSelectorService.PickRandomMsu();
+        var response = _msuSelectorService.PickRandomMsu(new MsuSelectorRequest()
+        {
+            EmptyFolder = true,
+            Msus = msus,
+            OutputMsuType = msuType
+        });
+        ShowSelectorResponseMessage(response);
     }
 
     public MsuList MsuList
@@ -140,7 +147,13 @@ public partial class MsuWindow
 
         DataContext.SelectedMsus = msus.Select(x => x.Path).ToList();
         _msuUserOptionsService.Save();
-        _msuSelectorService.CreateShuffledMsu();
+        var response = _msuSelectorService.CreateShuffledMsu(new MsuSelectorRequest()
+        {
+            EmptyFolder = true,
+            Msus = msus,
+            OutputMsuType = msuType
+        });
+        ShowSelectorResponseMessage(response);
     }
     
     private void ContinuousMsuButton_OnClick(object sender, RoutedEventArgs e)
@@ -204,6 +217,16 @@ public partial class MsuWindow
         if (FilterComboBox.SelectedItem is not MsuFilter filter) return;
         DataContext.Filter = filter;
         MsuList.MsuFilter = filter;
+    }
+
+    private void ShowSelectorResponseMessage(MsuSelectorResponse response)
+    {
+        if (!string.IsNullOrWhiteSpace(response.Message))
+        {
+            var title = response.Successful ? "Warning" : "Error";
+            var icon = response.Successful ? MessageBoxImage.Warning : MessageBoxImage.Error;
+            MessageBox.Show(this, response.Message, title, MessageBoxButton.OK, icon);
+        }
     }
 
     

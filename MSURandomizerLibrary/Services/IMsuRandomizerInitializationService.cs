@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using MSURandomizerLibrary.Models;
 
 namespace MSURandomizerLibrary.Services;
 
@@ -10,14 +11,6 @@ public interface IMsuRandomizerInitializationService
     /// <summary>
     /// Initializes required MSU randomizer services
     /// </summary>
-    /// <param name="randomizerSettingsPath">File path to the MSU randomizer settings file</param>
-    /// <param name="msuTypeFilePathOverride">Override for the location of the MSU types</param>
-    public void Initialize(string randomizerSettingsPath, string msuTypeFilePathOverride = "", string userSettingsFilePathOverride = "");
-
-    /// <summary>
-    /// Initializes required MSU randomizer services
-    /// </summary>
-    /// <param name="randomizerSettingsStream">Stream to the MSU randomizer settings file</param>
-    /// <param name="msuTypeFilePathOverride">Override for the location of the MSU types</param>
-    public void Initialize(Stream randomizerSettingsStream, string msuTypeFilePathOverride = "", string userSettingsFilePathOverride = "");
+    /// <param name="request">Details used for initializing required services</param>
+    public void Initialize(MsuRandomizerInitializationRequest request);
 }

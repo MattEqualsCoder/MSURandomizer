@@ -7,7 +7,7 @@
         ResizeMode="NoResize"
         Closed="Window_Closed"
         Loaded="MSUContinuousShuffleWindow_OnLoaded"
-        Title="Continuous Reshuffle" Height="120" Width="200">
+        Title="Continuous Reshuffle" Height="150" Width="250">
     <Window.Resources>
         <ResourceDictionary Source="../Themes/Generic.xaml" />
     </Window.Resources>
@@ -17,6 +17,6 @@
                 <Button x:Name="CancelButton" HorizontalAlignment="Center" Margin="0 0 0 0" Click="CancelButton_Click">_Stop</Button>
             </StackPanel>
         </Border>
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Name="MessageTextBlock">Waiting...</TextBlock>
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Name="MessageTextBlock" TextWrapping="Wrap">Waiting...</TextBlock>
     </DockPanel>
 </Window>

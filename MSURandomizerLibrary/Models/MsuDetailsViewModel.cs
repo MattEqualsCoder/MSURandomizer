@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using MSURandomizerLibrary.Configs;
 
-namespace MSURandomizerLibrary.UI;
+namespace MSURandomizerLibrary.Models;
 
 public class MsuDetailsViewModel : INotifyPropertyChanged
 {

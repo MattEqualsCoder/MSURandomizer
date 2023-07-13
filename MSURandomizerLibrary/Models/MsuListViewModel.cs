@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
 
-namespace MSURandomizerLibrary.UI;
+namespace MSURandomizerLibrary.Models;
 
 public sealed class MsuListViewModel : INotifyPropertyChanged
 {
