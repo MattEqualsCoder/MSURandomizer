@@ -187,7 +187,7 @@ internal class MsuLookupService : IMsuLookupService
             FileName = baseName,
             Path = msuPath,
             Tracks = tracks.ToList(),
-            Name = baseName,
+            Name = new DirectoryInfo(directory).Name,
         };
     }
 
@@ -274,7 +274,7 @@ internal class MsuLookupService : IMsuLookupService
             Path = msuPath,
             Tracks = tracks,
             MsuType = msuType,
-            Name = baseName,
+            Name = new DirectoryInfo(directory).Name,
         };
     }
 
