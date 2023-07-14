@@ -23,5 +23,6 @@ public interface IMsuDetailsService
     /// </summary>
     /// <param name="msu">The MSU to save the details for</param>
     /// <param name="outputPath">The path to save the YAML file to</param>
-    public void SaveMsuDetails(Msu msu, string outputPath);
+    /// <returns>If the write was successful or not</returns>
+    public bool SaveMsuDetails(Msu msu, string outputPath);
 }

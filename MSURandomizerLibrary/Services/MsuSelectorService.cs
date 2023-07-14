@@ -240,9 +240,17 @@ public class MsuSelectorService : IMsuSelectorService
                 MsuPath = msuPath
             }
         };
+
+        if (!WriteTrackFile(tracks, $"{outputDirectory}{Path.DirectorySeparatorChar}msu-randomizer-output.txt"))
+        {
+            warningMessage ??= "MSU generated successfully but unable to save msu-randomizer-output.txt file";
+        }
+
+        if (!_msuDetailsService.SaveMsuDetails(outputMsu, msuPath.Replace(".msu", ".yml")))
+        {
+            warningMessage ??= "MSU generated successfully but unable to save MSU details YAML file";
+        }
         
-        WriteTrackFile(tracks, $"{outputDirectory}{Path.DirectorySeparatorChar}msu-randomizer-output.txt");
-        _msuDetailsService.SaveMsuDetails(outputMsu, msuPath.Replace(".msu", ".yml"));
         var response = ValidateMsu(outputMsu);
 
         if (response.Successful && openFolder == true)
@@ -250,7 +258,7 @@ public class MsuSelectorService : IMsuSelectorService
             OpenMsuDirectory(outputMsu);
         }
 
-        if (warningMessage != null && !string.IsNullOrWhiteSpace(response.Message))
+        if (warningMessage != null && string.IsNullOrWhiteSpace(response.Message))
         {
             response.Message = warningMessage;
         }
@@ -293,13 +301,23 @@ public class MsuSelectorService : IMsuSelectorService
         };
     }
 
-    private static void WriteTrackFile(ICollection<Track> tracks, string path)
+    private bool WriteTrackFile(ICollection<Track> tracks, string path)
     {
-        var output = tracks
-            .OrderBy(x => x.Number)
-            .Select(x => $"{x.Number}: {x.OriginalPath}");
+        try
+        {
+            var output = tracks
+                .OrderBy(x => x.Number)
+                .Select(x => $"{x.Number}: {x.OriginalPath}");
         
-        File.WriteAllLines(path, output);
+            File.WriteAllLines(path, output);
+            return true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unable to write msu-randomizer.output.txt file to {Path}", path);
+            return false;
+        }
+        
     }
     
     private bool CreatePcmFile(string source, string destination)
@@ -374,7 +392,7 @@ public class MsuSelectorService : IMsuSelectorService
         var percentRequiredTracks = 1.0f * matchingRequiredTracks / msu.MsuType.RequiredTrackNumbers.Count;
         if (percentRequiredTracks < .9)
         {
-            message = "MSU generated successfully, but multiple required tracks are missing.";
+            message = "MSU generated successfully but multiple required tracks are missing.";
         }
 
         return new MsuSelectorResponse()

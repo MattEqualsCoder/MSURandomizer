@@ -141,7 +141,7 @@ public class MsuDetailsService : IMsuDetailsService
         }
     }
 
-    public void SaveMsuDetails(Msu msu, string outputPath)
+    public bool SaveMsuDetails(Msu msu, string outputPath)
     {
         var msuTrackDetails = msu.Tracks.OrderBy(x => x.Number).Select(x => new MsuDetailsTrack()
         {
@@ -162,9 +162,19 @@ public class MsuDetailsService : IMsuDetailsService
             PackVersion = 1,
             Tracks = msuTrackDetails
         };
+
+        try
+        {
+            var yaml = _serializer.Serialize(msuDetails);
+            File.WriteAllText(outputPath, yaml);
+            return true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unable to write MSU YAML details to {Path}", outputPath);
+            return false;
+        }
         
-        var yaml = _serializer.Serialize(msuDetails);
-        File.WriteAllText(outputPath, yaml);
     }
 
     private Msu? ParseSmz3MsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText)
