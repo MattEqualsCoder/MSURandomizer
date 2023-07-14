@@ -30,6 +30,10 @@ internal class MsuTypeConfig
         {
             foreach (var track in Tracks.Extended)
             {
+                if (track.Remap != null)
+                {
+                    track.Fallback = track.Remap.Value;
+                }
                 track.IsExtended = true;
                 track.IsIgnored = true;
                 FullTrackList.Add(track);
@@ -68,7 +72,7 @@ internal class MsuTypeConfig
                     Title = track.Title,
                     Name = track.Name,
                     NonLooping = track.NonLooping,
-                    Fallback = track.Fallback,
+                    Fallback = track.Fallback + copy.Modifier,
                     IsUnused = track.IsUnused,
                     IsExtended = track.IsExtended,
                     PairedTrack = track.PairedTrack + copy.Modifier,
@@ -118,6 +122,9 @@ internal class MsuTypeConfigTrack
     
     [JsonPropertyName("fallback")]
     public int Fallback { get; set; }
+    
+    [JsonPropertyName("remap")]
+    public int? Remap { get; set; }
     
     [JsonPropertyName("unused")]
     public bool IsUnused { get; set; }

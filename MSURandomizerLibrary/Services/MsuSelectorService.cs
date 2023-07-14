@@ -73,7 +73,7 @@ public class MsuSelectorService : IMsuSelectorService
         var tracks = convertedMsu.SelectMany(x => x.ValidTracks).ToList();
         var selectedTracks = new List<Track>();
         var selectedPaths = new List<string>();
-        foreach (var msuTypeTrack in msuType.Tracks)
+        foreach (var msuTypeTrack in msuType.Tracks.OrderBy(x => x.Number))
         {
             if (selectedTracks.Any(x => x.Number == msuTypeTrack.Number))
             {
@@ -90,6 +90,7 @@ public class MsuSelectorService : IMsuSelectorService
             {
                 continue;
             }
+
             selectedTracks.Add(track);
             selectedPaths.Add(track.Path);
 
@@ -186,23 +187,34 @@ public class MsuSelectorService : IMsuSelectorService
             using (File.Create(msuPath)) {}
         }
 
+        var selectedPaths = new Dictionary<int, string>();
         var tracks = new List<Track>();
         var allowAltTracks = msu.Settings.AllowAltTracks;
         string? warningMessage = null;
 
-        foreach (var trackNumber in msu.Tracks.Select(x => x.Number))
+        foreach (var trackNumber in msu.Tracks.Select(x => x.Number).Order())
         {
+            var msuTypeTrack = msu.SelectedMsuType?.Tracks.FirstOrDefault(x => x.Number == trackNumber);
             var track = allowAltTracks ? msu.Tracks.Where(x => x.Number == trackNumber).Random(_random)! : msu.Tracks.FirstOrDefault(x => x.Number == trackNumber && !x.IsAlt);
             track ??= msu.Tracks.First(x => x.Number == trackNumber);
             var source = track.Path;
             var destination = $"{outputDirectory}{Path.DirectorySeparatorChar}{outputFilename}-{trackNumber}.pcm";
-            var trackName = msu.SelectedMsuType?.Tracks.FirstOrDefault(x => x.Number == trackNumber)?.Name ?? track.TrackName;
+            var trackName = msuTypeTrack?.Name ?? track.TrackName;
+
+            // If the fallback to the track is the same file, we can skip it
+            if (msuTypeTrack?.Fallback >= 0 && selectedPaths.TryGetValue(msuTypeTrack.Fallback, out var fallbackPath) && fallbackPath == source)
+            {
+                selectedPaths[trackNumber] = source;
+                continue;
+            }
+            
             try
             {
                 if (CreatePcmFile(source, destination))
                 {
                     _logger.LogInformation("Created PCM {Source} => {Destination}", source, destination);
-                    tracks.Add(new Track(track, number: trackNumber, path: destination, trackName: trackName));    
+                    tracks.Add(new Track(track, number: trackNumber, path: destination, trackName: trackName));
+                    selectedPaths[trackNumber] = source;
                 }
                 else
                 {
@@ -228,7 +240,7 @@ public class MsuSelectorService : IMsuSelectorService
 
         var outputMsu = new Msu
         {
-            MsuType = msu.MsuType,
+            MsuType = msu.SelectedMsuType,
             Creator = msu.Creator,
             Name = msu.Name,
             FileName = new FileInfo(msuPath).Name,
