@@ -63,6 +63,7 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
                 throw new InvalidOperationException("Missing MSU Type configuration");
             }
             
+            msuTypePath = Environment.ExpandEnvironmentVariables(msuTypePath);
             if ((msuTypePath.ToLower().EndsWith(".yaml") || msuTypePath.ToLower().EndsWith(".yml")) && File.Exists(msuTypePath))
             {
                 using var yamlFile = new FileStream(msuTypePath, FileMode.Open);

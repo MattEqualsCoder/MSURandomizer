@@ -221,9 +221,14 @@ internal class MsuLookupService : IMsuLookupService
                 continue;
             }
 
-            var path = pcmFiles.First(x =>
+            var path = pcmFiles.FirstOrDefault(x =>
                 x.Equals($"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm",
                     StringComparison.OrdinalIgnoreCase));
+
+            if (path == null)
+            {
+                continue;
+            }
 
             // Add the base track
             tracks.Add(new Track
@@ -282,7 +287,7 @@ internal class MsuLookupService : IMsuLookupService
             .Select(int.Parse)
             .ToHashSet();
         
-        var matchingMsus = new List<(MsuType Type, float Confidence, int ValidTracks)>();
+        var matchingMsus = new List<(MsuType Type, float PrimaryConfidence, int PrimaryCount, float SecondaryConfidence, int SecondaryCount)>();
         
         var allowedMsuTypes = _msuTypeService.MsuTypes.ToList();
         if (msuTypeFilter != null && !_msuAppSettings.Smz3MsuTypes.Contains(msuTypeFilter.Name))
@@ -298,19 +303,42 @@ internal class MsuLookupService : IMsuLookupService
             }
             var requiredConfidence = 1.0f * msuType.RequiredTrackNumbers.Intersect(trackNumbers).Count() / msuType.RequiredTrackNumbers.Count;
             var allConfidence = 1.0f * msuType.ValidTrackNumbers.Intersect(trackNumbers).Count() / msuType.ValidTrackNumbers.Count;
-            var confidence = Math.Max(requiredConfidence, allConfidence);
-            if (confidence <= .85)
+            var requiredCount = msuType.RequiredTrackNumbers.Intersect(trackNumbers).Count();
+            var allCount = msuType.ValidTrackNumbers.Intersect(trackNumbers).Count();
+            float primaryConfidence;
+            float secondaryConfidence;
+            int primaryCount;
+            int secondaryCount;
+
+            if (allConfidence >= requiredConfidence)
+            {
+                primaryConfidence = allConfidence;
+                secondaryConfidence = requiredConfidence;
+                primaryCount = allCount;
+                secondaryCount = requiredCount;
+            }
+            else
+            {
+                primaryConfidence = requiredConfidence;
+                secondaryConfidence = allConfidence;
+                primaryCount = requiredCount;
+                secondaryCount = allCount;
+            }
+
+            if (primaryConfidence <= 0.85f)
             {
                 continue;
             }
-            var validTracks = msuType.ValidTrackNumbers.Intersect(trackNumbers).Count();
-            matchingMsus.Add((msuType, confidence, validTracks));
+            
+            matchingMsus.Add((msuType, primaryConfidence, primaryCount, secondaryConfidence, secondaryCount));
         }
         
         var matchedType = matchingMsus
             .OrderByDescending(x => _msuAppSettings.Smz3MsuTypes.Contains(x.Type.Name))
-            .ThenByDescending(x => x.Confidence)
-            .ThenByDescending(x => x.ValidTracks)
+            .ThenByDescending(x => x.PrimaryConfidence)
+            .ThenByDescending(x => x.PrimaryCount)
+            .ThenByDescending(x => x.SecondaryConfidence)
+            .ThenByDescending(x => x.SecondaryCount)
             .Select(x => x.Type)
             .FirstOrDefault();
         

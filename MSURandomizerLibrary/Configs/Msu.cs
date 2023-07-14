@@ -27,6 +27,7 @@ public class Msu
         return (filter == MsuFilter.All ||
                 (filter == MsuFilter.Compatible && SelectedMsuType?.IsCompatibleWith(type) == true) ||
                 (filter == MsuFilter.Exact && SelectedMsuType?.IsExactMatchWith(type) == true)) &&
-               (string.IsNullOrEmpty(path) || Path.StartsWith(path));
+               (string.IsNullOrEmpty(path) || Path.StartsWith(path)) &&
+               Tracks.Count >= 1;
     }
 }
