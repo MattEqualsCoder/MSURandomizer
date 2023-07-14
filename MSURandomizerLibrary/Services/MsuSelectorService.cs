@@ -188,6 +188,7 @@ public class MsuSelectorService : IMsuSelectorService
 
         var tracks = new List<Track>();
         var allowAltTracks = msu.Settings.AllowAltTracks;
+        string? warningMessage = null;
 
         foreach (var trackNumber in msu.Tracks.Select(x => x.Number))
         {
@@ -198,23 +199,30 @@ public class MsuSelectorService : IMsuSelectorService
             var trackName = msu.SelectedMsuType?.Tracks.FirstOrDefault(x => x.Number == trackNumber)?.Name ?? track.TrackName;
             try
             {
-                CreatePcmFile(source, destination);
-                _logger.LogInformation("Created PCM {Source} => {Destination}", source, destination);
-                tracks.Add(new Track(track, number: trackNumber, path: destination, trackName: trackName));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                track = prevMsu?.Tracks.FirstOrDefault(x => x.Path == destination);
-                if (track != null)
+                if (CreatePcmFile(source, destination))
                 {
-                    tracks.Add(new Track(track));
-                    _logger.LogInformation("Used previous PCM track {Destination}", destination);
+                    _logger.LogInformation("Created PCM {Source} => {Destination}", source, destination);
+                    tracks.Add(new Track(track, number: trackNumber, path: destination, trackName: trackName));    
                 }
                 else
                 {
-                    _logger.LogWarning("Could not create PCM {Source} => {Destination}", source, destination);
+                    track = prevMsu?.Tracks.FirstOrDefault(x => x.Path == destination);
+                    if (track != null)
+                    {
+                        tracks.Add(new Track(track));
+                        _logger.LogInformation("Used previous PCM track {Destination}", destination);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Could not create PCM {Source} => {Destination}", source, destination);
+                    }
                 }
+                
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unable to save PCM file {Source} to {Destination}", source, destination);
+                warningMessage = "One or more PCM files failed to save. Verify space and permissions of destination.";
             }
         }
 
@@ -240,6 +248,11 @@ public class MsuSelectorService : IMsuSelectorService
         if (response.Successful && openFolder == true)
         {
             OpenMsuDirectory(outputMsu);
+        }
+
+        if (warningMessage != null && !string.IsNullOrWhiteSpace(response.Message))
+        {
+            response.Message = warningMessage;
         }
 
         return response;
@@ -289,7 +302,7 @@ public class MsuSelectorService : IMsuSelectorService
         File.WriteAllLines(path, output);
     }
     
-    private static void CreatePcmFile(string source, string destination)
+    private bool CreatePcmFile(string source, string destination)
     {
         if (File.Exists(destination))
         {
@@ -299,7 +312,8 @@ public class MsuSelectorService : IMsuSelectorService
             }
             catch
             {
-                throw new InvalidOperationException($"File {destination} could not be deleted");
+                _logger.LogInformation("File {Destination} could not be deleted", destination);
+                return false;
             }
         }
         
@@ -307,6 +321,8 @@ public class MsuSelectorService : IMsuSelectorService
             NativeMethods.CreateHardLink(destination, source, IntPtr.Zero);
         else
             File.Copy(source, destination);
+
+        return true;
     }
 
     private void EmptyFolder(string path)
