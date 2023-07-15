@@ -285,7 +285,7 @@ public class MsuSelectorService : IMsuSelectorService
 
     private Msu InternalConvertMsu(Msu msu, MsuType msuType)
     {
-        if (msu.MsuTypeName == msuType.Name && !msu.Settings.AllowAltTracks)
+        if (msu.MsuTypeName == msuType.DisplayName && !msu.Settings.AllowAltTracks)
         {
             return msu;
         }

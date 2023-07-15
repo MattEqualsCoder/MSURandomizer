@@ -131,7 +131,7 @@ public class MsuDetailsService : IMsuDetailsService
 
         // The YAML can come in the form of SMZ3 specific and a generic format. Try to detect which format it's in
         // and deserialize it accordingly
-        if ((msuType.Name == _msuAppSettings.Smz3MsuTypeName || msuType.Name == _msuAppSettings.Smz3LegacyMsuTypeName) && yamlText.Contains("light_world") && yamlText.Contains("samus_fanfare"))
+        if ((msuType.DisplayName == _msuAppSettings.Smz3MsuTypeName || msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName) && yamlText.Contains("light_world") && yamlText.Contains("samus_fanfare"))
         {
             return ParseSmz3MsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText);
         }
@@ -186,7 +186,7 @@ public class MsuDetailsService : IMsuDetailsService
             {
                 return null;
             }
-            var tracks = GetSmz3TrackDetails(msuDetails, msuDirectory, msuBaseName, msuType.Name.Contains("Legacy"));
+            var tracks = GetSmz3TrackDetails(msuDetails, msuDirectory, msuBaseName, msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName);
             return new Msu()
             {
                 FolderName = new DirectoryInfo(msuDirectory).Name,

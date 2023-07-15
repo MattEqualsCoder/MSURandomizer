@@ -65,16 +65,16 @@ public partial class MsuWindow
         var availableMsuTypes = msus.Select(x => x.SelectedMsuType).Distinct().Where(x => x is { Selectable: true }).Cast<MsuType>();
         
         // If we have SMZ3 legacy, make sure SMZ3 is added to the dropdown
-        if (msus.Select(x => x.SelectedMsuType).Any(x => x is { Selectable: false} && x.Name == _msuAppSettings.Smz3LegacyMsuTypeName) && availableMsuTypes.All(x => x.Name != _msuAppSettings.Smz3MsuTypeName))
+        if (msus.Select(x => x.SelectedMsuType).Any(x => x is { Selectable: false} && x.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName) && availableMsuTypes.All(x => x.DisplayName != _msuAppSettings.Smz3MsuTypeName))
         {
-            availableMsuTypes = availableMsuTypes.Append(_msuTypeService.GetMsuType(_msuAppSettings.Smz3MsuTypeName)!).OrderBy(x => x.Name);
+            availableMsuTypes = availableMsuTypes.Append(_msuTypeService.GetMsuType(_msuAppSettings.Smz3MsuTypeName)!).OrderBy(x => x.DisplayName);
         }
         
-        MsuTypesComboBox.ItemsSource = availableMsuTypes.Select(x => x.Name).ToList();
+        MsuTypesComboBox.ItemsSource = availableMsuTypes.Select(x => x.DisplayName).ToList();
         MsuTypesComboBox.IsEnabled = availableMsuTypes.Any();
-        if (availableMsuTypes.Any(x => x.Name == DataContext.OutputMsuType))
+        if (availableMsuTypes.Any(x => x.DisplayName == DataContext.OutputMsuType))
         {
-            MsuTypesComboBox.SelectedItem = availableMsuTypes.First(x => x.Name == DataContext.OutputMsuType).Name;
+            MsuTypesComboBox.SelectedItem = availableMsuTypes.First(x => x.DisplayName == DataContext.OutputMsuType).DisplayName;
         }
         else
         {
@@ -180,7 +180,7 @@ public partial class MsuWindow
     private void MsuTypesComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var msuType = SelectedMsuType;
-        DataContext.OutputMsuType = msuType?.Name;
+        DataContext.OutputMsuType = msuType?.DisplayName;
         MsuList.TargetMsuType = msuType;
         MsuList.BasePath = msuType != null && DataContext.MsuTypePaths.TryGetValue(msuType, out string? path) && !string.IsNullOrEmpty(path)
             ? path
@@ -195,7 +195,7 @@ public partial class MsuWindow
             
         // If any of the paths were modified, look up the MSUs again and refresh the list
         _msuLookupService.LookupMsus(DataContext.DefaultMsuPath, DataContext.MsuTypePaths);  
-        DataContext.OutputMsuType = SelectedMsuType?.Name;
+        DataContext.OutputMsuType = SelectedMsuType?.DisplayName;
         MsuList.TargetMsuType = SelectedMsuType;
         MsuList.BasePath = SelectedMsuType != null && DataContext.MsuTypePaths.TryGetValue(SelectedMsuType, out var path) && !string.IsNullOrEmpty(path)
             ? path

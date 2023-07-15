@@ -82,12 +82,12 @@ internal class MsuTypeService : IMsuTypeService
 
     public string GetMsuTypeName(MsuType? msuType)
     {
-        return msuType?.Name ?? "Unknown";
+        return msuType?.DisplayName ?? "Unknown";
     }
     
     public MsuType? GetMsuType(string? name)
     {
-        return MsuTypes.FirstOrDefault(x => x.Name == name);
+        return MsuTypes.FirstOrDefault(x => x.DisplayName == name);
     }
 
     private void FinalizeConfigs(IEnumerable<MsuTypeConfig> configs)
@@ -114,11 +114,11 @@ internal class MsuTypeService : IMsuTypeService
         foreach (var config in configs.Where(x => x.CanCopy))
         {
             var msuName = _msuAppSettings.GetMsuName(config.Name);
-            var msuType = _msuTypes.First(x => x.Name == msuName);
+            var msuType = _msuTypes.First(x => x.DisplayName == msuName);
             foreach (var copyDetails in config.Copy!)
             {
                 var otherConfig = configs.First(x => x.Path == copyDetails.Msu || x.Name == copyDetails.Msu);
-                var otherMsuType = _msuTypes.First(x => x.Name == _msuAppSettings.GetMsuName(otherConfig.Name));
+                var otherMsuType = _msuTypes.First(x => x.DisplayName == _msuAppSettings.GetMsuName(otherConfig.Name));
                 msuType.Conversions[otherMsuType] = x => x + copyDetails.Modifier;
                 otherMsuType.Conversions[msuType] = x => x - copyDetails.Modifier;
             }
@@ -126,14 +126,14 @@ internal class MsuTypeService : IMsuTypeService
             foreach (var exactMatch in config.Meta.ExactMatches)
             {
                 var otherConfig = configs.First(x => x.Path == exactMatch || x.Name == exactMatch);
-                var otherMsuType = _msuTypes.First(x => x.Name == _msuAppSettings.GetMsuName(otherConfig.Name));
+                var otherMsuType = _msuTypes.First(x => x.DisplayName == _msuAppSettings.GetMsuName(otherConfig.Name));
                 msuType.ExactMatches.Add(otherMsuType);
                 otherMsuType.ExactMatches.Add(msuType);
             }
         }
 
-        var smz3 = _msuTypes.First(x => x.Name == _msuAppSettings.Smz3MsuTypeName);
-        var smz3Old = _msuTypes.First(x => x.Name == _msuAppSettings.Smz3LegacyMsuTypeName);
+        var smz3 = _msuTypes.First(x => x.DisplayName == _msuAppSettings.Smz3MsuTypeName);
+        var smz3Old = _msuTypes.First(x => x.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName);
         
         smz3.Conversions[smz3Old] = x =>
         {
@@ -171,7 +171,8 @@ internal class MsuTypeService : IMsuTypeService
 
         return new MsuType()
         {
-            Name = _msuAppSettings.GetMsuName(config.Name),
+            Name = config.Name,
+            DisplayName = _msuAppSettings.GetMsuName(config.Name),
             Selectable = config.Meta.Selectable != false,
             Tracks = tracks,
             RequiredTrackNumbers = tracks.Where(x => !x.IsIgnored).Select(x => x.Number).ToHashSet(),

@@ -129,7 +129,7 @@ public class MsuDetailsViewModel : INotifyPropertyChanged
 
         msu.Settings.Creator = Creator != msu.Creator ? Creator : null;
 
-        msu.Settings.MsuTypeName = type?.Name != msu.MsuType?.Name ? type?.Name : null;
+        msu.Settings.MsuTypeName = type?.DisplayName != msu.MsuType?.DisplayName ? type?.DisplayName : null;
         msu.Settings.MsuType = type;
 
         msu.Settings.AllowAltTracks = _allowAltTracks;

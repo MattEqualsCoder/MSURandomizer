@@ -72,7 +72,7 @@ public class MsuUiFactory : IMsuUiFactory
 
     public void OpenMsuDetailsWindow(Msu msu)
     {
-        var msuTypeNames = _msuTypeService.MsuTypes.OrderBy(x => x.Name).Select(x => x.Name).ToList();
+        var msuTypeNames = _msuTypeService.MsuTypes.OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToList();
         msuTypeNames.Insert(0, _msuTypeService.GetMsuTypeName(null));
         var viewModel = new MsuDetailsViewModel(msu, msuTypeNames);
         var window = _serviceProvider.GetRequiredService<MsuDetailsWindow>();

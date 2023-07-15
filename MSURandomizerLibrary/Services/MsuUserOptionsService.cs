@@ -41,7 +41,7 @@ public class MsuUserOptionsService : IMsuUserOptionsService
         
         foreach (var msuTypeDirectory in _options.MsuTypeNamePaths)
         {
-            var msuType = _msuTypeService.MsuTypes.FirstOrDefault(x => x.Name == msuTypeDirectory.Key);
+            var msuType = _msuTypeService.MsuTypes.FirstOrDefault(x => x.DisplayName == msuTypeDirectory.Key);
             if (msuType != null)
             {
                 _options.MsuTypePaths[msuType] = msuTypeDirectory.Value;

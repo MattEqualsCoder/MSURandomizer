@@ -18,7 +18,7 @@ public class Msu
     public string DisplayCreator => string.IsNullOrWhiteSpace(Settings.Creator) ? Creator ?? "" : Settings.Creator;
     public MsuType? SelectedMsuType => Settings.MsuType ?? MsuType; 
     public string FullName => DisplayName + (string.IsNullOrWhiteSpace(DisplayCreator) ? "" : $" by {DisplayCreator}");
-    public string MsuTypeName => string.IsNullOrWhiteSpace(SelectedMsuType?.Name) ? "Unknown" : SelectedMsuType.Name;
+    public string MsuTypeName => string.IsNullOrWhiteSpace(SelectedMsuType?.DisplayName) ? "Unknown" : SelectedMsuType.DisplayName;
     public ICollection<Track> ValidTracks => Tracks.Where(x => Settings.AllowAltTracks || !x.IsAlt).ToList();
     public int NumUniqueTracks => Tracks.Select(x => x.Path).Distinct().Count();
 

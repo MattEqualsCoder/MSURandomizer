@@ -74,7 +74,7 @@ internal class MsuLookupService : IMsuLookupService
         {
             return null;
         }
-        
+
         var baseName = Path.GetFileName(msuPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var pcmFiles = Directory.EnumerateFiles(directory, $"{baseName}-*.pcm", SearchOption.AllDirectories).ToList();
         var msuSettings = _msuUserOptions.GetMsuSettings(msuPath);
@@ -84,7 +84,7 @@ internal class MsuLookupService : IMsuLookupService
         var originalMsuType = GetMsuType(baseName, pcmFiles, msuTypeFilter);
         var msuType = msuSettings.MsuType ?? originalMsuType;
         
-        _logger.LogInformation("MSU {Name} found as MSU Type {Type}", baseName, msuType?.Name ?? "Unknown");
+        _logger.LogInformation("MSU {Name} found as MSU Type {Type}", baseName, msuType?.DisplayName ?? "Unknown");
 
         Msu msu;
         
@@ -290,7 +290,7 @@ internal class MsuLookupService : IMsuLookupService
         var matchingMsus = new List<(MsuType Type, float PrimaryConfidence, int PrimaryCount, float SecondaryConfidence, int SecondaryCount)>();
         
         var allowedMsuTypes = _msuTypeService.MsuTypes.ToList();
-        if (msuTypeFilter != null && !_msuAppSettings.Smz3MsuTypes.Contains(msuTypeFilter.Name))
+        if (msuTypeFilter != null && !_msuAppSettings.Smz3MsuTypes.Contains(msuTypeFilter.DisplayName))
         {
             allowedMsuTypes = allowedMsuTypes.Where(x => x.IsCompatibleWith(msuTypeFilter)).ToList();
         }
@@ -310,7 +310,7 @@ internal class MsuLookupService : IMsuLookupService
             int primaryCount;
             int secondaryCount;
 
-            if (allConfidence >= requiredConfidence)
+             if (allConfidence >= requiredConfidence)
             {
                 primaryConfidence = allConfidence;
                 secondaryConfidence = requiredConfidence;
@@ -334,7 +334,7 @@ internal class MsuLookupService : IMsuLookupService
         }
         
         var matchedType = matchingMsus
-            .OrderByDescending(x => _msuAppSettings.Smz3MsuTypes.Contains(x.Type.Name))
+            .OrderByDescending(x => _msuAppSettings.Smz3MsuTypes.Contains(x.Type.DisplayName))
             .ThenByDescending(x => x.PrimaryConfidence)
             .ThenByDescending(x => x.PrimaryCount)
             .ThenByDescending(x => x.SecondaryConfidence)

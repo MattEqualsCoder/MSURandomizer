@@ -21,7 +21,7 @@ public partial class MsuUserSettingsWindow : Window
         DataContext = msuUserOptions;
         InitializeComponent();
         AddDirectoryControl(null, msuUserOptions.DefaultMsuPath);
-        foreach(var msuType in msuTypeService.MsuTypes.Where(x => x.Selectable).OrderBy(x => x.Name))
+        foreach(var msuType in msuTypeService.MsuTypes.Where(x => x.Selectable).OrderBy(x => x.DisplayName))
         {
             msuUserOptions.MsuTypePaths.TryGetValue(msuType, out var typePath);
             AddDirectoryControl(msuType, typePath);
@@ -57,13 +57,13 @@ public partial class MsuUserSettingsWindow : Window
             else if (!string.IsNullOrWhiteSpace(control.MsuDirectory) && Directory.Exists(control.MsuDirectory))
             {
                 DataContext.MsuTypePaths[control.MsuType] = control.MsuDirectory;
-                DataContext.MsuTypeNamePaths[control.MsuType.Name] = control.MsuDirectory;
+                DataContext.MsuTypeNamePaths[control.MsuType.DisplayName] = control.MsuDirectory;
             }
             else if (string.IsNullOrWhiteSpace(control.MsuDirectory) &&
-                     DataContext.MsuTypeNamePaths.ContainsKey(control.MsuType.Name))
+                     DataContext.MsuTypeNamePaths.ContainsKey(control.MsuType.DisplayName))
             {
                 DataContext.MsuTypePaths.Remove(control.MsuType);
-                DataContext.MsuTypeNamePaths.Remove(control.MsuType.Name);
+                DataContext.MsuTypeNamePaths.Remove(control.MsuType.DisplayName);
             }
         }
 

@@ -16,7 +16,7 @@ public partial class MsuDirectoryControl : UserControl
         InitializeComponent();
         MsuType = msuType;
         MsuDirectory = msuDirectory;
-        MsuNameTextBlock.Text = msuType?.Name == null ? "Default MSU Directory" : $"{msuType.Name} MSU Directory";
+        MsuNameTextBlock.Text = msuType?.DisplayName == null ? "Default MSU Directory" : $"{msuType.DisplayName} MSU Directory";
         OutputFolderTextBox.Text = msuDirectory ?? "";
         ClearFolderButton.IsEnabled = !string.IsNullOrWhiteSpace(msuDirectory);
     }
