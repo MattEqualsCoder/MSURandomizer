@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
+using System.Windows.Media;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 using YamlDotNet.Serialization;
@@ -100,7 +102,7 @@ public class MsuDetailsService : IMsuDetailsService
             if (!File.Exists(path))
             {
                 yamlPath = null;
-                return null;
+                return GetBasicJsonDetails(msuPath);
             }
         }
 
@@ -114,6 +116,38 @@ public class MsuDetailsService : IMsuDetailsService
         {
             _logger.LogError(e, "Could not parse YAML file {Path}", path);
             yamlPath = null;
+            return null;
+        }
+    }
+
+    private MsuDetails? GetBasicJsonDetails(string msuPath)
+    {
+        var fileInfo = new FileInfo(msuPath);
+        if (fileInfo.DirectoryName == null)
+            return null;
+        var jsonPaths = Directory.EnumerateFiles(fileInfo.DirectoryName, "*.json");
+        if (!jsonPaths.Any()) 
+            return null;
+        var path = jsonPaths.First();
+        try
+        {
+            var jsonText = File.ReadAllText(path);
+            var json = JsonSerializer.Deserialize<TracksJson>(jsonText);
+            if (json == null)
+            {
+                return null;
+            }
+
+            return new MsuDetails()
+            {
+                PackName = json.Name ?? json.Pack ?? json.PackName,
+                PackAuthor = json.Creator ?? json.PackCreator ?? json.PackAuthor,
+                Artist = json.Artist,
+                Url = json.Url
+            };
+        }
+        catch
+        {
             return null;
         }
     }

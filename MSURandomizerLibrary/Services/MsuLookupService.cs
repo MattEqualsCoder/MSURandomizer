@@ -120,7 +120,7 @@ internal class MsuLookupService : IMsuLookupService
     private Msu LoadDetailedMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, string ymlPath)
     {
         var msu = _msuDetailsService.LoadMsuDetails(msuType, msuPath, directory, baseName, ymlPath, out var msuDetails);
-        if (msu?.Tracks?.Any() != true)
+        if (msu?.Tracks.Any() != true)
         {
             return LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles, msuDetails);
         }
