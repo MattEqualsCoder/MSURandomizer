@@ -30,6 +30,94 @@ public class MsuDetailsService : IMsuDetailsService
             .Build();
     }
 
+    public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath, out MsuDetails? msuDetails)
+    {
+        using var fileStream = new FileStream(yamlPath, FileMode.Open);
+        using var reader = new StreamReader(fileStream);
+        var yamlText = reader.ReadToEnd();
+
+        if (string.IsNullOrWhiteSpace(yamlText))
+        {
+            _logger.LogError("Empty MSU yaml file {File}", yamlPath);
+            msuDetails = null;
+            return null;
+        }
+
+        // The YAML can come in the form of SMZ3 specific and a generic format. Try to detect which format it's in
+        // and deserialize it accordingly
+        if ((msuType.DisplayName == _msuAppSettings.Smz3MsuTypeName || msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName) && yamlText.Contains("light_world") && yamlText.Contains("samus_fanfare"))
+        {
+            return ParseSmz3MsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText, out msuDetails);
+        }
+        else
+        {
+            return ParseGenericMsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText, out msuDetails);
+        }
+    }
+
+    public bool SaveMsuDetails(Msu msu, string outputPath)
+    {
+        var msuTrackDetails = msu.Tracks.OrderBy(x => x.Number).Select(x => new MsuDetailsTrack()
+        {
+            TrackNumber = x.Number,
+            TrackName = x.TrackName,
+            Name = x.SongName,
+            Artist = x.Artist,
+            Album = x.Album,
+            Url = x.Url,
+            MsuAuthor = x.MsuCreator,
+            MsuName = x.MsuName
+        }).ToList();
+
+        var msuDetails = new MsuDetailsGeneric()
+        {
+            PackName = msu.Name,
+            PackAuthor = msu.Creator,
+            PackVersion = 1,
+            Tracks = msuTrackDetails
+        };
+
+        try
+        {
+            var yaml = _serializer.Serialize(msuDetails);
+            File.WriteAllText(outputPath, yaml);
+            return true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unable to write MSU YAML details to {Path}", outputPath);
+            return false;
+        }
+        
+    }
+
+    public MsuDetails? GetBasicMsuDetails(string msuPath, out string? yamlPath)
+    {
+        var path = msuPath.Replace(".msu", ".yml", StringComparison.OrdinalIgnoreCase);
+        if (!File.Exists(path))
+        {
+            path = path.Replace(".yml", ".yaml");
+            if (!File.Exists(path))
+            {
+                yamlPath = null;
+                return null;
+            }
+        }
+
+        try
+        {
+            yamlPath = path;
+            var yamlText = File.ReadAllText(path);
+            return _deserializer.Deserialize<MsuDetails>(yamlText);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Could not parse YAML file {Path}", path);
+            yamlPath = null;
+            return null;
+        }
+    }
+
     private List<Track> GetTrackDetails(ICollection<MsuDetailsTrack> tracks, MsuDetails msuDetails, string directory, string baseName)
     {
         if (tracks.Any(x => (x.TrackNumber ?? 0) <= 0))
@@ -117,76 +205,26 @@ public class MsuDetailsService : IMsuDetailsService
         return GetTrackDetails(tracks, msuDetailsSmz3, directory, baseName);
     }
 
-    public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath)
-    {
-        using var fileStream = new FileStream(yamlPath, FileMode.Open);
-        using var reader = new StreamReader(fileStream);
-        var yamlText = reader.ReadToEnd();
-
-        if (string.IsNullOrWhiteSpace(yamlText))
-        {
-            _logger.LogError("Empty MSU yaml file {File}", yamlPath);
-            return null;
-        }
-
-        // The YAML can come in the form of SMZ3 specific and a generic format. Try to detect which format it's in
-        // and deserialize it accordingly
-        if ((msuType.DisplayName == _msuAppSettings.Smz3MsuTypeName || msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName) && yamlText.Contains("light_world") && yamlText.Contains("samus_fanfare"))
-        {
-            return ParseSmz3MsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText);
-        }
-        else
-        {
-            return ParseGenericMsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText);
-        }
-    }
-
-    public bool SaveMsuDetails(Msu msu, string outputPath)
-    {
-        var msuTrackDetails = msu.Tracks.OrderBy(x => x.Number).Select(x => new MsuDetailsTrack()
-        {
-            TrackNumber = x.Number,
-            TrackName = x.TrackName,
-            Name = x.SongName,
-            Artist = x.Artist,
-            Album = x.Album,
-            Url = x.Url,
-            MsuAuthor = x.MsuCreator,
-            MsuName = x.MsuName
-        }).ToList();
-
-        var msuDetails = new MsuDetailsGeneric()
-        {
-            PackName = msu.Name,
-            PackAuthor = msu.Creator,
-            PackVersion = 1,
-            Tracks = msuTrackDetails
-        };
-
-        try
-        {
-            var yaml = _serializer.Serialize(msuDetails);
-            File.WriteAllText(outputPath, yaml);
-            return true;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Unable to write MSU YAML details to {Path}", outputPath);
-            return false;
-        }
-        
-    }
-
-    private Msu? ParseSmz3MsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText)
+    private Msu? ParseSmz3MsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText, out MsuDetails? msuDetails)
     {
         try
         {
-            var msuDetails = _deserializer.Deserialize<MsuDetailsSmz3>(yamlText);
-            if (msuDetails.Tracks == null)
+            var smz3Details = _deserializer.Deserialize<MsuDetailsSmz3>(yamlText);
+            msuDetails = smz3Details;
+            if (smz3Details.Tracks == null)
             {
-                return null;
+                return new Msu()
+                {
+                    FolderName = new DirectoryInfo(msuDirectory).Name,
+                    FileName = msuBaseName,
+                    Path = msuPath,
+                    Tracks = new List<Track>(),
+                    MsuType = msuType,
+                    Name = string.IsNullOrWhiteSpace(smz3Details.PackName) ? msuBaseName : smz3Details.PackName,
+                    Creator = smz3Details.PackAuthor ?? ""
+                };
             }
-            var tracks = GetSmz3TrackDetails(msuDetails, msuDirectory, msuBaseName, msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName);
+            var tracks = GetSmz3TrackDetails(smz3Details, msuDirectory, msuBaseName, msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName);
             return new Msu()
             {
                 FolderName = new DirectoryInfo(msuDirectory).Name,
@@ -194,32 +232,40 @@ public class MsuDetailsService : IMsuDetailsService
                 Path = msuPath,
                 Tracks = tracks,
                 MsuType = msuType,
-                Name = string.IsNullOrWhiteSpace(msuDetails.PackName) ? msuBaseName : msuDetails.PackName,
-                Creator = msuDetails.PackAuthor ?? ""
+                Name = string.IsNullOrWhiteSpace(smz3Details.PackName) ? msuBaseName : smz3Details.PackName,
+                Creator = smz3Details.PackAuthor ?? ""
             };
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Unable to parse SMZ3 MSU yaml file for {Directory}{Separator}{BaseName}.msu", msuDirectory, Path.DirectorySeparatorChar, msuBaseName);
             Console.WriteLine(e);
+            msuDetails = null;
             return null;
         }
     }
 
-    private Msu? ParseGenericMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText)
+    private Msu? ParseGenericMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText, out MsuDetails? msuDetails)
     {
         try
         {
-            var deserializer = new DeserializerBuilder()
-                .WithNamingConvention(UnderscoredNamingConvention.Instance)
-                .Build();
-            var msuDetails = deserializer.Deserialize<MsuDetailsGeneric>(yamlText);
-            if (msuDetails.Tracks?.Any() != true || msuDetails.Tracks?.Any(x => x.TrackNumber <= 0) == true)
+            var genericDetails = _deserializer.Deserialize<MsuDetailsGeneric>(yamlText);
+            msuDetails = genericDetails;
+            if (genericDetails.Tracks?.Any() != true || genericDetails.Tracks?.Any(x => x.TrackNumber <= 0) == true)
             {
                 _logger.LogInformation("YAML file for MSU {Path} missing track details", msuPath);
-                return null;
+                return new Msu()
+                {
+                    FolderName = new DirectoryInfo(msuDirectory).Name,
+                    FileName = msuBaseName,
+                    Path = msuPath,
+                    Tracks = new List<Track>(),
+                    MsuType = msuType,
+                    Name = string.IsNullOrWhiteSpace(genericDetails.PackName) ? msuBaseName : genericDetails.PackName,
+                    Creator = genericDetails.PackAuthor ?? ""
+                };
             }
-            var tracks = GetTrackDetails(msuDetails.Tracks!, msuDetails, msuDirectory, msuBaseName);
+            var tracks = GetTrackDetails(genericDetails.Tracks!, genericDetails, msuDirectory, msuBaseName);
             return new Msu()
             {
                 FolderName = new DirectoryInfo(msuDirectory).Name,
@@ -227,14 +273,15 @@ public class MsuDetailsService : IMsuDetailsService
                 Path = msuPath,
                 Tracks = tracks,
                 MsuType = msuType,
-                Name = string.IsNullOrWhiteSpace(msuDetails.PackName) ? msuBaseName : msuDetails.PackName,
-                Creator = msuDetails.PackAuthor ?? ""
+                Name = string.IsNullOrWhiteSpace(genericDetails.PackName) ? msuBaseName : genericDetails.PackName,
+                Creator = genericDetails.PackAuthor ?? ""
             };
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Unable to parse generic MSU yaml file for {Directory}{Separator}{BaseName}.msu", msuDirectory, Path.DirectorySeparatorChar, msuBaseName);
             Console.WriteLine(e);
+            msuDetails = null;
             return null;
         }
     }

@@ -75,13 +75,18 @@ internal class MsuLookupService : IMsuLookupService
             return null;
         }
 
+        var basicMsuDetails = _msuDetailsService.GetBasicMsuDetails(msuPath, out var yamlPath);
         var baseName = Path.GetFileName(msuPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var pcmFiles = Directory.EnumerateFiles(directory, $"{baseName}-*.pcm", SearchOption.AllDirectories).ToList();
         var msuSettings = _msuUserOptions.GetMsuSettings(msuPath);
         
         msuSettings.MsuType = _msuTypeService.GetMsuType(msuSettings.MsuTypeName);
 
-        var originalMsuType = GetMsuType(baseName, pcmFiles, msuTypeFilter);
+        // Try to load the MSU type specified by the MSU details if possible, otherwise try to auto detect
+        var originalMsuType = !string.IsNullOrEmpty(basicMsuDetails?.MsuType) 
+            ? (_msuTypeService.GetMsuType(basicMsuDetails.MsuType) ?? GetMsuType(baseName, pcmFiles, msuTypeFilter))
+            : GetMsuType(baseName, pcmFiles, msuTypeFilter);
+        
         var msuType = msuSettings.MsuType ?? originalMsuType;
         
         _logger.LogInformation("MSU {Name} found as MSU Type {Type}", baseName, msuType?.DisplayName ?? "Unknown");
@@ -94,20 +99,14 @@ internal class MsuLookupService : IMsuLookupService
             msu = LoadUnknownMsu(msuPath, directory, baseName, pcmFiles);
         }
         // Check if there's a YAML file associated with the MSU to pull MSU and track information from
-        else if (File.Exists(directory + Path.DirectorySeparatorChar + baseName + ".yml"))
+        else if (!string.IsNullOrEmpty(yamlPath))
         {
-            msu = LoadDetailedMsu(msuPath, directory, baseName, msuType, pcmFiles,
-                directory + Path.DirectorySeparatorChar + baseName + ".yml");
-        }
-        else if (File.Exists(directory + Path.DirectorySeparatorChar + baseName + ".yaml"))
-        {
-            msu = LoadDetailedMsu(msuPath, directory, baseName, msuType, pcmFiles,
-                directory + Path.DirectorySeparatorChar + baseName + ".yaml");
+            msu = LoadDetailedMsu(msuPath, directory, baseName, msuType, pcmFiles, yamlPath);
         }
         // Otherwise load it using the details from the MSU type
         else
         {
-            msu = LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles);
+            msu = LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles, basicMsuDetails);
         }
 
         msu.Settings = msuSettings;
@@ -120,12 +119,12 @@ internal class MsuLookupService : IMsuLookupService
 
     private Msu LoadDetailedMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, string ymlPath)
     {
-        var msuDetails = _msuDetailsService.LoadMsuDetails(msuType, msuPath, directory, baseName, ymlPath);
-        if (msuDetails == null)
+        var msu = _msuDetailsService.LoadMsuDetails(msuType, msuPath, directory, baseName, ymlPath, out var msuDetails);
+        if (msu?.Tracks?.Any() != true)
         {
-            return LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles);
+            return LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles, msuDetails);
         }
-        var trackDetails = msuDetails.Tracks;
+        var trackDetails = msu.Tracks;
         
         var tracks = new List<Track>();
         foreach (var track in msuType.Tracks)
@@ -159,8 +158,8 @@ internal class MsuLookupService : IMsuLookupService
             Path = msuPath,
             Tracks = tracks,
             MsuType = msuType,
-            Name = msuDetails.Name,
-            Creator = msuDetails.Creator,
+            Name = msu.Name,
+            Creator = msu.Creator,
             HasDetails = true
         };
     }
@@ -191,7 +190,7 @@ internal class MsuLookupService : IMsuLookupService
         };
     }
 
-    private Msu LoadBasicMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles)
+    private Msu LoadBasicMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, MsuDetails? msuDetails)
     {
         var trackNumbers = pcmFiles
             .Select(x =>
@@ -199,6 +198,12 @@ internal class MsuLookupService : IMsuLookupService
             .Where(x => int.TryParse(x, out _))
             .Select(int.Parse)
             .ToHashSet();
+
+        var msuName = msuDetails?.PackName ?? new DirectoryInfo(directory).Name;
+        var msuCreator = msuDetails?.PackAuthor;
+        var artist = msuDetails?.Artist;
+        var album = msuDetails?.Album;
+        var url = msuDetails?.Url;
 
         var tracks = new List<Track>();
         foreach (var track in msuType.Tracks)
@@ -229,7 +234,7 @@ internal class MsuLookupService : IMsuLookupService
             {
                 continue;
             }
-
+            
             // Add the base track
             tracks.Add(new Track
             (
@@ -237,8 +242,12 @@ internal class MsuLookupService : IMsuLookupService
                 number: track.Number,
                 songName: $"Track #{trackNumber}",
                 path: path,
-                msuPath: $"{directory}{Path.DirectorySeparatorChar}{baseName}.msu",
-                msuName: baseName
+                msuPath: msuPath,
+                msuName: msuName,
+                msuCreator: msuCreator,
+                album: album,
+                artist: artist,
+                url: url
             ));
 
             // See if there are any alt tracks to add
@@ -260,8 +269,12 @@ internal class MsuLookupService : IMsuLookupService
                     number: track.Number,
                     songName: $"Track #{trackNumber} ({altName})",
                     path: alt,
-                    msuPath: $"{directory}{Path.DirectorySeparatorChar}{baseName}.msu",
-                    msuName: baseName,
+                    msuPath: msuPath,
+                    msuName: msuName,
+                    msuCreator: msuCreator,
+                    album: album,
+                    artist: artist,
+                    url: url,
                     isAlt: true
                 ));
             }
@@ -274,7 +287,8 @@ internal class MsuLookupService : IMsuLookupService
             Path = msuPath,
             Tracks = tracks,
             MsuType = msuType,
-            Name = new DirectoryInfo(directory).Name,
+            Name = msuName,
+            Creator = msuCreator
         };
     }
 

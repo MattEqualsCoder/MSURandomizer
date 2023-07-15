@@ -7,5 +7,6 @@ public class MsuDetails
     public int PackVersion { get; set; }
     public string? Artist { get; set; }
     public string? Album { get; set; }
+    public string? MsuType { get; set; }
     public string? Url { get; set; }
 }
