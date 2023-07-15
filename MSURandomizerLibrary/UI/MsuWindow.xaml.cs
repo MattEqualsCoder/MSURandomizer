@@ -91,18 +91,21 @@ public partial class MsuWindow
             RandomMsuButton.Content = "_Select MSU";
             RandomMsuButton.IsEnabled = false;
             ShuffledMsuButton.IsEnabled = false;
+            ContinuousShuffledMsuButton.IsEnabled = false;
         }
         else if (msuCount == 1)
         {
             RandomMsuButton.Content = "_Select MSU";
             RandomMsuButton.IsEnabled = true;
             ShuffledMsuButton.IsEnabled = false;
+            ContinuousShuffledMsuButton.IsEnabled = false;
         }
         else
         {
             RandomMsuButton.Content = "Pick _Random MSU";
             RandomMsuButton.IsEnabled = true;
             ShuffledMsuButton.IsEnabled = true;
+            ContinuousShuffledMsuButton.IsEnabled = true;
         }
     }
 

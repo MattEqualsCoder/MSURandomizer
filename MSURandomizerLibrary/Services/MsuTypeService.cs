@@ -87,7 +87,7 @@ internal class MsuTypeService : IMsuTypeService
     
     public MsuType? GetMsuType(string? name)
     {
-        return MsuTypes.FirstOrDefault(x => x.DisplayName == name);
+        return MsuTypes.FirstOrDefault(x => x.DisplayName == name || x.Name == name);
     }
 
     private void FinalizeConfigs(IEnumerable<MsuTypeConfig> configs)

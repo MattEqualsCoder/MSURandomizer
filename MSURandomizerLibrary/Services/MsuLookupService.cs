@@ -74,7 +74,7 @@ internal class MsuLookupService : IMsuLookupService
         {
             return null;
         }
-
+        
         var basicMsuDetails = _msuDetailsService.GetBasicMsuDetails(msuPath, out var yamlPath);
         var baseName = Path.GetFileName(msuPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var pcmFiles = Directory.EnumerateFiles(directory, $"{baseName}-*.pcm", SearchOption.AllDirectories).ToList();
@@ -348,7 +348,7 @@ internal class MsuLookupService : IMsuLookupService
         }
         
         var matchedType = matchingMsus
-            .OrderByDescending(x => _msuAppSettings.Smz3MsuTypes.Contains(x.Type.DisplayName))
+            .OrderByDescending(x => _msuAppSettings.Smz3MsuTypes.Contains(x.Type.DisplayName) || _msuAppSettings.Smz3MsuTypes.Contains(x.Type.Name))
             .ThenByDescending(x => x.PrimaryConfidence)
             .ThenByDescending(x => x.PrimaryCount)
             .ThenByDescending(x => x.SecondaryConfidence)
