@@ -29,6 +29,7 @@ public class MsuDetailsService : IMsuDetailsService
             .Build();
         _deserializer = new DeserializerBuilder()
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
+            .IgnoreUnmatchedProperties()
             .Build();
     }
 
