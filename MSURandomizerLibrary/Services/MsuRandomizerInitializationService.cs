@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
 
@@ -11,15 +14,19 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
 {
     private readonly IMsuAppSettingsService _msuAppSettingsService;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<MsuRandomizerInitializationService> _logger;
     
-    public MsuRandomizerInitializationService(IMsuAppSettingsService msuAppSettingsService, IServiceProvider serviceProvider)
+    public MsuRandomizerInitializationService(IMsuAppSettingsService msuAppSettingsService, IServiceProvider serviceProvider, ILogger<MsuRandomizerInitializationService> logger)
     {
         _msuAppSettingsService = msuAppSettingsService;
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
     
     public void Initialize(MsuRandomizerInitializationRequest request)
     {
+        var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+        _logger.LogInformation("Initializing MSU Randomizer Library {Version}", version.ProductVersion ?? "");
         if (request.MsuAppSettingsStream == null && string.IsNullOrWhiteSpace(request.MsuAppSettingsPath))
         {
             throw new InvalidOperationException(

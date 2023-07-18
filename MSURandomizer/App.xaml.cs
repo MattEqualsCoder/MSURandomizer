@@ -41,6 +41,8 @@ namespace MSURandomizer
                 .Start();
             
             _logger = _host.Services.GetRequiredService<ILogger<App>>();
+            var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+            _logger.LogInformation("Starting MSU Randomizer {Version}", version.ProductVersion ?? "");
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             var settingsStream =

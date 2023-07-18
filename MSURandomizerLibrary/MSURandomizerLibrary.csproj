@@ -4,6 +4,11 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <Version>0.9.7-rc.2</Version>
+    <Title>MSU Randomizer Library</Title>
+    <Authors>MattEqualsCoder</Authors>
+    <Description>Library for detecting, selecting, and randomizing MSUs for various games and randomizers.</Description>
+    <RepositoryUrl>https://github.com/MattEqualsCoder/MSURandomizer</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
