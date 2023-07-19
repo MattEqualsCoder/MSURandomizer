@@ -132,28 +132,31 @@ internal class MsuTypeService : IMsuTypeService
             }
         }
 
-        var smz3 = _msuTypes.First(x => x.DisplayName == _msuAppSettings.Smz3MsuTypeName);
-        var smz3Old = _msuTypes.First(x => x.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName);
-        
-        smz3.Conversions[smz3Old] = x =>
+        var smz3 = _msuTypes.FirstOrDefault(x => x.DisplayName == _msuAppSettings.Smz3MsuTypeName);
+        var smz3Old = _msuTypes.FirstOrDefault(x => x.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName);
+
+        if (smz3 != null && smz3Old != null)
         {
-            return x switch
+            smz3.Conversions[smz3Old] = x =>
             {
-                < 99 => x + 100,
-                > 99 => x - 100,
-                _ => x
+                return x switch
+                {
+                    < 99 => x + 100,
+                    > 99 => x - 100,
+                    _ => x
+                };
             };
-        };
         
-        smz3Old.Conversions[smz3] = x =>
-        {
-            return x switch
+            smz3Old.Conversions[smz3] = x =>
             {
-                < 99 => x + 100,
-                > 99 => x - 100,
-                _ => x
+                return x switch
+                {
+                    < 99 => x + 100,
+                    > 99 => x - 100,
+                    _ => x
+                };
             };
-        };
+        }
     }
 
     private MsuType ConvertMsuTypeConfig(MsuTypeConfig config)

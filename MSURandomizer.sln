@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSURandomizer", "MSURandomi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSURandomizerLibrary", "MSURandomizerLibrary\MSURandomizerLibrary.csproj", "{BC1C945A-AD2D-4DEF-9730-E715F68FACBD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSURandomizerLibraryTests", "MSURandomizerLibraryTests\MSURandomizerLibraryTests.csproj", "{306BC2A0-D69A-47C9-A40B-4FD40DD8032D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{BC1C945A-AD2D-4DEF-9730-E715F68FACBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC1C945A-AD2D-4DEF-9730-E715F68FACBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC1C945A-AD2D-4DEF-9730-E715F68FACBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{306BC2A0-D69A-47C9-A40B-4FD40DD8032D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{306BC2A0-D69A-47C9-A40B-4FD40DD8032D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{306BC2A0-D69A-47C9-A40B-4FD40DD8032D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{306BC2A0-D69A-47C9-A40B-4FD40DD8032D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
