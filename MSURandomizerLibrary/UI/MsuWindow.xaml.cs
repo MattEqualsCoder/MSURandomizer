@@ -12,7 +12,7 @@ namespace MSURandomizerLibrary.UI;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MsuWindow
+public partial class MsuWindow : Window
 {
     public new readonly MsuUserOptions DataContext;
     private readonly IMsuTypeService _msuTypeService;
@@ -23,7 +23,7 @@ public partial class MsuWindow
     private readonly ILogger<MsuWindow> _logger;
     private readonly MsuAppSettings _msuAppSettings;
         
-    public MsuWindow(ILogger<MsuWindow> logger, IMsuUiFactory uiFactory, IMsuLookupService msuLookupService, MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, IMsuSelectorService msuSelectorService, IMsuUserOptionsService msuUserOptionsService, IMsuUiFactory msuUiFactory, MsuAppSettings msuAppSettings)
+    public MsuWindow(ILogger<MsuWindow> logger, IMsuLookupService msuLookupService, MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, IMsuSelectorService msuSelectorService, IMsuUserOptionsService msuUserOptionsService, IMsuUiFactory msuUiFactory, MsuAppSettings msuAppSettings)
     {
         DataContext = msuUserOptions;
         _msuTypeService = msuTypeService;
@@ -35,16 +35,56 @@ public partial class MsuWindow
         _logger = logger;
         InitializeComponent();
 
-        MsuList = uiFactory.CreateMsuList();
+        MsuList = new MsuList(_msuUiFactory);
+    }
+
+    public new void Show() => Show(SelectionMode.Multiple, false);
+    
+    public new void ShowDialog() => Show(SelectionMode.Multiple, true);
+
+    public void Show(SelectionMode selectionMode, bool dialog)
+    {
+        // Create the MSU List
+        MsuList = _msuUiFactory.CreateMsuList(selectionMode);
         MainGrid.Children.Add(MsuList);
         MsuList.SelectedMsusUpdated += MsuListOnSelectedMsusUpdated;
-        
-        FilterComboBox.SelectedItem = _msuUserOptionsService.MsuUserOptions.Filter;
-
-        msuLookupService.OnMsuLookupComplete += (sender, args) => OnMsuLookupComplete(args.Msus);
-        if (msuLookupService.Status == MsuLoadStatus.Loaded)
+        _msuLookupService.OnMsuLookupComplete += (sender, args) => OnMsuLookupComplete(args.Msus);
+        if (_msuLookupService.Status == MsuLoadStatus.Loaded)
         {
-            Dispatcher.InvokeAsync(() => { OnMsuLookupComplete(msuLookupService.Msus); });
+            Dispatcher.InvokeAsync(() => { OnMsuLookupComplete(_msuLookupService.Msus); });
+        }
+        FilterComboBox.SelectedItem = _msuUserOptionsService.MsuUserOptions.Filter;
+        
+        RandomMsuButton.Visibility =
+            _msuAppSettings.MsuWindowDisplayRandomButton ? Visibility.Visible : Visibility.Collapsed;
+        ShuffledMsuButton.Visibility =
+            _msuAppSettings.MsuWindowDisplayShuffleButton ? Visibility.Visible : Visibility.Collapsed;
+        ContinuousShuffledMsuButton.Visibility =
+            _msuAppSettings.MsuWindowDisplayContinuousButton ? Visibility.Visible : Visibility.Collapsed;
+        SelectMsusButtons.Visibility =
+            _msuAppSettings.MsuWindowDisplaySelectButton ? Visibility.Visible : Visibility.Collapsed;
+        CancelButton.Visibility =
+            _msuAppSettings.MsuWindowDisplaySelectButton ? Visibility.Visible : Visibility.Collapsed;
+        OptionsButton.Visibility =
+            _msuAppSettings.MsuWindowDisplayOptionsButton ? Visibility.Visible : Visibility.Collapsed;
+
+        SelectAllButton.IsEnabled = selectionMode == SelectionMode.Multiple;
+        SelectNoneButton.IsEnabled = selectionMode == SelectionMode.Multiple;
+
+        if (!string.IsNullOrEmpty(_msuAppSettings.ForcedMsuType))
+        {
+            MsuTypesPanel.Visibility = Visibility.Collapsed;
+            TopGrid.ColumnDefinitions[0].Width = GridLength.Auto;
+            TopGrid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
+        }
+
+        if (dialog || _msuAppSettings.MsuWindowDisplaySelectButton)
+        {
+            base.ShowDialog();
+        }
+        else
+        {
+            base.Show();
         }
     }
 
@@ -88,21 +128,28 @@ public partial class MsuWindow
 
         if (msuCount == 0)
         {
+            SelectMsusButtons.Content = "_Select MSU";
             RandomMsuButton.Content = "_Select MSU";
+            SelectMsusButtons.IsEnabled = false;
             RandomMsuButton.IsEnabled = false;
             ShuffledMsuButton.IsEnabled = false;
             ContinuousShuffledMsuButton.IsEnabled = false;
         }
         else if (msuCount == 1)
         {
+            SelectMsusButtons.Content = "_Select MSU";
             RandomMsuButton.Content = "_Select MSU";
+            SelectMsusButtons.IsEnabled = true;
             RandomMsuButton.IsEnabled = true;
             ShuffledMsuButton.IsEnabled = false;
             ContinuousShuffledMsuButton.IsEnabled = false;
+            SelectMsusButtons.Content = "_Select MSU";
         }
         else
         {
+            SelectMsusButtons.Content = $"_Select {msuCount} MSUs";
             RandomMsuButton.Content = "Pick _Random MSU";
+            SelectMsusButtons.IsEnabled = true;
             RandomMsuButton.IsEnabled = true;
             ShuffledMsuButton.IsEnabled = true;
             ContinuousShuffledMsuButton.IsEnabled = true;
@@ -190,7 +237,9 @@ public partial class MsuWindow
             : DataContext.DefaultMsuPath;
     }
 
-    private MsuType? SelectedMsuType => _msuTypeService.GetMsuType(MsuTypesComboBox.SelectedItem as string ?? "");
+    private MsuType? SelectedMsuType => string.IsNullOrEmpty(_msuAppSettings.ForcedMsuType) 
+        ? _msuTypeService.GetMsuType(MsuTypesComboBox.SelectedItem as string ?? "")
+        : _msuTypeService.GetMsuType(_msuAppSettings.ForcedMsuType);
 
     private void OpenUserSettingsWindow()
     {
@@ -231,6 +280,25 @@ public partial class MsuWindow
             MessageBox.Show(this, response.Message, title, MessageBoxButton.OK, icon);
         }
     }
-
     
+    private void SelectMsusButtons_OnClick(object sender, RoutedEventArgs e)
+    {
+        var msuType = SelectedMsuType;
+        if (msuType == null)
+        {
+            return;
+        }
+        
+        DataContext.OutputMsuType = msuType.DisplayName;
+        DataContext.SelectedMsus = MsuList.SelectedMsus.Select(x => x.Path).ToList();
+        _msuUserOptionsService.Save();
+        DialogResult = MsuList.SelectedMsus.Any();
+        Close();
+    }
+
+    private void CancelButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
 }
