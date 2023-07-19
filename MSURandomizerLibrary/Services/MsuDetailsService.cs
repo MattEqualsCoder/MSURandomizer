@@ -33,7 +33,7 @@ public class MsuDetailsService : IMsuDetailsService
             .Build();
     }
 
-    public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath, out MsuDetails? msuDetails)
+    public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath, out MsuDetails? msuDetails, out string? error)
     {
         using var fileStream = new FileStream(yamlPath, FileMode.Open);
         using var reader = new StreamReader(fileStream);
@@ -43,6 +43,7 @@ public class MsuDetailsService : IMsuDetailsService
         {
             _logger.LogError("Empty MSU yaml file {File}", yamlPath);
             msuDetails = null;
+            error = "Empty MSU yaml file";
             return null;
         }
 
@@ -50,11 +51,11 @@ public class MsuDetailsService : IMsuDetailsService
         // and deserialize it accordingly
         if ((msuType.DisplayName == _msuAppSettings.Smz3MsuTypeName || msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName) && yamlText.Contains("light_world") && yamlText.Contains("samus_fanfare"))
         {
-            return ParseSmz3MsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText, out msuDetails);
+            return ParseSmz3MsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText, out msuDetails, out error);
         }
         else
         {
-            return ParseGenericMsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText, out msuDetails);
+            return ParseGenericMsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText, out msuDetails, out error);
         }
     }
 
@@ -94,7 +95,7 @@ public class MsuDetailsService : IMsuDetailsService
         
     }
 
-    public MsuDetails? GetBasicMsuDetails(string msuPath, out string? yamlPath)
+    public MsuDetails? GetBasicMsuDetails(string msuPath, out string? yamlPath, out string? error)
     {
         var path = msuPath.Replace(".msu", ".yml", StringComparison.OrdinalIgnoreCase);
         if (!File.Exists(path))
@@ -103,6 +104,7 @@ public class MsuDetailsService : IMsuDetailsService
             if (!File.Exists(path))
             {
                 yamlPath = null;
+                error = null;
                 return GetBasicJsonDetails(msuPath);
             }
         }
@@ -111,12 +113,14 @@ public class MsuDetailsService : IMsuDetailsService
         {
             yamlPath = path;
             var yamlText = File.ReadAllText(path);
+            error = null;
             return _deserializer.Deserialize<MsuDetails>(yamlText);
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Could not parse YAML file {Path}", path);
             yamlPath = null;
+            error = $"Could not load YAML file: {e.Message}";
             return null;
         }
     }
@@ -240,7 +244,7 @@ public class MsuDetailsService : IMsuDetailsService
         return GetTrackDetails(tracks, msuDetailsSmz3, directory, baseName);
     }
 
-    private Msu? ParseSmz3MsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText, out MsuDetails? msuDetails)
+    private Msu? ParseSmz3MsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText, out MsuDetails? msuDetails, out string? error)
     {
         try
         {
@@ -248,6 +252,7 @@ public class MsuDetailsService : IMsuDetailsService
             msuDetails = smz3Details;
             if (smz3Details.Tracks == null)
             {
+                error = null;
                 return new Msu()
                 {
                     FolderName = new DirectoryInfo(msuDirectory).Name,
@@ -260,6 +265,7 @@ public class MsuDetailsService : IMsuDetailsService
                 };
             }
             var tracks = GetSmz3TrackDetails(smz3Details, msuDirectory, msuBaseName, msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName);
+            error = null;
             return new Msu()
             {
                 FolderName = new DirectoryInfo(msuDirectory).Name,
@@ -276,11 +282,12 @@ public class MsuDetailsService : IMsuDetailsService
             _logger.LogError(e, "Unable to parse SMZ3 MSU yaml file for {Directory}{Separator}{BaseName}.msu", msuDirectory, Path.DirectorySeparatorChar, msuBaseName);
             Console.WriteLine(e);
             msuDetails = null;
+            error = $"Could not load YAML file: {e.Message}";
             return null;
         }
     }
 
-    private Msu? ParseGenericMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText, out MsuDetails? msuDetails)
+    private Msu? ParseGenericMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText, out MsuDetails? msuDetails, out string? error)
     {
         try
         {
@@ -289,6 +296,7 @@ public class MsuDetailsService : IMsuDetailsService
             if (genericDetails.Tracks?.Any() != true || genericDetails.Tracks?.Any(x => x.TrackNumber <= 0) == true)
             {
                 _logger.LogInformation("YAML file for MSU {Path} missing track details", msuPath);
+                error = null;
                 return new Msu()
                 {
                     FolderName = new DirectoryInfo(msuDirectory).Name,
@@ -301,6 +309,7 @@ public class MsuDetailsService : IMsuDetailsService
                 };
             }
             var tracks = GetTrackDetails(genericDetails.Tracks!, genericDetails, msuDirectory, msuBaseName);
+            error = null;
             return new Msu()
             {
                 FolderName = new DirectoryInfo(msuDirectory).Name,
@@ -317,6 +326,7 @@ public class MsuDetailsService : IMsuDetailsService
             _logger.LogError(e, "Unable to parse generic MSU yaml file for {Directory}{Separator}{BaseName}.msu", msuDirectory, Path.DirectorySeparatorChar, msuBaseName);
             Console.WriteLine(e);
             msuDetails = null;
+            error = $"Could not load YAML file: {e.Message}";
             return null;
         }
     }

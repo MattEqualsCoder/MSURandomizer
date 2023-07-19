@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +17,7 @@ namespace MSURandomizerLibrary.UI;
 public partial class MsuList : UserControl
 {
     private readonly IMsuUiFactory _msuUiFactory;
+    private readonly List<string> _displayedErrors = new();
 
     public MsuList(IMsuUiFactory msuUiFactory)
     {
@@ -75,6 +77,21 @@ public partial class MsuList : UserControl
                     MsuListView.SelectedIndex = i;
                     return;
                 }
+            }
+        }
+
+        // Display errors from loading if there are any
+        if (DataContext.Errors == null) return;
+        var window = Window.GetWindow(this);
+        if (window == null) return;
+        foreach (var error in DataContext.Errors)
+        {
+            var fileInfo = new FileInfo(error.Key);
+            var message = $"Problem loading MSU \"{fileInfo.Directory?.Name}/{fileInfo.Name}\"\r\n\r\n{error.Value}";
+            if (!_displayedErrors.Contains(message))
+            {
+                MessageBox.Show(window, message, "MSU Load Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _displayedErrors.Add(message);
             }
         }
     }
@@ -137,7 +154,7 @@ public partial class MsuList : UserControl
 
     private void MsuListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        SelectedMsusUpdated?.Invoke(this, new MsuListEventArgs(MsuListView.SelectedItems.Cast<Msu>().ToList()));
+        SelectedMsusUpdated?.Invoke(this, new MsuListEventArgs(MsuListView.SelectedItems.Cast<Msu>().ToList(), null));
     }
 
     private void MenuItem_OnClick(object sender, RoutedEventArgs e)

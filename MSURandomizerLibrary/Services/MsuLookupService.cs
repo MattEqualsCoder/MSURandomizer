@@ -15,6 +15,7 @@ internal class MsuLookupService : IMsuLookupService
     private readonly MsuUserOptions _msuUserOptions;
     private readonly IMsuDetailsService _msuDetailsService;
     private readonly MsuAppSettings _msuAppSettings;
+    private readonly Dictionary<string, string> _errors = new();
     private IReadOnlyCollection<Msu> _msus = new List<Msu>();
 
     public MsuLookupService(ILogger<MsuLookupService> logger, IMsuTypeService msuTypeService, MsuUserOptions msuUserOptions, IMsuDetailsService msuDetailsService, MsuAppSettings msuAppSettings)
@@ -40,6 +41,7 @@ internal class MsuLookupService : IMsuLookupService
         }
 
         _logger.LogInformation("MSU lookup started");
+        _errors.Clear();
         Status = MsuLoadStatus.Loading;
         var msus = new List<Msu>();
         
@@ -62,7 +64,7 @@ internal class MsuLookupService : IMsuLookupService
         _msus = msus;
         _logger.LogInformation("MSU lookup complete");
         Status = MsuLoadStatus.Loaded;
-        OnMsuLookupComplete?.Invoke(this, new(_msus));
+        OnMsuLookupComplete?.Invoke(this, new(_msus, _errors));
         return _msus;
     }
 
@@ -75,7 +77,12 @@ internal class MsuLookupService : IMsuLookupService
             return null;
         }
         
-        var basicMsuDetails = _msuDetailsService.GetBasicMsuDetails(msuPath, out var yamlPath);
+        var basicMsuDetails = _msuDetailsService.GetBasicMsuDetails(msuPath, out var yamlPath, out var yamlError);
+        if (!string.IsNullOrEmpty(yamlError))
+        {
+            _errors[msuPath] = yamlError;
+        }
+        
         var baseName = Path.GetFileName(msuPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var pcmFiles = Directory.EnumerateFiles(directory, $"{baseName}-*.pcm", SearchOption.AllDirectories).ToList();
         var msuSettings = _msuUserOptions.GetMsuSettings(msuPath);
@@ -119,7 +126,13 @@ internal class MsuLookupService : IMsuLookupService
 
     private Msu LoadDetailedMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, string ymlPath)
     {
-        var msu = _msuDetailsService.LoadMsuDetails(msuType, msuPath, directory, baseName, ymlPath, out var msuDetails);
+        var msu = _msuDetailsService.LoadMsuDetails(msuType, msuPath, directory, baseName, ymlPath, out var msuDetails, out var yamlError);
+        
+        if (!string.IsNullOrEmpty(yamlError))
+        {
+            _errors[msuPath] = yamlError;
+        }
+        
         if (msu?.Tracks.Any() != true)
         {
             return LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles, msuDetails);
@@ -369,6 +382,7 @@ internal class MsuLookupService : IMsuLookupService
     public void RefreshMsu(Msu msu)
     {
         Status = MsuLoadStatus.Loading;
+        _errors.Clear();
         
         // Reload the MSU
         var newMsu = LoadMsu(msu.Path);
@@ -384,7 +398,7 @@ internal class MsuLookupService : IMsuLookupService
         msus.Add(newMsu);
         _msus = msus;
         
-        OnMsuLookupComplete?.Invoke(this, new MsuListEventArgs(_msus));
+        OnMsuLookupComplete?.Invoke(this, new MsuListEventArgs(_msus, _errors));
         Status = MsuLoadStatus.Loaded;
     }
 
@@ -409,4 +423,6 @@ internal class MsuLookupService : IMsuLookupService
 
         return _msus.FirstOrDefault(x => x.Path == path);
     }
+
+    public IDictionary<string, string> Errors => _errors;
 }

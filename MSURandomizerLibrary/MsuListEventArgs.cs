@@ -10,10 +10,12 @@ namespace MSURandomizerLibrary;
 /// </summary>
 public class MsuListEventArgs : EventArgs
 {
-    public MsuListEventArgs(IReadOnlyCollection<Msu> msus)
+    public MsuListEventArgs(IReadOnlyCollection<Msu> msus, IReadOnlyDictionary<string, string>? errors)
     {
         Msus = msus;
+        Errors = errors;
     }
     
     public IReadOnlyCollection<Msu> Msus { get; }
+    public IReadOnlyDictionary<string, string>? Errors { get; }
 }

@@ -68,4 +68,9 @@ public interface IMsuLookupService
     /// <param name="path">The path to search for</param>
     /// <returns>The found MSU</returns>
     public Msu? GetMsuByPath(string? path);
+    
+    /// <summary>
+    /// A dictionary containing all of the MSUs that had issues loading
+    /// </summary>
+    public IDictionary<string, string> Errors { get; }
 }

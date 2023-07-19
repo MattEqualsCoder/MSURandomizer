@@ -20,6 +20,7 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
         if (msuLookupService.Status == MsuLoadStatus.Loaded)
         {
             _allMsus = msuLookupService.Msus;
+            Errors = msuLookupService.Errors;
         }
         msuLookupService.OnMsuLookupComplete += MsuLookupServiceOnOnMsuLookupComplete;
     }
@@ -36,11 +37,11 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
         {
             SetField(ref _allMsus, value);
             OnPropertyChanged(nameof(AvailableMsus));
-            MsuListUpdated?.Invoke(this, new MsuListEventArgs(value));
-            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus));
+            MsuListUpdated?.Invoke(this, new MsuListEventArgs(value, null));
+            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus, null));
         }
     }
-
+    
     private SelectionMode _selectionMode;
 
     public SelectionMode SelectionMode
@@ -58,7 +59,7 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
         {
             SetField(ref _msuType, value);
             OnPropertyChanged(nameof(AvailableMsus));
-            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus));
+            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus, null));
         }
     }
 
@@ -71,7 +72,7 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
         {
             SetField(ref _msuFilter, value);
             OnPropertyChanged(nameof(AvailableMsus));
-            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus));
+            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus, null));
         }
     }
 
@@ -83,7 +84,7 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
         set
         {
             SetField(ref _selectedMsuPaths, value);
-            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus));
+            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus, null));
         }
     }
 
@@ -95,13 +96,14 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
         set
         {
             SetField(ref _basePath, value);
-            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus));
+            AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus, null));
         }
     }
     
     private void MsuLookupServiceOnOnMsuLookupComplete(object? sender, MsuListEventArgs e)
     {
         AllMsus = e.Msus;
+        Errors = e.Errors?.ToDictionary(x => x.Key, x => x.Value);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -109,6 +111,8 @@ public sealed class MsuListViewModel : INotifyPropertyChanged
     public event EventHandler<MsuListEventArgs>? MsuListUpdated;
     
     public event EventHandler<MsuListEventArgs>? AvailableMsusUpdated;
+
+    public IDictionary<string, string>? Errors { get; set; }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
