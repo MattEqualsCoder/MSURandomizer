@@ -43,9 +43,9 @@ internal class MsuTypeConfig
         var currentTrackNumber = 1;
         foreach (var track in FullTrackList)
         {
-            if (track.Num > 0)
+            if (track.Num != null)
             {
-                currentTrackNumber = track.Num + 1;
+                currentTrackNumber = track.Num.Value + 1;
             }
             else
             {
@@ -76,7 +76,7 @@ internal class MsuTypeConfig
                     IsUnused = track.IsUnused,
                     IsExtended = track.IsExtended,
                     PairedTrack = track.PairedTrack + copy.Modifier,
-                    IsIgnored = track.IsIgnored || copy.IgnoredTracks.Contains(track.Num + copy.Modifier) || track.IsExtended
+                    IsIgnored = track.IsIgnored || copy.IgnoredTracks.Contains(track.Num!.Value + copy.Modifier) || track.IsExtended
                 });
             }
         }
@@ -109,7 +109,7 @@ internal class MsuTypeConfigTracks
 internal class MsuTypeConfigTrack
 {
     [JsonPropertyName("num")]
-    public int Num { get; set; }
+    public int? Num { get; set; }
     
     [JsonPropertyName("title")]
     public string Title { get; set; } = "";

@@ -164,7 +164,7 @@ internal class MsuTypeService : IMsuTypeService
         var tracks = config.FullTrackList.Where(x => !x.IsUnused).Select(x => new MsuTypeTrack()
         {
             Name = string.IsNullOrWhiteSpace(x.Title) ? x.Name : x.Title,
-            Number = x.Num,
+            Number = x.Num!.Value,
             Fallback = x.Fallback,
             PairedTrack = x.PairedTrack,
             IsExtended = x.IsExtended,
