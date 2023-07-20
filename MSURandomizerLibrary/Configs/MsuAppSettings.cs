@@ -8,6 +8,8 @@ public class MsuAppSettings
     public List<string> Smz3MsuTypes { get; set; } = new List<string>();
     public string Smz3MsuTypeName { get; set; } = "";
     public string Smz3LegacyMsuTypeName { get; set; } = "";
+    public string ZeldaMsuTypeName { get; set; } = "";
+    public string MetroidMsuTypeName { get; set; } = "";
     public string UserOptionsFilePath { get; set; } = "";
     public string MsuTypeFilePath { get; set; } = "";
     public int ContinuousReshuffleSeconds { get; set; } = 60;

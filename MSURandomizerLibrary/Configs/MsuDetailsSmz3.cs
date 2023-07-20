@@ -2,5 +2,5 @@
 
 public class MsuDetailsSmz3 : MsuDetails
 {
-    public MsuDetailsTrackList? Tracks { get; set; }
+    public MsuDetailsTrackListSmz3? Tracks { get; set; }
 }

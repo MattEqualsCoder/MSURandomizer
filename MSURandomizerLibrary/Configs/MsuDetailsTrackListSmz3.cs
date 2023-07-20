@@ -2,7 +2,7 @@
 
 namespace MSURandomizerLibrary.Configs;
 
-public class MsuDetailsTrackList
+public class MsuDetailsTrackListSmz3
 {
     [YamlMember(Alias = "zelda_title")]
     [Smz3TrackNumber(ZeldaFirst = 1, MetroidFirst = 101)]

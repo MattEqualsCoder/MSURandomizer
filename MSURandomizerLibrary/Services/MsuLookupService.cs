@@ -106,9 +106,9 @@ internal class MsuLookupService : IMsuLookupService
             msu = LoadUnknownMsu(msuPath, directory, baseName, pcmFiles);
         }
         // Check if there's a YAML file associated with the MSU to pull MSU and track information from
-        else if (!string.IsNullOrEmpty(yamlPath))
+        else if (!string.IsNullOrEmpty(yamlPath) && basicMsuDetails != null)
         {
-            msu = LoadDetailedMsu(msuPath, directory, baseName, msuType, pcmFiles, yamlPath);
+            msu = LoadDetailedMsu(msuPath, directory, baseName, msuType, pcmFiles, yamlPath, basicMsuDetails);
         }
         // Otherwise load it using the details from the MSU type
         else
@@ -124,9 +124,9 @@ internal class MsuLookupService : IMsuLookupService
 
     public IReadOnlyCollection<Msu> Msus => _msus.ToList();
 
-    private Msu LoadDetailedMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, string ymlPath)
+    private Msu LoadDetailedMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, string ymlPath, MsuDetailsBasic basicDetails)
     {
-        var msu = _msuDetailsService.LoadMsuDetails(msuType, msuPath, directory, baseName, ymlPath, out var msuDetails, out var yamlError);
+        var msu = _msuDetailsService.LoadMsuDetails(msuType, msuPath, directory, baseName, ymlPath, basicDetails, out var msuDetails, out var yamlError);
         
         if (!string.IsNullOrEmpty(yamlError))
         {

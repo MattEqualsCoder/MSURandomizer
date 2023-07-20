@@ -15,10 +15,11 @@ public interface IMsuDetailsService
     /// <param name="msuDirectory">The directory of the MSU file</param>
     /// <param name="msuBaseName">The base name of the MSU file with no file extension</param>
     /// <param name="yamlPath">The path to the YAML file</param>
+    /// <param name="basicDetails">The basic MSU details</param>
     /// <param name="msuDetails">The loaded MSU details if they were found</param>
     /// <param name="error">Any errors with loading the basic MSU details</param>
     /// <returns>The MSU with all of the updated details from the YAML file</returns>
-    public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath, out MsuDetails? msuDetails, out string? error);
+    public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath, MsuDetailsBasic? basicDetails, out MsuDetails? msuDetails, out string? error);
     
     /// <summary>
     /// Saves the MSU details to a YAML file
@@ -35,5 +36,5 @@ public interface IMsuDetailsService
     /// <param name="yamlPath">The path of the YAML file that was loaded, if applicable</param>
     /// <param name="error">Any errors with loading the basic MSU details</param>
     /// <returns>The MSU details if they were able to be loaded</returns>
-    public MsuDetails? GetBasicMsuDetails(string msuPath, out string? yamlPath, out string? error);
+    public MsuDetailsBasic? GetBasicMsuDetails(string msuPath, out string? yamlPath, out string? error);
 }

@@ -10,6 +10,8 @@ Smz3MsuTypes:
   - Super Metroid
 Smz3MsuTypeName: "SMZ3 Combo Randomizer"
 Smz3LegacyMsuTypeName: "SMZ3 Classic (Metroid First)"
+ZeldaMsuTypeName: "A Link to the Past"
+MetroidMsuTypeName: "Super Metroid"
 UserOptionsFilePath: "%LocalAppData%\\MSURandomizer\\msu-user-settings.yml"
 MsuTypeFilePath: "%LocalAppData%\\MSURandomizer\\Configs"
 ContinuousReshuffleSeconds: 60

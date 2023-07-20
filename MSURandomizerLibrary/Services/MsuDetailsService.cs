@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using System.Windows.Media;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 using YamlDotNet.Serialization;
@@ -33,7 +32,7 @@ public class MsuDetailsService : IMsuDetailsService
             .Build();
     }
 
-    public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath, out MsuDetails? msuDetails, out string? error)
+    public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath, MsuDetailsBasic? basicDetails, out MsuDetails? msuDetails, out string? error)
     {
         using var fileStream = new FileStream(yamlPath, FileMode.Open);
         using var reader = new StreamReader(fileStream);
@@ -47,11 +46,13 @@ public class MsuDetailsService : IMsuDetailsService
             return null;
         }
 
+        var trackType = basicDetails?.Tracks?.GetType().Name;
+
         // The YAML can come in the form of SMZ3 specific and a generic format. Try to detect which format it's in
         // and deserialize it accordingly
-        if ((msuType.DisplayName == _msuAppSettings.Smz3MsuTypeName || msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName) && yamlText.Contains("light_world") && yamlText.Contains("samus_fanfare"))
+        if (trackType?.StartsWith("Dictionary") == true)
         {
-            return ParseSmz3MsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText, out msuDetails, out error);
+            return ParseSmz3MsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText, basicDetails!, out msuDetails, out error);
         }
         else
         {
@@ -60,6 +61,37 @@ public class MsuDetailsService : IMsuDetailsService
     }
 
     public bool SaveMsuDetails(Msu msu, string outputPath)
+    {
+        if (_msuAppSettings.Smz3MsuTypes.Contains(msu.MsuTypeName))
+        {
+            return SaveMsuDetailsSmz3(msu, outputPath);
+        }
+        else
+        {
+            return SaveMsuDetailsGeneric(msu, outputPath);
+        }
+    }
+
+    public MsuDetailsBasic? GetBasicMsuDetails(string msuPath, out string? yamlPath, out string? error)
+    {
+        var path = msuPath.Replace(".msu", ".yml", StringComparison.OrdinalIgnoreCase);
+        if (!File.Exists(path))
+        {
+            path = path.Replace(".yml", ".yaml");
+            if (!File.Exists(path))
+            {
+                yamlPath = null;
+                error = null;
+                return GetBasicJsonDetails(msuPath);
+            }
+        }
+
+        var msuDetails = InternalGetBasicMsuDetails(path, out error);
+        yamlPath = msuDetails == null ? null : path;
+        return msuDetails;
+    }
+
+    private bool SaveMsuDetailsGeneric(Msu msu, string outputPath)
     {
         var msuTrackDetails = msu.Tracks.OrderBy(x => x.Number).Select(x => new MsuDetailsTrack()
         {
@@ -92,40 +124,75 @@ public class MsuDetailsService : IMsuDetailsService
             _logger.LogError(e, "Unable to write MSU YAML details to {Path}", outputPath);
             return false;
         }
-        
     }
-
-    public MsuDetails? GetBasicMsuDetails(string msuPath, out string? yamlPath, out string? error)
+    
+    private bool SaveMsuDetailsSmz3(Msu msu, string outputPath)
     {
-        var path = msuPath.Replace(".msu", ".yml", StringComparison.OrdinalIgnoreCase);
-        if (!File.Exists(path))
+        var metroidFirst = msu.MsuTypeName == _msuAppSettings.MetroidMsuTypeName ||
+                           msu.MsuTypeName == _msuAppSettings.Smz3LegacyMsuTypeName;
+
+        var msuTrackDetails = new MsuDetailsTrackListSmz3();
+        
+        foreach (var prop in typeof(MsuDetailsTrackListSmz3).GetProperties())
         {
-            path = path.Replace(".yml", ".yaml");
-            if (!File.Exists(path))
+            var attribute = prop.GetCustomAttributes<Smz3TrackNumberAttribute>().First();
+            var trackNumber = metroidFirst ? attribute.MetroidFirst : attribute.ZeldaFirst;
+            var track = msu.Tracks.FirstOrDefault(x => x.Number == trackNumber);
+            
+            if (track == null)
             {
-                yamlPath = null;
-                error = null;
-                return GetBasicJsonDetails(msuPath);
+                continue;
             }
+
+            prop.SetValue(msuTrackDetails, new MsuDetailsTrack()
+            {
+                Name = track.SongName,
+                Artist = track.Artist,
+                Album = track.Album,
+                Url = track.Url,
+                MsuAuthor = track.MsuCreator,
+                MsuName = track.MsuName
+            });
         }
+        
+        var msuDetails = new MsuDetailsSmz3()
+        {
+            PackName = msu.Name,
+            PackAuthor = msu.Creator,
+            PackVersion = 1,
+            Tracks = msuTrackDetails
+        };
 
         try
         {
-            yamlPath = path;
-            var yamlText = File.ReadAllText(path);
-            error = null;
-            return _deserializer.Deserialize<MsuDetails>(yamlText);
+            var yaml = _serializer.Serialize(msuDetails);
+            File.WriteAllText(outputPath, yaml);
+            return true;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Could not parse YAML file {Path}", path);
-            yamlPath = null;
+            _logger.LogError(e, "Unable to write MSU YAML details to {Path}", outputPath);
+            return false;
+        }
+    }
+
+    private MsuDetailsBasic? InternalGetBasicMsuDetails(string yamlPath, out string? error)
+    {
+        try
+        {
+            var yamlText = File.ReadAllText(yamlPath);
+            error = null;
+            return _deserializer.Deserialize<MsuDetailsBasic>(yamlText);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Could not parse YAML file {Path}", yamlPath);
             error = $"Could not load YAML file: {e.Message}";
             return null;
         }
     }
 
-    private MsuDetails? GetBasicJsonDetails(string msuPath)
+    private MsuDetailsBasic? GetBasicJsonDetails(string msuPath)
     {
         var fileInfo = new FileInfo(msuPath);
         if (fileInfo.DirectoryName == null)
@@ -143,7 +210,7 @@ public class MsuDetailsService : IMsuDetailsService
                 return null;
             }
 
-            return new MsuDetails()
+            return new MsuDetailsBasic()
             {
                 PackName = json.Name ?? json.Pack ?? json.PackName,
                 PackAuthor = json.Creator ?? json.PackCreator ?? json.PackAuthor,
@@ -226,7 +293,7 @@ public class MsuDetailsService : IMsuDetailsService
         
         // For SMZ3 specific YAML files, we need to get the tracks by property and get the track number from the 
         // property attributes based on if it's Metroid or Zelda first
-        foreach (var prop in typeof(MsuDetailsTrackList).GetProperties())
+        foreach (var prop in typeof(MsuDetailsTrackListSmz3).GetProperties())
         {
             if (prop.GetValue(msuDetailsSmz3.Tracks) is not MsuDetailsTrack track)
             {
@@ -244,7 +311,7 @@ public class MsuDetailsService : IMsuDetailsService
         return GetTrackDetails(tracks, msuDetailsSmz3, directory, baseName);
     }
 
-    private Msu? ParseSmz3MsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText, out MsuDetails? msuDetails, out string? error)
+    private Msu? ParseSmz3MsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText, MsuDetailsBasic basicDetails, out MsuDetails? msuDetails, out string? error)
     {
         try
         {
@@ -264,7 +331,7 @@ public class MsuDetailsService : IMsuDetailsService
                     Creator = smz3Details.PackAuthor ?? ""
                 };
             }
-            var tracks = GetSmz3TrackDetails(smz3Details, msuDirectory, msuBaseName, msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName);
+            var tracks = GetSmz3TrackDetails(smz3Details, msuDirectory, msuBaseName, msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName || msuType.DisplayName == _msuAppSettings.MetroidMsuTypeName);
             error = null;
             return new Msu()
             {

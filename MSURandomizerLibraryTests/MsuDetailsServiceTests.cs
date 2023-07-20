@@ -117,8 +117,11 @@ tracks:
             Smz3MsuTypeName = "Test MSU Type"
         });
 
+        var basicDetails = service.GetBasicMsuDetails(_msuPath, out _, out var basicError);
+        Assert.That(basicDetails, Is.Not.Null);
+
         var msu = service.LoadMsuDetails(msuType, _msuPath, new FileInfo(_msuPath).DirectoryName!, "unit-test",
-            _yamlPath, out var msuDetails, out var error);
+            _yamlPath, basicDetails, out var msuDetails, out var error);
         Assert.Multiple(() =>
         {
             Assert.That(msu, Is.Not.Null);

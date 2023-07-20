@@ -165,7 +165,7 @@ public abstract class TestHelpers
         return CreateMsu(GetTracksFromRanges(tracks), msuName, deleteOld, createAlts);
     }
 
-    public static IMsuDetailsService CreateMockMsuDetailsService(MsuDetails? returnMsuDetails, Msu? returnMsu)
+    public static IMsuDetailsService CreateMockMsuDetailsService(MsuDetailsBasic? returnMsuDetails, Msu? returnMsu)
     {
         var msuDetailsService = new Mock<IMsuDetailsService>();
         
@@ -175,7 +175,7 @@ public abstract class TestHelpers
             .Returns(value: returnMsuDetails);
 
         MsuDetails? outDetails;
-        msuDetailsService.Setup(x => x.LoadMsuDetails(It.IsAny<MsuType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), out outDetails, out outString1))
+        msuDetailsService.Setup(x => x.LoadMsuDetails(It.IsAny<MsuType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), returnMsuDetails, out outDetails, out outString1))
             .Returns(value: returnMsu);
         
         msuDetailsService.Setup(x => x.SaveMsuDetails(It.IsAny<Msu>(), It.IsAny<string>()))
