@@ -105,18 +105,8 @@ public class MsuLookupServiceTests
     private MsuLookupService CreateMsuLookupService(List<(int, int)> tracks)
     {
         var logger = TestHelpers.CreateMockLogger<MsuLookupService>();
-        var msuTypeService = TestHelpers.CreateMockMsuTypeService(tracks);
-        var msuDetailsService = new Mock<IMsuDetailsService>();
-        
-        string? outString1;
-        string? outString2;
-        msuDetailsService.Setup(x => x.GetBasicMsuDetails(It.IsAny<string>(), out outString1, out outString2))
-            .Returns(value: null);
-
-        MsuDetails? outDetails;
-        msuDetailsService.Setup(x => x.LoadMsuDetails(It.IsAny<MsuType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), out outDetails, out outString1))
-            .Returns(value: null);
-        
-        return new MsuLookupService(logger, msuTypeService, new MsuUserOptions(), msuDetailsService.Object, new MsuAppSettings());
+        var msuTypeService = TestHelpers.CreateMockMsuTypeService(tracks, out var msuTypes);
+        var msuDetailsService = TestHelpers.CreateMockMsuDetailsService(null, null);
+        return new MsuLookupService(logger, msuTypeService, new MsuUserOptions(), msuDetailsService, new MsuAppSettings());
     }
 }

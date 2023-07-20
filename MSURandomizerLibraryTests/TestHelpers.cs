@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections;
+using Microsoft.Extensions.Logging;
 using Moq;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
@@ -7,14 +8,11 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibraryTests;
 
-public class TestHelpers
+public abstract class TestHelpers
 {
     public static IMsuAppSettingsService CreateMsuAppSettingsService(MsuAppSettings? settings = null)
     {
-        if (settings == null)
-        {
-            settings = new MsuAppSettings();
-        }
+        settings ??= new MsuAppSettings();
 
         var appSettingsService = new MsuMsuAppSettingsService();
         
@@ -54,7 +52,7 @@ public class TestHelpers
         return mockService.Object;
     }
     
-    public static IMsuTypeService CreateMockMsuTypeService(List<(int, int)> tracks)
+    public static IMsuTypeService CreateMockMsuTypeService(List<(int, int)> tracks, out List<MsuType> msuTypes)
     {
         var trackNumbers = GetTracksFromRanges(tracks);
 
@@ -71,7 +69,56 @@ public class TestHelpers
             })
         };
 
-        return CreateMockMsuTypeService(new List<MsuType>() { msuType });
+        msuTypes = new List<MsuType>() { msuType };
+        return CreateMockMsuTypeService(msuTypes);
+    }
+    
+    public static IMsuTypeService CreateMockMsuTypeServiceMulti(List<List<(int, int)>> msuTypeTracks, out List<MsuType> msuTypes)
+    {
+        msuTypes = new List<MsuType>();
+
+        var index = 1;
+
+        foreach (var tracks in msuTypeTracks)
+        {
+            var currentIndex = index;
+            var trackNumbers = GetTracksFromRanges(tracks);
+            
+            msuTypes.Add(new MsuType()
+            {
+                Name = $"Test MSU Type {currentIndex}",
+                DisplayName = $"Test MSU Type {currentIndex}",
+                RequiredTrackNumbers = trackNumbers.ToHashSet(),
+                ValidTrackNumbers = trackNumbers.ToHashSet(),
+                Tracks = trackNumbers.Select(x => new MsuTypeTrack()
+                {
+                    Number = x,
+                    Name = $"MSU Type {currentIndex} Track {x}"
+                })
+            });
+
+            index++;
+        }
+        
+        return CreateMockMsuTypeService(msuTypes);
+    }
+
+    public static IMsuUserOptionsService CreateMockMsuUserOptionsService(MsuUserOptions? options)
+    {
+        options ??= new MsuUserOptions();
+        var service = new Mock<IMsuUserOptionsService>();
+
+        service.Setup(x => x.Initialize(It.IsAny<string>()))
+            .Returns(options);
+        
+        service.Setup(x => x.MsuUserOptions)
+            .Returns(options);
+
+        service.Setup(x => x.Save());
+        
+        service.Setup(x => x.SaveMsuSettings(It.IsAny<Msu>()));
+
+        return service.Object;
     }
 
     public static string CreateMsu(List<int> tracks, string msuName = "test-msu", bool deleteOld = true, bool createAlts = false)
@@ -86,7 +133,7 @@ public class TestHelpers
 
         if (deleteOld)
         {
-            foreach(var filePath in Directory.EnumerateFiles(path, "*.msu").Concat(Directory.EnumerateFiles(path, "*.pcm")))
+            foreach(var filePath in Directory.EnumerateFiles(path))
             {
                 File.Delete(filePath);
             }    
@@ -116,6 +163,25 @@ public class TestHelpers
     public static string CreateMsu(List<(int, int)> tracks, string msuName = "test-msu", bool deleteOld = true, bool createAlts = false)
     {
         return CreateMsu(GetTracksFromRanges(tracks), msuName, deleteOld, createAlts);
+    }
+
+    public static IMsuDetailsService CreateMockMsuDetailsService(MsuDetails? returnMsuDetails, Msu? returnMsu)
+    {
+        var msuDetailsService = new Mock<IMsuDetailsService>();
+        
+        string? outString1;
+        string? outString2;
+        msuDetailsService.Setup(x => x.GetBasicMsuDetails(It.IsAny<string>(), out outString1, out outString2))
+            .Returns(value: returnMsuDetails);
+
+        MsuDetails? outDetails;
+        msuDetailsService.Setup(x => x.LoadMsuDetails(It.IsAny<MsuType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), out outDetails, out outString1))
+            .Returns(value: returnMsu);
+        
+        msuDetailsService.Setup(x => x.SaveMsuDetails(It.IsAny<Msu>(), It.IsAny<string>()))
+            .Returns(value: true);
+
+        return msuDetailsService.Object;
     }
 
     private static List<int> GetTracksFromRanges(List<(int, int)> tracks)
