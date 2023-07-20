@@ -38,4 +38,19 @@ public class TestHelpers
     {
         return Mock.Of<ILogger<T>>();
     }
+
+    public static IMsuTypeService CreateMockMsuTypeService(List<MsuType>? msuTypes)
+    {
+        var mockService = new Mock<IMsuTypeService>();
+        
+        mockService
+            .Setup(x => x.MsuTypes)
+            .Returns(msuTypes ?? new List<MsuType>());
+        
+        mockService
+            .Setup(x => x.GetMsuType(It.IsAny<string>()))
+            .Returns((string key) => msuTypes?.FirstOrDefault(x => x.Name == key));
+        
+        return mockService.Object;
+    }
 }

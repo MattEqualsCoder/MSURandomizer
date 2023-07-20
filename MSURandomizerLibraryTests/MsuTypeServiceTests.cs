@@ -1,4 +1,3 @@
-using Moq;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
 
@@ -49,8 +48,8 @@ public class MsuTypeServiceTests
         });
 
         var lttpType = msuTypeService.GetMsuType("LTTP");
-        Assert.AreEqual(msuTypeService.GetMsuTypeName(lttpType), "LTTP");
-        Assert.AreEqual(msuTypeService.GetMsuTypeName(null), "Unknown");
+        Assert.That(msuTypeService.GetMsuTypeName(lttpType), Is.EqualTo("LTTP"));
+        Assert.That(msuTypeService.GetMsuTypeName(null), Is.EqualTo("Unknown"));
     }
     
     private string GetConfigDirectory()

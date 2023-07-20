@@ -23,7 +23,7 @@ public class MsuUserOptionsServiceTests
             file.Delete();
         }
         var options = msuUserOptionsService.Initialize(file.FullName);
-        Assert.AreEqual(defaultOptions.Name, options.Name, "Spawned default options are invalid");
+        Assert.That(options.Name, Is.EqualTo(defaultOptions.Name), "Spawned default options are invalid");
     }
 
     [Test]
@@ -50,7 +50,7 @@ public class MsuUserOptionsServiceTests
         }
         
         var options = msuUserOptionsService.Initialize(file.FullName);
-        Assert.AreNotEqual(options.Name, TestOptionName);
+        Assert.That(options.Name, Is.Not.EqualTo(TestOptionName));
         
         options.Name = TestOptionName;
         options.MsuTypeNamePaths = new Dictionary<string, string>()
@@ -63,9 +63,9 @@ public class MsuUserOptionsServiceTests
         Assert.IsTrue(file.Exists, $"{file.FullName} was not created by MsuUserOptionsService");
         
         msuUserOptionsService.Initialize(file.FullName);
-        Assert.AreEqual(TestOptionName, msuUserOptionsService.MsuUserOptions.Name, "Reloaded MSU User Options name is invalid");
+        Assert.That(msuUserOptionsService.MsuUserOptions.Name, Is.EqualTo(TestOptionName), "Reloaded MSU User Options name is invalid");
         Assert.Contains(testMsuType, msuUserOptionsService.MsuUserOptions.MsuTypePaths.Keys);
-        Assert.AreEqual(msuUserOptionsService.MsuUserOptions.MsuTypePaths[testMsuType], TestMsuTypeValue);
+        Assert.That(msuUserOptionsService.MsuUserOptions.MsuTypePaths[testMsuType], Is.EqualTo(TestMsuTypeValue));
         file.Delete();
     }
     
@@ -99,7 +99,7 @@ public class MsuUserOptionsServiceTests
         Assert.IsTrue(file.Exists, $"{file.FullName} was not created by MsuUserOptionsService");
         
         msuUserOptionsService.Initialize(file.FullName);
-        Assert.AreEqual(TestMsuSettingsName, msuUserOptionsService.MsuUserOptions.MsuSettings.FirstOrDefault(x => x.MsuPath == TestMsuName)?.Name, "Reloaded MSU settings is invalid");
+        Assert.That(msuUserOptionsService.MsuUserOptions.MsuSettings.FirstOrDefault(x => x.MsuPath == TestMsuName)?.Name, Is.EqualTo(TestMsuSettingsName), "Reloaded MSU settings is invalid");
         file.Delete();
 
         msu.Settings = new MsuSettings(TestMsuName);
