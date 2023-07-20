@@ -63,7 +63,7 @@ public interface IMsuLookupService
     public ICollection<Msu> GetMsusByPath(ICollection<string>? paths);
     
     /// <summary>
-    /// Retrieves an MSU that match the given path
+    /// Retrieves a MSU that matches the given path
     /// </summary>
     /// <param name="path">The path to search for</param>
     /// <returns>The found MSU</returns>

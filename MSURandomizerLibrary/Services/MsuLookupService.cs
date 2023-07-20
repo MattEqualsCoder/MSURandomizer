@@ -212,6 +212,9 @@ internal class MsuLookupService : IMsuLookupService
             .Select(int.Parse)
             .ToHashSet();
 
+        var basicPcmFiles = trackNumbers.Select(x => Path.Combine(directory, $"{baseName}-{x}.pcm")).ToList();
+        var extraPcmFiles = pcmFiles.Where(x => !basicPcmFiles.Contains(x));
+
         var msuName = msuDetails?.PackName ?? new DirectoryInfo(directory).Name;
         var msuCreator = msuDetails?.PackAuthor;
         var artist = msuDetails?.Artist;
@@ -264,7 +267,7 @@ internal class MsuLookupService : IMsuLookupService
             ));
 
             // See if there are any alt tracks to add
-            var alts = pcmFiles.Where(x => x != path && Regex.IsMatch(x, $"-{trackNumber}[^0-9]")).ToList();
+            var alts = extraPcmFiles.Where(x => x != path && Regex.IsMatch(x.Replace(Path.Combine(directory, baseName), ""), $"-{trackNumber}[^0-9]")).ToList();
             if (!alts.Any()) continue;
             
             foreach (var alt in alts)
