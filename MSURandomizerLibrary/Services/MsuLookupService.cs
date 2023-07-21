@@ -320,7 +320,7 @@ internal class MsuLookupService : IMsuLookupService
         var matchingMsus = new List<(MsuType Type, float PrimaryConfidence, int PrimaryCount, float SecondaryConfidence, int SecondaryCount)>();
         
         var allowedMsuTypes = _msuTypeService.MsuTypes.ToList();
-        if (msuTypeFilter != null && !_msuAppSettings.Smz3MsuTypes.Contains(msuTypeFilter.DisplayName))
+        if (msuTypeFilter != null && !_msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(msuTypeFilter.DisplayName))
         {
             allowedMsuTypes = allowedMsuTypes.Where(x => x.IsCompatibleWith(msuTypeFilter)).ToList();
         }
@@ -364,7 +364,7 @@ internal class MsuLookupService : IMsuLookupService
         }
         
         var matchedType = matchingMsus
-            .OrderByDescending(x => _msuAppSettings.Smz3MsuTypes.Contains(x.Type.DisplayName) || _msuAppSettings.Smz3MsuTypes.Contains(x.Type.Name))
+            .OrderByDescending(x => _msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(x.Type.DisplayName) || _msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(x.Type.Name))
             .ThenByDescending(x => x.PrimaryConfidence)
             .ThenByDescending(x => x.PrimaryCount)
             .ThenByDescending(x => x.SecondaryConfidence)

@@ -62,7 +62,7 @@ public class MsuDetailsService : IMsuDetailsService
 
     public bool SaveMsuDetails(Msu msu, string outputPath)
     {
-        if (_msuAppSettings.Smz3MsuTypes.Contains(msu.MsuTypeName))
+        if (_msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(msu.MsuTypeName))
         {
             return SaveMsuDetailsSmz3(msu, outputPath);
         }
@@ -128,8 +128,7 @@ public class MsuDetailsService : IMsuDetailsService
     
     private bool SaveMsuDetailsSmz3(Msu msu, string outputPath)
     {
-        var metroidFirst = msu.MsuTypeName == _msuAppSettings.MetroidMsuTypeName ||
-                           msu.MsuTypeName == _msuAppSettings.Smz3LegacyMsuTypeName;
+        var metroidFirst = _msuAppSettings.MetroidFirstMsuTypes.Contains(msu.MsuTypeName);
 
         var msuTrackDetails = new MsuDetailsTrackListSmz3();
         
@@ -331,7 +330,7 @@ public class MsuDetailsService : IMsuDetailsService
                     Creator = smz3Details.PackAuthor ?? ""
                 };
             }
-            var tracks = GetSmz3TrackDetails(smz3Details, msuDirectory, msuBaseName, msuType.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName || msuType.DisplayName == _msuAppSettings.MetroidMsuTypeName);
+            var tracks = GetSmz3TrackDetails(smz3Details, msuDirectory, msuBaseName, _msuAppSettings.MetroidFirstMsuTypes.Contains(msuType.DisplayName));
             error = null;
             return new Msu()
             {

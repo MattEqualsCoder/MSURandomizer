@@ -189,7 +189,7 @@ public class MsuTypeTests
     [Test]
     public void TestOther()
     {
-        var msuTypes = _msuTypeService.MsuTypes.Where(x => !_appSettings.Smz3MsuTypes.Contains(x.DisplayName))
+        var msuTypes = _msuTypeService.MsuTypes.Where(x => !_appSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(x.DisplayName))
             .ToList();
 
         foreach (var msuType in msuTypes)

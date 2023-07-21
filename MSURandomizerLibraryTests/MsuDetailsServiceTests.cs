@@ -114,7 +114,7 @@ tracks:
         
         var service = GetMsuDetailsService(new MsuAppSettings()
         {
-            Smz3MsuTypeName = "Test MSU Type"
+            Smz3MsuTypes = new List<string> { "Test MSU Type" }
         });
 
         var basicDetails = service.GetBasicMsuDetails(_msuPath, out _, out var basicError);

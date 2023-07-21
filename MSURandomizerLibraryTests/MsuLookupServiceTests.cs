@@ -1,5 +1,4 @@
-﻿using Moq;
-using MSURandomizerLibrary.Configs;
+﻿using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibraryTests;
@@ -24,7 +23,7 @@ public class MsuLookupServiceTests
     public void LookupMsusTest()
     {
         var tracks = new List<(int, int)>() { (1, 5) };
-        TestHelpers.CreateMsu(tracks, "test-msu-1", true);
+        TestHelpers.CreateMsu(tracks, "test-msu-1");
         var msuPath = TestHelpers.CreateMsu(tracks, "test-msu-2", false, true);
         var folder = new FileInfo(msuPath).DirectoryName;
         
@@ -44,7 +43,7 @@ public class MsuLookupServiceTests
     public void RefreshMsuTest()
     {
         var tracks = new List<(int, int)>() { (1, 5) };
-        var msuPath = TestHelpers.CreateMsu(tracks, "test-msu-1", true);
+        var msuPath = TestHelpers.CreateMsu(tracks, "test-msu-1");
         var folder = new FileInfo(msuPath).DirectoryName;
         
         var service = CreateMsuLookupService(tracks);
@@ -54,7 +53,7 @@ public class MsuLookupServiceTests
         Assert.That(service.Msus.First().Tracks.Count, Is.EqualTo(5));
         
         tracks = new List<(int, int)>() { (1, 6) };
-        msuPath = TestHelpers.CreateMsu(tracks, "test-msu-1", true);
+        TestHelpers.CreateMsu(tracks, "test-msu-1");
         
         service.LookupMsus(folder);
         Assert.That(service.Msus.Count, Is.EqualTo(1));
@@ -65,7 +64,7 @@ public class MsuLookupServiceTests
     public void GetMsusByPathTest()
     {
         var tracks = new List<(int, int)>() { (1, 5) };
-        var path1 = TestHelpers.CreateMsu(tracks, "test-msu-1", true);
+        var path1 = TestHelpers.CreateMsu(tracks, "test-msu-1");
         var path2 = TestHelpers.CreateMsu(tracks, "test-msu-2", false);
         var path3 = TestHelpers.CreateMsu(tracks, "test-msu-3", false);
         
@@ -86,7 +85,7 @@ public class MsuLookupServiceTests
     public void GetMsuByPathTest()
     {
         var tracks = new List<(int, int)>() { (1, 5) };
-        var path1 = TestHelpers.CreateMsu(tracks, "test-msu-1", true);
+        var path1 = TestHelpers.CreateMsu(tracks, "test-msu-1");
         var path2 = TestHelpers.CreateMsu(tracks, "test-msu-2", false);
         
         var folder = new FileInfo(path1).DirectoryName;

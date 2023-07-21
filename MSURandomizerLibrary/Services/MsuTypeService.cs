@@ -132,12 +132,13 @@ internal class MsuTypeService : IMsuTypeService
             }
         }
 
-        var smz3 = _msuTypes.FirstOrDefault(x => x.DisplayName == _msuAppSettings.Smz3MsuTypeName);
-        var smz3Old = _msuTypes.FirstOrDefault(x => x.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName);
+        var smz3Types = _msuTypes.Where(x => _msuAppSettings.Smz3MsuTypes.Contains(x.DisplayName));
+        var smz3One = smz3Types.FirstOrDefault();
+        var smz3Two = smz3Types.LastOrDefault();
 
-        if (smz3 != null && smz3Old != null)
+        if (smz3One != smz3Two && smz3One != null && smz3Two != null)
         {
-            smz3.Conversions[smz3Old] = x =>
+            smz3One.Conversions[smz3Two] = x =>
             {
                 return x switch
                 {
@@ -147,7 +148,7 @@ internal class MsuTypeService : IMsuTypeService
                 };
             };
         
-            smz3Old.Conversions[smz3] = x =>
+            smz3Two.Conversions[smz3One] = x =>
             {
                 return x switch
                 {

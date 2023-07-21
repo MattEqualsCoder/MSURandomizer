@@ -105,9 +105,16 @@ public partial class MsuWindow : Window
         var availableMsuTypes = msus.Select(x => x.SelectedMsuType).Distinct().Where(x => x is { Selectable: true }).Cast<MsuType>();
         
         // If we have SMZ3 legacy, make sure SMZ3 is added to the dropdown
-        if (msus.Select(x => x.SelectedMsuType).Any(x => x is { Selectable: false} && x.DisplayName == _msuAppSettings.Smz3LegacyMsuTypeName) && availableMsuTypes.All(x => x.DisplayName != _msuAppSettings.Smz3MsuTypeName))
+        var smz3MsuTypes = msus.Select(x => x.SelectedMsuType)
+            .Where(x => x != null && _msuAppSettings.Smz3MsuTypes.Contains(x.DisplayName))
+            .Distinct()
+            .Cast<MsuType>()
+            .ToList();
+        if (smz3MsuTypes.All(x => x.Selectable == false))
         {
-            availableMsuTypes = availableMsuTypes.Append(_msuTypeService.GetMsuType(_msuAppSettings.Smz3MsuTypeName)!).OrderBy(x => x.DisplayName);
+            var smz3MsuType = _msuTypeService.MsuTypes.First(x =>
+                x is { Selectable: true } && _msuAppSettings.Smz3MsuTypes.Contains(x.DisplayName));
+            availableMsuTypes = availableMsuTypes.Append(smz3MsuType).OrderBy(x => x.DisplayName);
         }
         
         MsuTypesComboBox.ItemsSource = availableMsuTypes.Select(x => x.DisplayName).ToList();
