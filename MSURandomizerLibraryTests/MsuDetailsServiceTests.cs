@@ -30,7 +30,7 @@ artist: Test Artist
             Assert.That(details, Is.Not.Null, "No basic MSU details loaded");
             Assert.That(details?.PackName, Is.EqualTo("Test MSU Pack"), "Pack name invalid");
             Assert.That(details?.PackAuthor, Is.EqualTo("Test Author"), "Pack author invalid");
-            Assert.That(details?.PackVersion, Is.EqualTo(100), "Pack version invalid");
+            Assert.That(details?.PackVersion, Is.EqualTo("100"), "Pack version invalid");
             Assert.That(details?.Artist, Is.EqualTo("Test Artist"), "Artist invalid");
         });
     }
