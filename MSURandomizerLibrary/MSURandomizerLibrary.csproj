@@ -4,6 +4,11 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <Version>0.9.7</Version>
+    <Title>MSU Randomizer Library</Title>
+    <Authors>MattEqualsCoder</Authors>
+    <Description>Library for detecting, selecting, and randomizing MSUs for various games and randomizers.</Description>
+    <RepositoryUrl>https://github.com/MattEqualsCoder/MSURandomizer</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,15 +18,49 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="MSUTypes\YamlFiles\alttp.yml" />
-    <EmbeddedResource Include="MSUTypes\YamlFiles\sm.yml" />
-    <EmbeddedResource Include="MSUTypes\YamlFiles\smz3.yml" />
-    <EmbeddedResource Include="MSUTypes\YamlFiles\smz3_legacy.yml" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="WindowsAPICodePack" Version="7.0.1" />
+    <PackageReference Include="YamlDotNet" Version="12.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WindowsAPICodePack" Version="7.0.1" />
-    <PackageReference Include="YamlDotNet" Version="12.2.0" />
+    <Page Update="UI\MsuList.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\MsuUserSettingsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\MsuDirectoryControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\MsuCreateWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\MsuContinuousShuffleWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\MsuWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
 </Project>

@@ -4,10 +4,10 @@
 #include "CodeDependencies.iss"
 
 #define MyAppName "MSU Randomizer"
-#define MyAppVersion "0.9.6"
 #define MyAppPublisher "MattEqualsCoder"
 #define MyAppURL "https://github.com/MattEqualsCoder"
 #define MyAppExeName "MSURandomizer.exe"
+#define MyAppVersion GetStringFileInfo("..\MSURandomizer\bin\Release\net7.0-windows\win-x64\publish\" + MyAppExeName, "ProductVersion"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -15,7 +15,6 @@
 AppId={{34E4F7EB-916B-445B-80FC-8F9F637E9EE2}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -50,7 +49,7 @@ Source: "netcorecheck.exe"; Flags: dontcopy noencryption
 Source: "netcorecheck_x64.exe"; Flags: dontcopy noencryption
 Source: "..\MSURandomizer\bin\Release\net7.0-windows\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: Is64BitInstallMode;
 Source: "..\MSURandomizer\bin\Release\net7.0-windows\win-x86\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: "not Is64BitInstallMode";
-Source: "..\MSURandomizerLibrary\MSUTypes\YamlFiles\*"; DestDir: "{localappdata}\MSURandomizer\Configs"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\ConfigRepo\resources\snes\*"; Excludes: "*.txt,*.bps"; DestDir: "{localappdata}\MSURandomizer\Configs\snes"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

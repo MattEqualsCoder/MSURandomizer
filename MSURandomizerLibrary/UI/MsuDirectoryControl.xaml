@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="MSURandomizerLibrary.UI.MsuDirectoryControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <StackPanel Orientation="Vertical" Margin="5">
+        <TextBlock Name="MsuNameTextBlock">Name</TextBlock>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0"
+                     Name="OutputFolderTextBox" 
+                     IsReadOnly="True"
+                     Margin="0 0 5 0"/>
+            <Button x:Name="OutputFolderButton"
+                    Grid.Column="1"
+                    Margin="0 0 5 0"
+                    Padding="5 0 5 0"
+                    Click="OutputFolderButton_OnClick">Browse...</Button>
+            <Button x:Name="ClearFolderButton"
+                    Grid.Column="2"
+                    Padding="5 0 5 0"
+                    Click="ClearFolderButton_OnClick">×</Button>
+            
+        </Grid>
+    </StackPanel>
+</UserControl>
