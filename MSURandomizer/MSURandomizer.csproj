@@ -9,7 +9,7 @@
     <FileVersion></FileVersion>
     <PackageIcon>MSURandomizerIcon.ico</PackageIcon>
     <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
-    <Version>0.9.7-rc.2</Version>
+    <Version>0.9.7</Version>
   </PropertyGroup>
 
   <ItemGroup>

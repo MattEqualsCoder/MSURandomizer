@@ -4,10 +4,10 @@
 #include "CodeDependencies.iss"
 
 #define MyAppName "MSU Randomizer"
-#define MyAppVersion "0.9.7-rc.2"
 #define MyAppPublisher "MattEqualsCoder"
 #define MyAppURL "https://github.com/MattEqualsCoder"
 #define MyAppExeName "MSURandomizer.exe"
+#define MyAppVersion GetStringFileInfo("..\MSURandomizer\bin\Release\net7.0-windows\win-x64\publish\" + MyAppExeName, "ProductVersion"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -15,7 +15,6 @@
 AppId={{34E4F7EB-916B-445B-80FC-8F9F637E9EE2}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
