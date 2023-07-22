@@ -1,0 +1,18 @@
+# Generic template for all MSU types outside of Zelda, Super Metroid, and SMZ3
+pack_name: 
+pack_author: 
+artist: 
+album: 
+tracks:
+- track_number: 1
+  name: 
+  artist: 
+  album: 
+- track_number: 2
+  name: 
+  artist: 
+  album: 
+- track_number: 3
+  name: 
+  artist: 
+  album: 
