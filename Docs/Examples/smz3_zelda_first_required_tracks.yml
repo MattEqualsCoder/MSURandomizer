@@ -1,0 +1,476 @@
+# SMZ3 template without tracks not used in SMZ3 with Zelda tracks first
+pack_name: 
+pack_author: 
+artist: 
+album: 
+tracks: 
+  # Track Number: 2
+  light_world:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 4
+  bunny_theme:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 5
+  lost_woods:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 7
+  kakariko:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 8
+  mirror:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 9
+  dark_world:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 10
+  pedestal_pull:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 11
+  zelda_game_over:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 12
+  guards:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 13
+  dark_death_mountain:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 14
+  minigame:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 15
+  dark_woods:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 16
+  hyrule_castle:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 17
+  pendant_dungeon:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 18
+  cave_1:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 19
+  boss_victory:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 20
+  sanctuary:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 21
+  zelda_boss_battle:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 22
+  crystal_dungeon:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 23
+  shop:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 24
+  cave_2:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 26
+  crystal_retrieved:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 27
+  fairy:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 28
+  agahnims_floor:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 29
+  ganon_reveal:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 30
+  ganons_message:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 31
+  ganon_battle:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 32
+  triforce_room:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 33
+  epilogue:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 35
+  eastern_palace:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 36
+  desert_palace:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 37
+  agahnims_tower:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 38
+  swamp_palace:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 39
+  palace_of_darkness:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 40
+  misery_mire:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 41
+  skull_woods:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 42
+  ice_palace:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 43
+  tower_of_hera:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 44
+  thieves_town:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 45
+  turtle_rock:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 46
+  ganons_tower:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 47
+  armos_knights:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 48
+  lanmolas:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 49
+  agahnim_1:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 50
+  arrghus:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 51
+  helmasaur_king:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 52
+  vitreous:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 53
+  mothula:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 54
+  kholdstare:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 55
+  moldorm:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 56
+  blind:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 57
+  trinexx:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 58
+  agahnim_2:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 59
+  ganons_tower_climb:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 60
+  light_world_2:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 61
+  dark_world_2:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 99
+  smz3_credits:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 101
+  samus_fanfare:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 103
+  item_room:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 104
+  metroid_opening_with_intro:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 105
+  metroid_opening_without_intro:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 106
+  crateria_landing_with_thunder:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 107
+  crateria_landing_without_thunder:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 108
+  crateria_space_pirates_appear:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 109
+  golden_statues:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 110
+  samus_aran_theme:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 111
+  green_brinstar:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 112
+  red_brinstar:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 113
+  upper_norfair:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 114
+  lower_norfair:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 115
+  inner_maridia:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 116
+  outer_maridia:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 117
+  tourian:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 118
+  mother_brain_battle:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 119
+  big_boss_battle_1:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 120
+  evacuation:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 121
+  chozo_statue_awakens:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 122
+  big_boss_battle_2:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 123
+  tension:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 124
+  plant_miniboss:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 126
+  wrecked_ship_powered_off:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 127
+  wrecked_ship_powered_on:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 129
+  death_cry:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 130
+  metroid_credits:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 131
+  kraid_incoming:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 132
+  kraid_battle:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 133
+  phantoon_incoming:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 134
+  phantoon_battle:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 135
+  draygon_battle:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 136
+  ridley_battle:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 137
+  baby_incoming:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 138
+  the_baby:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 139
+  hyper_beam:
+    name: 
+    artist: 
+    album: 
+  # Track Number: 140
+  metroid_game_over:
+    name: 
+    artist: 
+    album: 
