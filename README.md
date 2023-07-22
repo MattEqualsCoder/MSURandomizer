@@ -2,7 +2,7 @@
 
 A multi game MSU randomizer originally created for the [SMZ3 Cas' Randomizer](https://github.com/Vivelin/SMZ3Randomizer). Select which MSUs you want as possibilities, then either have it shuffle them all together or have it pick a random one for you!
 
-![image](https://user-images.githubusercontent.com/63823784/209894639-b07f1cab-b618-4225-81b9-51767314d2ce.png)
+![image](https://github.com/MattEqualsCoder/MSURandomizer/assets/63823784/aee49149-3148-43c0-bd03-460b24e958d1)
 
 ## Features
 
