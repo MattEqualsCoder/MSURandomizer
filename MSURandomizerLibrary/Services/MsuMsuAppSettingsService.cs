@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using MSURandomizerLibrary.Configs;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -18,7 +19,7 @@ public class MsuMsuAppSettingsService : IMsuAppSettingsService
         }
         using var reader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true);
         var yamlText = reader.ReadToEnd();
-        Parse(yamlText);
+        LoadSettings(yamlText);
         return _settings;
     }
 
@@ -29,17 +30,43 @@ public class MsuMsuAppSettingsService : IMsuAppSettingsService
             throw new FileNotFoundException("Could not find MsuRandomizerSettings file {File}", path);
         }
         var yamlText = File.ReadAllText(path);
-        Parse(yamlText);
+        LoadSettings(yamlText);
         return _settings;
     }
 
-    private void Parse(string yamlText)
+    private void LoadSettings(string overrideYaml)
+    {
+        var stream =
+            Assembly.GetExecutingAssembly().GetManifestResourceStream("MSURandomizerLibrary.settings.yaml");
+        var settings = new MsuAppSettings();
+        if (stream != null)
+        {
+            using var reader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true);
+            var defaultYaml = reader.ReadToEnd();
+            settings = Parse(defaultYaml);
+        }
+        var overrideSettings = Parse(overrideYaml);
+        
+        // Pull in override settings if they are not null
+        foreach (var prop in typeof(MsuAppSettings).GetProperties())
+        {
+            var value = prop.GetValue(overrideSettings);
+            if (value != null && prop.CanWrite)
+            {
+                prop.SetValue(settings, value);
+            }
+        }
+
+        _settings = settings;
+    }
+
+    private MsuAppSettings Parse(string yamlText)
     {
         var deserializer = new DeserializerBuilder()
             .WithNamingConvention(PascalCaseNamingConvention.Instance)
             .IgnoreUnmatchedProperties()
             .Build();
-        _settings = deserializer.Deserialize<MsuAppSettings>(yamlText);
+        return deserializer.Deserialize<MsuAppSettings>(yamlText);
     }
 
     public MsuAppSettings MsuAppSettings => _settings;

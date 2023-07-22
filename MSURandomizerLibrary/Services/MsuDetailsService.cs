@@ -128,7 +128,7 @@ public class MsuDetailsService : IMsuDetailsService
     
     private bool SaveMsuDetailsSmz3(Msu msu, string outputPath)
     {
-        var metroidFirst = _msuAppSettings.MetroidFirstMsuTypes.Contains(msu.MsuTypeName);
+        var metroidFirst = _msuAppSettings.MetroidFirstMsuTypes?.Contains(msu.MsuTypeName) == true;
 
         var msuTrackDetails = new MsuDetailsTrackListSmz3();
         
@@ -330,7 +330,7 @@ public class MsuDetailsService : IMsuDetailsService
                     Creator = smz3Details.PackAuthor ?? ""
                 };
             }
-            var tracks = GetSmz3TrackDetails(smz3Details, msuDirectory, msuBaseName, _msuAppSettings.MetroidFirstMsuTypes.Contains(msuType.DisplayName));
+            var tracks = GetSmz3TrackDetails(smz3Details, msuDirectory, msuBaseName, _msuAppSettings.MetroidFirstMsuTypes?.Contains(msuType.DisplayName) == true);
             error = null;
             return new Msu()
             {

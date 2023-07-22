@@ -32,13 +32,16 @@
 
   <ItemGroup>
     <None Remove="settings.yaml" />
-    <EmbeddedResource Include="settings.yaml" />
   </ItemGroup>
 
   <ItemGroup>
     <Page Update="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="settings.yaml" />
   </ItemGroup>
 
 </Project>

@@ -71,10 +71,10 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
             }
             
             msuTypePath = Environment.ExpandEnvironmentVariables(msuTypePath);
-            if ((msuTypePath.ToLower().EndsWith(".yaml") || msuTypePath.ToLower().EndsWith(".yml")) && File.Exists(msuTypePath))
+            if ((msuTypePath.ToLower().EndsWith(".json")) && File.Exists(msuTypePath))
             {
-                using var yamlFile = new FileStream(msuTypePath, FileMode.Open);
-                msuTypeService.LoadMsuTypes(yamlFile);
+                using var jsonStream = new FileStream(msuTypePath, FileMode.Open);
+                msuTypeService.LoadMsuTypes(jsonStream);
             }
             else
             {

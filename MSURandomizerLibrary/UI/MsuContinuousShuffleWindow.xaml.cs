@@ -77,7 +77,7 @@ public partial class MsuContinuousShuffleWindow
             OpenFolder = false
         };
             
-        _reshuffleTimer = new Timer(TimeSpan.FromSeconds(appSettings.ContinuousReshuffleSeconds));
+        _reshuffleTimer = new Timer(TimeSpan.FromSeconds(appSettings.ContinuousReshuffleSeconds ?? 60));
         _reshuffleTimer.Elapsed += OnTimedEvent;
         _reshuffleTimer.Start();
     }

@@ -56,17 +56,17 @@ public partial class MsuWindow : Window
         FilterComboBox.SelectedItem = _msuUserOptionsService.MsuUserOptions.Filter;
         
         RandomMsuButton.Visibility =
-            _msuAppSettings.MsuWindowDisplayRandomButton ? Visibility.Visible : Visibility.Collapsed;
+            _msuAppSettings.MsuWindowDisplayRandomButton == true ? Visibility.Visible : Visibility.Collapsed;
         ShuffledMsuButton.Visibility =
-            _msuAppSettings.MsuWindowDisplayShuffleButton ? Visibility.Visible : Visibility.Collapsed;
+            _msuAppSettings.MsuWindowDisplayShuffleButton == true ? Visibility.Visible : Visibility.Collapsed;
         ContinuousShuffledMsuButton.Visibility =
-            _msuAppSettings.MsuWindowDisplayContinuousButton ? Visibility.Visible : Visibility.Collapsed;
+            _msuAppSettings.MsuWindowDisplayContinuousButton == true ? Visibility.Visible : Visibility.Collapsed;
         SelectMsusButtons.Visibility =
-            _msuAppSettings.MsuWindowDisplaySelectButton ? Visibility.Visible : Visibility.Collapsed;
+            _msuAppSettings.MsuWindowDisplaySelectButton == true ? Visibility.Visible : Visibility.Collapsed;
         CancelButton.Visibility =
-            _msuAppSettings.MsuWindowDisplaySelectButton ? Visibility.Visible : Visibility.Collapsed;
+            _msuAppSettings.MsuWindowDisplaySelectButton == true ? Visibility.Visible : Visibility.Collapsed;
         OptionsButton.Visibility =
-            _msuAppSettings.MsuWindowDisplayOptionsButton ? Visibility.Visible : Visibility.Collapsed;
+            _msuAppSettings.MsuWindowDisplayOptionsButton == true ? Visibility.Visible : Visibility.Collapsed;
 
         SelectAllButton.IsEnabled = selectionMode == SelectionMode.Multiple;
         SelectNoneButton.IsEnabled = selectionMode == SelectionMode.Multiple;
@@ -78,7 +78,7 @@ public partial class MsuWindow : Window
             TopGrid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
         }
 
-        if (dialog || _msuAppSettings.MsuWindowDisplaySelectButton)
+        if (dialog || _msuAppSettings.MsuWindowDisplaySelectButton == true)
         {
             base.ShowDialog();
         }
@@ -106,14 +106,14 @@ public partial class MsuWindow : Window
         
         // If we have SMZ3 legacy, make sure SMZ3 is added to the dropdown
         var smz3MsuTypes = msus.Select(x => x.SelectedMsuType)
-            .Where(x => x != null && _msuAppSettings.Smz3MsuTypes.Contains(x.DisplayName))
+            .Where(x => x != null && _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true)
             .Distinct()
             .Cast<MsuType>()
             .ToList();
         if (smz3MsuTypes.All(x => x.Selectable == false) && smz3MsuTypes.Count > 0)
         {
             var smz3MsuType = _msuTypeService.MsuTypes.First(x =>
-                x is { Selectable: true } && _msuAppSettings.Smz3MsuTypes.Contains(x.DisplayName));
+                x is { Selectable: true } && _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true);
             availableMsuTypes = availableMsuTypes.Append(smz3MsuType).OrderBy(x => x.DisplayName);
         }
         

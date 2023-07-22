@@ -132,7 +132,7 @@ internal class MsuTypeService : IMsuTypeService
             }
         }
 
-        var smz3Types = _msuTypes.Where(x => _msuAppSettings.Smz3MsuTypes.Contains(x.DisplayName));
+        var smz3Types = _msuTypes.Where(x => _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true);
         var smz3One = smz3Types.FirstOrDefault();
         var smz3Two = smz3Types.LastOrDefault();
 
