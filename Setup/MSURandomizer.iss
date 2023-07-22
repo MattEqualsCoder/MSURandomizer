@@ -7,7 +7,7 @@
 #define MyAppPublisher "MattEqualsCoder"
 #define MyAppURL "https://github.com/MattEqualsCoder"
 #define MyAppExeName "MSURandomizer.exe"
-#define MyAppVersion GetStringFileInfo("..\MSURandomizer\bin\Release\net7.0-windows\win-x64\publish\" + MyAppExeName, "ProductVersion"
+#define MyAppVersion GetStringFileInfo("..\MSURandomizer\bin\Release\net7.0-windows\win-x64\publish\" + MyAppExeName, "ProductVersion")
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
