@@ -110,7 +110,7 @@ public partial class MsuWindow : Window
             .Distinct()
             .Cast<MsuType>()
             .ToList();
-        if (smz3MsuTypes.All(x => x.Selectable == false))
+        if (smz3MsuTypes.All(x => x.Selectable == false) && smz3MsuTypes.Count > 0)
         {
             var smz3MsuType = _msuTypeService.MsuTypes.First(x =>
                 x is { Selectable: true } && _msuAppSettings.Smz3MsuTypes.Contains(x.DisplayName));
