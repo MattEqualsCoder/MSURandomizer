@@ -109,7 +109,7 @@ public class MsuDetailsService : IMsuDetailsService
         {
             PackName = msu.Name,
             PackAuthor = msu.Creator,
-            PackVersion = 1,
+            PackVersion = "1",
             Tracks = msuTrackDetails
         };
 
@@ -158,7 +158,7 @@ public class MsuDetailsService : IMsuDetailsService
         {
             PackName = msu.Name,
             PackAuthor = msu.Creator,
-            PackVersion = 1,
+            PackVersion = "1",
             Tracks = msuTrackDetails
         };
 
