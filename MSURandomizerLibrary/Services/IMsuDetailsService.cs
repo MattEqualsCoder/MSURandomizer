@@ -17,17 +17,18 @@ public interface IMsuDetailsService
     /// <param name="yamlPath">The path to the YAML file</param>
     /// <param name="basicDetails">The basic MSU details</param>
     /// <param name="msuDetails">The loaded MSU details if they were found</param>
-    /// <param name="error">Any errors with loading the basic MSU details</param>
+    /// <param name="error">Any errors with loading the MSU details</param>
     /// <returns>The MSU with all of the updated details from the YAML file</returns>
     public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath, MsuDetailsBasic? basicDetails, out MsuDetails? msuDetails, out string? error);
-    
+
     /// <summary>
     /// Saves the MSU details to a YAML file
     /// </summary>
     /// <param name="msu">The MSU to save the details for</param>
     /// <param name="outputPath">The path to save the YAML file to</param>
+    /// <param name="error">Any errors with saving the MSU details</param>
     /// <returns>If the write was successful or not</returns>
-    public bool SaveMsuDetails(Msu msu, string outputPath);
+    public bool SaveMsuDetails(Msu msu, string outputPath, out string? error);
 
     /// <summary>
     /// Loads the basic MSU details without track information

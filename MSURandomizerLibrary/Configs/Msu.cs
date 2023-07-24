@@ -8,7 +8,11 @@ public class Msu
     public MsuType? MsuType { get; set; }
     public required string Name { get; set; }
     public string? Creator { get; set; }
+    public string? Version { get; set; }
     public bool HasDetails { get; set; }
+    public string? Artist { get; set; }
+    public string? Album { get; set; }
+    public string? Url { get; set; }
     public required string FolderName { get; set; }
     public required string FileName { get; set; }
     public required string Path { get; set; }

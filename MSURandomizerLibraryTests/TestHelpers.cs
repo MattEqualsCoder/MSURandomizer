@@ -178,7 +178,7 @@ public abstract class TestHelpers
         msuDetailsService.Setup(x => x.LoadMsuDetails(It.IsAny<MsuType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), returnMsuDetails, out outDetails, out outString1))
             .Returns(value: returnMsu);
         
-        msuDetailsService.Setup(x => x.SaveMsuDetails(It.IsAny<Msu>(), It.IsAny<string>()))
+        msuDetailsService.Setup(x => x.SaveMsuDetails(It.IsAny<Msu>(), It.IsAny<string>(), out outString1))
             .Returns(value: true);
 
         return msuDetailsService.Object;

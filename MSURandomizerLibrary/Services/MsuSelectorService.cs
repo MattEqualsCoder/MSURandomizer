@@ -258,7 +258,7 @@ public class MsuSelectorService : IMsuSelectorService
             warningMessage ??= "MSU generated successfully but unable to save msu-randomizer-output.txt file";
         }
 
-        if (!_msuDetailsService.SaveMsuDetails(outputMsu, msuPath.Replace(".msu", ".yml")))
+        if (!_msuDetailsService.SaveMsuDetails(outputMsu, msuPath.Replace(".msu", ".yml"), out var error))
         {
             warningMessage ??= "MSU generated successfully but unable to save MSU details YAML file";
         }

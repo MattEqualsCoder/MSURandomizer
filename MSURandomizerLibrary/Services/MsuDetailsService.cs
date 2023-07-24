@@ -60,15 +60,15 @@ public class MsuDetailsService : IMsuDetailsService
         }
     }
 
-    public bool SaveMsuDetails(Msu msu, string outputPath)
+    public bool SaveMsuDetails(Msu msu, string outputPath, out string? error)
     {
         if (_msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(msu.MsuTypeName))
         {
-            return SaveMsuDetailsSmz3(msu, outputPath);
+            return SaveMsuDetailsSmz3(msu, outputPath, out error);
         }
         else
         {
-            return SaveMsuDetailsGeneric(msu, outputPath);
+            return SaveMsuDetailsGeneric(msu, outputPath, out error);
         }
     }
 
@@ -91,26 +91,31 @@ public class MsuDetailsService : IMsuDetailsService
         return msuDetails;
     }
 
-    private bool SaveMsuDetailsGeneric(Msu msu, string outputPath)
+    private bool SaveMsuDetailsGeneric(Msu msu, string outputPath, out string? error)
     {
-        var msuTrackDetails = msu.Tracks.OrderBy(x => x.Number).Select(x => new MsuDetailsTrack()
-        {
-            TrackNumber = x.Number,
-            TrackName = x.TrackName,
-            Name = x.SongName,
-            Artist = x.Artist,
-            Album = x.Album,
-            Url = x.Url,
-            MsuAuthor = x.MsuCreator,
-            MsuName = x.MsuName
-        }).ToList();
+        var tracks = new List<MsuDetailsTrack>();
 
+        error = null;
+        
+        foreach (var track in msu.Tracks.OrderBy(x => x.Number))
+        {
+            var trackDetails = InternalConvertToTrackDetails(msu, track.Number, true, out var trackError);
+            if (trackError != null)
+                error = trackError;
+            if (trackDetails != null)
+                tracks.Add(trackDetails);
+        }
+        
         var msuDetails = new MsuDetailsGeneric()
         {
             PackName = msu.Name,
             PackAuthor = msu.Creator,
             PackVersion = "1",
-            Tracks = msuTrackDetails
+            Album = msu.Album,
+            Artist = msu.Artist,
+            Url = msu.Url,
+            MsuType = msu.MsuType?.Name ?? "Unknown",
+            Tracks = tracks
         };
 
         try
@@ -126,39 +131,32 @@ public class MsuDetailsService : IMsuDetailsService
         }
     }
     
-    private bool SaveMsuDetailsSmz3(Msu msu, string outputPath)
+    private bool SaveMsuDetailsSmz3(Msu msu, string outputPath, out string? error)
     {
         var metroidFirst = _msuAppSettings.MetroidFirstMsuTypes?.Contains(msu.MsuTypeName) == true;
 
         var msuTrackDetails = new MsuDetailsTrackListSmz3();
+        error = null;
         
         foreach (var prop in typeof(MsuDetailsTrackListSmz3).GetProperties())
         {
             var attribute = prop.GetCustomAttributes<Smz3TrackNumberAttribute>().First();
             var trackNumber = metroidFirst ? attribute.MetroidFirst : attribute.ZeldaFirst;
-            var track = msu.Tracks.FirstOrDefault(x => x.Number == trackNumber);
-            
-            if (track == null)
-            {
-                continue;
-            }
-
-            prop.SetValue(msuTrackDetails, new MsuDetailsTrack()
-            {
-                Name = track.SongName,
-                Artist = track.Artist,
-                Album = track.Album,
-                Url = track.Url,
-                MsuAuthor = track.MsuCreator,
-                MsuName = track.MsuName
-            });
+            var track = InternalConvertToTrackDetails(msu, trackNumber, false, out var trackError);
+            if (trackError != null)
+                error = trackError;
+            prop.SetValue(msuTrackDetails, track);
         }
         
         var msuDetails = new MsuDetailsSmz3()
         {
             PackName = msu.Name,
             PackAuthor = msu.Creator,
-            PackVersion = "1",
+            PackVersion = msu.Version,
+            Album = msu.Album,
+            Artist = msu.Artist,
+            Url = msu.Url,
+            MsuType = msu.MsuType?.Name ?? "Unknown",
             Tracks = msuTrackDetails
         };
 
@@ -173,6 +171,74 @@ public class MsuDetailsService : IMsuDetailsService
             _logger.LogError(e, "Unable to write MSU YAML details to {Path}", outputPath);
             return false;
         }
+    }
+
+    private MsuDetailsTrack? InternalConvertToTrackDetails(Msu msu, int trackNumber, bool writeTrackDetails, out string? error)
+    {
+        var track = msu.Tracks.FirstOrDefault(x => x.Number == trackNumber && !x.IsAlt);
+        error = null;
+            
+        if (track == null) 
+            return null;
+
+        var output = new MsuDetailsTrack()
+        {
+            Name = track.SongName,
+            Artist = track.Artist,
+            Album = track.Album,
+            Url = track.Url,
+            MsuAuthor = track.MsuCreator,
+            MsuName = track.MsuName
+        };
+
+        if (writeTrackDetails)
+        {
+            output.TrackName = track.TrackName;
+            output.TrackNumber = track.Number;
+        }
+
+        if (!msu.Tracks.Any(x => x.Number == trackNumber && x.IsAlt)) 
+            return output;
+
+        var alts = new List<MsuDetailsTrack>();
+        if (!output.CalculateAltInfo(msu.Path, track.Path))
+        {
+            _logger.LogWarning("Unable to calculate alt track info for {Path}", track.Path);
+            error = $"Unable to calculate alt track info for {track.Path}";
+        }
+            
+        foreach (var altTrack in msu.Tracks.Where(x => x.Number == trackNumber && x.IsAlt))
+        {
+            var altOutput = new MsuDetailsTrack()
+            {
+                TrackName = altTrack.TrackName,
+                TrackNumber = altTrack.Number,
+                Name = altTrack.SongName,
+                Artist = altTrack.Artist,
+                Album = altTrack.Album,
+                Url = altTrack.Url,
+                MsuAuthor = altTrack.MsuCreator,
+                MsuName = altTrack.MsuName
+            };
+            
+            if (writeTrackDetails)
+            {
+                altOutput.TrackName = altTrack.TrackName;
+                altOutput.TrackNumber = altTrack.Number;
+            }
+            
+            if (!altOutput.CalculateAltInfo(msu.Path, altTrack.Path))
+            {
+                _logger.LogWarning("Unable to calculate alt track info for {Path}", altTrack.Path);
+                error = $"Unable to calculate alt track info for {altTrack.Path}";
+            }
+            
+            alts.Add(altOutput);
+        }
+
+        output.Alts = alts;
+
+        return output;
     }
 
     private MsuDetailsBasic? InternalGetBasicMsuDetails(string yamlPath, out string? error)

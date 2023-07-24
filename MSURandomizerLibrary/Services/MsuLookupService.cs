@@ -118,6 +118,10 @@ internal class MsuLookupService : IMsuLookupService
 
         msu.Settings = msuSettings;
         msu.MsuType = originalMsuType;
+        msu.Version = basicMsuDetails?.PackVersion;
+        msu.Artist = basicMsuDetails?.Artist;
+        msu.Album = basicMsuDetails?.Album;
+        msu.Url = basicMsuDetails?.Url;
 
         return msu;
     }

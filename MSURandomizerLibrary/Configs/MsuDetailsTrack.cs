@@ -24,6 +24,7 @@ public class MsuDetailsTrack
     [YamlIgnore]
     public bool HasData => !string.IsNullOrWhiteSpace(Name) || !string.IsNullOrWhiteSpace(Artist) || !string.IsNullOrWhiteSpace(Album);
 
+    [YamlIgnore]
     public bool HasAltTrackData =>
         !string.IsNullOrWhiteSpace(Path) && !string.IsNullOrWhiteSpace(Hash) && FileLength > 0;
 
@@ -60,5 +61,17 @@ public class MsuDetailsTrack
         }
 
         return null;
+    }
+
+    public bool CalculateAltInfo(string msuPath, string trackPath)
+    {
+        if (!File.Exists(trackPath)) return false;
+        var msuFolder = new FileInfo(msuPath).DirectoryName ?? msuPath;
+        Path = System.IO.Path.GetRelativePath(msuFolder, trackPath);
+        FileLength = new FileInfo(trackPath).Length;
+        using var sha1 = SHA1.Create();
+        using var stream1 = File.OpenRead(trackPath);
+        Hash = BitConverter.ToString(sha1.ComputeHash(stream1)).Replace("-", "");
+        return true;
     }
 }

@@ -2,7 +2,7 @@
 
 public class Track
 {
-    public Track(string trackName, int number, string songName, string path, string msuPath, string msuName, string? msuCreator = null, string? artist = null,
+    public Track(string trackName, int number, string songName, string path, string msuPath, string? msuName, string? msuCreator = null, string? artist = null,
         string? album = null, string? url = null, bool isAlt = false)
     {
         TrackName = trackName;
@@ -39,7 +39,7 @@ public class Track
     public int Number { get; set; }
     public string SongName { get; set; }
     public string MsuPath { get; set; }
-    public string MsuName { get; set; }
+    public string? MsuName { get; set; }
     public string? MsuCreator { get; set; }
     public string Path { get; set; }
     public string? Artist { get; set; }

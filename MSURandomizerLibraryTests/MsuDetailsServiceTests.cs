@@ -52,17 +52,17 @@ artist: Test Artist
         };
         
         var service = GetMsuDetailsService(null);
-        var success = service.SaveMsuDetails(msu, _yamlPath);
+        var success = service.SaveMsuDetails(msu, _yamlPath, out var error);
 
         var expectedResult =
-            @"tracks:
+            @"pack_name: Test MSU Pack
+pack_author: Test Creator
+pack_version: 1
+tracks:
 - track_number: 1
   track_name: Test Track
   name: Test Song
   msu_name: Test MSU Pack
-pack_name: Test MSU Pack
-pack_author: Test Creator
-pack_version: 1
 ";
 
         var output = success ? File.ReadAllText(_yamlPath) : "";
@@ -70,6 +70,7 @@ pack_version: 1
         
         Assert.Multiple(() =>
         {
+            Assert.That(string.IsNullOrEmpty(error));
             Assert.That(success, Is.True, "Save MSU Details Unsuccessful");
             Assert.That(output, Is.EqualTo(expectedResult), "Invalid YAML text");
         });
