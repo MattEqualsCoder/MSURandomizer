@@ -4,10 +4,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
+using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
 
-namespace MSURandomizerLibrary.Models;
+namespace MSURandomizerUI.Models;
 
 public sealed class MsuListViewModel : INotifyPropertyChanged
 {

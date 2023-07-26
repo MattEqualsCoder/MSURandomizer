@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using MSURandomizerLibrary.Configs;
 
-namespace MSURandomizerLibrary.Models;
+namespace MSURandomizerUI.Models;
 
 public class MsuDetailsTrackViewModel : INotifyPropertyChanged
 {

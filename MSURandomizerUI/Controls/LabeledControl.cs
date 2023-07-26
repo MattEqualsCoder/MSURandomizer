@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace MSURandomizerLibrary.UI;
+namespace MSURandomizerUI.Controls;
 
 public class LabeledControl : ContentControl
 {

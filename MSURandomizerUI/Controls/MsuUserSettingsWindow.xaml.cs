@@ -5,7 +5,7 @@ using System.Windows;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
 
-namespace MSURandomizerLibrary.UI;
+namespace MSURandomizerUI.Controls;
 
 /// <summary>
 /// Interaction logic for MSUOptionsWindow.xaml

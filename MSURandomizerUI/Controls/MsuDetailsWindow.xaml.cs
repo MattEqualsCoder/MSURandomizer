@@ -5,9 +5,9 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
-using MSURandomizerLibrary.Models;
+using MSURandomizerUI.Models;
 
-namespace MSURandomizerLibrary.UI;
+namespace MSURandomizerUI.Controls;
 
 public partial class MsuDetailsWindow : Window, INotifyPropertyChanged
 {

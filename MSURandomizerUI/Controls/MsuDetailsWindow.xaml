@@ -1,14 +1,15 @@
-﻿<Window x:Class="MSURandomizerLibrary.UI.MsuDetailsWindow"
+﻿<Window x:Class="MSURandomizerUI.Controls.MsuDetailsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:ui="clr-namespace:MSURandomizerLibrary.UI"
         xmlns:models="clr-namespace:MSURandomizerLibrary.Models"
+        xmlns:controls="clr-namespace:MSURandomizerUI.Controls"
+        xmlns:models2="clr-namespace:MSURandomizerUI.Models"
         mc:Ignorable="d"
         Title="{Binding Name}" Height="450" Width="800">
     <Window.DataContext>
-        <models:MsuDetailsViewModel></models:MsuDetailsViewModel>
+        <models2:MsuDetailsViewModel></models2:MsuDetailsViewModel>
     </Window.DataContext>
     <Window.Resources>
         <ResourceDictionary Source="../Themes/Generic.xaml" />
@@ -16,7 +17,7 @@
     <DockPanel>
         <StackPanel Orientation="Vertical" Margin="5" Grid.IsSharedSizeScope="True" DockPanel.Dock="Top">
             
-            <ui:LabeledControl Text="Name: ">
+            <controls:LabeledControl Text="Name: ">
                 <StackPanel>
                     <TextBox 
                         Name="NameTextBox"
@@ -34,9 +35,9 @@
                             Converter={StaticResource  VisibilityConverter}}"
                     ></TextBlock>
                 </StackPanel>
-            </ui:LabeledControl>
+            </controls:LabeledControl>
             
-            <ui:LabeledControl Text="Creator: ">
+            <controls:LabeledControl Text="Creator: ">
                 <StackPanel>
                     <TextBox 
                         Name="CreatorTextBox"
@@ -54,9 +55,9 @@
                             Converter={StaticResource  VisibilityConverter}}"
                     ></TextBlock>
                 </StackPanel>
-            </ui:LabeledControl>
+            </controls:LabeledControl>
             
-            <ui:LabeledControl Text="MSU Type: ">
+            <controls:LabeledControl Text="MSU Type: ">
                 <StackPanel>
                     <ComboBox 
                         Name="FilterComboBox"
@@ -65,16 +66,16 @@
                         SelectedValue="{Binding MsuTypeName}">
                     </ComboBox>
                 </StackPanel>
-            </ui:LabeledControl>
+            </controls:LabeledControl>
             
-            <ui:LabeledControl Text="Path: ">
+            <controls:LabeledControl Text="Path: ">
                 <StackPanel>
                     <TextBlock 
                         Padding="5"
                         Text="{Binding Path=Path}"
                     ></TextBlock>
                 </StackPanel>
-            </ui:LabeledControl>
+            </controls:LabeledControl>
             
             <CheckBox IsChecked="{Binding Path=AllowAltTracks}" Margin="5 3 0 3">Allow MSU alternate tracks to be randomly picked</CheckBox>
         </StackPanel>

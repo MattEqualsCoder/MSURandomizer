@@ -90,6 +90,14 @@ internal class MsuTypeService : IMsuTypeService
         return MsuTypes.FirstOrDefault(x => x.DisplayName == name || x.Name == name);
     }
 
+    public MsuType? GetSMZ3MsuType() => MsuTypes.FirstOrDefault(x =>
+        (_msuAppSettings.Smz3MsuTypes?.Contains(x.Name) == true ||
+         _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true) && x.Selectable);
+
+    public MsuType? GetSMZ3LegacyMSUType() => MsuTypes.FirstOrDefault(x =>
+        (_msuAppSettings.Smz3MsuTypes?.Contains(x.Name) == true ||
+         _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true) && !x.Selectable);
+
     private void FinalizeConfigs(IEnumerable<MsuTypeConfig> configs)
     {
         foreach (var config in configs)

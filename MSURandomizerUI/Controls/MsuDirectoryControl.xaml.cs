@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MSURandomizerLibrary.Configs;
 
-namespace MSURandomizerLibrary.UI;
+namespace MSURandomizerUI.Controls;
 
 public partial class MsuDirectoryControl : UserControl
 {

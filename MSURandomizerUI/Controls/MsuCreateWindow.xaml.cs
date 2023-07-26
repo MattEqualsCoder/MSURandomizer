@@ -2,9 +2,10 @@
 using System.Windows;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 
-namespace MSURandomizerLibrary.UI;
+namespace MSURandomizerUI.Controls;
 
 /// <summary>
 /// Interaction logic for GenerateOptionsWindow.xaml

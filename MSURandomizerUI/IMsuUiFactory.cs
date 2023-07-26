@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
+using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
-using MSURandomizerLibrary.UI;
+using MSURandomizerUI.Controls;
 
-namespace MSURandomizerLibrary.Services;
+namespace MSURandomizerUI;
 
 /// <summary>
 /// Factory for creating UI elements to display

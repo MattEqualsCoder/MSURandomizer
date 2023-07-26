@@ -5,11 +5,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
-using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
+using MSURandomizerUI.Models;
 
-namespace MSURandomizerLibrary.UI;
+namespace MSURandomizerUI.Controls;
 
 /// <summary>
 /// Interaction logic for MSURandomizerControl.xaml

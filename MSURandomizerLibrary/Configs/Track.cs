@@ -47,6 +47,7 @@ public class Track
     public string? Url { get; set; }
     public string? OriginalPath { get; set; }
     public bool IsAlt { get; set; }
+    public bool IsCopied { get; set; }
     
     public string GetDisplayText(bool includeMsu = true)
     {

@@ -114,9 +114,13 @@ public class MsuDetailsService : IMsuDetailsService
             Album = msu.Album,
             Artist = msu.Artist,
             Url = msu.Url,
-            MsuType = msu.MsuType?.Name ?? "Unknown",
             Tracks = tracks
         };
+
+        if (msu.MsuType != null)
+        {
+            msuDetails.MsuType = msu.MsuType?.Name;
+        }
 
         try
         {
@@ -156,9 +160,13 @@ public class MsuDetailsService : IMsuDetailsService
             Album = msu.Album,
             Artist = msu.Artist,
             Url = msu.Url,
-            MsuType = msu.MsuType?.Name ?? "Unknown",
             Tracks = msuTrackDetails
         };
+        
+        if (msu.MsuType != null)
+        {
+            msuDetails.MsuType = msu.MsuType?.Name;
+        }
 
         try
         {
@@ -211,8 +219,6 @@ public class MsuDetailsService : IMsuDetailsService
         {
             var altOutput = new MsuDetailsTrack()
             {
-                TrackName = altTrack.TrackName,
-                TrackNumber = altTrack.Number,
                 Name = altTrack.SongName,
                 Artist = altTrack.Artist,
                 Album = altTrack.Album,

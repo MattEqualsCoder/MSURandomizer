@@ -164,7 +164,10 @@ internal class MsuLookupService : IMsuLookupService
             {
                 var trackName = msuType.Tracks.FirstOrDefault(x => x.Number == track.Number)?.Name ??
                                 innerTrackDetails.TrackName;
-                tracks.Add(new Track(innerTrackDetails, number: track.Number, trackName: trackName));
+                tracks.Add(new Track(innerTrackDetails, number: track.Number, trackName: trackName)
+                {
+                    IsCopied = trackNumber != track.Number
+                });
             }
         }
 
@@ -268,7 +271,9 @@ internal class MsuLookupService : IMsuLookupService
                 album: album,
                 artist: artist,
                 url: url
-            ));
+            ){
+                IsCopied = trackNumber != track.Number
+            });
 
             // See if there are any alt tracks to add
             var alts = extraPcmFiles.Where(x => x != path && Regex.IsMatch(x.Replace(Path.Combine(directory, baseName), ""), $"-{trackNumber}[^0-9]")).ToList();
@@ -296,7 +301,9 @@ internal class MsuLookupService : IMsuLookupService
                     artist: artist,
                     url: url,
                     isAlt: true
-                ));
+                ){
+                    IsCopied = trackNumber != track.Number
+                });
             }
         }
         

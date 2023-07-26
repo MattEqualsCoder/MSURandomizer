@@ -4,11 +4,13 @@ using System.Linq;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
-using MSURandomizerLibrary.Models;
-using MSURandomizerLibrary.UI;
+using MSURandomizerLibrary.Services;
+using MSURandomizerUI.Controls;
+using MSURandomizerUI.Models;
 
-namespace MSURandomizerLibrary.Services;
+namespace MSURandomizerUI;
 
 public class MsuUiFactory : IMsuUiFactory
 {

@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MSURandomizerLibrary\MSURandomizerLibrary.csproj" />
+    <ProjectReference Include="..\MSURandomizerUI\MSURandomizerUI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

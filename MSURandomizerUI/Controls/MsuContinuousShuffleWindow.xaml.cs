@@ -7,8 +7,9 @@ using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
+using Timer = System.Timers.Timer;
 
-namespace MSURandomizerLibrary.UI;
+namespace MSURandomizerUI.Controls;
 
 /// <summary>
 /// Interaction logic for MSUContinuousShuffleWindow.xaml

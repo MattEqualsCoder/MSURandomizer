@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Markup;
 
-namespace MSURandomizerLibrary;
+namespace MSURandomizerUI;
 
 internal class EnumBindingSourceExtension : MarkupExtension
 {
