@@ -102,9 +102,9 @@ public partial class MsuWindow : Window
             OpenUserSettingsWindow();
             return;
         }
- 
-        var availableMsuTypes = msus.Select(x => x.SelectedMsuType).Distinct().Where(x => x is { Selectable: true }).Cast<MsuType>();
         
+        var availableMsuTypes = msus.Where(x => x.Tracks.Count > 0).Select(x => x.SelectedMsuType).Distinct().Where(x => x is { Selectable: true }).Cast<MsuType>();
+
         // If we have SMZ3 legacy, make sure SMZ3 is added to the dropdown
         var smz3MsuTypes = msus.Select(x => x.SelectedMsuType)
             .Where(x => x != null && _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true)

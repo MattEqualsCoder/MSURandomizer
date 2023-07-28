@@ -127,7 +127,7 @@ public class MsuSelectorServiceTests
             Assert.That(File.Exists(track.Path));
         }
         
-        Assert.That(response.Msu?.Tracks.Select(x => x.MsuPath).Distinct().Count(), Is.EqualTo(2));
+        Assert.That(response.Msu?.Tracks.Select(x => x.OriginalMsu).Distinct().Count(), Is.EqualTo(2));
     }
     
     [Test]

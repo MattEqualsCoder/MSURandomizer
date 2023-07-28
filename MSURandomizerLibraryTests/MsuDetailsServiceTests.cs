@@ -38,17 +38,26 @@ artist: Test Artist
     [Test]
     public void SaveMsuDetails()
     {
-        var msu = new Msu()
-        {
-            Name = "Test MSU Pack",
-            Creator = "Test Creator",
-            FolderName = "Test Folder",
-            FileName = "Test File",
-            Path = _msuPath,
-            Tracks = new List<Track>()
+        var msu = new Msu(
+            type: null, 
+            name: "Test MSU Pack", 
+            folderName: "Test Folder", 
+            fileName: "Test File", 
+            path: _msuPath, 
+            tracks: new List<Track>()
             {
-                new Track("Test Track", 1, "Test Song", "Test Path", _msuPath, "Test MSU Pack")
-            }
+                new(
+                    trackName: "Test Track", 
+                    number: 1, 
+                    songName: "Test Song", 
+                    path:"Test Path"
+                )
+            },
+            msuDetails: null,
+            prevMsu: null
+        )
+        {
+            Creator = "Test Creator"
         };
         
         var service = GetMsuDetailsService(null);
@@ -62,7 +71,6 @@ tracks:
 - track_number: 1
   track_name: Test Track
   name: Test Song
-  msu_name: Test MSU Pack
 ";
 
         var output = success ? File.ReadAllText(_yamlPath) : "";

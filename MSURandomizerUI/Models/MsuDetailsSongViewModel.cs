@@ -7,7 +7,7 @@ public class MsuDetailsSongViewModel
     public MsuDetailsSongViewModel(Track track)
     {
         SongDetails = track.GetDisplayText(false);
-        Url = track.Url;
+        Url = track.DisplayUrl;
     }
     
     public string SongDetails { get; set; }

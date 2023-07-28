@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 
@@ -76,7 +72,7 @@ internal class MsuLookupService : IMsuLookupService
         {
             return null;
         }
-        
+
         var basicMsuDetails = _msuDetailsService.GetBasicMsuDetails(msuPath, out var yamlPath, out var yamlError);
         if (!string.IsNullOrEmpty(yamlError))
         {
@@ -166,22 +162,15 @@ internal class MsuLookupService : IMsuLookupService
                                 innerTrackDetails.TrackName;
                 tracks.Add(new Track(innerTrackDetails, number: track.Number, trackName: trackName)
                 {
-                    IsCopied = trackNumber != track.Number
+                    IsCopied = trackNumber != track.Number,
+                    Msu = msu,
                 });
             }
         }
 
-        return new Msu
-        {
-            FolderName = new DirectoryInfo(directory).Name,
-            FileName = baseName,
-            Path = msuPath,
-            Tracks = tracks,
-            MsuType = msuType,
-            Name = msu.Name,
-            Creator = msu.Creator,
-            HasDetails = true
-        };
+        msu.Tracks = tracks;
+
+        return msu;
     }
     
     private Msu LoadUnknownMsu(string msuPath, string directory, string baseName, IEnumerable<string> pcmFiles)
@@ -195,19 +184,19 @@ internal class MsuLookupService : IMsuLookupService
                     trackName: $"Track #{x}",
                     number: int.Parse(x),
                     songName: $"Track #{x}",
-                    path: $"{directory}{Path.DirectorySeparatorChar}{baseName}-{x}.pcm",
-                    msuPath: $"{directory}{Path.DirectorySeparatorChar}{baseName}.msu",
-                    msuName: baseName
+                    path: $"{directory}{Path.DirectorySeparatorChar}{baseName}-{x}.pcm"
                 ));
-        
-        return new Msu
-        {
-            FolderName = new DirectoryInfo(directory).Name,
-            FileName = baseName,
-            Path = msuPath,
-            Tracks = tracks.ToList(),
-            Name = new DirectoryInfo(directory).Name,
-        };
+
+        return new Msu(
+            type: null, 
+            name: new DirectoryInfo(directory).Name, 
+            folderName: new DirectoryInfo(directory).Name, 
+            fileName: baseName,
+            path: msuPath,
+            tracks: tracks.ToList(),
+            msuDetails: null,
+            prevMsu: null
+        );
     }
 
     private Msu LoadBasicMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, MsuDetails? msuDetails)
@@ -221,13 +210,7 @@ internal class MsuLookupService : IMsuLookupService
 
         var basicPcmFiles = trackNumbers.Select(x => Path.Combine(directory, $"{baseName}-{x}.pcm")).ToList();
         var extraPcmFiles = pcmFiles.Where(x => !basicPcmFiles.Contains(x));
-
-        var msuName = msuDetails?.PackName ?? new DirectoryInfo(directory).Name;
-        var msuCreator = msuDetails?.PackAuthor;
-        var artist = msuDetails?.Artist;
-        var album = msuDetails?.Album;
-        var url = msuDetails?.Url;
-
+        
         var tracks = new List<Track>();
         foreach (var track in msuType.Tracks)
         {
@@ -264,13 +247,7 @@ internal class MsuLookupService : IMsuLookupService
                 trackName: msuType.Tracks.FirstOrDefault(x => x.Number == track.Number)?.Name ?? $"Track #{trackNumber}",
                 number: track.Number,
                 songName: $"Track #{trackNumber}",
-                path: path,
-                msuPath: msuPath,
-                msuName: msuName,
-                msuCreator: msuCreator,
-                album: album,
-                artist: artist,
-                url: url
+                path: path
             ){
                 IsCopied = trackNumber != track.Number
             });
@@ -294,29 +271,23 @@ internal class MsuLookupService : IMsuLookupService
                     number: track.Number,
                     songName: $"Track #{trackNumber} ({altName})",
                     path: alt,
-                    msuPath: msuPath,
-                    msuName: msuName,
-                    msuCreator: msuCreator,
-                    album: album,
-                    artist: artist,
-                    url: url,
                     isAlt: true
                 ){
                     IsCopied = trackNumber != track.Number
                 });
             }
         }
-        
-        return new Msu
-        {
-            FolderName = new DirectoryInfo(directory).Name,
-            FileName = baseName,
-            Path = msuPath,
-            Tracks = tracks,
-            MsuType = msuType,
-            Name = msuName,
-            Creator = msuCreator
-        };
+
+        return new Msu(
+            type: msuType,
+            name: msuDetails?.PackName ?? new DirectoryInfo(directory).Name,
+            folderName: new DirectoryInfo(directory).Name,
+            fileName: baseName,
+            path: msuPath,
+            tracks: tracks,
+            msuDetails: msuDetails,
+            prevMsu: null
+        );
     }
 
     private MsuType? GetMsuType(string baseName, IEnumerable<string> pcmFiles, MsuType? msuTypeFilter = null)

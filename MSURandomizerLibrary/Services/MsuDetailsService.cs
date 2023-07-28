@@ -192,13 +192,38 @@ public class MsuDetailsService : IMsuDetailsService
         var output = new MsuDetailsTrack()
         {
             Name = track.SongName,
-            Artist = track.Artist,
-            Album = track.Album,
-            Url = track.Url,
-            MsuAuthor = track.MsuCreator,
-            MsuName = track.MsuName
         };
+        
+        if (!string.IsNullOrEmpty(track.OriginalMsu?.DisplayCreator) && track.OriginalMsu?.DisplayCreator != msu.DisplayCreator)
+        {
+            output.MsuAuthor = track.OriginalMsu?.DisplayCreator;
+        }
+        
+        if (!string.IsNullOrEmpty(track.OriginalMsu?.DisplayName) && track.OriginalMsu?.DisplayName != msu.DisplayName)
+        {
+            output.MsuName = track.OriginalMsu?.DisplayName;
+        }
+        
+        if (!string.IsNullOrEmpty(track.Artist) && track.Artist != msu.Artist)
+        {
+            output.Artist = track.Artist;
+        }
 
+        if (!string.IsNullOrEmpty(track.Artist) && track.Artist != msu.Artist)
+        {
+            output.Artist = track.Artist;
+        }
+        
+        if (!string.IsNullOrEmpty(track.Album) && track.Album != msu.Album)
+        {
+            output.Album = track.Album;
+        }
+        
+        if (!string.IsNullOrEmpty(track.Url) && track.Url != msu.Url)
+        {
+            output.Url = track.Url;
+        }
+        
         if (writeTrackDetails)
         {
             output.TrackName = track.TrackName;
@@ -220,9 +245,9 @@ public class MsuDetailsService : IMsuDetailsService
             var altOutput = new MsuDetailsTrack()
             {
                 Name = altTrack.SongName,
-                Artist = altTrack.Artist,
-                Album = altTrack.Album,
-                Url = altTrack.Url,
+                Artist = altTrack.DisplayArtist,
+                Album = altTrack.DisplayAlbum,
+                Url = altTrack.DisplayUrl,
                 MsuAuthor = altTrack.MsuCreator,
                 MsuName = altTrack.MsuName
             };
@@ -268,7 +293,8 @@ public class MsuDetailsService : IMsuDetailsService
         var fileInfo = new FileInfo(msuPath);
         if (fileInfo.DirectoryName == null)
             return null;
-        var jsonPaths = Directory.EnumerateFiles(fileInfo.DirectoryName, "*.json");
+        var baseName = fileInfo.Name.Replace(fileInfo.Extension, "");
+        var jsonPaths = Directory.EnumerateFiles(fileInfo.DirectoryName, "*.json").OrderBy(x => !x.Contains(baseName));
         if (!jsonPaths.Any()) 
             return null;
         var path = jsonPaths.First();
@@ -318,9 +344,6 @@ public class MsuDetailsService : IMsuDetailsService
                     number: trackNumber,
                     songName: string.IsNullOrWhiteSpace(track.Name) ? $"Track #{trackNumber}" : track.Name,
                     path: pcmFilePath,
-                    msuPath: $"{directory}{Path.DirectorySeparatorChar}{baseName}.msu",
-                    msuName: msuDetails.PackName ?? baseName,
-                    msuCreator: msuDetails.PackAuthor,
                     artist: string.IsNullOrWhiteSpace(track.Artist) ? msuDetails.Artist : track.Artist,
                     album: string.IsNullOrWhiteSpace(track.Album) ? msuDetails.Album : track.Album,
                     url: string.IsNullOrWhiteSpace(track.Url) ? msuDetails.Url : track.Url
@@ -343,12 +366,9 @@ public class MsuDetailsService : IMsuDetailsService
                         number: trackNumber,
                         songName: string.IsNullOrWhiteSpace(subTrack.Name) ? $"Track #{trackNumber}" : subTrack.Name,
                         path: path ?? "",
-                        msuPath: $"{directory}{Path.DirectorySeparatorChar}{baseName}.msu",
                         artist: string.IsNullOrWhiteSpace(subTrack.Artist) ? msuDetails.Artist : subTrack.Artist,
                         album: string.IsNullOrWhiteSpace(subTrack.Album) ? msuDetails.Album : subTrack.Album,
                         url: string.IsNullOrWhiteSpace(track.Url) ? msuDetails.Url : track.Url,
-                        msuName: msuDetails.PackName ?? baseName,
-                        msuCreator: msuDetails.PackAuthor,
                         isAlt: subTrack != track
                     ));
                 }
@@ -391,29 +411,29 @@ public class MsuDetailsService : IMsuDetailsService
             if (smz3Details.Tracks == null)
             {
                 error = null;
-                return new Msu()
-                {
-                    FolderName = new DirectoryInfo(msuDirectory).Name,
-                    FileName = msuBaseName,
-                    Path = msuPath,
-                    Tracks = new List<Track>(),
-                    MsuType = msuType,
-                    Name = string.IsNullOrWhiteSpace(smz3Details.PackName) ? msuBaseName : smz3Details.PackName,
-                    Creator = smz3Details.PackAuthor ?? ""
-                };
+                return new Msu(
+                    type: msuType,
+                    name: string.IsNullOrWhiteSpace(smz3Details.PackName) ? msuBaseName : smz3Details.PackName,
+                    folderName: new DirectoryInfo(msuDirectory).Name, 
+                    fileName: msuBaseName, 
+                    path: msuPath, 
+                    tracks: new List<Track>(), 
+                    msuDetails: smz3Details, 
+                    prevMsu: null
+                );
             }
             var tracks = GetSmz3TrackDetails(smz3Details, msuDirectory, msuBaseName, _msuAppSettings.MetroidFirstMsuTypes?.Contains(msuType.DisplayName) == true);
             error = null;
-            return new Msu()
-            {
-                FolderName = new DirectoryInfo(msuDirectory).Name,
-                FileName = msuBaseName,
-                Path = msuPath,
-                Tracks = tracks,
-                MsuType = msuType,
-                Name = string.IsNullOrWhiteSpace(smz3Details.PackName) ? msuBaseName : smz3Details.PackName,
-                Creator = smz3Details.PackAuthor ?? ""
-            };
+            return new Msu(
+                type: msuType,
+                name: string.IsNullOrWhiteSpace(smz3Details.PackName) ? msuBaseName : smz3Details.PackName,
+                folderName: new DirectoryInfo(msuDirectory).Name, 
+                fileName: msuBaseName, 
+                path: msuPath, 
+                tracks: tracks, 
+                msuDetails: smz3Details, 
+                prevMsu: null
+            );
         }
         catch (Exception e)
         {
@@ -435,29 +455,29 @@ public class MsuDetailsService : IMsuDetailsService
             {
                 _logger.LogInformation("YAML file for MSU {Path} missing track details", msuPath);
                 error = null;
-                return new Msu()
-                {
-                    FolderName = new DirectoryInfo(msuDirectory).Name,
-                    FileName = msuBaseName,
-                    Path = msuPath,
-                    Tracks = new List<Track>(),
-                    MsuType = msuType,
-                    Name = string.IsNullOrWhiteSpace(genericDetails.PackName) ? msuBaseName : genericDetails.PackName,
-                    Creator = genericDetails.PackAuthor ?? ""
-                };
+                return new Msu(
+                    type: msuType,
+                    name: string.IsNullOrWhiteSpace(genericDetails.PackName) ? msuBaseName : genericDetails.PackName,
+                    folderName: new DirectoryInfo(msuDirectory).Name, 
+                    fileName: msuBaseName, 
+                    path: msuPath, 
+                    tracks: new List<Track>(), 
+                    msuDetails: genericDetails,
+                    prevMsu: null
+                );
             }
             var tracks = GetTrackDetails(genericDetails.Tracks!, genericDetails, msuDirectory, msuBaseName);
             error = null;
-            return new Msu()
-            {
-                FolderName = new DirectoryInfo(msuDirectory).Name,
-                FileName = msuBaseName,
-                Path = msuPath,
-                Tracks = tracks,
-                MsuType = msuType,
-                Name = string.IsNullOrWhiteSpace(genericDetails.PackName) ? msuBaseName : genericDetails.PackName,
-                Creator = genericDetails.PackAuthor ?? ""
-            };
+            return new Msu(
+                type: msuType, 
+                name: string.IsNullOrWhiteSpace(genericDetails.PackName) ? msuBaseName : genericDetails.PackName, 
+                folderName: new DirectoryInfo(msuDirectory).Name, 
+                fileName: msuBaseName, 
+                path: msuPath, 
+                tracks: tracks, 
+                msuDetails: genericDetails,
+                prevMsu: null
+            );
         }
         catch (Exception e)
         {
