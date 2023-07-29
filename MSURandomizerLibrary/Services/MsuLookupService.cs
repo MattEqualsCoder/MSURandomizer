@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 
@@ -39,12 +41,43 @@ internal class MsuLookupService : IMsuLookupService
         _logger.LogInformation("MSU lookup started");
         _errors.Clear();
         Status = MsuLoadStatus.Loading;
-        var msus = new List<Msu>();
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        var msusToLoad = GetMsusToLoad(defaultDirectory, msuTypeDirectories);
+
+        var msus = new ConcurrentBag<Msu>();
+
+        Parallel.ForEach((msusToLoad), loadInfo =>
+        {
+            var msu = LoadMsu(loadInfo.Item1, loadInfo.Item2);
+            if (msu != null)
+            {
+                msus.Add(msu);
+            }
+        });
+
+        _msus = msus.ToList();
+        
+        stopwatch.Stop();
+        _logger.LogInformation("MSU lookup complete in {Seconds} seconds (found {Count} MSUs)", stopwatch.Elapsed.TotalSeconds, _msus.Count);
+        Status = MsuLoadStatus.Loaded;
+        OnMsuLookupComplete?.Invoke(this, new(_msus, _errors));
+        return _msus;
+    }
+
+    
+
+    private List<(string, MsuType?)> GetMsusToLoad(string? defaultDirectory, Dictionary<MsuType, string>? msuTypeDirectories = null)
+    {
+        var msuLookups = new List<(string, MsuType?)>();
         
         if (Directory.Exists(defaultDirectory))
         {
-            var msuFiles = Directory.EnumerateFiles(defaultDirectory, "*.msu", SearchOption.AllDirectories);
-            msus.AddRange(msuFiles.Select(x => LoadMsu(x)).Where(x => x != null).Cast<Msu>());    
+            foreach (var msuFile in Directory.EnumerateFiles(defaultDirectory, "*.msu", SearchOption.AllDirectories))
+            {
+                msuLookups.Add((msuFile, null));
+            }
         }
         
         if (msuTypeDirectories != null)
@@ -52,16 +85,14 @@ internal class MsuLookupService : IMsuLookupService
             foreach (var msuTypeDirectory in msuTypeDirectories)
             {
                 if (!Directory.Exists(msuTypeDirectory.Value)) continue;
-                var msuFiles = Directory.EnumerateFiles(msuTypeDirectory.Value, "*.msu", SearchOption.AllDirectories);
-                msus.AddRange(msuFiles.Select(x => LoadMsu(x, msuTypeDirectory.Key)).Where(x => x != null).Cast<Msu>());   
+                foreach (var msuFile in Directory.EnumerateFiles(msuTypeDirectory.Value, "*.msu", SearchOption.AllDirectories))
+                {
+                    msuLookups.Add((msuFile, msuTypeDirectory.Key));
+                }  
             }
         }
 
-        _msus = msus;
-        _logger.LogInformation("MSU lookup complete");
-        Status = MsuLoadStatus.Loaded;
-        OnMsuLookupComplete?.Invoke(this, new(_msus, _errors));
-        return _msus;
+        return msuLookups;
     }
 
     public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null)

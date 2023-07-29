@@ -261,12 +261,17 @@ public class MsuDetailsService : IMsuDetailsService
             else
             {
                 var basePcm = $"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm";
+                var basePcmMatched = false;
                 foreach (var subTrack in track.Alts!.Append(track))
                 {
                     var subTrackPath = subTrack.Path?.Replace('/', Path.DirectorySeparatorChar)
                         .Replace('\\', Path.DirectorySeparatorChar);
                     var altPcmPath = $"{directory}{Path.DirectorySeparatorChar}{subTrackPath}";
-                    var path = subTrack.DeterminePath(basePcm, altPcmPath);
+                    var path = basePcmMatched ? altPcmPath : subTrack.DeterminePath(basePcm, altPcmPath);
+
+                    if (path == basePcm)
+                        basePcmMatched = true;
+                    
                     toReturn.Add(new Track
                     (
                         trackName: msuTypeTrack.Name,
