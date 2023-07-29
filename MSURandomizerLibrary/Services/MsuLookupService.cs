@@ -13,16 +13,18 @@ internal class MsuLookupService : IMsuLookupService
     private readonly MsuUserOptions _msuUserOptions;
     private readonly IMsuDetailsService _msuDetailsService;
     private readonly MsuAppSettings _msuAppSettings;
+    private readonly IMsuCacheService _msuCacheService;
     private readonly Dictionary<string, string> _errors = new();
     private IReadOnlyCollection<Msu> _msus = new List<Msu>();
 
-    public MsuLookupService(ILogger<MsuLookupService> logger, IMsuTypeService msuTypeService, MsuUserOptions msuUserOptions, IMsuDetailsService msuDetailsService, MsuAppSettings msuAppSettings)
+    public MsuLookupService(ILogger<MsuLookupService> logger, IMsuTypeService msuTypeService, MsuUserOptions msuUserOptions, IMsuDetailsService msuDetailsService, MsuAppSettings msuAppSettings, IMsuCacheService msuCacheService)
     {
         _logger = logger;
         _msuTypeService = msuTypeService;
         _msuUserOptions = msuUserOptions;
         _msuDetailsService = msuDetailsService;
         _msuAppSettings = msuAppSettings;
+        _msuCacheService = msuCacheService;
     }
 
     public IReadOnlyCollection<Msu> LookupMsus()
@@ -30,7 +32,7 @@ internal class MsuLookupService : IMsuLookupService
         return LookupMsus(_msuUserOptions.DefaultMsuPath, _msuUserOptions.MsuTypePaths);
     }
 
-    public IReadOnlyCollection<Msu> LookupMsus(string? defaultDirectory, Dictionary<MsuType, string>? msuTypeDirectories = null)
+    public IReadOnlyCollection<Msu> LookupMsus(string? defaultDirectory, Dictionary<MsuType, string>? msuTypeDirectories = null, bool ignoreCache = false)
     {
         if (!_msuTypeService.MsuTypes.Any())
         {
@@ -50,7 +52,7 @@ internal class MsuLookupService : IMsuLookupService
 
         Parallel.ForEach((msusToLoad), loadInfo =>
         {
-            var msu = LoadMsu(loadInfo.Item1, loadInfo.Item2);
+            var msu = LoadMsu(loadInfo.Item1, loadInfo.Item2, false, ignoreCache);
             if (msu != null)
             {
                 msus.Add(msu);
@@ -58,6 +60,7 @@ internal class MsuLookupService : IMsuLookupService
         });
 
         _msus = msus.ToList();
+        _msuCacheService.Save();
         
         stopwatch.Stop();
         _logger.LogInformation("MSU lookup complete in {Seconds} seconds (found {Count} MSUs)", stopwatch.Elapsed.TotalSeconds, _msus.Count);
@@ -95,7 +98,7 @@ internal class MsuLookupService : IMsuLookupService
         return msuLookups;
     }
 
-    public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null)
+    public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null, bool saveToCache = true, bool ignoreCache = false)
     {
         var directory = new FileInfo(msuPath).Directory!.FullName;
 
@@ -104,7 +107,7 @@ internal class MsuLookupService : IMsuLookupService
             return null;
         }
 
-        var msuDetails = _msuDetailsService.GetMsuDetails(msuPath, out var yamlPath, out var yamlError);
+        var msuDetails = _msuDetailsService.GetMsuDetails(msuPath, out var yamlHash, out var yamlError);
         if (!string.IsNullOrEmpty(yamlError))
         {
             _errors[msuPath] = yamlError;
@@ -112,6 +115,18 @@ internal class MsuLookupService : IMsuLookupService
         
         var baseName = Path.GetFileName(msuPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var pcmFiles = Directory.EnumerateFiles(directory, $"{baseName}-*.pcm", SearchOption.AllDirectories).ToList();
+
+        // Load the MSU from cache if possible
+        if (!ignoreCache)
+        {
+            var cacheMsu = _msuCacheService.Get(msuPath, yamlHash, pcmFiles);
+            if (cacheMsu != null)
+            {
+                return cacheMsu;
+            }
+        }
+        
+        
         var msuSettings = _msuUserOptions.GetMsuSettings(msuPath);
         
         msuSettings.MsuType = _msuTypeService.GetMsuType(msuSettings.MsuTypeName);
@@ -149,6 +164,8 @@ internal class MsuLookupService : IMsuLookupService
         msu.Artist = msuDetails?.Artist;
         msu.Album = msuDetails?.Album;
         msu.Url = msuDetails?.Url;
+        
+        _msuCacheService.Put(msu, yamlHash, pcmFiles, saveToCache);
 
         return msu;
     }

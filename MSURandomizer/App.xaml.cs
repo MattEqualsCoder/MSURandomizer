@@ -59,6 +59,8 @@ namespace MSURandomizer
                 MsuAppSettingsStream = settingsStream
             };
 
+            msuInitializationRequest.MsuCachePath = "%LocalAppData%\\MSURandomizer";
+
             #if DEBUG
             msuInitializationRequest.MsuTypeConfigPath = GetConfigDirectory();
             msuInitializationRequest.UserOptionsPath = "%LocalAppData%\\MSURandomizer\\msu-user-settings-debug.yml";

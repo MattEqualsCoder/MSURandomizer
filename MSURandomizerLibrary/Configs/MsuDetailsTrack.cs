@@ -8,6 +8,8 @@ namespace MSURandomizerLibrary.Configs;
 
 public class MsuDetailsTrack
 {
+    private static SHA1 _sha1 = SHA1.Create();
+    
     public int? TrackNumber { get; set; }
     public string? Name { get; set; }
     public string? Artist { get; set; }

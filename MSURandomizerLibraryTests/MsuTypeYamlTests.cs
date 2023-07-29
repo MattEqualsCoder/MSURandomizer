@@ -205,6 +205,7 @@ public class MsuTypeYamlTests
     {
         var logger = TestHelpers.CreateMockLogger<MsuLookupService>();
         var detailsService = new MsuDetailsService(TestHelpers.CreateMockLogger<MsuDetailsService>());
-        return new MsuLookupService(logger, _msuTypeService, new MsuUserOptions(), detailsService, appSettings ?? new MsuAppSettings());
+        var msuCacheService = TestHelpers.CreateMockMsuCacheService();
+        return new MsuLookupService(logger, _msuTypeService, new MsuUserOptions(), detailsService, appSettings ?? new MsuAppSettings(), msuCacheService);
     }
 }

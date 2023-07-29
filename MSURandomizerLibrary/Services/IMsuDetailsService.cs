@@ -17,15 +17,13 @@ public interface IMsuDetailsService
     public MsuDetails? GetMsuDetails(string msuPath, out string yamlHash, out string? error);
     
     /// <summary>
-    /// Loads the MSU Details from a YAML file
+    /// Converts the MSU details object into an MSU object
     /// </summary>
+    /// <param name="msuDetails">The previously loaded MSU details object</param>
     /// <param name="msuType">The MSU type that is applicable for the MSU</param>
     /// <param name="msuPath">The path to the MSU file</param>
     /// <param name="msuDirectory">The directory of the MSU file</param>
     /// <param name="msuBaseName">The base name of the MSU file with no file extension</param>
-    /// <param name="yamlPath">The path to the YAML file</param>
-    /// <param name="basicDetails">The basic MSU details</param>
-    /// <param name="msuDetails">The loaded MSU details if they were found</param>
     /// <param name="error">Any errors with loading the MSU details</param>
     /// <returns>The MSU with all of the updated details from the YAML file</returns>
     public Msu? ConvertToMsu(MsuDetails msuDetails, MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, out string? error);

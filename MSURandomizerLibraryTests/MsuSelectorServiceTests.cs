@@ -246,6 +246,7 @@ public class MsuSelectorServiceTests
         var msuDetailsService = TestHelpers.CreateMockMsuDetailsService(null, null);
         var msuTypeService = TestHelpers.CreateMockMsuTypeServiceMulti(msuTypeTracks, out var generatedMsuTypes);
         var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
+        var msuCacheService = TestHelpers.CreateMockMsuCacheService();
 
         msuTypes = generatedMsuTypes;
         
@@ -260,7 +261,7 @@ public class MsuSelectorServiceTests
             }
             index++;
         }
-        var lookupService = new MsuLookupService(lookupLogger, msuTypeService, msuUserOptionsService.MsuUserOptions, msuDetailsService, new MsuAppSettings());
+        var lookupService = new MsuLookupService(lookupLogger, msuTypeService, msuUserOptionsService.MsuUserOptions, msuDetailsService, new MsuAppSettings(), msuCacheService);
         lookupService.LookupMsus(folder);
 
         msus = lookupService.Msus.ToList();

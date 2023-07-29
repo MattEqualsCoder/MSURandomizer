@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 using YamlDotNet.Serialization;
@@ -80,14 +82,13 @@ public class MsuDetailsService : IMsuDetailsService
             path = path.Replace(".yml", ".yaml");
             if (!File.Exists(path))
             {
-                yamlHash = "null";
+                yamlHash = "";
                 error = null;
                 return GetBasicJsonDetails(msuPath);
             }
         }
 
-        var msuDetails = InternalGetMsuDetails(path, out error);
-        yamlHash = "";
+        var msuDetails = InternalGetMsuDetails(path, out yamlHash, out error);
         return msuDetails;
     }
 
@@ -171,11 +172,13 @@ public class MsuDetailsService : IMsuDetailsService
         return output;
     }
 
-    private MsuDetails? InternalGetMsuDetails(string yamlPath, out string? error)
+    private MsuDetails? InternalGetMsuDetails(string yamlPath, out string yamlHash, out string? error)
     {
         try
         {
             var yamlText = File.ReadAllText(yamlPath);
+            using var sha1 = SHA1.Create();
+            yamlHash = BitConverter.ToString(sha1.ComputeHash(Encoding.UTF32.GetBytes(yamlText))).Replace("-", "");
             error = null;
             return _deserializer.Deserialize<MsuDetails>(yamlText);
         }
@@ -183,6 +186,7 @@ public class MsuDetailsService : IMsuDetailsService
         {
             _logger.LogError(e, "Could not parse YAML file {Path}", yamlPath);
             error = $"Could not load YAML file: {e.Message}";
+            yamlHash = "";
             return null;
         }
     }

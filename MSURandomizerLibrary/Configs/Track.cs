@@ -1,9 +1,15 @@
-﻿using YamlDotNet.Serialization;
+﻿using System.Text.Json.Serialization;
+using YamlDotNet.Serialization;
 
 namespace MSURandomizerLibrary.Configs;
 
 public class Track
 {
+    public Track()
+    {
+        
+    }
+    
     public Track(string trackName, int number, string songName, string path, string? artist = null,
         string? album = null, string? url = null, bool isAlt = false)
     {
@@ -31,31 +37,29 @@ public class Track
         OriginalPath = other.OriginalPath;
         OriginalMsu = other.OriginalMsu ?? other.Msu;
     }
-    
-    public string TrackName { get; set; }
+
+    public string TrackName { get; set; } = "";
     public int Number { get; set; }
-    public string SongName { get; set; }
+    public string SongName { get; set; } = "";
     public string? MsuPath { get; set; }
     public string? MsuName { get; set; }
     public string? MsuCreator { get; set; }
-    public string Path { get; set; }
+    public string Path { get; set; } = "";
     public string? Artist { get; set; }
     public string? Album { get; set; } 
     public string? Url { get; set; }
     public string? OriginalPath { get; set; }
-    [YamlIgnore]
     public bool IsAlt { get; set; }
-    [YamlIgnore]
     public bool IsCopied { get; set; }
-    [YamlIgnore]
+    [JsonIgnore]
     public Msu? Msu { get; set; }
-    [YamlIgnore]
+    [JsonIgnore]
     public Msu? OriginalMsu { get; set; }
-    [YamlIgnore]
+    [JsonIgnore]
     public string? DisplayArtist => Artist ?? Msu?.Artist;
-    [YamlIgnore]
+    [JsonIgnore]
     public string? DisplayAlbum => Album ?? Msu?.Album;
-    [YamlIgnore]
+    [JsonIgnore]
     public string? DisplayUrl => Url ?? Msu?.Url;
     
     public string GetDisplayText(bool includeMsu = true)

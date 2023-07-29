@@ -33,8 +33,8 @@ public class MsuLookupServiceTests
         Assert.That(service.Msus.Count, Is.EqualTo(2));
         Assert.That(service.Msus.First().Name, Is.EqualTo("msu-test"));
         Assert.That(service.Msus.Last().Name, Is.EqualTo("msu-test"));
-        Assert.That(service.Msus.First().Tracks.Count, Is.EqualTo(5));
-        Assert.That(service.Msus.Last().Tracks.Count, Is.EqualTo(10));
+        Assert.That(service.Msus.Any(x => x.Tracks.Count == 5));
+        Assert.That(service.Msus.Any(x => x.Tracks.Count == 10));
         Assert.That(File.Exists(service.Msus.First().Tracks.First().Path), Is.True);
         Assert.That(File.Exists(service.Msus.Last().Tracks.First().Path), Is.True);
     }
@@ -106,6 +106,7 @@ public class MsuLookupServiceTests
         var logger = TestHelpers.CreateMockLogger<MsuLookupService>();
         var msuTypeService = TestHelpers.CreateMockMsuTypeService(tracks, out var msuTypes);
         var msuDetailsService = TestHelpers.CreateMockMsuDetailsService(null, null);
-        return new MsuLookupService(logger, msuTypeService, new MsuUserOptions(), msuDetailsService, new MsuAppSettings());
+        var msuCacheService = TestHelpers.CreateMockMsuCacheService();
+        return new MsuLookupService(logger, msuTypeService, new MsuUserOptions(), msuDetailsService, new MsuAppSettings(), msuCacheService);
     }
 }

@@ -120,6 +120,22 @@ public abstract class TestHelpers
 
         return service.Object;
     }
+    
+    public static IMsuCacheService CreateMockMsuCacheService()
+    {
+        var service = new Mock<IMsuCacheService>();
+        
+        service.Setup(x => x.Initialize(It.IsAny<string>()));
+        
+        service.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ICollection<string>>()))
+            .Returns(value: null);
+
+        service.Setup(x => x.Save());
+        
+        service.Setup(x => x.Put(It.IsAny<Msu>(), It.IsAny<string>(), It.IsAny<ICollection<string>>(), It.IsAny<bool>()));
+
+        return service.Object;
+    }
 
     public static string CreateMsu(List<int> tracks, string msuName = "test-msu", bool deleteOld = true, bool createAlts = false)
     {
@@ -174,7 +190,6 @@ public abstract class TestHelpers
         msuDetailsService.Setup(x => x.GetMsuDetails(It.IsAny<string>(), out outString1, out outString2))
             .Returns(value: returnMsuDetails);
 
-        MsuDetails? outDetails;
         msuDetailsService.Setup(x => x.ConvertToMsu(It.IsAny<MsuDetails>(),It.IsAny<MsuType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), out outString1))
             .Returns(value: returnMsu);
         

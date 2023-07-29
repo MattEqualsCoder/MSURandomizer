@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using MSURandomizerLibrary.Configs;
+﻿using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerLibrary.Services;
 
@@ -16,14 +13,15 @@ public interface IMsuLookupService
     /// </summary>
     /// <returns>A collection of all MSUs found</returns>
     public IReadOnlyCollection<Msu> LookupMsus();
-    
+
     /// <summary>
     /// Loads all MSUs within a directory and all subdirectories
     /// </summary>
     /// <param name="defaultDirectory">The directory to search for MSUs</param>
     /// <param name="msuTypeDirectories">A collection of folders for specific msu types</param>
+    /// <param name="ignoreCache">If what was previously stored in the cache should be ignored</param>
     /// <returns>A collection of all MSUs found</returns>
-    public IReadOnlyCollection<Msu> LookupMsus(string? defaultDirectory, Dictionary<MsuType, string>? msuTypeDirectories = null);
+    public IReadOnlyCollection<Msu> LookupMsus(string? defaultDirectory, Dictionary<MsuType, string>? msuTypeDirectories = null, bool ignoreCache = false);
 
     /// <summary>
     /// Loads a specific MSU and all of its tracks
@@ -31,8 +29,10 @@ public interface IMsuLookupService
     /// <param name="msuPath">The path of the MSU to load</param>
     /// <param name="msuTypeFilter">Used to try to ensure that the msu is loaded as the given msu type or a compatible
     /// msu type. If not provided, it will try to determine the best fit of MSU out of all list types.</param>
+    /// <param name="saveToCache">If the msu details should be automatically saved to the cache file.</param>
+    /// <param name="ignoreCache">If what was previously stored in the cache should be ignored</param>
     /// <returns>The MSU object with details of the MSU and its found tracks</returns>
-    public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null);
+    public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null, bool saveToCache = true, bool ignoreCache = false);
 
     /// <summary>
     /// The collection of loaded MSUs

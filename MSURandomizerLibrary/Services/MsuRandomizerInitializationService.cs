@@ -45,6 +45,8 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
         InitializeMsuTypes(request, appSettings);
         var userOptions = InitializeUserOptions(request, appSettings);
         
+        InitializeCache(request);
+
         Task.Run(() =>
         {
             var msuLookupService = _serviceProvider.GetRequiredService<IMsuLookupService>();
@@ -97,5 +99,12 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
         var userOptionsPath = Environment.ExpandEnvironmentVariables(basePath);
         var userOptionsService = _serviceProvider.GetRequiredService<IMsuUserOptionsService>();
         return userOptionsService.Initialize(userOptionsPath);
+    }
+
+    private void InitializeCache(MsuRandomizerInitializationRequest request)
+    {
+        if (string.IsNullOrEmpty(request.MsuCachePath)) return;
+        var msuCacheService = _serviceProvider.GetRequiredService<IMsuCacheService>();
+        msuCacheService.Initialize(Environment.ExpandEnvironmentVariables(request.MsuCachePath));
     }
 }
