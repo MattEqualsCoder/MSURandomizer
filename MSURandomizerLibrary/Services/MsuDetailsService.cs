@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 using YamlDotNet.Serialization;
@@ -14,14 +9,12 @@ namespace MSURandomizerLibrary.Services;
 public class MsuDetailsService : IMsuDetailsService
 {
     private readonly ILogger<MsuDetailsService> _logger;
-    private readonly MsuAppSettings _msuAppSettings;
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
 
-    public MsuDetailsService(ILogger<MsuDetailsService> logger, MsuAppSettings msuAppSettings)
+    public MsuDetailsService(ILogger<MsuDetailsService> logger)
     {
         _logger = logger;
-        _msuAppSettings = msuAppSettings;
         _serializer = new SerializerBuilder()
             .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitDefaults)
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
@@ -32,81 +25,25 @@ public class MsuDetailsService : IMsuDetailsService
             .Build();
     }
 
-    public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath, MsuDetailsBasic? basicDetails, out MsuDetails? msuDetails, out string? error)
-    {
-        using var fileStream = new FileStream(yamlPath, FileMode.Open);
-        using var reader = new StreamReader(fileStream);
-        var yamlText = reader.ReadToEnd();
-
-        if (string.IsNullOrWhiteSpace(yamlText))
-        {
-            _logger.LogError("Empty MSU yaml file {File}", yamlPath);
-            msuDetails = null;
-            error = "Empty MSU yaml file";
-            return null;
-        }
-
-        var trackType = basicDetails?.Tracks?.GetType().Name;
-
-        // The YAML can come in the form of SMZ3 specific and a generic format. Try to detect which format it's in
-        // and deserialize it accordingly
-        if (trackType?.StartsWith("Dictionary") == true)
-        {
-            return ParseSmz3MsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText, basicDetails!, out msuDetails, out error);
-        }
-        else
-        {
-            return ParseGenericMsuDetails(msuType, msuPath, msuDirectory, msuBaseName, yamlText, out msuDetails, out error);
-        }
-    }
-
     public bool SaveMsuDetails(Msu msu, string outputPath, out string? error)
     {
-        if (_msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(msu.MsuTypeName))
-        {
-            return SaveMsuDetailsSmz3(msu, outputPath, out error);
-        }
-        else
-        {
-            return SaveMsuDetailsGeneric(msu, outputPath, out error);
-        }
-    }
-
-    public MsuDetailsBasic? GetBasicMsuDetails(string msuPath, out string? yamlPath, out string? error)
-    {
-        var path = msuPath.Replace(".msu", ".yml", StringComparison.OrdinalIgnoreCase);
-        if (!File.Exists(path))
-        {
-            path = path.Replace(".yml", ".yaml");
-            if (!File.Exists(path))
-            {
-                yamlPath = null;
-                error = null;
-                return GetBasicJsonDetails(msuPath);
-            }
-        }
-
-        var msuDetails = InternalGetBasicMsuDetails(path, out error);
-        yamlPath = msuDetails == null ? null : path;
-        return msuDetails;
-    }
-
-    private bool SaveMsuDetailsGeneric(Msu msu, string outputPath, out string? error)
-    {
-        var tracks = new List<MsuDetailsTrack>();
+        var tracks = new Dictionary<string, MsuDetailsTrack>();
 
         error = null;
         
         foreach (var track in msu.Tracks.OrderBy(x => x.Number))
         {
-            var trackDetails = InternalConvertToTrackDetails(msu, track.Number, true, out var trackError);
+            var trackDetails = InternalConvertToTrackDetails(msu, track.Number, out var trackError);
             if (trackError != null)
                 error = trackError;
             if (trackDetails != null)
-                tracks.Add(trackDetails);
+            {
+                var msuTypeTrack = msu.MsuType?.Tracks.FirstOrDefault(x => x.Number == trackDetails.TrackNumber);
+                tracks[msuTypeTrack?.YamlNameSecondary ?? msuTypeTrack?.YamlName ?? track.TrackName] = trackDetails;
+            }
         }
         
-        var msuDetails = new MsuDetailsGeneric()
+        var msuDetails = new MsuDetails()
         {
             PackName = msu.Name,
             PackAuthor = msu.Creator,
@@ -134,54 +71,27 @@ public class MsuDetailsService : IMsuDetailsService
             return false;
         }
     }
-    
-    private bool SaveMsuDetailsSmz3(Msu msu, string outputPath, out string? error)
+
+    public MsuDetails? GetMsuDetails(string msuPath, out string yamlHash, out string? error)
     {
-        var metroidFirst = _msuAppSettings.MetroidFirstMsuTypes?.Contains(msu.MsuTypeName) == true;
-
-        var msuTrackDetails = new MsuDetailsTrackListSmz3();
-        error = null;
-        
-        foreach (var prop in typeof(MsuDetailsTrackListSmz3).GetProperties())
+        var path = msuPath.Replace(".msu", ".yml", StringComparison.OrdinalIgnoreCase);
+        if (!File.Exists(path))
         {
-            var attribute = prop.GetCustomAttributes<Smz3TrackNumberAttribute>().First();
-            var trackNumber = metroidFirst ? attribute.MetroidFirst : attribute.ZeldaFirst;
-            var track = InternalConvertToTrackDetails(msu, trackNumber, false, out var trackError);
-            if (trackError != null)
-                error = trackError;
-            prop.SetValue(msuTrackDetails, track);
-        }
-        
-        var msuDetails = new MsuDetailsSmz3()
-        {
-            PackName = msu.Name,
-            PackAuthor = msu.Creator,
-            PackVersion = msu.Version,
-            Album = msu.Album,
-            Artist = msu.Artist,
-            Url = msu.Url,
-            Tracks = msuTrackDetails
-        };
-        
-        if (msu.MsuType != null)
-        {
-            msuDetails.MsuType = msu.MsuType?.Name;
+            path = path.Replace(".yml", ".yaml");
+            if (!File.Exists(path))
+            {
+                yamlHash = "null";
+                error = null;
+                return GetBasicJsonDetails(msuPath);
+            }
         }
 
-        try
-        {
-            var yaml = _serializer.Serialize(msuDetails);
-            File.WriteAllText(outputPath, yaml);
-            return true;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Unable to write MSU YAML details to {Path}", outputPath);
-            return false;
-        }
+        var msuDetails = InternalGetMsuDetails(path, out error);
+        yamlHash = "";
+        return msuDetails;
     }
 
-    private MsuDetailsTrack? InternalConvertToTrackDetails(Msu msu, int trackNumber, bool writeTrackDetails, out string? error)
+    private MsuDetailsTrack? InternalConvertToTrackDetails(Msu msu, int trackNumber, out string? error)
     {
         var track = msu.Tracks.FirstOrDefault(x => x.Number == trackNumber && !x.IsAlt);
         error = null;
@@ -192,6 +102,7 @@ public class MsuDetailsService : IMsuDetailsService
         var output = new MsuDetailsTrack()
         {
             Name = track.SongName,
+            TrackNumber = trackNumber
         };
         
         if (!string.IsNullOrEmpty(track.OriginalMsu?.DisplayCreator) && track.OriginalMsu?.DisplayCreator != msu.DisplayCreator)
@@ -224,12 +135,6 @@ public class MsuDetailsService : IMsuDetailsService
             output.Url = track.Url;
         }
         
-        if (writeTrackDetails)
-        {
-            output.TrackName = track.TrackName;
-            output.TrackNumber = track.Number;
-        }
-
         if (!msu.Tracks.Any(x => x.Number == trackNumber && x.IsAlt)) 
             return output;
 
@@ -252,12 +157,6 @@ public class MsuDetailsService : IMsuDetailsService
                 MsuName = altTrack.MsuName
             };
             
-            if (writeTrackDetails)
-            {
-                altOutput.TrackName = altTrack.TrackName;
-                altOutput.TrackNumber = altTrack.Number;
-            }
-            
             if (!altOutput.CalculateAltInfo(msu.Path, altTrack.Path))
             {
                 _logger.LogWarning("Unable to calculate alt track info for {Path}", altTrack.Path);
@@ -272,13 +171,13 @@ public class MsuDetailsService : IMsuDetailsService
         return output;
     }
 
-    private MsuDetailsBasic? InternalGetBasicMsuDetails(string yamlPath, out string? error)
+    private MsuDetails? InternalGetMsuDetails(string yamlPath, out string? error)
     {
         try
         {
             var yamlText = File.ReadAllText(yamlPath);
             error = null;
-            return _deserializer.Deserialize<MsuDetailsBasic>(yamlText);
+            return _deserializer.Deserialize<MsuDetails>(yamlText);
         }
         catch (Exception e)
         {
@@ -288,7 +187,7 @@ public class MsuDetailsService : IMsuDetailsService
         }
     }
 
-    private MsuDetailsBasic? GetBasicJsonDetails(string msuPath)
+    private MsuDetails? GetBasicJsonDetails(string msuPath)
     {
         var fileInfo = new FileInfo(msuPath);
         if (fileInfo.DirectoryName == null)
@@ -307,7 +206,7 @@ public class MsuDetailsService : IMsuDetailsService
                 return null;
             }
 
-            return new MsuDetailsBasic()
+            return new MsuDetails()
             {
                 PackName = json.Name ?? json.Pack ?? json.PackName,
                 PackAuthor = json.Creator ?? json.PackCreator ?? json.PackAuthor,
@@ -321,17 +220,25 @@ public class MsuDetailsService : IMsuDetailsService
         }
     }
 
-    private List<Track> GetTrackDetails(ICollection<MsuDetailsTrack> tracks, MsuDetails msuDetails, string directory, string baseName)
+    private List<Track> GetTrackDetails(MsuType msuType, MsuDetails msuDetails, string directory, string baseName, out string? error)
     {
-        if (tracks.Any(x => (x.TrackNumber ?? 0) <= 0))
-        {
-            throw new InvalidOperationException("Track missing number");
-        }
+        error = null;
         
         var toReturn = new List<Track>();
-        foreach (var track in tracks)
+        foreach (var trackInfo in msuDetails.Tracks!)
         {
-            var trackNumber = track.TrackNumber ?? 0;
+            var trackName = trackInfo.Key;
+            var track = trackInfo.Value;
+            var msuTypeTrack = msuType.Tracks.FirstOrDefault(x =>
+                x.Number == track.TrackNumber || x.YamlName == trackName || x.YamlNameSecondary == trackName);
+
+            if (msuTypeTrack == null)
+            {
+                error = $"Could not match track {trackName} in MSU {baseName}";
+                continue;
+            }
+            
+            var trackNumber = msuTypeTrack.Number;
             
             // If there's no alt data for the track, simply load the base PCM file as the track
             if (!track.HasAltTrackData)
@@ -340,8 +247,8 @@ public class MsuDetailsService : IMsuDetailsService
                 track.Path = pcmFilePath;
                 toReturn.Add(new Track
                 (
-                    trackName: track.TrackName ?? $"Track #{trackNumber}",
-                    number: trackNumber,
+                    trackName: msuTypeTrack.Name,
+                    number: msuTypeTrack.Number,
                     songName: string.IsNullOrWhiteSpace(track.Name) ? $"Track #{trackNumber}" : track.Name,
                     path: pcmFilePath,
                     artist: string.IsNullOrWhiteSpace(track.Artist) ? msuDetails.Artist : track.Artist,
@@ -362,7 +269,7 @@ public class MsuDetailsService : IMsuDetailsService
                     var path = subTrack.DeterminePath(basePcm, altPcmPath);
                     toReturn.Add(new Track
                     (
-                        trackName: track.TrackName ?? $"Track #{trackNumber}",
+                        trackName: msuTypeTrack.Name,
                         number: trackNumber,
                         songName: string.IsNullOrWhiteSpace(subTrack.Name) ? $"Track #{trackNumber}" : subTrack.Name,
                         path: path ?? "",
@@ -378,104 +285,19 @@ public class MsuDetailsService : IMsuDetailsService
         return toReturn;
     }
     
-    private List<Track> GetSmz3TrackDetails(MsuDetailsSmz3 msuDetailsSmz3, string directory, string baseName, bool metroidFirst)
-    {
-        var tracks = new List<MsuDetailsTrack>();
-        
-        // For SMZ3 specific YAML files, we need to get the tracks by property and get the track number from the 
-        // property attributes based on if it's Metroid or Zelda first
-        foreach (var prop in typeof(MsuDetailsTrackListSmz3).GetProperties())
-        {
-            if (prop.GetValue(msuDetailsSmz3.Tracks) is not MsuDetailsTrack track)
-            {
-                continue;
-            }
-
-            var attribute = prop.GetCustomAttributes<Smz3TrackNumberAttribute>().First();
-            var trackNumber = metroidFirst ? attribute.MetroidFirst : attribute.ZeldaFirst;
-
-            track.TrackNumber = trackNumber;
-            track.TrackName = prop.Name;
-            tracks.Add(track);
-        }
-
-        return GetTrackDetails(tracks, msuDetailsSmz3, directory, baseName);
-    }
-
-    private Msu? ParseSmz3MsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText, MsuDetailsBasic basicDetails, out MsuDetails? msuDetails, out string? error)
+    public Msu? ConvertToMsu(MsuDetails msuDetails, MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, out string? error)
     {
         try
         {
-            var smz3Details = _deserializer.Deserialize<MsuDetailsSmz3>(yamlText);
-            msuDetails = smz3Details;
-            if (smz3Details.Tracks == null)
-            {
-                error = null;
-                return new Msu(
-                    type: msuType,
-                    name: string.IsNullOrWhiteSpace(smz3Details.PackName) ? msuBaseName : smz3Details.PackName,
-                    folderName: new DirectoryInfo(msuDirectory).Name, 
-                    fileName: msuBaseName, 
-                    path: msuPath, 
-                    tracks: new List<Track>(), 
-                    msuDetails: smz3Details, 
-                    prevMsu: null
-                );
-            }
-            var tracks = GetSmz3TrackDetails(smz3Details, msuDirectory, msuBaseName, _msuAppSettings.MetroidFirstMsuTypes?.Contains(msuType.DisplayName) == true);
-            error = null;
-            return new Msu(
-                type: msuType,
-                name: string.IsNullOrWhiteSpace(smz3Details.PackName) ? msuBaseName : smz3Details.PackName,
-                folderName: new DirectoryInfo(msuDirectory).Name, 
-                fileName: msuBaseName, 
-                path: msuPath, 
-                tracks: tracks, 
-                msuDetails: smz3Details, 
-                prevMsu: null
-            );
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Unable to parse SMZ3 MSU yaml file for {Directory}{Separator}{BaseName}.msu", msuDirectory, Path.DirectorySeparatorChar, msuBaseName);
-            Console.WriteLine(e);
-            msuDetails = null;
-            error = $"Could not load YAML file: {e.Message}";
-            return null;
-        }
-    }
-
-    private Msu? ParseGenericMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlText, out MsuDetails? msuDetails, out string? error)
-    {
-        try
-        {
-            var genericDetails = _deserializer.Deserialize<MsuDetailsGeneric>(yamlText);
-            msuDetails = genericDetails;
-            if (genericDetails.Tracks?.Any() != true || genericDetails.Tracks?.Any(x => x.TrackNumber <= 0) == true)
-            {
-                _logger.LogInformation("YAML file for MSU {Path} missing track details", msuPath);
-                error = null;
-                return new Msu(
-                    type: msuType,
-                    name: string.IsNullOrWhiteSpace(genericDetails.PackName) ? msuBaseName : genericDetails.PackName,
-                    folderName: new DirectoryInfo(msuDirectory).Name, 
-                    fileName: msuBaseName, 
-                    path: msuPath, 
-                    tracks: new List<Track>(), 
-                    msuDetails: genericDetails,
-                    prevMsu: null
-                );
-            }
-            var tracks = GetTrackDetails(genericDetails.Tracks!, genericDetails, msuDirectory, msuBaseName);
-            error = null;
+            var tracks = GetTrackDetails(msuType, msuDetails, msuDirectory, msuBaseName, out error);
             return new Msu(
                 type: msuType, 
-                name: string.IsNullOrWhiteSpace(genericDetails.PackName) ? msuBaseName : genericDetails.PackName, 
+                name: string.IsNullOrWhiteSpace(msuDetails.PackName) ? msuBaseName : msuDetails.PackName, 
                 folderName: new DirectoryInfo(msuDirectory).Name, 
                 fileName: msuBaseName, 
                 path: msuPath, 
                 tracks: tracks, 
-                msuDetails: genericDetails,
+                msuDetails: msuDetails,
                 prevMsu: null
             );
         }
@@ -483,7 +305,6 @@ public class MsuDetailsService : IMsuDetailsService
         {
             _logger.LogError(e, "Unable to parse generic MSU yaml file for {Directory}{Separator}{BaseName}.msu", msuDirectory, Path.DirectorySeparatorChar, msuBaseName);
             Console.WriteLine(e);
-            msuDetails = null;
             error = $"Could not load YAML file: {e.Message}";
             return null;
         }

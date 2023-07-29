@@ -1,0 +1,371 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: 'The Legend of Zelda: A Link to the Past'
+tracks:
+  zelda_title:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  light_world:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  rainy_intro:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  bunny_theme:
+    track_number: 4
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_woods:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  prologue:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 
+  kakariko:
+    track_number: 7
+    name: 
+    artist: 
+    album: 
+    url: 
+  mirror:
+    track_number: 8
+    name: 
+    artist: 
+    album: 
+    url: 
+  dark_world:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  pedestal_pull:
+    track_number: 10
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_game_over:
+    track_number: 11
+    name: 
+    artist: 
+    album: 
+    url: 
+  guards:
+    track_number: 12
+    name: 
+    artist: 
+    album: 
+    url: 
+  dark_death_mountain:
+    track_number: 13
+    name: 
+    artist: 
+    album: 
+    url: 
+  minigame:
+    track_number: 14
+    name: 
+    artist: 
+    album: 
+    url: 
+  dark_woods:
+    track_number: 15
+    name: 
+    artist: 
+    album: 
+    url: 
+  hyrule_castle:
+    track_number: 16
+    name: 
+    artist: 
+    album: 
+    url: 
+  pendant_dungeon:
+    track_number: 17
+    name: 
+    artist: 
+    album: 
+    url: 
+  cave_1:
+    track_number: 18
+    name: 
+    artist: 
+    album: 
+    url: 
+  boss_victory:
+    track_number: 19
+    name: 
+    artist: 
+    album: 
+    url: 
+  sanctuary:
+    track_number: 20
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_boss_battle:
+    track_number: 21
+    name: 
+    artist: 
+    album: 
+    url: 
+  crystal_dungeon:
+    track_number: 22
+    name: 
+    artist: 
+    album: 
+    url: 
+  shop:
+    track_number: 23
+    name: 
+    artist: 
+    album: 
+    url: 
+  cave_2:
+    track_number: 24
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_rescued:
+    track_number: 25
+    name: 
+    artist: 
+    album: 
+    url: 
+  crystal_retrieved:
+    track_number: 26
+    name: 
+    artist: 
+    album: 
+    url: 
+  fairy:
+    track_number: 27
+    name: 
+    artist: 
+    album: 
+    url: 
+  agahnims_floor:
+    track_number: 28
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganon_reveal:
+    track_number: 29
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganons_message:
+    track_number: 30
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganon_battle:
+    track_number: 31
+    name: 
+    artist: 
+    album: 
+    url: 
+  triforce_room:
+    track_number: 32
+    name: 
+    artist: 
+    album: 
+    url: 
+  epilogue:
+    track_number: 33
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_credits:
+    track_number: 34
+    name: 
+    artist: 
+    album: 
+    url: 
+  eastern_palace:
+    track_number: 35
+    name: 
+    artist: 
+    album: 
+    url: 
+  desert_palace:
+    track_number: 36
+    name: 
+    artist: 
+    album: 
+    url: 
+  agahnims_tower:
+    track_number: 37
+    name: 
+    artist: 
+    album: 
+    url: 
+  swamp_palace:
+    track_number: 38
+    name: 
+    artist: 
+    album: 
+    url: 
+  palace_of_darkness:
+    track_number: 39
+    name: 
+    artist: 
+    album: 
+    url: 
+  misery_mire:
+    track_number: 40
+    name: 
+    artist: 
+    album: 
+    url: 
+  skull_woods:
+    track_number: 41
+    name: 
+    artist: 
+    album: 
+    url: 
+  ice_palace:
+    track_number: 42
+    name: 
+    artist: 
+    album: 
+    url: 
+  tower_of_hera:
+    track_number: 43
+    name: 
+    artist: 
+    album: 
+    url: 
+  thieves_town:
+    track_number: 44
+    name: 
+    artist: 
+    album: 
+    url: 
+  turtle_rock:
+    track_number: 45
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganons_tower:
+    track_number: 46
+    name: 
+    artist: 
+    album: 
+    url: 
+  armos_knights:
+    track_number: 47
+    name: 
+    artist: 
+    album: 
+    url: 
+  lanmolas:
+    track_number: 48
+    name: 
+    artist: 
+    album: 
+    url: 
+  agahnim_1:
+    track_number: 49
+    name: 
+    artist: 
+    album: 
+    url: 
+  arrghus:
+    track_number: 50
+    name: 
+    artist: 
+    album: 
+    url: 
+  helmasaur_king:
+    track_number: 51
+    name: 
+    artist: 
+    album: 
+    url: 
+  vitreous:
+    track_number: 52
+    name: 
+    artist: 
+    album: 
+    url: 
+  mothula:
+    track_number: 53
+    name: 
+    artist: 
+    album: 
+    url: 
+  kholdstare:
+    track_number: 54
+    name: 
+    artist: 
+    album: 
+    url: 
+  moldorm:
+    track_number: 55
+    name: 
+    artist: 
+    album: 
+    url: 
+  blind:
+    track_number: 56
+    name: 
+    artist: 
+    album: 
+    url: 
+  trinexx:
+    track_number: 57
+    name: 
+    artist: 
+    album: 
+    url: 
+  agahnim_2:
+    track_number: 58
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganons_tower_climb:
+    track_number: 59
+    name: 
+    artist: 
+    album: 
+    url: 
+  light_world_2:
+    track_number: 60
+    name: 
+    artist: 
+    album: 
+    url: 
+  dark_world_2:
+    track_number: 61
+    name: 
+    artist: 
+    album: 
+    url: 

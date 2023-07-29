@@ -73,7 +73,7 @@ internal class MsuLookupService : IMsuLookupService
             return null;
         }
 
-        var basicMsuDetails = _msuDetailsService.GetBasicMsuDetails(msuPath, out var yamlPath, out var yamlError);
+        var msuDetails = _msuDetailsService.GetMsuDetails(msuPath, out var yamlPath, out var yamlError);
         if (!string.IsNullOrEmpty(yamlError))
         {
             _errors[msuPath] = yamlError;
@@ -86,8 +86,8 @@ internal class MsuLookupService : IMsuLookupService
         msuSettings.MsuType = _msuTypeService.GetMsuType(msuSettings.MsuTypeName);
 
         // Try to load the MSU type specified by the MSU details if possible, otherwise try to auto detect
-        var originalMsuType = !string.IsNullOrEmpty(basicMsuDetails?.MsuType) 
-            ? (_msuTypeService.GetMsuType(basicMsuDetails.MsuType) ?? GetMsuType(baseName, pcmFiles, msuTypeFilter))
+        var originalMsuType = !string.IsNullOrEmpty(msuDetails?.MsuType) 
+            ? (_msuTypeService.GetMsuType(msuDetails.MsuType) ?? GetMsuType(baseName, pcmFiles, msuTypeFilter))
             : GetMsuType(baseName, pcmFiles, msuTypeFilter);
         
         var msuType = msuSettings.MsuType ?? originalMsuType;
@@ -102,31 +102,31 @@ internal class MsuLookupService : IMsuLookupService
             msu = LoadUnknownMsu(msuPath, directory, baseName, pcmFiles);
         }
         // Check if there's a YAML file associated with the MSU to pull MSU and track information from
-        else if (!string.IsNullOrEmpty(yamlPath) && basicMsuDetails != null)
+        else if (msuDetails != null && msuDetails.Tracks?.Any() == true)
         {
-            msu = LoadDetailedMsu(msuPath, directory, baseName, msuType, pcmFiles, yamlPath, basicMsuDetails);
+            msu = LoadDetailedMsu(msuPath, directory, baseName, msuType, pcmFiles, msuDetails);
         }
         // Otherwise load it using the details from the MSU type
         else
         {
-            msu = LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles, basicMsuDetails);
+            msu = LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles, msuDetails);
         }
 
         msu.Settings = msuSettings;
         msu.MsuType = originalMsuType;
-        msu.Version = basicMsuDetails?.PackVersion;
-        msu.Artist = basicMsuDetails?.Artist;
-        msu.Album = basicMsuDetails?.Album;
-        msu.Url = basicMsuDetails?.Url;
+        msu.Version = msuDetails?.PackVersion;
+        msu.Artist = msuDetails?.Artist;
+        msu.Album = msuDetails?.Album;
+        msu.Url = msuDetails?.Url;
 
         return msu;
     }
 
     public IReadOnlyCollection<Msu> Msus => _msus.ToList();
 
-    private Msu LoadDetailedMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, string ymlPath, MsuDetailsBasic basicDetails)
+    private Msu LoadDetailedMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, MsuDetails basicDetails)
     {
-        var msu = _msuDetailsService.LoadMsuDetails(msuType, msuPath, directory, baseName, ymlPath, basicDetails, out var msuDetails, out var yamlError);
+        var msu = _msuDetailsService.ConvertToMsu(basicDetails, msuType, msuPath, directory, baseName, out var yamlError);
         
         if (!string.IsNullOrEmpty(yamlError))
         {
@@ -135,7 +135,7 @@ internal class MsuLookupService : IMsuLookupService
         
         if (msu?.Tracks.Any() != true)
         {
-            return LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles, msuDetails);
+            return LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles, basicDetails);
         }
         var trackDetails = msu.Tracks;
         

@@ -9,4 +9,6 @@ public class MsuTypeTrack
     public bool IsExtended { get; init; }
     public bool NonLooping { get; init; }
     public bool IsIgnored { get; init; }
+    public string? YamlName { get; set; }
+    public string? YamlNameSecondary { get; set; }
 }

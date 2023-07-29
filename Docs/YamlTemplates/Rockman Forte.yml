@@ -1,0 +1,161 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: Rockman & Forte
+tracks:
+  title_screen:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  file_select:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  player_select:
+    track_number: 4
+    name: 
+    artist: 
+    album: 
+    url: 
+  stage_select:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  stage_selected:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 
+  museum:
+    track_number: 7
+    name: 
+    artist: 
+    album: 
+    url: 
+  dynamo_man:
+    track_number: 8
+    name: 
+    artist: 
+    album: 
+    url: 
+  cold_man:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  ground_man:
+    track_number: 10
+    name: 
+    artist: 
+    album: 
+    url: 
+  tengu_man:
+    track_number: 11
+    name: 
+    artist: 
+    album: 
+    url: 
+  astro_man:
+    track_number: 12
+    name: 
+    artist: 
+    album: 
+    url: 
+  pirate_man:
+    track_number: 13
+    name: 
+    artist: 
+    album: 
+    url: 
+  burner_man:
+    track_number: 14
+    name: 
+    artist: 
+    album: 
+    url: 
+  magic_man:
+    track_number: 15
+    name: 
+    artist: 
+    album: 
+    url: 
+  king_castle:
+    track_number: 16
+    name: 
+    artist: 
+    album: 
+    url: 
+  wily_castle:
+    track_number: 17
+    name: 
+    artist: 
+    album: 
+    url: 
+  seals:
+    track_number: 18
+    name: 
+    artist: 
+    album: 
+    url: 
+  king_castle_intro:
+    track_number: 19
+    name: 
+    artist: 
+    album: 
+    url: 
+  new_weapon_presentation:
+    track_number: 20
+    name: 
+    artist: 
+    album: 
+    url: 
+  victory:
+    track_number: 21
+    name: 
+    artist: 
+    album: 
+    url: 
+  rightots_shop:
+    track_number: 22
+    name: 
+    artist: 
+    album: 
+    url: 
+  data_base:
+    track_number: 23
+    name: 
+    artist: 
+    album: 
+    url: 
+  game_over:
+    track_number: 24
+    name: 
+    artist: 
+    album: 
+    url: 
+  credits:
+    track_number: 25
+    name: 
+    artist: 
+    album: 
+    url: 
+  boss:
+    track_number: 27
+    name: 
+    artist: 
+    album: 
+    url: 
+  last_boss:
+    track_number: 28
+    name: 
+    artist: 
+    album: 
+    url: 

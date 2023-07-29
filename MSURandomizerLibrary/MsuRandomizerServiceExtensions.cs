@@ -15,9 +15,11 @@ public static class MsuRandomizerServiceExtensions
         
         services.AddSingleton<IMsuTypeService, MsuTypeService>();
         services.AddSingleton<IMsuDetailsService, MsuDetailsService>();
+        services.AddSingleton<IMsuCacheService, MsuCacheService>();
         services.AddSingleton<IMsuLookupService, MsuLookupService>();
         services.AddSingleton<IMsuSelectorService, MsuSelectorService>();
         services.AddSingleton<IMsuRandomizerInitializationService, MsuRandomizerInitializationService>();
+        
         return services;
     }
 }

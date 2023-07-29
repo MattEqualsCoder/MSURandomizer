@@ -1,0 +1,365 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: Donkey Kong Country
+tracks:
+  jungle_hijinxs:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  reptile_rumble:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  stop_go_station:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  coral_capers:
+    track_number: 4
+    name: 
+    artist: 
+    album: 
+    url: 
+  mine_cart_carnage:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  snow_barrel_blast:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 
+  millstone_mayhem:
+    track_number: 7
+    name: 
+    artist: 
+    album: 
+    url: 
+  oil_drum_alley:
+    track_number: 8
+    name: 
+    artist: 
+    album: 
+    url: 
+  winkys_walkway:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  title_screen:
+    track_number: 10
+    name: 
+    artist: 
+    album: 
+    url: 
+  rare_logo:
+    track_number: 11
+    name: 
+    artist: 
+    album: 
+    url: 
+  slipslide_ride:
+    track_number: 12
+    name: 
+    artist: 
+    album: 
+    url: 
+  overworld_map_1:
+    track_number: 13
+    name: 
+    artist: 
+    album: 
+    url: 
+  vulture_culture:
+    track_number: 14
+    name: 
+    artist: 
+    album: 
+    url: 
+  credits_concerto:
+    track_number: 15
+    name: 
+    artist: 
+    album: 
+    url: 
+  game_over:
+    track_number: 16
+    name: 
+    artist: 
+    album: 
+    url: 
+  bonus_round:
+    track_number: 17
+    name: 
+    artist: 
+    album: 
+    url: 
+  victory_theme:
+    track_number: 18
+    name: 
+    artist: 
+    album: 
+    url: 
+  life_lost:
+    track_number: 19
+    name: 
+    artist: 
+    album: 
+    url: 
+  tree_top_town:
+    track_number: 20
+    name: 
+    artist: 
+    album: 
+    url: 
+  funkys_fugue:
+    track_number: 21
+    name: 
+    artist: 
+    album: 
+    url: 
+  very_gnawtys_lair:
+    track_number: 22
+    name: 
+    artist: 
+    album: 
+    url: 
+  candys_save_point:
+    track_number: 23
+    name: 
+    artist: 
+    album: 
+    url: 
+  crankys_theme:
+    track_number: 24
+    name: 
+    artist: 
+    album: 
+    url: 
+  lose_bonusbanana_stolen:
+    track_number: 25
+    name: 
+    artist: 
+    album: 
+    url: 
+  gangplank_galleon:
+    track_number: 26
+    name: 
+    artist: 
+    album: 
+    url: 
+  level_complete:
+    track_number: 27
+    name: 
+    artist: 
+    album: 
+    url: 
+  ropey_rampage:
+    track_number: 28
+    name: 
+    artist: 
+    album: 
+    url: 
+  barrel_cannon_canyon:
+    track_number: 29
+    name: 
+    artist: 
+    album: 
+    url: 
+  orangutan_gang:
+    track_number: 30
+    name: 
+    artist: 
+    album: 
+    url: 
+  bouncy_bonanza:
+    track_number: 31
+    name: 
+    artist: 
+    album: 
+    url: 
+  torchlight_trouble:
+    track_number: 32
+    name: 
+    artist: 
+    album: 
+    url: 
+  elevator_antics:
+    track_number: 33
+    name: 
+    artist: 
+    album: 
+    url: 
+  manic_mincers:
+    track_number: 34
+    name: 
+    artist: 
+    album: 
+    url: 
+  misty_mine:
+    track_number: 35
+    name: 
+    artist: 
+    album: 
+    url: 
+  loopy_lights:
+    track_number: 36
+    name: 
+    artist: 
+    album: 
+    url: 
+  clam_city:
+    track_number: 37
+    name: 
+    artist: 
+    album: 
+    url: 
+  croctopus_chase:
+    track_number: 38
+    name: 
+    artist: 
+    album: 
+    url: 
+  poison_pond:
+    track_number: 39
+    name: 
+    artist: 
+    album: 
+    url: 
+  mine_cart_madness:
+    track_number: 40
+    name: 
+    artist: 
+    album: 
+    url: 
+  ice_age_alley:
+    track_number: 41
+    name: 
+    artist: 
+    album: 
+    url: 
+  temple_tempest:
+    track_number: 42
+    name: 
+    artist: 
+    album: 
+    url: 
+  blackout_basement:
+    track_number: 43
+    name: 
+    artist: 
+    album: 
+    url: 
+  trick_track_trek:
+    track_number: 44
+    name: 
+    artist: 
+    album: 
+    url: 
+  tanked_up_trouble:
+    track_number: 45
+    name: 
+    artist: 
+    album: 
+    url: 
+  platform_perils:
+    track_number: 46
+    name: 
+    artist: 
+    album: 
+    url: 
+  rope_bridge_rumble:
+    track_number: 47
+    name: 
+    artist: 
+    album: 
+    url: 
+  neckys_nuts:
+    track_number: 48
+    name: 
+    artist: 
+    album: 
+    url: 
+  queen_b_rumble:
+    track_number: 49
+    name: 
+    artist: 
+    album: 
+    url: 
+  really_gnawty_rampage:
+    track_number: 50
+    name: 
+    artist: 
+    album: 
+    url: 
+  boss_dumb_drum:
+    track_number: 51
+    name: 
+    artist: 
+    album: 
+    url: 
+  neckys_revenge:
+    track_number: 52
+    name: 
+    artist: 
+    album: 
+    url: 
+  forest_frenzy:
+    track_number: 53
+    name: 
+    artist: 
+    album: 
+    url: 
+  overworld_map_2:
+    track_number: 54
+    name: 
+    artist: 
+    album: 
+    url: 
+  overworld_map_3:
+    track_number: 55
+    name: 
+    artist: 
+    album: 
+    url: 
+  overworld_map_4:
+    track_number: 56
+    name: 
+    artist: 
+    album: 
+    url: 
+  overworld_map_5:
+    track_number: 57
+    name: 
+    artist: 
+    album: 
+    url: 
+  overworld_map_6:
+    track_number: 58
+    name: 
+    artist: 
+    album: 
+    url: 
+  overworld_map_7:
+    track_number: 59
+    name: 
+    artist: 
+    album: 
+    url: 
+  overworld_map_8:
+    track_number: 60
+    name: 
+    artist: 
+    album: 
+    url: 

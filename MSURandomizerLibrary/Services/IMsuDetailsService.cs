@@ -8,6 +8,15 @@ namespace MSURandomizerLibrary.Services;
 public interface IMsuDetailsService
 {
     /// <summary>
+    /// Loads the basic MSU details without track information
+    /// </summary>
+    /// <param name="msuPath">The path of the MSU to load the MSU details for</param>
+    /// <param name="yamlHash">The hashed value of the YAML file to using for caching</param>
+    /// <param name="error">Any errors with loading the basic MSU details</param>
+    /// <returns>The MSU details if they were able to be loaded</returns>
+    public MsuDetails? GetMsuDetails(string msuPath, out string yamlHash, out string? error);
+    
+    /// <summary>
     /// Loads the MSU Details from a YAML file
     /// </summary>
     /// <param name="msuType">The MSU type that is applicable for the MSU</param>
@@ -19,7 +28,7 @@ public interface IMsuDetailsService
     /// <param name="msuDetails">The loaded MSU details if they were found</param>
     /// <param name="error">Any errors with loading the MSU details</param>
     /// <returns>The MSU with all of the updated details from the YAML file</returns>
-    public Msu? LoadMsuDetails(MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, string yamlPath, MsuDetailsBasic? basicDetails, out MsuDetails? msuDetails, out string? error);
+    public Msu? ConvertToMsu(MsuDetails msuDetails, MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, out string? error);
 
     /// <summary>
     /// Saves the MSU details to a YAML file
@@ -29,13 +38,4 @@ public interface IMsuDetailsService
     /// <param name="error">Any errors with saving the MSU details</param>
     /// <returns>If the write was successful or not</returns>
     public bool SaveMsuDetails(Msu msu, string outputPath, out string? error);
-
-    /// <summary>
-    /// Loads the basic MSU details without track information
-    /// </summary>
-    /// <param name="msuPath">The path of the MSU to load the MSU details for</param>
-    /// <param name="yamlPath">The path of the YAML file that was loaded, if applicable</param>
-    /// <param name="error">Any errors with loading the basic MSU details</param>
-    /// <returns>The MSU details if they were able to be loaded</returns>
-    public MsuDetailsBasic? GetBasicMsuDetails(string msuPath, out string? yamlPath, out string? error);
 }

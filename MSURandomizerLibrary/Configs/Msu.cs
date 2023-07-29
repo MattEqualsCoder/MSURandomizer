@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using YamlDotNet.Serialization;
 
 namespace MSURandomizerLibrary.Configs;
 
@@ -39,13 +40,21 @@ public class Msu
     public string FileName { get; set; }
     public string Path { get; set; }
     public ICollection<Track> Tracks { get; set; }
+    [YamlIgnore]
     public MsuSettings Settings { get; set; } = new() { MsuPath = "" };
+    [YamlIgnore]
     public string DisplayName => string.IsNullOrWhiteSpace(Settings.Name) ? Name : Settings.Name;
+    [YamlIgnore]
     public string DisplayCreator => string.IsNullOrWhiteSpace(Settings.Creator) ? Creator ?? "" : Settings.Creator;
-    public MsuType? SelectedMsuType => Settings.MsuType ?? MsuType; 
+    [YamlIgnore]
+    public MsuType? SelectedMsuType => Settings.MsuType ?? MsuType;
+    [YamlIgnore]
     public string FullName => DisplayName + (string.IsNullOrWhiteSpace(DisplayCreator) ? "" : $" by {DisplayCreator}");
+    [YamlIgnore]
     public string MsuTypeName => string.IsNullOrWhiteSpace(SelectedMsuType?.DisplayName) ? "Unknown" : SelectedMsuType.DisplayName;
+    [YamlIgnore]
     public ICollection<Track> ValidTracks => Tracks.Where(x => Settings.AllowAltTracks || !x.IsAlt).ToList();
+    [YamlIgnore]
     public int NumUniqueTracks => Tracks.Select(x => x.Path).Distinct().Count();
 
     public bool MatchesFilter(MsuFilter filter, MsuType type, string? path)

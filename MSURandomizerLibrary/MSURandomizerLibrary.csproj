@@ -37,6 +37,8 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </EmbeddedResource>
+    <None Remove="yaml_tracks_rewrites.yml" />
+    <EmbeddedResource Include="yaml_tracks_rewrites.yml" />
   </ItemGroup>
 
   <ItemGroup>

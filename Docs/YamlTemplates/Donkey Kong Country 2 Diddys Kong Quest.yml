@@ -1,0 +1,611 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: "Donkey Kong Country 2: Diddy's Kong Quest"
+tracks:
+  welcome_to_crocodile_isle:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  k_rool_returns:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  bayou_boogie:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  swankys_swing:
+    track_number: 4
+    name: 
+    artist: 
+    album: 
+    url: 
+  forest_interlude:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  klomps_romp:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 
+  kannons_klaim:
+    track_number: 7
+    name: 
+    artist: 
+    album: 
+    url: 
+  funky_the_main_monkey:
+    track_number: 8
+    name: 
+    artist: 
+    album: 
+    url: 
+  stickerbush_symphony:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  klubbas_reveille:
+    track_number: 10
+    name: 
+    artist: 
+    album: 
+    url: 
+  flight_of_the_zinger:
+    track_number: 11
+    name: 
+    artist: 
+    album: 
+    url: 
+  school_house_harmony:
+    track_number: 12
+    name: 
+    artist: 
+    album: 
+    url: 
+  hothead_bop:
+    track_number: 13
+    name: 
+    artist: 
+    album: 
+    url: 
+  disco_train:
+    track_number: 14
+    name: 
+    artist: 
+    album: 
+    url: 
+  objective_screen:
+    track_number: 15
+    name: 
+    artist: 
+    album: 
+    url: 
+  lockjaws_saga:
+    track_number: 16
+    name: 
+    artist: 
+    album: 
+    url: 
+  opening_fanfare:
+    track_number: 17
+    name: 
+    artist: 
+    album: 
+    url: 
+  snakey_chantey:
+    track_number: 18
+    name: 
+    artist: 
+    album: 
+    url: 
+  stronghold_showdown:
+    track_number: 19
+    name: 
+    artist: 
+    album: 
+    url: 
+  game_over:
+    track_number: 20
+    name: 
+    artist: 
+    album: 
+    url: 
+  boss_bossanova:
+    track_number: 21
+    name: 
+    artist: 
+    album: 
+    url: 
+  krooks_march:
+    track_number: 22
+    name: 
+    artist: 
+    album: 
+    url: 
+  haunted_chase:
+    track_number: 23
+    name: 
+    artist: 
+    album: 
+    url: 
+  steel_drum_rhumba:
+    track_number: 24
+    name: 
+    artist: 
+    album: 
+    url: 
+  crankys_conga:
+    track_number: 25
+    name: 
+    artist: 
+    album: 
+    url: 
+  in_a_snowbound_land:
+    track_number: 26
+    name: 
+    artist: 
+    album: 
+    url: 
+  primal_rave:
+    track_number: 27
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_world_anthem:
+    track_number: 28
+    name: 
+    artist: 
+    album: 
+    url: 
+  jib_jig:
+    track_number: 29
+    name: 
+    artist: 
+    album: 
+    url: 
+  donkey_kong_rescued:
+    track_number: 30
+    name: 
+    artist: 
+    album: 
+    url: 
+  crocodile_cacophony:
+    track_number: 31
+    name: 
+    artist: 
+    album: 
+    url: 
+  windwater_sounds:
+    track_number: 36
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_swamp:
+    track_number: 43
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_enchanted_wood:
+    track_number: 45
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_ship_deck:
+    track_number: 46
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_mine:
+    track_number: 47
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_brambles:
+    track_number: 49
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_wasp_hive:
+    track_number: 51
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_lava:
+    track_number: 53
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_roller_coaster:
+    track_number: 54
+    name: 
+    artist: 
+    album: 
+    url: 
+  win_bonus:
+    track_number: 55
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_ship_hold:
+    track_number: 56
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_ship_deck_2:
+    track_number: 58
+    name: 
+    artist: 
+    album: 
+    url: 
+  the_flying_krock_rescue_kong:
+    track_number: 59
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_big_boss:
+    track_number: 61
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_castle:
+    track_number: 62
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_haunted:
+    track_number: 63
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_ice:
+    track_number: 66
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_jungle:
+    track_number: 67
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life_rigging:
+    track_number: 69
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_swamp:
+    track_number: 83
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_enchanted_wood:
+    track_number: 85
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_ship_deck:
+    track_number: 86
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_mine:
+    track_number: 87
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_brambles:
+    track_number: 89
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_wasp_hive:
+    track_number: 91
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_lava:
+    track_number: 93
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_roller_coaster:
+    track_number: 94
+    name: 
+    artist: 
+    album: 
+    url: 
+  loss_bonus:
+    track_number: 95
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_ship_hold:
+    track_number: 96
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_ship_deck_2:
+    track_number: 98
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_big_boss:
+    track_number: 101
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_castle:
+    track_number: 102
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_haunted:
+    track_number: 103
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_ice:
+    track_number: 106
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_jungle:
+    track_number: 107
+    name: 
+    artist: 
+    album: 
+    url: 
+  diddy_victory_rigging:
+    track_number: 109
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_swamp:
+    track_number: 123
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_enchanted_wood:
+    track_number: 125
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_ship_deck:
+    track_number: 126
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_mine:
+    track_number: 127
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_brambles:
+    track_number: 129
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_wasp_hive:
+    track_number: 131
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_lava:
+    track_number: 133
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_roller_coaster:
+    track_number: 134
+    name: 
+    artist: 
+    album: 
+    url: 
+  token_tango_bonus:
+    track_number: 135
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_ship_hold:
+    track_number: 136
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_ship_deck_2:
+    track_number: 138
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_big_boss:
+    track_number: 141
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_castle:
+    track_number: 142
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_haunted:
+    track_number: 143
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_ice:
+    track_number: 146
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_jungle:
+    track_number: 147
+    name: 
+    artist: 
+    album: 
+    url: 
+  dixie_victory_rigging:
+    track_number: 149
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_swamp:
+    track_number: 163
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_enchanted_wood:
+    track_number: 165
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_ship_deck:
+    track_number: 166
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_mine:
+    track_number: 167
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_brambles:
+    track_number: 169
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_wasp_hive:
+    track_number: 171
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_lava:
+    track_number: 173
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_roller_coaster:
+    track_number: 174
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_ship_hold:
+    track_number: 176
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_ship_deck_2:
+    track_number: 178
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_castle:
+    track_number: 182
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_haunted:
+    track_number: 183
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_ice:
+    track_number: 186
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_jungle:
+    track_number: 187
+    name: 
+    artist: 
+    album: 
+    url: 
+  hit_target_rigging:
+    track_number: 189
+    name: 
+    artist: 
+    album: 
+    url: 
+  bad_bird_rag_brambles:
+    track_number: 209
+    name: 
+    artist: 
+    album: 
+    url: 
+  run_rambi_run_wasp_hive:
+    track_number: 211
+    name: 
+    artist: 
+    album: 
+    url: 

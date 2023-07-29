@@ -1,4 +1,6 @@
-﻿namespace MSURandomizerLibrary.Configs;
+﻿using YamlDotNet.Serialization;
+
+namespace MSURandomizerLibrary.Configs;
 
 public class Track
 {
@@ -41,12 +43,19 @@ public class Track
     public string? Album { get; set; } 
     public string? Url { get; set; }
     public string? OriginalPath { get; set; }
+    [YamlIgnore]
     public bool IsAlt { get; set; }
+    [YamlIgnore]
     public bool IsCopied { get; set; }
+    [YamlIgnore]
     public Msu? Msu { get; set; }
+    [YamlIgnore]
     public Msu? OriginalMsu { get; set; }
+    [YamlIgnore]
     public string? DisplayArtist => Artist ?? Msu?.Artist;
+    [YamlIgnore]
     public string? DisplayAlbum => Album ?? Msu?.Album;
+    [YamlIgnore]
     public string? DisplayUrl => Url ?? Msu?.Url;
     
     public string GetDisplayText(bool includeMsu = true)

@@ -1,0 +1,41 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: Top Gear 2
+tracks:
+  auckland:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  ayers_rock:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  cantebury_plains:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  title_screen:
+    track_number: 4
+    name: 
+    artist: 
+    album: 
+    url: 
+  ending_theme_results:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  qualified_jingle:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 

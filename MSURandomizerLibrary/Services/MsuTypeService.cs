@@ -2,22 +2,30 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibrary.Services;
 
 internal class MsuTypeService : IMsuTypeService
 {
+    public static readonly Regex TrackYamlNameRegex = new("[^a-zA-Z0-9 ]");
+    
     private readonly ILogger<MsuTypeService> _logger;
     private readonly List<MsuType> _msuTypes = new();
     private readonly MsuAppSettings _msuAppSettings;
+    private Dictionary<string, Dictionary<int, string>> _msuTypeTrackYamlRewrites = new();
 
     public MsuTypeService(ILogger<MsuTypeService> logger, MsuAppSettings randomizerMsuAppSettings)
     {
         _logger = logger;
         _msuAppSettings = randomizerMsuAppSettings;
+        LoadYamlTrackRewrites();
     }
 
     public void LoadMsuTypes(Stream stream)
@@ -98,6 +106,24 @@ internal class MsuTypeService : IMsuTypeService
         (_msuAppSettings.Smz3MsuTypes?.Contains(x.Name) == true ||
          _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true) && !x.Selectable);
 
+    private void LoadYamlTrackRewrites()
+    {
+        var stream =
+            Assembly.GetExecutingAssembly().GetManifestResourceStream("MSURandomizerLibrary.yaml_tracks_rewrites.yml");
+
+        if (stream != null)
+        {
+            using var reader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true);
+            var text = reader.ReadToEnd();
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(PascalCaseNamingConvention.Instance)
+                .IgnoreUnmatchedProperties()
+                .Build();
+            _msuTypeTrackYamlRewrites = deserializer.Deserialize<Dictionary<string, Dictionary<int, string>>>(text);
+        }
+        
+    }
+    
     private void FinalizeConfigs(IEnumerable<MsuTypeConfig> configs)
     {
         foreach (var config in configs)
@@ -170,6 +196,8 @@ internal class MsuTypeService : IMsuTypeService
 
     private MsuType ConvertMsuTypeConfig(MsuTypeConfig config)
     {
+        _msuTypeTrackYamlRewrites.TryGetValue(config.Name, out var rewrite);
+        
         var tracks = config.FullTrackList.Where(x => !x.IsUnused).Select(x => new MsuTypeTrack()
         {
             Name = string.IsNullOrWhiteSpace(x.Title) ? x.Name : x.Title,
@@ -178,7 +206,9 @@ internal class MsuTypeService : IMsuTypeService
             PairedTrack = x.PairedTrack,
             IsExtended = x.IsExtended,
             NonLooping = x.NonLooping,
-            IsIgnored = x.IsIgnored || x.IsExtended
+            IsIgnored = x.IsIgnored || x.IsExtended,
+            YamlName = TrackYamlNameRegex.Replace(string.IsNullOrWhiteSpace(x.Title) ? x.Name : x.Title, "").Replace(" ", "_").Replace("__", "_").ToLower(),
+            YamlNameSecondary = rewrite?[x.Num!.Value]
         });
 
         return new MsuType()

@@ -9,4 +9,6 @@ public class MsuDetails
     public string? Album { get; set; }
     public string? MsuType { get; set; }
     public string? Url { get; set; }
+    public Dictionary<string, MsuDetailsTrack>? Tracks { get; set; }
+
 }

@@ -1,0 +1,71 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: Maui Mallard in Cold Shadow
+tracks:
+  disney_interactive_intro:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  level_intro_theme:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  level_1_mojo_mansion:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  level_2_the_ninja_training_grounds:
+    track_number: 4
+    name: 
+    artist: 
+    album: 
+    url: 
+  level_3_muddrake_mayhem:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  level_4_sacrifice_of_maui:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 
+  level_5_the_test_of_duckhood:
+    track_number: 7
+    name: 
+    artist: 
+    album: 
+    url: 
+  level_6_the_flying_duckman:
+    track_number: 8
+    name: 
+    artist: 
+    album: 
+    url: 
+  level_7_the_realm_of_the_dead:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  level_8_the_mojo_stronghold:
+    track_number: 10
+    name: 
+    artist: 
+    album: 
+    url: 
+  ending:
+    track_number: 11
+    name: 
+    artist: 
+    album: 
+    url: 
