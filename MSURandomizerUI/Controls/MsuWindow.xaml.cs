@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
+using MessageBox = System.Windows.MessageBox;
+using SelectionMode = System.Windows.Controls.SelectionMode;
 
 namespace MSURandomizerUI.Controls;
 
@@ -47,6 +51,7 @@ public partial class MsuWindow : Window
     {
         // Create the MSU List
         MsuList = _msuUiFactory.CreateMsuList(selectionMode);
+        ToggleInput(false);
         MainGrid.Children.Add(MsuList);
         MsuList.SelectedMsusUpdated += MsuListOnSelectedMsusUpdated;
         _msuLookupService.OnMsuLookupComplete += (sender, args) => OnMsuLookupComplete(args.Msus);
@@ -89,6 +94,22 @@ public partial class MsuWindow : Window
         }
     }
 
+    private void ToggleInput(bool isEnabled)
+    {
+        LoadingBarStackPanel.Visibility = isEnabled ? Visibility.Collapsed : Visibility.Visible;
+        MsuList.Visibility = isEnabled ? Visibility.Visible : Visibility.Collapsed;
+        MsuList.IsEnabled = isEnabled;
+        MsuTypesComboBox.IsEnabled = isEnabled;
+        FilterComboBox.IsEnabled = isEnabled;
+        SelectAllButton.IsEnabled = isEnabled;
+        SelectNoneButton.IsEnabled = isEnabled;
+        SelectMsusButtons.IsEnabled = isEnabled;
+        RandomMsuButton.IsEnabled = isEnabled;
+        ShuffledMsuButton.IsEnabled = isEnabled;
+        OptionsButton.IsEnabled = IsEnabled;
+        ContinuousShuffledMsuButton.IsEnabled = isEnabled;
+    }
+
     private void OnMsuLookupComplete(IEnumerable<Msu> msus)
     {
         if (!Dispatcher.CheckAccess())
@@ -102,6 +123,8 @@ public partial class MsuWindow : Window
             OpenUserSettingsWindow();
             return;
         }
+
+        ToggleInput(true);
         
         var availableMsuTypes = msus.Where(x => x.Tracks.Count > 0).Select(x => x.SelectedMsuType).Distinct().Where(x => x is { Selectable: true }).Cast<MsuType>();
 
@@ -252,14 +275,25 @@ public partial class MsuWindow : Window
     private void OpenUserSettingsWindow()
     {
         if (!_msuUiFactory.OpenUserSettingsWindow()) return;
-            
-        // If any of the paths were modified, look up the MSUs again and refresh the list
-        _msuLookupService.LookupMsus(DataContext.DefaultMsuPath, DataContext.MsuTypePaths);  
-        DataContext.OutputMsuType = SelectedMsuType?.DisplayName;
-        MsuList.TargetMsuType = SelectedMsuType;
-        MsuList.BasePath = SelectedMsuType != null && DataContext.MsuTypePaths.TryGetValue(SelectedMsuType, out var path) && !string.IsNullOrEmpty(path)
-            ? path
-            : DataContext.DefaultMsuPath;
+        
+        ToggleInput(false);
+
+        Task.Run(() =>
+        {
+            // If any of the paths were modified, look up the MSUs again and refresh the list
+            _msuLookupService.LookupMsus(DataContext.DefaultMsuPath, DataContext.MsuTypePaths);
+
+            Dispatcher.Invoke(() =>
+            {
+                DataContext.OutputMsuType = SelectedMsuType?.DisplayName;
+                MsuList.TargetMsuType = SelectedMsuType;
+                MsuList.BasePath = SelectedMsuType != null &&
+                                   DataContext.MsuTypePaths.TryGetValue(SelectedMsuType, out var path) &&
+                                   !string.IsNullOrEmpty(path)
+                    ? path
+                    : DataContext.DefaultMsuPath;
+            });
+        });
     }
 
     private void SelectAllButton_OnClick(object sender, RoutedEventArgs e)
