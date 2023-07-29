@@ -33,16 +33,13 @@ public class MsuDetailsService : IMsuDetailsService
 
         error = null;
         
-        foreach (var track in msu.Tracks.OrderBy(x => x.Number))
+        foreach (var trackGroup in msu.Tracks.GroupBy(x => x.Number))
         {
-            var trackDetails = InternalConvertToTrackDetails(msu, track.Number, out var trackError);
+            var trackDetails = InternalConvertToTrackDetails(msu, trackGroup, out var trackError);
             if (trackError != null)
                 error = trackError;
-            if (trackDetails != null)
-            {
-                var msuTypeTrack = msu.MsuType?.Tracks.FirstOrDefault(x => x.Number == trackDetails.TrackNumber);
-                tracks[msuTypeTrack?.YamlNameSecondary ?? msuTypeTrack?.YamlName ?? track.TrackName] = trackDetails;
-            }
+            var msuTypeTrack = msu.MsuType?.Tracks.FirstOrDefault(x => x.Number == trackDetails.TrackNumber);
+            tracks[msuTypeTrack?.YamlNameSecondary ?? msuTypeTrack?.YamlName ?? trackGroup.First().TrackName] = trackDetails;
         }
         
         var msuDetails = new MsuDetails()
@@ -92,18 +89,17 @@ public class MsuDetailsService : IMsuDetailsService
         return msuDetails;
     }
 
-    private MsuDetailsTrack? InternalConvertToTrackDetails(Msu msu, int trackNumber, out string? error)
+    private MsuDetailsTrack InternalConvertToTrackDetails(Msu msu, IGrouping<int, Track> trackGroup, out string? error)
     {
-        var track = msu.Tracks.FirstOrDefault(x => x.Number == trackNumber && !x.IsAlt);
         error = null;
-            
-        if (track == null) 
-            return null;
 
+        var tracks = trackGroup.OrderBy(x => x.IsAlt);
+        var track = tracks.First();
+            
         var output = new MsuDetailsTrack()
         {
             Name = track.SongName,
-            TrackNumber = trackNumber
+            TrackNumber = track.Number
         };
         
         if (!string.IsNullOrEmpty(track.OriginalMsu?.DisplayCreator) && track.OriginalMsu?.DisplayCreator != msu.DisplayCreator)
@@ -135,9 +131,11 @@ public class MsuDetailsService : IMsuDetailsService
         {
             output.Url = track.Url;
         }
-        
-        if (!msu.Tracks.Any(x => x.Number == trackNumber && x.IsAlt)) 
+
+        if (tracks.Count() == 1)
+        {
             return output;
+        }
 
         var alts = new List<MsuDetailsTrack>();
         if (!output.CalculateAltInfo(msu.Path, track.Path))
@@ -146,7 +144,7 @@ public class MsuDetailsService : IMsuDetailsService
             error = $"Unable to calculate alt track info for {track.Path}";
         }
             
-        foreach (var altTrack in msu.Tracks.Where(x => x.Number == trackNumber && x.IsAlt))
+        foreach (var altTrack in trackGroup.Where(x => x != track))
         {
             var altOutput = new MsuDetailsTrack()
             {
@@ -275,13 +273,18 @@ public class MsuDetailsService : IMsuDetailsService
 
                     if (path == basePcm)
                         basePcmMatched = true;
+
+                    if (string.IsNullOrEmpty(path))
+                    {
+                        continue;
+                    }
                     
                     toReturn.Add(new Track
                     (
                         trackName: msuTypeTrack.Name,
                         number: trackNumber,
                         songName: string.IsNullOrWhiteSpace(subTrack.Name) ? $"Track #{trackNumber}" : subTrack.Name,
-                        path: path ?? "",
+                        path: path,
                         artist: string.IsNullOrWhiteSpace(subTrack.Artist) ? msuDetails.Artist : subTrack.Artist,
                         album: string.IsNullOrWhiteSpace(subTrack.Album) ? msuDetails.Album : subTrack.Album,
                         url: string.IsNullOrWhiteSpace(track.Url) ? msuDetails.Url : track.Url,

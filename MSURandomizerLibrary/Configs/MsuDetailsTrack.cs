@@ -49,7 +49,7 @@ public class MsuDetailsTrack
             }
             else if (hash2 == Hash)
             {
-                return hash2;
+                return path2;
             }
         }
         else if (path1Length == FileLength)

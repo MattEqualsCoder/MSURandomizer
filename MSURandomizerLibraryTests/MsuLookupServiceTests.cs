@@ -14,7 +14,7 @@ public class MsuLookupServiceTests
         var msu = service.LoadMsu(msuPath);
         
         Assert.That(msu, Is.Not.Null);
-        Assert.That(msu?.Name, Is.EqualTo("msu-test"));
+        Assert.That(msu?.Name, Is.EqualTo("test-msu"));
         Assert.That(msu?.Tracks.Count, Is.EqualTo(5));
         Assert.That(File.Exists(msu?.Tracks.First().Path), Is.True);
     }
@@ -25,14 +25,14 @@ public class MsuLookupServiceTests
         var tracks = new List<(int, int)>() { (1, 5) };
         TestHelpers.CreateMsu(tracks, "test-msu-1");
         var msuPath = TestHelpers.CreateMsu(tracks, "test-msu-2", false, true);
-        var folder = new FileInfo(msuPath).DirectoryName;
+        var folder = new FileInfo(msuPath).Directory?.Parent?.FullName;
         
         var service = CreateMsuLookupService(tracks);
         var msus = service.LookupMsus(folder);
         
         Assert.That(service.Msus.Count, Is.EqualTo(2));
-        Assert.That(service.Msus.First().Name, Is.EqualTo("msu-test"));
-        Assert.That(service.Msus.Last().Name, Is.EqualTo("msu-test"));
+        Assert.That(service.Msus.Any(x => x.Name == "test-msu-1"));
+        Assert.That(service.Msus.Any(x => x.Name == "test-msu-2"));
         Assert.That(service.Msus.Any(x => x.Tracks.Count == 5));
         Assert.That(service.Msus.Any(x => x.Tracks.Count == 10));
         Assert.That(File.Exists(service.Msus.First().Tracks.First().Path), Is.True);
@@ -44,7 +44,7 @@ public class MsuLookupServiceTests
     {
         var tracks = new List<(int, int)>() { (1, 5) };
         var msuPath = TestHelpers.CreateMsu(tracks, "test-msu-1");
-        var folder = new FileInfo(msuPath).DirectoryName;
+        var folder = new FileInfo(msuPath).Directory?.Parent?.FullName;
         
         var service = CreateMsuLookupService(tracks);
         service.LookupMsus(folder);
@@ -68,7 +68,7 @@ public class MsuLookupServiceTests
         var path2 = TestHelpers.CreateMsu(tracks, "test-msu-2", false);
         var path3 = TestHelpers.CreateMsu(tracks, "test-msu-3", false);
         
-        var folder = new FileInfo(path1).DirectoryName;
+        var folder = new FileInfo(path1).Directory?.Parent?.FullName;
         
         var service = CreateMsuLookupService(tracks);
         service.LookupMsus(folder);
@@ -88,7 +88,7 @@ public class MsuLookupServiceTests
         var path1 = TestHelpers.CreateMsu(tracks, "test-msu-1");
         var path2 = TestHelpers.CreateMsu(tracks, "test-msu-2", false);
         
-        var folder = new FileInfo(path1).DirectoryName;
+        var folder = new FileInfo(path1).Directory?.Parent?.FullName;
         
         var service = CreateMsuLookupService(tracks);
         service.LookupMsus(folder);

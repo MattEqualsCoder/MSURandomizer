@@ -239,6 +239,7 @@ public class MsuSelectorServiceTests
         Assert.That(response.Msu?.Tracks.Select(x => x.MsuPath).Distinct().Count(), Is.EqualTo(1));
     }
 
+
     private MsuSelectorService CreateMsuSelectorService(List<List<(int, int)>> msuTypeTracks, List<List<(int, int)>> msuTracks, out ICollection<MsuType> msuTypes, out ICollection<Msu> msus)
     {
         var logger = TestHelpers.CreateMockLogger<MsuSelectorService>();
@@ -257,7 +258,7 @@ public class MsuSelectorServiceTests
             var path = TestHelpers.CreateMsu(tracks, $"test-msu-{index}", index == 1);
             if (string.IsNullOrEmpty(folder))
             {
-                folder = new FileInfo(path).DirectoryName;
+                folder = new FileInfo(path).Directory?.Parent?.FullName;;
             }
             index++;
         }
