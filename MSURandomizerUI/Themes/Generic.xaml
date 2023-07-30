@@ -64,5 +64,6 @@
         </Style>
         
         <controls:BoolToVisibilityConverter x:Key="VisibilityConverter" />
+        <controls:EnumDescriptionConverter x:Key="EnumConverter" />
 
 </ResourceDictionary>

@@ -61,7 +61,7 @@ public class Msu
     [JsonIgnore]
     public string MsuTypeName => string.IsNullOrWhiteSpace(SelectedMsuType?.DisplayName) ? "Unknown" : SelectedMsuType.DisplayName;
     [JsonIgnore]
-    public ICollection<Track> ValidTracks => Tracks.Where(x => Settings.AllowAltTracks || !x.IsAlt).ToList();
+    public ICollection<Track> ValidTracks => Tracks.Where(x => x.MatchesAltOption(Settings.AltOption)).ToList();
     [JsonIgnore]
     public int NumUniqueTracks => Tracks.Select(x => x.Path).Distinct().Count();
 
@@ -73,4 +73,6 @@ public class Msu
                (string.IsNullOrEmpty(path) || Path.StartsWith(path)) &&
                Tracks.Count >= 1;
     }
+
+    
 }

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerUI.Models;
@@ -11,11 +12,11 @@ public class MsuDetailsViewModel : INotifyPropertyChanged
     private string _name;
     private string _creator;
     private string _msuTypeName;
-    private bool _allowAltTracks;
+    private AltOptions _altOption;
     private readonly string _originalName;
     private readonly string _originalCreator;
     private readonly string _originalMsuTypeName;
-    private readonly bool _originalAllowAltTracks;
+    private readonly AltOptions _originalAltOption;
     private bool _hasChanges;
 
     public MsuDetailsViewModel()
@@ -33,7 +34,7 @@ public class MsuDetailsViewModel : INotifyPropertyChanged
         _originalName = _name = msu.DisplayName;
         _originalCreator = _creator = msu.DisplayCreator;
         _originalMsuTypeName = _msuTypeName = msu.MsuTypeName;
-        _originalAllowAltTracks = _allowAltTracks = msu.Settings.AllowAltTracks;
+        _originalAltOption = _altOption = msu.Settings.AltOption;
         CanViewEditBoxes = !msu.HasDetails;
         Path = msu.Path;
         MsuTypeNames = msuTypeNames;
@@ -80,12 +81,12 @@ public class MsuDetailsViewModel : INotifyPropertyChanged
         }
     }
     
-    public bool AllowAltTracks
+    public AltOptions AltOption
     {
-        get => _allowAltTracks;
+        get => _altOption;
         set
         {
-            SetField(ref _allowAltTracks, value);
+            SetField(ref _altOption, value);
             CheckChanges();
         }
     }
@@ -120,7 +121,7 @@ public class MsuDetailsViewModel : INotifyPropertyChanged
         HasChanges = (name == null ? _originalName != _name : _originalName != name)
             || (creator == null ? _originalCreator != _creator : _originalCreator != creator)
             || (msuTypeName == null ? _originalMsuTypeName != _msuTypeName : _originalMsuTypeName != msuTypeName)
-            || (_originalAllowAltTracks != _allowAltTracks);
+            || (_originalAltOption != _altOption);
     }
 
     public void ApplyChanges(Msu msu, MsuType? type)
@@ -132,6 +133,6 @@ public class MsuDetailsViewModel : INotifyPropertyChanged
         msu.Settings.MsuTypeName = type?.DisplayName != msu.MsuType?.DisplayName ? type?.DisplayName : null;
         msu.Settings.MsuType = type;
 
-        msu.Settings.AllowAltTracks = _allowAltTracks;
+        msu.Settings.AltOption = _altOption;
     }
 }

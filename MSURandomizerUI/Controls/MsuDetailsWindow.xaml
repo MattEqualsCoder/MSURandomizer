@@ -6,6 +6,8 @@
         xmlns:models="clr-namespace:MSURandomizerLibrary.Models"
         xmlns:controls="clr-namespace:MSURandomizerUI.Controls"
         xmlns:models2="clr-namespace:MSURandomizerUI.Models"
+        xmlns:msuRandomizerUi="clr-namespace:MSURandomizerUI"
+        xmlns:msuRandomizerLibrary="clr-namespace:MSURandomizerLibrary;assembly=MSURandomizerLibrary"
         mc:Ignorable="d"
         Title="{Binding Name}" Height="450" Width="800">
     <Window.DataContext>
@@ -77,7 +79,20 @@
                 </StackPanel>
             </controls:LabeledControl>
             
-            <CheckBox IsChecked="{Binding Path=AllowAltTracks}" Margin="5 3 0 3">Allow MSU alternate tracks to be randomly picked</CheckBox>
+            <controls:LabeledControl Text="Alt Tracks: ">
+                <StackPanel>
+                    <ComboBox
+                              ItemsSource="{Binding Source={msuRandomizerUi:EnumBindingSource {x:Type msuRandomizerLibrary:AltOptions}}}"
+                              SelectedItem="{Binding Path=AltOption}"
+                    >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+            </controls:LabeledControl>
         </StackPanel>
         
         <Border DockPanel.Dock="Bottom" Style="{StaticResource ResourceKey=BottomPanel}">

@@ -71,4 +71,14 @@ public class Track
         var creator = string.IsNullOrWhiteSpace(MsuCreator) ? "" : $" by {MsuCreator}";
         return $"{SongName}{artist}{album} from MSU Pack {MsuName}{creator}";
     }
+    
+    public bool MatchesAltOption(AltOptions option)
+    {
+        if (option == AltOptions.Disable)
+            return !IsAlt;
+        else if (option == AltOptions.PreferAlt)
+            return IsAlt;
+        else
+            return true;
+    }
 }
