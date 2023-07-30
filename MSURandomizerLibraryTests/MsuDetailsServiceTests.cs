@@ -153,9 +153,9 @@ tracks:
         Assert.Multiple(() =>
         {
             Assert.That(track1?.SongName, Is.EqualTo("Test Song 1"));
-            Assert.That(track1?.Album, Is.EqualTo("Test Album 1"));
-            Assert.That(track1?.Artist, Is.EqualTo("Test Artist"));
-            Assert.That(track1?.Url, Is.EqualTo("Test Url 1"));
+            Assert.That(track1?.DisplayAlbum, Is.EqualTo("Test Album 1"));
+            Assert.That(track1?.DisplayArtist, Is.EqualTo("Test Artist"));
+            Assert.That(track1?.DisplayUrl, Is.EqualTo("Test Url 1"));
             Assert.That(track1?.TrackName, Is.EqualTo("Track 2"));
             Assert.That(track1?.Number, Is.EqualTo(2));
         });
@@ -164,8 +164,8 @@ tracks:
         Assert.Multiple(() =>
         {
             Assert.That(track2?.SongName, Is.EqualTo("Test Song 2"));
-            Assert.That(track2?.Album, Is.EqualTo("Test Album 2"));
-            Assert.That(track2?.Artist, Is.EqualTo("Test Artist 2"));
+            Assert.That(track2?.DisplayAlbum, Is.EqualTo("Test Album 2"));
+            Assert.That(track2?.DisplayArtist, Is.EqualTo("Test Artist 2"));
             Assert.That(track2?.TrackName, Is.EqualTo("Track 101"));
             Assert.That(track2?.Number, Is.EqualTo(101));
         });

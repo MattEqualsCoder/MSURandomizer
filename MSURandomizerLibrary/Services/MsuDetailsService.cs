@@ -253,9 +253,9 @@ public class MsuDetailsService : IMsuDetailsService
                     number: msuTypeTrack.Number,
                     songName: string.IsNullOrWhiteSpace(track.Name) ? $"Track #{trackNumber}" : track.Name,
                     path: pcmFilePath,
-                    artist: string.IsNullOrWhiteSpace(track.Artist) ? msuDetails.Artist : track.Artist,
-                    album: string.IsNullOrWhiteSpace(track.Album) ? msuDetails.Album : track.Album,
-                    url: string.IsNullOrWhiteSpace(track.Url) ? msuDetails.Url : track.Url
+                    artist: track.Artist,
+                    album: track.Album,
+                    url: track.Url
                 ));
             }
             // If there are alt tracks, we need to determine which file is which in case they've been swapped
@@ -285,9 +285,9 @@ public class MsuDetailsService : IMsuDetailsService
                         number: trackNumber,
                         songName: string.IsNullOrWhiteSpace(subTrack.Name) ? $"Track #{trackNumber}" : subTrack.Name,
                         path: path,
-                        artist: string.IsNullOrWhiteSpace(subTrack.Artist) ? msuDetails.Artist : subTrack.Artist,
-                        album: string.IsNullOrWhiteSpace(subTrack.Album) ? msuDetails.Album : subTrack.Album,
-                        url: string.IsNullOrWhiteSpace(track.Url) ? msuDetails.Url : track.Url,
+                        artist: subTrack.Artist,
+                        album: subTrack.Album,
+                        url: subTrack.Url,
                         isAlt: subTrack != track
                     ));
                 }
