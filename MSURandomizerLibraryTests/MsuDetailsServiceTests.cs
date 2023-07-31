@@ -137,6 +137,12 @@ tracks:
 
         var msuDetails = service.GetMsuDetails(_msuPath, out _, out var basicError);
         Assert.That(msuDetails, Is.Not.Null);
+        
+        if (!File.Exists(_msuPath.Replace(".msu", "-2.pcm")))
+        {
+            using (File.Create(_msuPath.Replace(".msu", "-2.pcm"))) {}
+            using (File.Create(_msuPath.Replace(".msu", "-101.pcm"))) {}
+        }
 
         var msu = service.ConvertToMsu(msuDetails!, msuType, _msuPath, new FileInfo(_msuPath).DirectoryName!, "unit-test",
             out var error);

@@ -247,6 +247,12 @@ public class MsuDetailsService : IMsuDetailsService
             {
                 var pcmFilePath = $"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm";
                 track.Path = pcmFilePath;
+
+                if (!File.Exists(pcmFilePath))
+                {
+                    continue;
+                }
+                
                 toReturn.Add(new Track
                 (
                     trackName: msuTypeTrack.Name,
@@ -262,19 +268,24 @@ public class MsuDetailsService : IMsuDetailsService
             // manually or via script file
             else
             {
-                var basePcm = $"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm";
+                var basePcm = Path.Combine(directory, $"{baseName}-{trackNumber}.pcm");
+                var basePcmOriginal = $"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}_Original.pcm";
                 var basePcmMatched = false;
                 foreach (var subTrack in track.Alts!.Append(track))
                 {
                     var subTrackPath = subTrack.Path?.Replace('/', Path.DirectorySeparatorChar)
                         .Replace('\\', Path.DirectorySeparatorChar);
-                    var altPcmPath = $"{directory}{Path.DirectorySeparatorChar}{subTrackPath}";
+                    var altPcmPath = Path.Combine(directory, $"{subTrackPath}");
+                    if (altPcmPath == basePcm)
+                    {
+                        altPcmPath = basePcmOriginal;
+                    }
                     var path = basePcmMatched ? altPcmPath : subTrack.DeterminePath(basePcm, altPcmPath);
 
                     if (path == basePcm)
                         basePcmMatched = true;
 
-                    if (string.IsNullOrEmpty(path))
+                    if (string.IsNullOrEmpty(path) || !File.Exists(path))
                     {
                         continue;
                     }

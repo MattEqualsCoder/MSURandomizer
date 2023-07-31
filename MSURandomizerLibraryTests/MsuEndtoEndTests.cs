@@ -7,7 +7,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibraryTests;
 
-public class MsuAltTests
+public class MsuEndtoEndTests
 {
     private MsuTypeService _msuTypeService = null!;
     private MsuLookupService _msuLookupService = null!;

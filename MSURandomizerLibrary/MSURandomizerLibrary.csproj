@@ -14,7 +14,7 @@
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <IncludeSymbols>False</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>0.9.8-beta.16</Version>
+    <Version>0.9.8-beta.18</Version>
     <TargetFrameworks>net7.0-windows;net7.0</TargetFrameworks>
   </PropertyGroup>
 

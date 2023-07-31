@@ -27,7 +27,7 @@ public class MsuDetailsTrackViewModel : INotifyPropertyChanged
             return;
         }
         TrackName = tracks.First().TrackName;
-        Songs = tracks.Select(x => new MsuDetailsSongViewModel(x)).ToList();
+        Songs = tracks.OrderBy(x => x.IsAlt).Select(x => new MsuDetailsSongViewModel(x)).ToList();
         TrackNumber = trackNumber;
         HasSongs = true;
     }

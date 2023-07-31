@@ -113,7 +113,7 @@
                 <ItemsControl ItemsSource="{Binding Tracks}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Vertical" Margin="0 5 0 0">
                                 <TextBlock Text="{Binding TrackNameText}" />
                                 <StackPanel 
                                     Orientation="Horizontal" 
@@ -137,7 +137,7 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel 
-                                                Orientation="Horizontal" 
+                                                Orientation="Vertical" 
                                                 Margin="10 0 0 0"
                                             >
                                                 <BulletDecorator Width="Auto">
@@ -153,12 +153,13 @@
                                                         >
                                                              - 
                                                             <Hyperlink RequestNavigate="Hyperlink_OnRequestNavigate" NavigateUri="{Binding Path=Url}">
-                                                                <TextBlock Text="{Binding Path=Url}"></TextBlock>
+                                                                <TextBlock Text="{Binding Path=Url}" ></TextBlock>
                                                             </Hyperlink>
                                                         </TextBlock>
                                                         
                                                     </StackPanel>
                                                 </BulletDecorator>
+                                                <TextBlock Text="{Binding Path}" FontSize="10" Foreground="DimGray" Margin="8 0 0 0"></TextBlock>
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
