@@ -26,7 +26,7 @@ public class MsuTypeServiceTests
     {
         var msuTypeService = GetMsuTypeService(null, new MsuAppSettings()
         {
-            MsuNameOverrides = new Dictionary<string, string>()
+            MsuTypeNameOverrides = new Dictionary<string, string>()
             {
                 {"The Legend of Zelda: A Link to the Past", "LTTP"},
             }
@@ -41,7 +41,7 @@ public class MsuTypeServiceTests
     {
         var msuTypeService = GetMsuTypeService(null, new MsuAppSettings()
         {
-            MsuNameOverrides = new Dictionary<string, string>()
+            MsuTypeNameOverrides = new Dictionary<string, string>()
             {
                 {"The Legend of Zelda: A Link to the Past", "LTTP"},
             }

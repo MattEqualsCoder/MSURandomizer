@@ -16,7 +16,7 @@ public class MsuSettings
     
     public string MsuPath { get; set; }
     public string? MsuTypeName { get; set; }
-    public bool AllowAltTracks { get; set; } = true;
+    public AltOptions AltOption { get; set; }
     public string? Name { get; set; }
     public string? Creator { get; set; }
     
@@ -27,5 +27,5 @@ public class MsuSettings
     public bool HasSettings => !string.IsNullOrEmpty(MsuTypeName) 
                                  || !string.IsNullOrEmpty(Name) 
                                  || !string.IsNullOrEmpty(Creator) 
-                                 || !AllowAltTracks;
+                                 || AltOption != AltOptions.Randomize;
 }

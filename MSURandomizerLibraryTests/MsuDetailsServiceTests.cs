@@ -18,16 +18,22 @@ pack_name: Test MSU Pack
 pack_author: Test Author
 pack_version: 100
 artist: Test Artist
+tracks:
+    track_1:
+        name: hello
+    track_2:
+        name: hello2
 ");
         var service = GetMsuDetailsService(null);
-        var details = service.GetBasicMsuDetails(_msuPath, out var yamlPath, out var error);
+        var details = service.GetMsuDetails(_msuPath, out var yamlHash, out var error);
         DeleteYamlFile();
         
         Assert.Multiple(() =>
         {
-            Assert.That(_yamlPath, Is.EqualTo(yamlPath), "Generated yaml path is invalid");
+            //Assert.That(_yamlPath, Is.EqualTo(yamlPath), "Generated yaml path is invalid");
             Assert.That(string.IsNullOrEmpty(error), Is.True, "Details load error");
             Assert.That(details, Is.Not.Null, "No basic MSU details loaded");
+            Assert.That(details?.Tracks?.Count, Is.EqualTo(2), "Invalid track count");
             Assert.That(details?.PackName, Is.EqualTo("Test MSU Pack"), "Pack name invalid");
             Assert.That(details?.PackAuthor, Is.EqualTo("Test Author"), "Pack author invalid");
             Assert.That(details?.PackVersion, Is.EqualTo("100"), "Pack version invalid");
@@ -38,31 +44,39 @@ artist: Test Artist
     [Test]
     public void SaveMsuDetails()
     {
-        var msu = new Msu()
-        {
-            Name = "Test MSU Pack",
-            Creator = "Test Creator",
-            FolderName = "Test Folder",
-            FileName = "Test File",
-            Path = _msuPath,
-            Tracks = new List<Track>()
+        var msu = new Msu(
+            type: null, 
+            name: "Test MSU Pack", 
+            folderName: "Test Folder", 
+            fileName: "Test File", 
+            path: _msuPath, 
+            tracks: new List<Track>()
             {
-                new Track("Test Track", 1, "Test Song", "Test Path", _msuPath, "Test MSU Pack")
-            }
+                new(
+                    trackName: "Test Track", 
+                    number: 1, 
+                    songName: "Test Song", 
+                    path:"Test Path"
+                )
+            },
+            msuDetails: null,
+            prevMsu: null
+        )
+        {
+            Creator = "Test Creator"
         };
         
         var service = GetMsuDetailsService(null);
-        var success = service.SaveMsuDetails(msu, _yamlPath);
+        var success = service.SaveMsuDetails(msu, _yamlPath, out var error);
 
         var expectedResult =
-            @"tracks:
-- track_number: 1
-  track_name: Test Track
-  name: Test Song
-  msu_name: Test MSU Pack
-pack_name: Test MSU Pack
+            @"pack_name: Test MSU Pack
 pack_author: Test Creator
 pack_version: 1
+tracks:
+  Test Track:
+    track_number: 1
+    name: Test Song
 ";
 
         var output = success ? File.ReadAllText(_yamlPath) : "";
@@ -70,6 +84,7 @@ pack_version: 1
         
         Assert.Multiple(() =>
         {
+            Assert.That(string.IsNullOrEmpty(error));
             Assert.That(success, Is.True, "Save MSU Details Unsuccessful");
             Assert.That(output, Is.EqualTo(expectedResult), "Invalid YAML text");
         });
@@ -102,12 +117,15 @@ tracks:
                 new()
                 {
                     Number = 2,
-                    Name = "Track 2"
+                    Name = "Track 2",
+                    YamlName = "light_world"
                 },
                 new()
                 {
                     Number = 101,
-                    Name = "Track 101"
+                    Name = "Track 101",
+                    YamlName = "Whatever",
+                    YamlNameSecondary = "samus_fanfare"
                 }
             }
         };
@@ -117,15 +135,20 @@ tracks:
             Smz3MsuTypes = new List<string> { "Test MSU Type" }
         });
 
-        var basicDetails = service.GetBasicMsuDetails(_msuPath, out _, out var basicError);
-        Assert.That(basicDetails, Is.Not.Null);
+        var msuDetails = service.GetMsuDetails(_msuPath, out _, out var basicError);
+        Assert.That(msuDetails, Is.Not.Null);
+        
+        if (!File.Exists(_msuPath.Replace(".msu", "-2.pcm")))
+        {
+            using (File.Create(_msuPath.Replace(".msu", "-2.pcm"))) {}
+            using (File.Create(_msuPath.Replace(".msu", "-101.pcm"))) {}
+        }
 
-        var msu = service.LoadMsuDetails(msuType, _msuPath, new FileInfo(_msuPath).DirectoryName!, "unit-test",
-            _yamlPath, basicDetails, out var msuDetails, out var error);
+        var msu = service.ConvertToMsu(msuDetails!, msuType, _msuPath, new FileInfo(_msuPath).DirectoryName!, "unit-test",
+            out var error);
         Assert.Multiple(() =>
         {
             Assert.That(msu, Is.Not.Null);
-            Assert.That(msuDetails, Is.Not.Null);
             Assert.That(string.IsNullOrEmpty(error), Is.True);
             Assert.That(msu?.Name, Is.EqualTo("Test MSU Pack"));
             Assert.That(msu?.Creator, Is.EqualTo("Test Creator"));
@@ -136,10 +159,10 @@ tracks:
         Assert.Multiple(() =>
         {
             Assert.That(track1?.SongName, Is.EqualTo("Test Song 1"));
-            Assert.That(track1?.Album, Is.EqualTo("Test Album 1"));
-            Assert.That(track1?.Artist, Is.EqualTo("Test Artist"));
-            Assert.That(track1?.Url, Is.EqualTo("Test Url 1"));
-            Assert.That(track1?.TrackName, Is.EqualTo("LightWorld"));
+            Assert.That(track1?.DisplayAlbum, Is.EqualTo("Test Album 1"));
+            Assert.That(track1?.DisplayArtist, Is.EqualTo("Test Artist"));
+            Assert.That(track1?.DisplayUrl, Is.EqualTo("Test Url 1"));
+            Assert.That(track1?.TrackName, Is.EqualTo("Track 2"));
             Assert.That(track1?.Number, Is.EqualTo(2));
         });
         
@@ -147,9 +170,9 @@ tracks:
         Assert.Multiple(() =>
         {
             Assert.That(track2?.SongName, Is.EqualTo("Test Song 2"));
-            Assert.That(track2?.Album, Is.EqualTo("Test Album 2"));
-            Assert.That(track2?.Artist, Is.EqualTo("Test Artist 2"));
-            Assert.That(track2?.TrackName, Is.EqualTo("SamusFanfare"));
+            Assert.That(track2?.DisplayAlbum, Is.EqualTo("Test Album 2"));
+            Assert.That(track2?.DisplayArtist, Is.EqualTo("Test Artist 2"));
+            Assert.That(track2?.TrackName, Is.EqualTo("Track 101"));
             Assert.That(track2?.Number, Is.EqualTo(101));
         });
     }
@@ -165,7 +188,7 @@ tracks:
     {
         var logger = TestHelpers.CreateMockLogger<MsuDetailsService>();
         var settingsService = TestHelpers.CreateMsuAppSettingsService(appSettings);
-        return new MsuDetailsService(logger, settingsService.MsuAppSettings);
+        return new MsuDetailsService(logger);
     }
 
     private void DeleteYamlFile()

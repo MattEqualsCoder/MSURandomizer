@@ -1,0 +1,107 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: 'Teenage Mutant Ninja Turtles: Turtles in Time'
+tracks:
+  sewarage:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  dinosaur:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  pirate:
+    track_number: 12
+    name: 
+    artist: 
+    album: 
+    url: 
+  train:
+    track_number: 15
+    name: 
+    artist: 
+    album: 
+    url: 
+  highway:
+    track_number: 18
+    name: 
+    artist: 
+    album: 
+    url: 
+  starbase:
+    track_number: 21
+    name: 
+    artist: 
+    album: 
+    url: 
+  lastboss:
+    track_number: 27
+    name: 
+    artist: 
+    album: 
+    url: 
+  staff:
+    track_number: 42
+    name: 
+    artist: 
+    album: 
+    url: 
+  fortress:
+    track_number: 45
+    name: 
+    artist: 
+    album: 
+    url: 
+  elevator:
+    track_number: 57
+    name: 
+    artist: 
+    album: 
+    url: 
+  memory:
+    track_number: 60
+    name: 
+    artist: 
+    album: 
+    url: 
+  winner:
+    track_number: 69
+    name: 
+    artist: 
+    album: 
+    url: 
+  roof:
+    track_number: 232
+    name: 
+    artist: 
+    album: 
+    url: 
+  battle:
+    track_number: 235
+    name: 
+    artist: 
+    album: 
+    url: 
+  downtown:
+    track_number: 244
+    name: 
+    artist: 
+    album: 
+    url: 
+  open:
+    track_number: 250
+    name: 
+    artist: 
+    album: 
+    url: 
+  training:
+    track_number: 253
+    name: 
+    artist: 
+    album: 
+    url: 

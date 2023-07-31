@@ -72,13 +72,17 @@ public class MsuUserOptionsServiceTests
     [Test]
     public void SaveMsuTest()
     {
-        var msu = new Msu()
+        var msu = new Msu(
+            type: null, 
+            name: TestMsuName,
+            folderName: TestMsuName,
+            fileName: TestMsuName,
+            path: TestMsuName,
+            tracks: new List<Track>(),
+            msuDetails: null,
+            prevMsu: null
+        )
         {
-            Name = TestMsuName,
-            Path = TestMsuName,
-            FolderName = TestMsuName,
-            FileName = TestMsuName,
-            Tracks = new List<Track>(),
             Settings = new MsuSettings(TestMsuName)
             {
                 Name = TestMsuSettingsName

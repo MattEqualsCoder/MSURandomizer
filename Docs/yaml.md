@@ -23,47 +23,34 @@ Some basics to keep in mind for YAML:
 
  ## Basic Format
 
- YAML comes in two basic formats: one for ALttP/Super Metroid/SMZ3 and one for all other MSUs. The main difference is that ALttP/Super Metroid/SMZ3 are made special to make the track listing a bit cleaner.
+ Below is a basic example of a YAML file for an MSU for A Link to the Past. 
 
- ### SMZ3 Example
  ```YAML
-# Template with all 102 tracks with Zelda tracks first
-pack_name: My SMZ3 MSU Pack
+pack_name: My MSU Pack for ALttP
 pack_author: Matt
-artist: 
-album: 
+pack_version: 1
+artist: Matt
+msu_type: 'The Legend of Zelda: A Link to the Past'
 tracks:
-  # Track Number: 01
   zelda_title:
+    track_number: 1
     name: The Best Song
-    artist: Me
+    artist:
     album: My Best OST
-  # Track Number: 02
+    url: 
   light_world:
+    track_number: 2
     name: The Brightest of Worlds
-    artist: Me
+    artist:
     album: My Second Best OST
+    url: http://www.google.com
  ```
-The top portion is for information that is global, such as the MSU name/author and things like the artist and album which will be used if nothing is specified for the tracks. Following that is all of the tracks and their details. In these, the name of the song in A Link to the Past is used as a key to denote each track (zelda_title, light_world, etc.)
 
-### Generic Example
-```YAML
-# Generic template for all MSU types outside of Zelda, Super Metroid, and SMZ3
-pack_name: My Generic MSU Pack
-pack_author: Matt
-artist: 
-album: 
-tracks:
-- track_number: 1
-  name: The Best Song
-  artist: Me
-  album: My Best OST
-- track_number: 2
-  name: The Brightest of Worlds
-  artist: Me
-  album: My Second Best OST
-```
-The first few lines work the same, containing global and shared information. The tracks, however, are an array/list of tracks that use the track_number field to help map which details go to which song. Make sure these track numbers match the numbers of the pcm file. For example, if your msu is dkc-msu.msu, then dkc-msu-5.msu will match the track details where track_number: 5.
+The top portion is for information that is global, such as the MSU name/author and can include details like the artist and album which will be used if nothing is specified for the tracks. It also includes the field *msu_type*, which basically helps the MSU Randomizer know what type of MSU it is. 
+
+Below the global information is a list of the tracks and their details. Each track is designated by the name of the track, such as *zelda_title* and *light_world* in the above example. It's also advised, though not mandatory, to include the track_number as well just in case the track name changes for whatever reason.
+
+[You can view all of the templates for the different MSU types here.](YamlTemplates)
 
 ## Field Descriptions
 
@@ -103,13 +90,11 @@ Are you an MSU creator looking to make a YAML file? Here are the steps you'll wa
 
 The following are templates you can use to start editing for your MSU.
 
-* [A Link to the Past](Examples/z3_all_tracks.yml)
-* [Super Metroid](Examples/sm_all_tracks.yml)
-* [SMZ3 Combo Randomizer (all tracks)](Examples/smz3_zelda_first_all_tracks.yml)
-* [SMZ3 Combo Randomizer (base tracks)](Examples/smz3_zelda_first_required_tracks.yml)
-* [SMZ3 Classic (Metroid first - all tracks)](Examples/smz3_metroid_first_all_tracks.yml)
-* [SMZ3 Classic (Metroid first - base tracks)](Examples/smz3_metroid_first_required_tracks.yml)
-* [Generic](Examples/generic.yml)
+* [A Link to the Past](YamlTemplates/The%20Legend%20of%20Zelda%20A%20Link%20to%20the%20Past.yml)
+* [Super Metroid](YamlTemplates/Super%20Metroid.yml)
+* [SMZ3 Combo Randomizer (all tracks)](YamlTemplates/Super%20Metroid%20A%20Link%20to%20the%20Past%20Combination%20Randomizer.yml)
+* [SMZ3 Classic (Metroid first - all tracks)](YamlTemplates/Super%20Metroid%20A%20Link%20to%20the%20Past%20Combination%20Randomizer%20Legacy.yml)
+* [All Templates](YamlTemplates)
 
 
 ## Forcing a specific MSU type

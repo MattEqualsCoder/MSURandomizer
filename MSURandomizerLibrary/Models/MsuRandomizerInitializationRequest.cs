@@ -26,6 +26,11 @@ public class MsuRandomizerInitializationRequest
     public string? MsuTypeConfigPath { get; set; }
     
     /// <summary>
+    /// Where the MSU lookup cache file will be stored
+    /// </summary>
+    public string? MsuCachePath { get; set; }
+    
+    /// <summary>
     /// File path to load the user options from. If unspecified, it will fall back to the value specified in the App
     /// Settings
     /// </summary>

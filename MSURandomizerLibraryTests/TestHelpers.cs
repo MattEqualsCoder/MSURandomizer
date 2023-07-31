@@ -120,26 +120,37 @@ public abstract class TestHelpers
 
         return service.Object;
     }
+    
+    public static IMsuCacheService CreateMockMsuCacheService()
+    {
+        var service = new Mock<IMsuCacheService>();
+        
+        service.Setup(x => x.Initialize(It.IsAny<string>()));
+        
+        service.Setup(x => x.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ICollection<string>>()))
+            .Returns(value: null);
+
+        service.Setup(x => x.Save());
+        
+        service.Setup(x => x.Put(It.IsAny<Msu>(), It.IsAny<string>(), It.IsAny<ICollection<string>>(), It.IsAny<bool>()));
+
+        return service.Object;
+    }
 
     public static string CreateMsu(List<int> tracks, string msuName = "test-msu", bool deleteOld = true, bool createAlts = false)
     {
-        var folder = new DirectoryInfo("msu-test");
-        if (!folder.Exists)
+        if (deleteOld && Directory.Exists(MsuTestFolder))
         {
-            folder.Create();
+            DeleteFolder(MsuTestFolder);
+        }
+        
+        var folder = Path.Combine(MsuTestFolder, msuName);
+        if (!Directory.Exists(folder))
+        {
+            Directory.CreateDirectory(folder);
         }
 
-        var path = folder.FullName;
-
-        if (deleteOld)
-        {
-            foreach(var filePath in Directory.EnumerateFiles(path))
-            {
-                File.Delete(filePath);
-            }    
-        }
-
-        var msuPath = Path.Combine(folder.FullName, $"{msuName}.msu");
+        var msuPath = Path.Combine(folder, $"{msuName}.msu");
         if (!File.Exists(msuPath))
         {
             using (File.Create(msuPath)) {}
@@ -147,12 +158,12 @@ public abstract class TestHelpers
         
         foreach (var trackNumber in tracks)
         {
-            var pcmPath = Path.Combine(folder.FullName, $"{msuName}-{trackNumber}.pcm");
+            var pcmPath = Path.Combine(folder, $"{msuName}-{trackNumber}.pcm");
             using (File.Create(pcmPath)) {}
 
             if (createAlts)
             {
-                pcmPath = Path.Combine(folder.FullName, $"{msuName}-{trackNumber}_alt.pcm");
+                pcmPath = Path.Combine(folder, $"{msuName}-{trackNumber}_alt.pcm");
                 using (File.Create(pcmPath)) {}
             }
         }
@@ -165,20 +176,19 @@ public abstract class TestHelpers
         return CreateMsu(GetTracksFromRanges(tracks), msuName, deleteOld, createAlts);
     }
 
-    public static IMsuDetailsService CreateMockMsuDetailsService(MsuDetailsBasic? returnMsuDetails, Msu? returnMsu)
+    public static IMsuDetailsService CreateMockMsuDetailsService(MsuDetails? returnMsuDetails, Msu? returnMsu)
     {
         var msuDetailsService = new Mock<IMsuDetailsService>();
         
         string? outString1;
         string? outString2;
-        msuDetailsService.Setup(x => x.GetBasicMsuDetails(It.IsAny<string>(), out outString1, out outString2))
+        msuDetailsService.Setup(x => x.GetMsuDetails(It.IsAny<string>(), out outString1, out outString2))
             .Returns(value: returnMsuDetails);
 
-        MsuDetails? outDetails;
-        msuDetailsService.Setup(x => x.LoadMsuDetails(It.IsAny<MsuType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), returnMsuDetails, out outDetails, out outString1))
+        msuDetailsService.Setup(x => x.ConvertToMsu(It.IsAny<MsuDetails>(),It.IsAny<MsuType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), out outString1))
             .Returns(value: returnMsu);
         
-        msuDetailsService.Setup(x => x.SaveMsuDetails(It.IsAny<Msu>(), It.IsAny<string>()))
+        msuDetailsService.Setup(x => x.SaveMsuDetails(It.IsAny<Msu>(), It.IsAny<string>(), out outString1))
             .Returns(value: true);
 
         return msuDetailsService.Object;
@@ -197,5 +207,26 @@ public abstract class TestHelpers
         }
 
         return trackNumbers;
+    }
+
+    private static string _msuTestFolder = new DirectoryInfo(Path.Combine("msu-test", "msus")).FullName;
+    public static string MsuTestFolder => _msuTestFolder;
+
+    public static void DeleteFolder(string path)
+    {
+        if (!Directory.Exists(path))
+            return;
+        
+        foreach(var filePath in Directory.EnumerateFiles(path))
+        {
+            File.Delete(filePath);
+        }
+
+        foreach (var subDirectory in Directory.EnumerateDirectories(path))
+        {
+            DeleteFolder(subDirectory);
+        }
+
+        Directory.Delete(path);
     }
 }

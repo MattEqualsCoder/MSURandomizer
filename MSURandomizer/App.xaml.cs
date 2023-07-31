@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
-using MSURandomizerLibrary.UI;
+using MSURandomizerUI;
+using MSURandomizerUI.Controls;
 
 namespace MSURandomizer
 {
@@ -38,6 +38,7 @@ namespace MSURandomizer
                 .ConfigureServices(services =>
                 {
                     services.AddMsuRandomizerServices();
+                    services.AddMsuRandomizerUIServices();
                 })
                 .Start();
             
@@ -57,6 +58,8 @@ namespace MSURandomizer
             {
                 MsuAppSettingsStream = settingsStream
             };
+
+            msuInitializationRequest.MsuCachePath = "%LocalAppData%\\MSURandomizer";
 
             #if DEBUG
             msuInitializationRequest.MsuTypeConfigPath = GetConfigDirectory();

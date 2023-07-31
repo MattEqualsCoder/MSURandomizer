@@ -9,11 +9,11 @@
     <FileVersion></FileVersion>
     <PackageIcon>MSURandomizerIcon.ico</PackageIcon>
     <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
-    <Version>0.9.7</Version>
+    <Version>0.9.8</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MSURandomizerLibrary\MSURandomizerLibrary.csproj" />
+    <ProjectReference Include="..\MSURandomizerUI\MSURandomizerUI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,13 +32,16 @@
 
   <ItemGroup>
     <None Remove="settings.yaml" />
-    <EmbeddedResource Include="settings.yaml" />
   </ItemGroup>
 
   <ItemGroup>
     <Page Update="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="settings.yaml" />
   </ItemGroup>
 
 </Project>

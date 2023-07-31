@@ -1,0 +1,245 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: Super Metroid
+tracks:
+  samus_fanfare:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  item_acquired:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  item_room:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_opening_with_intro:
+    track_number: 4
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_opening_without_intro:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  crateria_landing_with_thunder:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 
+  crateria_landing_without_thunder:
+    track_number: 7
+    name: 
+    artist: 
+    album: 
+    url: 
+  crateria_space_pirates_appear:
+    track_number: 8
+    name: 
+    artist: 
+    album: 
+    url: 
+  golden_statues:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  samus_aran_theme:
+    track_number: 10
+    name: 
+    artist: 
+    album: 
+    url: 
+  green_brinstar:
+    track_number: 11
+    name: 
+    artist: 
+    album: 
+    url: 
+  red_brinstar:
+    track_number: 12
+    name: 
+    artist: 
+    album: 
+    url: 
+  upper_norfair:
+    track_number: 13
+    name: 
+    artist: 
+    album: 
+    url: 
+  lower_norfair:
+    track_number: 14
+    name: 
+    artist: 
+    album: 
+    url: 
+  inner_maridia:
+    track_number: 15
+    name: 
+    artist: 
+    album: 
+    url: 
+  outer_maridia:
+    track_number: 16
+    name: 
+    artist: 
+    album: 
+    url: 
+  tourian:
+    track_number: 17
+    name: 
+    artist: 
+    album: 
+    url: 
+  mother_brain_battle:
+    track_number: 18
+    name: 
+    artist: 
+    album: 
+    url: 
+  big_boss_battle_1:
+    track_number: 19
+    name: 
+    artist: 
+    album: 
+    url: 
+  evacuation:
+    track_number: 20
+    name: 
+    artist: 
+    album: 
+    url: 
+  chozo_statue_awakens:
+    track_number: 21
+    name: 
+    artist: 
+    album: 
+    url: 
+  big_boss_battle_2:
+    track_number: 22
+    name: 
+    artist: 
+    album: 
+    url: 
+  tension:
+    track_number: 23
+    name: 
+    artist: 
+    album: 
+    url: 
+  plant_miniboss:
+    track_number: 24
+    name: 
+    artist: 
+    album: 
+    url: 
+  ceres_station:
+    track_number: 25
+    name: 
+    artist: 
+    album: 
+    url: 
+  wrecked_ship_powered_off:
+    track_number: 26
+    name: 
+    artist: 
+    album: 
+    url: 
+  wrecked_ship_powered_on:
+    track_number: 27
+    name: 
+    artist: 
+    album: 
+    url: 
+  theme_of_super_metroid:
+    track_number: 28
+    name: 
+    artist: 
+    album: 
+    url: 
+  death_cry:
+    track_number: 29
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_credits:
+    track_number: 30
+    name: 
+    artist: 
+    album: 
+    url: 
+  kraid_incoming:
+    track_number: 31
+    name: 
+    artist: 
+    album: 
+    url: 
+  kraid_battle:
+    track_number: 32
+    name: 
+    artist: 
+    album: 
+    url: 
+  phantoon_incoming:
+    track_number: 33
+    name: 
+    artist: 
+    album: 
+    url: 
+  phantoon_battle:
+    track_number: 34
+    name: 
+    artist: 
+    album: 
+    url: 
+  draygon_battle:
+    track_number: 35
+    name: 
+    artist: 
+    album: 
+    url: 
+  ridley_battle:
+    track_number: 36
+    name: 
+    artist: 
+    album: 
+    url: 
+  baby_incoming:
+    track_number: 37
+    name: 
+    artist: 
+    album: 
+    url: 
+  the_baby:
+    track_number: 38
+    name: 
+    artist: 
+    album: 
+    url: 
+  hyper_beam:
+    track_number: 39
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_game_over:
+    track_number: 40
+    name: 
+    artist: 
+    album: 
+    url: 

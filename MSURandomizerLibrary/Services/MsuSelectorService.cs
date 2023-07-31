@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
@@ -12,7 +8,7 @@ namespace MSURandomizerLibrary.Services;
 public class MsuSelectorService : IMsuSelectorService
 {
     private readonly ILogger<MsuSelectorService> _logger;
-    private readonly Random _random;
+    private Random _random;
     private readonly IMsuDetailsService _msuDetailsService;
     private readonly IMsuTypeService _msuTypeService;
     private readonly IMsuLookupService _msuLookupService;
@@ -26,7 +22,7 @@ public class MsuSelectorService : IMsuSelectorService
         _msuLookupService = msuLookupService;
         _msuUserOptionsService = msuUserOptionsService;
         _random = new Random(System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, int.MaxValue));
-        for (var i = 0; i < 10; i++)
+        for (var i = 0; i < 100; i++)
         {
             _random.Next();
         }
@@ -38,6 +34,7 @@ public class MsuSelectorService : IMsuSelectorService
         var validateResponse = ValidateRequest(request, validateSingleMsu: true, validateMsuType: true, validateOutputPath: true);
         if (validateResponse != null) return validateResponse;
         var convertedMsu = InternalConvertMsu(request.Msu!, request.OutputMsuType!);
+        ApplyTrackPreferences(convertedMsu);
         return SaveMsuInternal(convertedMsu, request.OutputPath!, null, request.EmptyFolder, request.OpenFolder!.Value);
     }
 
@@ -56,6 +53,8 @@ public class MsuSelectorService : IMsuSelectorService
                 Message = "Could not pick random MSU"
             };
         }
+
+        ApplyTrackPreferences(convertedMsu);
         
         return SaveMsuInternal(convertedMsu, request.OutputPath!, null, request.EmptyFolder, request.OpenFolder);
     }
@@ -64,7 +63,7 @@ public class MsuSelectorService : IMsuSelectorService
     {
         var validateResponse = ValidateRequest(request, validateMultipleMsus: true, validateMsuType: true, validateOutputPath: true);
         if (validateResponse != null) return validateResponse;
-        
+
         ICollection<Msu> msus = request.Msus!;
         MsuType msuType = request.OutputMsuType!;
         string outputPath = request.OutputPath!;
@@ -91,6 +90,13 @@ public class MsuSelectorService : IMsuSelectorService
                 continue;
             }
 
+            track.MsuName = track.OriginalMsu?.DisplayName;
+            track.MsuCreator = track.OriginalMsu?.DisplayCreator;
+            track.MsuPath = track.OriginalMsu?.Path;
+            track.Artist = track.DisplayArtist;
+            track.Album = track.DisplayAlbum;
+            track.Url = track.DisplayUrl;
+
             selectedTracks.Add(track);
             selectedPaths.Add(track.Path);
 
@@ -99,25 +105,30 @@ public class MsuSelectorService : IMsuSelectorService
                 var pairedTrack = tracks.Where(x => x.Number == msuTypeTrack.PairedTrack && x.MsuPath == track.MsuPath).Random(_random);
                 if (pairedTrack != null)
                 {
+                    pairedTrack.MsuName = pairedTrack.OriginalMsu?.DisplayName;
+                    pairedTrack.MsuCreator = pairedTrack.OriginalMsu?.DisplayCreator;
+                    pairedTrack.MsuPath = pairedTrack.OriginalMsu?.Path;
+                    pairedTrack.Artist = pairedTrack.DisplayArtist;
+                    pairedTrack.Album = pairedTrack.DisplayAlbum;
+                    pairedTrack.Url = pairedTrack.DisplayUrl;
                     selectedTracks.Add(pairedTrack);
                     selectedPaths.Add(pairedTrack.Path);
                 }
             }
         }
         
-        var outputMsu = new Msu
+        var outputMsu = new Msu(
+            type: msuType, 
+            name: "Shuffled MSU", 
+            folderName: "", 
+            fileName: "shuffled-msu", 
+            path: "", 
+            tracks: selectedTracks, 
+            msuDetails: null, 
+            prevMsu: null
+        )
         {
-            MsuType = msuType,
-            Name = "Shuffled MSU",
-            Creator = "Various Creators",
-            FileName = "shuffled-msu",
-            FolderName = "",
-            Path = "",
-            Tracks = selectedTracks,
-            Settings = new MsuSettings()
-            {
-                MsuPath = ""
-            }
+            Creator = "Various Creators"
         };
         
         return SaveMsuInternal(outputMsu, outputPath, request.PrevMsu, request.EmptyFolder, request.OpenFolder);
@@ -154,6 +165,21 @@ public class MsuSelectorService : IMsuSelectorService
     #endregion Public methods
 
     #region Private Methods
+
+    private void ApplyTrackPreferences(Msu msu)
+    {
+        List<Track> tracks = new();
+        
+        foreach (var trackNumber in msu.Tracks.Select(x => x.Number).Distinct())
+        {
+            var track = msu.Tracks.Where(x => x.Number == trackNumber && x.MatchesAltOption(msu.Settings.AltOption)).Random(_random);
+            track ??= msu.Tracks.First(x => x.Number == trackNumber);
+            tracks.Add(track);
+        }
+
+        msu.Tracks = tracks;
+    }
+    
     private MsuSelectorResponse SaveMsuInternal(Msu msu, string outputPath, Msu? prevMsu, bool emptyFolder, bool? openFolder)
     {
         string outputDirectory;
@@ -189,14 +215,13 @@ public class MsuSelectorService : IMsuSelectorService
 
         var selectedPaths = new Dictionary<int, string>();
         var tracks = new List<Track>();
-        var allowAltTracks = msu.Settings.AllowAltTracks;
+        var altOption = msu.Settings.AltOption;
         string? warningMessage = null;
 
         foreach (var trackNumber in msu.Tracks.Select(x => x.Number).Order())
         {
             var msuTypeTrack = msu.SelectedMsuType?.Tracks.FirstOrDefault(x => x.Number == trackNumber);
-            var track = allowAltTracks ? msu.Tracks.Where(x => x.Number == trackNumber).Random(_random)! : msu.Tracks.FirstOrDefault(x => x.Number == trackNumber && !x.IsAlt);
-            track ??= msu.Tracks.First(x => x.Number == trackNumber);
+            var track = msu.Tracks.First(x => x.Number == trackNumber);
             var source = track.Path;
             var destination = $"{outputDirectory}{Path.DirectorySeparatorChar}{outputFilename}-{trackNumber}.pcm";
             var trackName = msuTypeTrack?.Name ?? track.TrackName;
@@ -213,7 +238,7 @@ public class MsuSelectorService : IMsuSelectorService
                 if (CreatePcmFile(source, destination))
                 {
                     _logger.LogInformation("Created PCM {Source} => {Destination}", source, destination);
-                    tracks.Add(new Track(track, number: trackNumber, path: destination, trackName: trackName));
+                    tracks.Add(new Track(track, number: trackNumber, path: destination, trackName: trackName) { OriginalMsu = track.OriginalMsu });
                     selectedPaths[trackNumber] = source;
                 }
                 else
@@ -221,7 +246,7 @@ public class MsuSelectorService : IMsuSelectorService
                     track = prevMsu?.Tracks.FirstOrDefault(x => x.Path == destination);
                     if (track != null)
                     {
-                        tracks.Add(new Track(track));
+                        tracks.Add(new Track(track) { OriginalMsu = track.OriginalMsu });
                         _logger.LogInformation("Used previous PCM track {Destination}", destination);
                     }
                     else
@@ -238,15 +263,16 @@ public class MsuSelectorService : IMsuSelectorService
             }
         }
 
-        var outputMsu = new Msu
+        var outputMsu = new Msu(
+            type: msu.SelectedMsuType, 
+            name: msu.Name, 
+            folderName: new DirectoryInfo(outputDirectory).Name, 
+            fileName: new FileInfo(msuPath).Name, 
+            path: msuPath, 
+            tracks: tracks,
+            msuDetails: null,
+            prevMsu: msu)
         {
-            MsuType = msu.SelectedMsuType,
-            Creator = msu.Creator,
-            Name = msu.Name,
-            FileName = new FileInfo(msuPath).Name,
-            FolderName = new DirectoryInfo(outputDirectory).Name,
-            Path = msuPath,
-            Tracks = tracks,
             Settings = new MsuSettings()
             {
                 MsuPath = msuPath
@@ -258,7 +284,7 @@ public class MsuSelectorService : IMsuSelectorService
             warningMessage ??= "MSU generated successfully but unable to save msu-randomizer-output.txt file";
         }
 
-        if (!_msuDetailsService.SaveMsuDetails(outputMsu, msuPath.Replace(".msu", ".yml")))
+        if (!_msuDetailsService.SaveMsuDetails(outputMsu, msuPath.Replace(".msu", ".yml"), out var error))
         {
             warningMessage ??= "MSU generated successfully but unable to save MSU details YAML file";
         }
@@ -285,9 +311,24 @@ public class MsuSelectorService : IMsuSelectorService
 
     private Msu InternalConvertMsu(Msu msu, MsuType msuType)
     {
-        if (msu.MsuTypeName == msuType.DisplayName && !msu.Settings.AllowAltTracks)
+        if (msu.MsuTypeName == msuType.DisplayName)
         {
-            return msu;
+            var copiedTracks = msu.Tracks.Select(x => new Track(x))
+                .ToList();
+            
+            return new Msu(
+                type: msuType,
+                name: msu.Name, 
+                folderName: msu.FolderName, 
+                fileName: msu.FolderName, 
+                path: msu.Path, 
+                tracks: copiedTracks,
+                msuDetails: null,
+                prevMsu: msu
+            )
+            {
+                Settings = msu.Settings,
+            };
         }
 
         var conversion = msu.SelectedMsuType != null && msuType.Conversions.ContainsKey(msu.SelectedMsuType!)
@@ -297,19 +338,21 @@ public class MsuSelectorService : IMsuSelectorService
         var trackNumbers = msuType.ValidTrackNumbers;
 
         var newTracks = msu.Tracks.Select(x => new Track(x, number: conversion(x.Number)))
-            .Where(x => trackNumbers.Contains(x.Number) && (msu.Settings.AllowAltTracks || !x.IsAlt))
+            .Where(x => trackNumbers.Contains(x.Number))
             .ToList();
 
-        return new Msu()
+        return new Msu(
+            type: msuType,
+            name: msu.Name, 
+            folderName: msu.FolderName, 
+            fileName: msu.FolderName, 
+            path: msu.Path, 
+            tracks: newTracks,
+            msuDetails: null,
+            prevMsu: msu
+        )
         {
-            MsuType = msuType,
-            Name = msu.Name,
-            Creator = msu.Creator,
-            FileName = msu.FileName,
-            FolderName = msu.FolderName,
-            Path = msu.Path,
             Settings = msu.Settings,
-            Tracks = newTracks
         };
     }
 

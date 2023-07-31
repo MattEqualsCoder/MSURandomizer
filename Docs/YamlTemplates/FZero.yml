@@ -1,0 +1,131 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: F-Zero
+tracks:
+  start:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  zoom:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  lost_life:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  opening_theme:
+    track_number: 4
+    name: 
+    artist: 
+    album: 
+    url: 
+  select_time_theme:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  big_blue:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 
+  ending_theme:
+    track_number: 7
+    name: 
+    artist: 
+    album: 
+    url: 
+  red_canyon_1:
+    track_number: 8
+    name: 
+    artist: 
+    album: 
+    url: 
+  fire_field:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  silence:
+    track_number: 10
+    name: 
+    artist: 
+    album: 
+    url: 
+  white_land_1:
+    track_number: 11
+    name: 
+    artist: 
+    album: 
+    url: 
+  white_land_2:
+    track_number: 12
+    name: 
+    artist: 
+    album: 
+    url: 
+  port_town_1:
+    track_number: 13
+    name: 
+    artist: 
+    album: 
+    url: 
+  mute_city_1:
+    track_number: 14
+    name: 
+    artist: 
+    album: 
+    url: 
+  sand_ocean:
+    track_number: 15
+    name: 
+    artist: 
+    album: 
+    url: 
+  death_wind_1:
+    track_number: 16
+    name: 
+    artist: 
+    album: 
+    url: 
+  mute_city_2:
+    track_number: 17
+    name: 
+    artist: 
+    album: 
+    url: 
+  port_town_2:
+    track_number: 18
+    name: 
+    artist: 
+    album: 
+    url: 
+  mute_city_3:
+    track_number: 19
+    name: 
+    artist: 
+    album: 
+    url: 
+  death_wind_2:
+    track_number: 20
+    name: 
+    artist: 
+    album: 
+    url: 
+  red_canyon_2:
+    track_number: 21
+    name: 
+    artist: 
+    album: 
+    url: 

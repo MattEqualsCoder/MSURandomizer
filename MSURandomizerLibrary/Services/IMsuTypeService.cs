@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using MSURandomizerLibrary.Configs;
+﻿using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerLibrary.Services;
 
@@ -34,6 +32,18 @@ public interface IMsuTypeService
     /// <param name="msuType">The MSU type to get the name of</param>
     /// <returns>The name of the MSU type</returns>
     public string GetMsuTypeName(MsuType? msuType);
+
+    /// <summary>
+    /// Returns the MSU type matching the new SMZ3 MSU patch (Zelda first)
+    /// </summary>
+    /// <returns>The MSU type, if it was found</returns>
+    public MsuType? GetSMZ3MsuType();
+
+    /// <summary>
+    /// Returns the MSU type matching the original SMZ3 MSU patch (Metroid first)
+    /// </summary>
+    /// <returns>The MSU type, if it was found</returns>
+    public MsuType? GetSMZ3LegacyMSUType();
 
     /// <summary>
     /// The collection of MSU types previously loaded

@@ -1,0 +1,323 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: Super Mario World
+tracks:
+  athletic:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  overworld:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  swimming:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  boss_battle:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  underground:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 
+  haunted_house:
+    track_number: 7
+    name: 
+    artist: 
+    album: 
+    url: 
+  fortress:
+    track_number: 8
+    name: 
+    artist: 
+    album: 
+    url: 
+  player_down:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  game_over:
+    track_number: 10
+    name: 
+    artist: 
+    album: 
+    url: 
+  fortress_clear:
+    track_number: 11
+    name: 
+    artist: 
+    album: 
+    url: 
+  course_clear:
+    track_number: 12
+    name: 
+    artist: 
+    album: 
+    url: 
+  invincible_starman:
+    track_number: 13
+    name: 
+    artist: 
+    album: 
+    url: 
+  pswitch:
+    track_number: 14
+    name: 
+    artist: 
+    album: 
+    url: 
+  secret_exit_into_keyhole:
+    track_number: 16
+    name: 
+    artist: 
+    album: 
+    url: 
+  fade_out_zoom_in:
+    track_number: 50
+    name: 
+    artist: 
+    album: 
+    url: 
+  bonus_game:
+    track_number: 18
+    name: 
+    artist: 
+    album: 
+    url: 
+  world_clear_welcome:
+    track_number: 19
+    name: 
+    artist: 
+    album: 
+    url: 
+  bonus_game_clear:
+    track_number: 20
+    name: 
+    artist: 
+    album: 
+    url: 
+  egg_is_rescued:
+    track_number: 21
+    name: 
+    artist: 
+    album: 
+    url: 
+  the_evil_king_bowser:
+    track_number: 22
+    name: 
+    artist: 
+    album: 
+    url: 
+  bowser_zoom_out:
+    track_number: 23
+    name: 
+    artist: 
+    album: 
+    url: 
+  bowser_zoom:
+    track_number: 24
+    name: 
+    artist: 
+    album: 
+    url: 
+  bowsers_last_attack:
+    track_number: 25
+    name: 
+    artist: 
+    album: 
+    url: 
+  bowsers_last_attack_faster:
+    track_number: 26
+    name: 
+    artist: 
+    album: 
+    url: 
+  bowser_defeated:
+    track_number: 27
+    name: 
+    artist: 
+    album: 
+    url: 
+  princess_peach_is_rescued:
+    track_number: 28
+    name: 
+    artist: 
+    album: 
+    url: 
+  the_evil_king_bowser_intro:
+    track_number: 29
+    name: 
+    artist: 
+    album: 
+    url: 
+  title_screen:
+    track_number: 30
+    name: 
+    artist: 
+    album: 
+    url: 
+  wandering_the_plains:
+    track_number: 31
+    name: 
+    artist: 
+    album: 
+    url: 
+  yoshis_island:
+    track_number: 32
+    name: 
+    artist: 
+    album: 
+    url: 
+  vanilla_dome:
+    track_number: 33
+    name: 
+    artist: 
+    album: 
+    url: 
+  star_road:
+    track_number: 34
+    name: 
+    artist: 
+    album: 
+    url: 
+  forest_of_illusion:
+    track_number: 35
+    name: 
+    artist: 
+    album: 
+    url: 
+  valley_of_bowser:
+    track_number: 36
+    name: 
+    artist: 
+    album: 
+    url: 
+  bowsers_castle_emerges:
+    track_number: 37
+    name: 
+    artist: 
+    album: 
+    url: 
+  special_world_smb_remix:
+    track_number: 38
+    name: 
+    artist: 
+    album: 
+    url: 
+  staff_roll:
+    track_number: 39
+    name: 
+    artist: 
+    album: 
+    url: 
+  the_yoshis_are_home:
+    track_number: 40
+    name: 
+    artist: 
+    album: 
+    url: 
+  card_list:
+    track_number: 41
+    name: 
+    artist: 
+    album: 
+    url: 
+  player_down_luigi:
+    track_number: 42
+    name: 
+    artist: 
+    album: 
+    url: 
+  game_over_luigi:
+    track_number: 43
+    name: 
+    artist: 
+    album: 
+    url: 
+  fortress_clear_luigi:
+    track_number: 44
+    name: 
+    artist: 
+    album: 
+    url: 
+  course_clear_luigi:
+    track_number: 45
+    name: 
+    artist: 
+    album: 
+    url: 
+  invincible_starman_luigi:
+    track_number: 46
+    name: 
+    artist: 
+    album: 
+    url: 
+  butter_bridge_ow_music:
+    track_number: 47
+    name: 
+    artist: 
+    album: 
+    url: 
+  soda_lake_ow_music:
+    track_number: 48
+    name: 
+    artist: 
+    album: 
+    url: 
+  secret_exit_into_keyhole_luigi:
+    track_number: 49
+    name: 
+    artist: 
+    album: 
+    url: 
+  cookie_mountain_ow_music:
+    track_number: 51
+    name: 
+    artist: 
+    album: 
+    url: 
+  chocolate_island_ow_music:
+    track_number: 52
+    name: 
+    artist: 
+    album: 
+    url: 
+  bonus_game_clear_luigi:
+    track_number: 53
+    name: 
+    artist: 
+    album: 
+    url: 
+  bowser_defeated_luigi:
+    track_number: 60
+    name: 
+    artist: 
+    album: 
+    url: 
+  princess_peach_is_rescued_luigi:
+    track_number: 61
+    name: 
+    artist: 
+    album: 
+    url: 
+  card_list_luigi:
+    track_number: 74
+    name: 
+    artist: 
+    album: 
+    url: 

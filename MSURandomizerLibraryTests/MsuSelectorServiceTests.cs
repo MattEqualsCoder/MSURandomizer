@@ -127,7 +127,7 @@ public class MsuSelectorServiceTests
             Assert.That(File.Exists(track.Path));
         }
         
-        Assert.That(response.Msu?.Tracks.Select(x => x.MsuPath).Distinct().Count(), Is.EqualTo(2));
+        Assert.That(response.Msu?.Tracks.Select(x => x.OriginalMsu).Distinct().Count(), Is.EqualTo(2));
     }
     
     [Test]
@@ -239,6 +239,7 @@ public class MsuSelectorServiceTests
         Assert.That(response.Msu?.Tracks.Select(x => x.MsuPath).Distinct().Count(), Is.EqualTo(1));
     }
 
+
     private MsuSelectorService CreateMsuSelectorService(List<List<(int, int)>> msuTypeTracks, List<List<(int, int)>> msuTracks, out ICollection<MsuType> msuTypes, out ICollection<Msu> msus)
     {
         var logger = TestHelpers.CreateMockLogger<MsuSelectorService>();
@@ -246,6 +247,7 @@ public class MsuSelectorServiceTests
         var msuDetailsService = TestHelpers.CreateMockMsuDetailsService(null, null);
         var msuTypeService = TestHelpers.CreateMockMsuTypeServiceMulti(msuTypeTracks, out var generatedMsuTypes);
         var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
+        var msuCacheService = TestHelpers.CreateMockMsuCacheService();
 
         msuTypes = generatedMsuTypes;
         
@@ -256,11 +258,11 @@ public class MsuSelectorServiceTests
             var path = TestHelpers.CreateMsu(tracks, $"test-msu-{index}", index == 1);
             if (string.IsNullOrEmpty(folder))
             {
-                folder = new FileInfo(path).DirectoryName;
+                folder = new FileInfo(path).Directory?.Parent?.FullName;;
             }
             index++;
         }
-        var lookupService = new MsuLookupService(lookupLogger, msuTypeService, msuUserOptionsService.MsuUserOptions, msuDetailsService, new MsuAppSettings());
+        var lookupService = new MsuLookupService(lookupLogger, msuTypeService, msuUserOptionsService.MsuUserOptions, msuDetailsService, new MsuAppSettings(), msuCacheService);
         lookupService.LookupMsus(folder);
 
         msus = lookupService.Msus.ToList();

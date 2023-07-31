@@ -1,0 +1,35 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: Rock n' Roll Racing
+tracks:
+  highway_star:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  peter_gunn:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  born_to_be_wild:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  bad_to_the_bone:
+    track_number: 4
+    name: 
+    artist: 
+    album: 
+    url: 
+  paranoid:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 

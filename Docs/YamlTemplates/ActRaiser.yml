@@ -1,0 +1,107 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: ActRaiser
+tracks:
+  fillmore:
+    track_number: 0
+    name: 
+    artist: 
+    album: 
+    url: 
+  sky_palace:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  bloodpool_casandora:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  the_beast_appears_boss_battle_1:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  aitos_temple:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  powerful_enemy_boss_battle_2:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 
+  opening:
+    track_number: 7
+    name: 
+    artist: 
+    album: 
+    url: 
+  descent:
+    track_number: 8
+    name: 
+    artist: 
+    album: 
+    url: 
+  piramid_marana:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  birth_of_the_people:
+    track_number: 10
+    name: 
+    artist: 
+    album: 
+    url: 
+  north_wall:
+    track_number: 12
+    name: 
+    artist: 
+    album: 
+    url: 
+  all_over_the_world:
+    track_number: 13
+    name: 
+    artist: 
+    album: 
+    url: 
+  satan:
+    track_number: 14
+    name: 
+    artist: 
+    album: 
+    url: 
+  silence:
+    track_number: 15
+    name: 
+    artist: 
+    album: 
+    url: 
+  sacrifices:
+    track_number: 16
+    name: 
+    artist: 
+    album: 
+    url: 
+  peaceful_world:
+    track_number: 19
+    name: 
+    artist: 
+    album: 
+    url: 
+  ending:
+    track_number: 21
+    name: 
+    artist: 
+    album: 
+    url: 
