@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
@@ -147,12 +143,12 @@ internal class MsuTypeService : IMsuTypeService
         // Create conversions from the copy part of the configs
         foreach (var config in configs.Where(x => x.CanCopy))
         {
-            var msuName = _msuAppSettings.GetMsuName(config.Name);
+            var msuName = _msuAppSettings.GetMsuTypeName(config.Name);
             var msuType = _msuTypes.First(x => x.DisplayName == msuName);
             foreach (var copyDetails in config.Copy!)
             {
                 var otherConfig = configs.First(x => x.Path == copyDetails.Msu || x.Name == copyDetails.Msu);
-                var otherMsuType = _msuTypes.First(x => x.DisplayName == _msuAppSettings.GetMsuName(otherConfig.Name));
+                var otherMsuType = _msuTypes.First(x => x.DisplayName == _msuAppSettings.GetMsuTypeName(otherConfig.Name));
                 msuType.Conversions[otherMsuType] = x => x + copyDetails.Modifier;
                 otherMsuType.Conversions[msuType] = x => x - copyDetails.Modifier;
             }
@@ -160,7 +156,7 @@ internal class MsuTypeService : IMsuTypeService
             foreach (var exactMatch in config.Meta.ExactMatches)
             {
                 var otherConfig = configs.First(x => x.Path == exactMatch || x.Name == exactMatch);
-                var otherMsuType = _msuTypes.First(x => x.DisplayName == _msuAppSettings.GetMsuName(otherConfig.Name));
+                var otherMsuType = _msuTypes.First(x => x.DisplayName == _msuAppSettings.GetMsuTypeName(otherConfig.Name));
                 msuType.ExactMatches.Add(otherMsuType);
                 otherMsuType.ExactMatches.Add(msuType);
             }
@@ -214,7 +210,7 @@ internal class MsuTypeService : IMsuTypeService
         return new MsuType()
         {
             Name = config.Name,
-            DisplayName = _msuAppSettings.GetMsuName(config.Name),
+            DisplayName = _msuAppSettings.GetMsuTypeName(config.Name),
             Selectable = config.Meta.Selectable != false,
             Tracks = tracks,
             RequiredTrackNumbers = tracks.Where(x => !x.IsIgnored).Select(x => x.Number).ToHashSet(),

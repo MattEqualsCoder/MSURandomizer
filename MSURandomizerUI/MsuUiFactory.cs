@@ -12,7 +12,7 @@ using MSURandomizerUI.Models;
 
 namespace MSURandomizerUI;
 
-public class MsuUiFactory : IMsuUiFactory
+internal class MsuUiFactory : IMsuUiFactory
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMsuUserOptionsService _msuUserOptionsService;
@@ -84,5 +84,23 @@ public class MsuUiFactory : IMsuUiFactory
         viewModel.ApplyChanges(msu, msuType);
         _msuUserOptionsService.SaveMsuSettings(msu);
         _msuLookupService.RefreshMsu(msu);
+    }
+
+    public bool OpenMsuWindow(SelectionMode selectionMode, bool asDialog, out MsuUserOptions selectedOptions)
+    {
+        var window = _serviceProvider.GetRequiredService<MsuWindow>();
+        
+        window.Show(selectionMode, asDialog);
+
+        selectedOptions = window.DataContext;
+
+        if (asDialog)
+        {
+            return window.DialogResult ?? false;
+        }
+        else
+        {
+            return true;
+        }
     }
 }

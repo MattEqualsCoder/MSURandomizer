@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
+using GitHubReleaseChecker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -47,26 +49,38 @@ namespace MSURandomizer
             _logger.LogInformation("Starting MSU Randomizer {Version}", version.ProductVersion ?? "");
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            var settingsStream =
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("MSURandomizer.settings.yaml");
-            if (settingsStream == null)
-            {
-                throw new InvalidOperationException("Missing RandomizerSettings stream");
-            }
-
-            var msuInitializationRequest = new MsuRandomizerInitializationRequest
-            {
-                MsuAppSettingsStream = settingsStream
-            };
-
-            msuInitializationRequest.MsuCachePath = "%LocalAppData%\\MSURandomizer";
+            var msuInitializationRequest = new MsuRandomizerInitializationRequest();
 
             #if DEBUG
             msuInitializationRequest.MsuTypeConfigPath = GetConfigDirectory();
             msuInitializationRequest.UserOptionsPath = "%LocalAppData%\\MSURandomizer\\msu-user-settings-debug.yml";
             #endif
+            
             _host.Services.GetRequiredService<IMsuRandomizerInitializationService>().Initialize(msuInitializationRequest);
-            _host.Services.GetRequiredService<MsuWindow>().Show();
+
+            var userOptions = _host.Services.GetRequiredService<MsuUserOptions>();
+            if (userOptions.PromptOnUpdate)
+            {
+                var newerHubRelease = _host.Services.GetRequiredService<IGitHubReleaseCheckerService>()
+                    .GetGitHubReleaseToUpdateTo("MattEqualsCoder", "MSURandomizer", version.ProductVersion ?? "", userOptions.PromptOnPreRelease);
+
+                if (newerHubRelease != null)
+                {
+                    var response = MessageBox.Show("A new version of the MSU Randomizer is now available!\n" +
+                                    "Do you want to open up the GitHub release page for the update?\n" +
+                                    "\n" +
+                                    "You can disable this check in the options window.", "MSU Randomizer Update",
+                        MessageBoxButton.YesNo);
+
+                    if (response == MessageBoxResult.Yes)
+                    {
+                        var url = newerHubRelease.Url.Replace("&", "^&");
+                        Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                    }
+                }
+            }
+
+            _host.Services.GetRequiredService<IMsuUiFactory>().OpenMsuWindow(SelectionMode.Multiple, false, out _);
         }
         
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

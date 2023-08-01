@@ -40,8 +40,4 @@
     </Page>
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="settings.yaml" />
-  </ItemGroup>
-
 </Project>

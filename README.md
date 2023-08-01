@@ -15,6 +15,10 @@ A multi game MSU randomizer originally created for the [SMZ3 Cas' Randomizer](ht
 - **Compile detailed MSU information** - MSU providers can create [YAML files](Docs/yaml.md) to package along with their MSUs. This will allow the MSU Randomizer to pull information about the MSU such as its name and creator as well as track details such as song names and artists, then create a YAML file with the outputted MSU details so that you (or any application) can view the songs picked.
 - **Alternative track support** - Sometimes you just have too many ideas for a song! MSU creators can package in alternative pcm files for tracks which will be picked up and randomly selected instead of the default ones. The YAML detail files even allows for adding information for each of the alt tracks so that the MSU Randomizer will know which one was picked and save the relevant info to the output YAML file.
 
+## Setup
+
+Download the latest exe installer from the [GitHub Releases](https://github.com/MattEqualsCoder/MSURandomizer/releases) page. It should automatically install all required dependencies.
+
 ## Planned Features
 
 - Possible built-in support for determining which track is currently playing.
@@ -22,6 +26,13 @@ A multi game MSU randomizer originally created for the [SMZ3 Cas' Randomizer](ht
 ## Troubleshooting
 
 Having problems? You can view the [support document](Docs/support.md) for more assistance. If you are still running into problems, please feel free to [post an Issue on GitHub](https://github.com/MattEqualsCoder/MSURandomizer/issues).
+
+## Randomizer Libraries
+
+Interested in using the MSU Randomizer libraries in your own .net based application? Lookup MattEqualsCoder.MSURandomizer.Library and MattEqualsCoder.MSURandomizer.UI on nuget to use them in your project!
+
+- [MSU Randomizer Library Documentation](./MSURandomizerLibrary/README.md)
+- [MSU Randomizer UI Documentation](./MSURandomizerUI/README.md)
 
 ## Credits & Thanks
 

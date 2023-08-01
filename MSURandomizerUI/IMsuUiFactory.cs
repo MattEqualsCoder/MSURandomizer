@@ -45,4 +45,13 @@ public interface IMsuUiFactory
     /// </summary>
     /// <param name="msu">The MSU details to open the window for</param>
     public void OpenMsuDetailsWindow(Msu msu);
+
+    /// <summary>
+    /// Opens the MSU Randomizer main window
+    /// </summary>
+    /// <param name="selectionMode">Whether the MSU list should be in single or multi select mode</param>
+    /// <param name="asDialog">If the window should be opened as a dialog window</param>
+    /// <param name="selectedOptions">The object of the opens selected by the user</param>
+    /// <returns>True if the user accepted the dialog, false otherwise</returns>
+    public bool OpenMsuWindow(SelectionMode selectionMode, bool asDialog, out MsuUserOptions selectedOptions);
 }

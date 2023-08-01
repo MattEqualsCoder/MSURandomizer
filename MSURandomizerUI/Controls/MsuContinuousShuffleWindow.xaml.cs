@@ -14,7 +14,7 @@ namespace MSURandomizerUI.Controls;
 /// <summary>
 /// Interaction logic for MSUContinuousShuffleWindow.xaml
 /// </summary>
-public partial class MsuContinuousShuffleWindow
+internal partial class MsuContinuousShuffleWindow
 {
     private readonly Timer _reshuffleTimer;
     private readonly IMsuSelectorService _msuSelectorService;

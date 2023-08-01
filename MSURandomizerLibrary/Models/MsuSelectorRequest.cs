@@ -3,6 +3,9 @@ using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerLibrary.Models;
 
+/// <summary>
+/// Request object for the MSU Selector service for creating MSUs
+/// </summary>
 public class MsuSelectorRequest
 {
     /// <summary>

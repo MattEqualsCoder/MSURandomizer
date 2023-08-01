@@ -2,12 +2,12 @@
 
 namespace MSURandomizerLibrary.Configs;
 
-public class MsuLookupCache
+internal class MsuLookupCache
 {
     public ConcurrentDictionary<string, MsuLookupCacheEntry> Data { get; set; } = new();
 }
 
-public class MsuLookupCacheEntry
+internal class MsuLookupCacheEntry
 {
     public string? YamlHash { get; set; }
     public string? PcmFileList { get; set; }

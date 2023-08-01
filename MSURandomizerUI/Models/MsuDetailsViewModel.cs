@@ -7,7 +7,7 @@ using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerUI.Models;
 
-public class MsuDetailsViewModel : INotifyPropertyChanged
+internal class MsuDetailsViewModel : INotifyPropertyChanged
 {
     private string _name;
     private string _creator;

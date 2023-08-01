@@ -1,12 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MSURandomizerLibrary.Services;
 using MSURandomizerUI.Controls;
 using MSURandomizerUI.Models;
 
 namespace MSURandomizerUI;
 
+/// <summary>
+/// Service extensions for adding the UI elements to the service collection
+/// </summary>
 public static class MsuRandomizerUIServiceExtensions
 {
+    /// <summary>
+    /// Adds the MSU Randomizer UI elements to the service collection
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddMsuRandomizerUIServices(this IServiceCollection services)
     {
         services.AddSingleton<IMsuUiFactory, MsuUiFactory>();
@@ -18,7 +25,6 @@ public static class MsuRandomizerUIServiceExtensions
         services.AddTransient<MsuContinuousShuffleWindow>();
         services.AddTransient<MsuDetailsWindow>();
         
-        services.AddSingleton<IMsuRandomizerInitializationService, MsuRandomizerInitializationService>();
         return services;
     }
 }

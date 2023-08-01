@@ -4,7 +4,7 @@ using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerLibrary.Services;
 
-public class MsuCacheService : IMsuCacheService
+internal class MsuCacheService : IMsuCacheService
 {
     private readonly IMsuTypeService _msuTypeService;
     private readonly MsuUserOptions _msuUserOptions;

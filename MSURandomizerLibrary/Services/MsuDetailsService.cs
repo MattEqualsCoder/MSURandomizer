@@ -8,7 +8,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibrary.Services;
 
-public class MsuDetailsService : IMsuDetailsService
+internal class MsuDetailsService : IMsuDetailsService
 {
     private readonly ILogger<MsuDetailsService> _logger;
     private readonly ISerializer _serializer;
