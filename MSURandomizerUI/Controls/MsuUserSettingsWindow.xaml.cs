@@ -15,6 +15,9 @@ internal partial class MsuUserSettingsWindow : Window
     public new readonly MsuUserOptions DataContext;
 
     private readonly List<MsuDirectoryControl> _directoryControls = new();
+    
+    private bool _originalPromptOnUpdate { get; set; } = true;
+    private bool _originalPromptOnPreRelease { get; set; }
         
     public MsuUserSettingsWindow(MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService)
     {
@@ -26,6 +29,9 @@ internal partial class MsuUserSettingsWindow : Window
             msuUserOptions.MsuTypePaths.TryGetValue(msuType, out var typePath);
             AddDirectoryControl(msuType, typePath);
         }
+
+        PromptOnUpdateCheckBox.IsChecked = _originalPromptOnUpdate = msuUserOptions.PromptOnUpdate;
+        PromptOnPreReleaseCheckBox.IsChecked = _originalPromptOnPreRelease = msuUserOptions.PromptOnPreRelease;
     }
 
     public void AddDirectoryControl(MsuType? msuType, string? path)
@@ -67,11 +73,28 @@ internal partial class MsuUserSettingsWindow : Window
             }
         }
 
+        if (_originalPromptOnUpdate != PromptOnUpdateCheckBox.IsChecked)
+        {
+            DataContext.PromptOnUpdate = PromptOnUpdateCheckBox.IsChecked ?? false;
+            hasModified = true;
+        }
+        
+        if (_originalPromptOnPreRelease != PromptOnPreReleaseCheckBox.IsChecked)
+        {
+            DataContext.PromptOnPreRelease = PromptOnPreReleaseCheckBox.IsChecked ?? false;
+            hasModified = true;
+        }
+
         if (hasModified)
         {
             DialogResult = true;
         }
             
         Close();
+    }
+
+    private void PromptOnUpdateCheckBox_OnChecked(object sender, RoutedEventArgs e)
+    {
+        PromptOnPreReleaseCheckBox.IsEnabled = PromptOnUpdateCheckBox.IsChecked ?? false;
     }
 }

@@ -9,7 +9,7 @@
     <FileVersion></FileVersion>
     <PackageIcon>MSURandomizerIcon.ico</PackageIcon>
     <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
-    <Version>0.9.8</Version>
+    <Version>0.9.9-beta.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MattEqualsCoder.GitHubReleaseChecker" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
     <PackageReference Include="NReco.Logging.File" Version="1.1.5" />
   </ItemGroup>
