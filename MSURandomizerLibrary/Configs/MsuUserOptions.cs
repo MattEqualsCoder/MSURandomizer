@@ -22,6 +22,8 @@ public class MsuUserOptions
     public ICollection<string>? SelectedMsus { get; set; }
     public string? OutputRomPath { get; set; }
     public string? OutputFolderPath { get; set; }
+    public bool PromptOnUpdate { get; set; } = true;
+    public bool PromptOnPreRelease { get; set; }
     public Dictionary<string, string> MsuTypeNamePaths { get; set;  } = new();
     public ICollection<MsuSettings> MsuSettings { get; set; } = new List<MsuSettings>();
     

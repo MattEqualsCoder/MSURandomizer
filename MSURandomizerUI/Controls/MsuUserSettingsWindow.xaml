@@ -3,9 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:configs="clr-namespace:MSURandomizerLibrary.Configs;assembly=MSURandomizerLibrary"
         mc:Ignorable="d"
         ResizeMode="NoResize"
         Title="Options" Height="450" Width="600">
+    <Window.DataContext>
+        <configs:MsuUserOptions></configs:MsuUserOptions>
+    </Window.DataContext>
     <Window.Resources>
         <ResourceDictionary Source="../Themes/Generic.xaml" />
     </Window.Resources>
@@ -17,8 +21,24 @@
         </Border>
         <ScrollViewer>
             <StackPanel Orientation="Vertical" Margin="11">
-                <StackPanel x:Name="BaseSettings"></StackPanel>
-                <GroupBox Header="Individual Game Directories">
+                <GroupBox Header="Basic Settings">
+                    <StackPanel Orientation="Vertical">
+                        <CheckBox Margin="0 3 0 3" 
+                                  Name="PromptOnUpdateCheckBox"
+                                  ToolTip="Shows a popup when first launching when there is a new update on GitHub."
+                                  IsChecked="{Binding PromptOnUpdate}"
+                        >Check for updates on launch</CheckBox>
+                        <CheckBox Margin="0 3 0 3" 
+                                  Name="PromptOnPreReleaseCheckBox"
+                                  ToolTip="When checking for new updates, alert on pre-release versions in addition to full releases."
+                                  IsEnabled="{Binding PromptOnUpdate}"
+                                  IsChecked="{Binding PromptOnPreRelease}"
+                        >Enable checking for pre-release versions</CheckBox>
+                        <StackPanel x:Name="BaseSettings"></StackPanel>
+                    </StackPanel>
+                </GroupBox>
+                
+                <GroupBox Header="Individual Game Directories" Margin="0 10 0 0 ">
                     <StackPanel Orientation="Vertical" x:Name="MsuTypeSettings">
                     </StackPanel>
                 </GroupBox>
