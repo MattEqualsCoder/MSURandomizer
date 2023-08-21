@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace MSURandomizerUI.Controls;
 
-public class LabeledControl : ContentControl
+internal class LabeledControl : ContentControl
 {
     public static readonly DependencyProperty TextProperty =
         DependencyProperty.Register("Text",

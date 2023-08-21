@@ -5,7 +5,7 @@ using MSURandomizerLibrary.Models;
 
 namespace MSURandomizerLibrary.Services;
 
-public class MsuSelectorService : IMsuSelectorService
+internal class MsuSelectorService : IMsuSelectorService
 {
     private readonly ILogger<MsuSelectorService> _logger;
     private Random _random;

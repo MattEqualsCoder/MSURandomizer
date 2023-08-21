@@ -9,7 +9,7 @@ using MSURandomizerUI.Models;
 
 namespace MSURandomizerUI.Controls;
 
-public partial class MsuDetailsWindow : Window, INotifyPropertyChanged
+internal partial class MsuDetailsWindow : Window, INotifyPropertyChanged
 {
     public MsuDetailsWindow()
     {

@@ -10,7 +10,7 @@ namespace MSURandomizerUI.Controls;
 /// <summary>
 /// Interaction logic for MSUOptionsWindow.xaml
 /// </summary>
-public partial class MsuUserSettingsWindow : Window
+internal partial class MsuUserSettingsWindow : Window
 {
     public new readonly MsuUserOptions DataContext;
 

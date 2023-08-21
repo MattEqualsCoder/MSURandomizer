@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace MSURandomizerLibrary.Configs;
 
+/// <summary>
+/// Settings for the MSU Randomizer
+/// </summary>
 public class MsuAppSettings
 {
     /// <summary>
@@ -69,14 +72,32 @@ public class MsuAppSettings
     /// The name of an MSU type that should be forced to be used as output
     /// </summary>
     public string? ForcedMsuType { get; set; }
+    
+    /// <summary>
+    /// Where the MSU lookup cache file will be stored
+    /// </summary>
+    public string? MsuCachePath { get; set; }
+    
+    /// <summary>
+    /// The Windows title of the main MSU Window
+    /// </summary>
+    public string? MsuWindowTitle { get; set; }
 
-    public string GetMsuName(string msuName)
+    /// <summary>
+    /// Retrieves the MSU Type name if found, using any overrides if specified in the app settings
+    /// </summary>
+    /// <param name="msuName"></param>
+    /// <returns></returns>
+    public string GetMsuTypeName(string msuName)
     {
         return MsuTypeNameOverrides == null
             ? msuName
             : MsuTypeNameOverrides.TryGetValue(msuName, out var overrideName) ? overrideName : msuName;
     }
 
+    /// <summary>
+    /// Retrieves any MSU type names related to SMZ3
+    /// </summary>
     public IEnumerable<string> ZeldaSuperMetroidSmz3MsuTypes =>
         MetroidFirstMsuTypes != null && ZeldaFirstMsuTypes != null
             ? MetroidFirstMsuTypes.Concat(ZeldaFirstMsuTypes)

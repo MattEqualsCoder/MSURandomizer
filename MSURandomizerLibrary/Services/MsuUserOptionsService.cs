@@ -7,7 +7,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibrary.Services;
 
-public class MsuUserOptionsService : IMsuUserOptionsService
+internal class MsuUserOptionsService : IMsuUserOptionsService
 {
     private static MsuUserOptions? _options { get; set; }
     private readonly IMsuTypeService _msuTypeService;

@@ -6,7 +6,7 @@ using System.Windows.Data;
 
 namespace MSURandomizerUI.Controls;
 
-public class EnumDescriptionConverter : IValueConverter
+internal class EnumDescriptionConverter : IValueConverter
 {
     private string GetEnumDescription(Enum enumObj)
     {

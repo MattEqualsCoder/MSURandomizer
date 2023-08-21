@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
-using MSURandomizerLibrary.Services;
 using MSURandomizerUI.Models;
 
 namespace MSURandomizerUI.Controls;
@@ -20,6 +19,10 @@ public partial class MsuList : UserControl
     private readonly IMsuUiFactory _msuUiFactory;
     private readonly List<string> _displayedErrors = new();
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="msuUiFactory"></param>
     public MsuList(IMsuUiFactory msuUiFactory)
     {
         _msuUiFactory = msuUiFactory;
@@ -27,9 +30,16 @@ public partial class MsuList : UserControl
         InitializeComponent();
     }
     
-    public new MsuListViewModel DataContext { get; private set; }
+    /// <summary>
+    /// The view model with all of the MSUs
+    /// </summary>
+    internal new MsuListViewModel DataContext { get; private set; }
 
-    public void SetDataContext(MsuListViewModel model)
+    /// <summary>
+    /// Sets the view model and sets up events
+    /// </summary>
+    /// <param name="model">The view model to set</param>
+    internal void SetDataContext(MsuListViewModel model)
     {
         DataContext = model;
         model.MsuListUpdated += ViewModelOnMsuListUpdated;
@@ -97,16 +107,28 @@ public partial class MsuList : UserControl
         }
     }
 
+    /// <summary>
+    /// Selects all MSUs
+    /// </summary>
     public void SelectAll() => MsuListView.SelectAll();
 
+    /// <summary>
+    /// Deselects all MSUs
+    /// </summary>
     public void UnselectAll() => MsuListView.UnselectAll();
 
+    /// <summary>
+    /// If the user should be able to select a single or multiple MSUs
+    /// </summary>
     public SelectionMode SelectionMode
     {
         get => DataContext.SelectionMode;
         set => DataContext.SelectionMode = value;
     }
 
+    /// <summary>
+    /// The MSU type that user is trying to generate
+    /// </summary>
     public MsuType? TargetMsuType
     {
         get => DataContext.MsuType;
@@ -120,6 +142,9 @@ public partial class MsuList : UserControl
         }
     }
 
+    /// <summary>
+    /// The filter that should be applied to the MSU type
+    /// </summary>
     public MsuFilter? MsuFilter
     {
         get => DataContext.MsuFilter;
@@ -133,20 +158,23 @@ public partial class MsuList : UserControl
         }
     }
 
-    public ICollection<string> SelectedMsuPaths
-    {
-        get => MsuListView.SelectedItems.Cast<Msu>().Select(x => x.Path).ToList();
-        set => DataContext.SelectedMsuPaths = value;
-    }
-    
+    /// <summary>
+    /// The base directory to filter MSUs by
+    /// </summary>
     public string? BasePath
     {
         get => DataContext.BasePath;
         set => DataContext.BasePath = value;
     }
 
+    /// <summary>
+    /// The currently selected MSUs
+    /// </summary>
     public ICollection<Msu> SelectedMsus => MsuListView.SelectedItems.Cast<Msu>().ToList();
     
+    /// <summary>
+    /// Event that is fired when the currently selected MSUs has changed
+    /// </summary>
     public event EventHandler<MsuListEventArgs>? SelectedMsusUpdated;
 
     private void MsuList_OnLoaded(object sender, RoutedEventArgs e)

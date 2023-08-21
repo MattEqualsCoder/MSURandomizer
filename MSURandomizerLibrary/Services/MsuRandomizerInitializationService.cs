@@ -10,7 +10,7 @@ using MSURandomizerLibrary.Models;
 
 namespace MSURandomizerLibrary.Services;
 
-public class MsuRandomizerInitializationService : IMsuRandomizerInitializationService
+internal class MsuRandomizerInitializationService : IMsuRandomizerInitializationService
 {
     private readonly IMsuAppSettingsService _msuAppSettingsService;
     private readonly IServiceProvider _serviceProvider;
@@ -27,15 +27,10 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
     {
         var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
         _logger.LogInformation("Initializing MSU Randomizer Library {Version}", version.ProductVersion ?? "");
-        if (request.MsuAppSettingsStream == null && string.IsNullOrWhiteSpace(request.MsuAppSettingsPath))
-        {
-            throw new InvalidOperationException(
-                "Initialization requires either the MsuAppSettingsStream or MsuAppSettingsPath to be specified");
-        }
-
+        
         var appSettings = request.MsuAppSettingsStream == null
-            ? _msuAppSettingsService.Initialize(request.MsuAppSettingsPath!)
-            : _msuAppSettingsService.Initialize(request.MsuAppSettingsStream!);
+            ? _msuAppSettingsService.Initialize(request.MsuAppSettingsPath)
+            : _msuAppSettingsService.Initialize(request.MsuAppSettingsStream);
 
         if (appSettings == null)
         {
@@ -45,13 +40,16 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
         InitializeMsuTypes(request, appSettings);
         var userOptions = InitializeUserOptions(request, appSettings);
         
-        InitializeCache(request);
+        InitializeCache(request, appSettings);
 
-        Task.Run(() =>
+        if (request.LookupMsus)
         {
-            var msuLookupService = _serviceProvider.GetRequiredService<IMsuLookupService>();
-            msuLookupService.LookupMsus(userOptions.DefaultMsuPath, userOptions.MsuTypePaths); 
-        });
+            Task.Run(() =>
+            {
+                var msuLookupService = _serviceProvider.GetRequiredService<IMsuLookupService>();
+                msuLookupService.LookupMsus(userOptions.DefaultMsuPath, userOptions.MsuTypePaths); 
+            });
+        }
     }
 
     private void InitializeMsuTypes(MsuRandomizerInitializationRequest request, MsuAppSettings appSettings)
@@ -101,10 +99,15 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
         return userOptionsService.Initialize(userOptionsPath);
     }
 
-    private void InitializeCache(MsuRandomizerInitializationRequest request)
+    private void InitializeCache(MsuRandomizerInitializationRequest request, MsuAppSettings msuAppSettings)
     {
-        if (string.IsNullOrEmpty(request.MsuCachePath)) return;
+        var cachePath = string.IsNullOrWhiteSpace(request.MsuCachePath)
+            ? msuAppSettings.MsuCachePath
+            : request.MsuCachePath;
+        
+        if (string.IsNullOrEmpty(cachePath)) return;
+        
         var msuCacheService = _serviceProvider.GetRequiredService<IMsuCacheService>();
-        msuCacheService.Initialize(Environment.ExpandEnvironmentVariables(request.MsuCachePath));
+        msuCacheService.Initialize(Environment.ExpandEnvironmentVariables(cachePath));
     }
 }

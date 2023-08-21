@@ -6,7 +6,7 @@
         xmlns:configs="clr-namespace:MSURandomizerLibrary.Configs;assembly=MSURandomizerLibrary"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="Options" Height="450" Width="600">
+        Title="Options" Height="450" Width="600" x:ClassModifier="internal">
     <Window.DataContext>
         <configs:MsuUserOptions></configs:MsuUserOptions>
     </Window.DataContext>

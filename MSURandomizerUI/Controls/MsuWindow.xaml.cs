@@ -19,7 +19,6 @@ namespace MSURandomizerUI.Controls;
 /// </summary>
 public partial class MsuWindow : Window
 {
-    public new readonly MsuUserOptions DataContext;
     private readonly IMsuTypeService _msuTypeService;
     private readonly IMsuLookupService _msuLookupService;
     private readonly IMsuSelectorService _msuSelectorService;
@@ -27,7 +26,19 @@ public partial class MsuWindow : Window
     private readonly IMsuUiFactory _msuUiFactory;
     private readonly ILogger<MsuWindow> _logger;
     private readonly MsuAppSettings _msuAppSettings;
+    private SelectionMode _selectionMode;
         
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="msuLookupService"></param>
+    /// <param name="msuUserOptions"></param>
+    /// <param name="msuTypeService"></param>
+    /// <param name="msuSelectorService"></param>
+    /// <param name="msuUserOptionsService"></param>
+    /// <param name="msuUiFactory"></param>
+    /// <param name="msuAppSettings"></param>
     public MsuWindow(ILogger<MsuWindow> logger, IMsuLookupService msuLookupService, MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, IMsuSelectorService msuSelectorService, IMsuUserOptionsService msuUserOptionsService, IMsuUiFactory msuUiFactory, MsuAppSettings msuAppSettings)
     {
         DataContext = msuUserOptions;
@@ -42,11 +53,27 @@ public partial class MsuWindow : Window
 
         MsuList = new MsuList(_msuUiFactory);
     }
+    
+    /// <summary>
+    /// The user options for the msu window
+    /// </summary>
+    public new MsuUserOptions DataContext { get; set; }
 
+    /// <summary>
+    /// Shows the MSU Window in the multiple selection mode
+    /// </summary>
     public new void Show() => Show(SelectionMode.Multiple, false);
     
+    /// <summary>
+    /// Shows the MSU Window as a dialog in multiple selection mode
+    /// </summary>
     public new void ShowDialog() => Show(SelectionMode.Multiple, true);
 
+    /// <summary>
+    /// Shows the MSU window
+    /// </summary>
+    /// <param name="selectionMode">If the list selection mode should be multiple or single</param>
+    /// <param name="dialog">If the window should be displayed as a modal or not</param>
     public void Show(SelectionMode selectionMode, bool dialog)
     {
         // Create the MSU List
@@ -54,7 +81,14 @@ public partial class MsuWindow : Window
         ToggleInput(false);
         MainGrid.Children.Add(MsuList);
         MsuList.SelectedMsusUpdated += MsuListOnSelectedMsusUpdated;
+        _selectionMode = selectionMode;
         _msuLookupService.OnMsuLookupComplete += (sender, args) => OnMsuLookupComplete(args.Msus);
+
+        if (!string.IsNullOrEmpty(_msuAppSettings.MsuWindowTitle))
+        {
+            Title = _msuAppSettings.MsuWindowTitle;
+        }
+        
         if (_msuLookupService.Status == MsuLoadStatus.Loaded)
         {
             Dispatcher.InvokeAsync(() => { OnMsuLookupComplete(_msuLookupService.Msus); });
@@ -101,8 +135,8 @@ public partial class MsuWindow : Window
         MsuList.IsEnabled = isEnabled;
         MsuTypesComboBox.IsEnabled = isEnabled;
         FilterComboBox.IsEnabled = isEnabled;
-        SelectAllButton.IsEnabled = isEnabled;
-        SelectNoneButton.IsEnabled = isEnabled;
+        SelectAllButton.IsEnabled = isEnabled && _selectionMode == SelectionMode.Multiple;
+        SelectNoneButton.IsEnabled = isEnabled && _selectionMode == SelectionMode.Multiple;
         SelectMsusButtons.IsEnabled = isEnabled;
         RandomMsuButton.IsEnabled = isEnabled;
         ShuffledMsuButton.IsEnabled = isEnabled;
@@ -209,6 +243,9 @@ public partial class MsuWindow : Window
         ShowSelectorResponseMessage(response);
     }
 
+    /// <summary>
+    /// The list of MSUs to pick from
+    /// </summary>
     public MsuList MsuList
     {
         get;

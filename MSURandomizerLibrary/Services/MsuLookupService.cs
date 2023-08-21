@@ -96,11 +96,11 @@ internal class MsuLookupService : IMsuLookupService
         return msuLookups;
     }
 
-    public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null, bool saveToCache = true, bool ignoreCache = false)
+    public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null, bool saveToCache = true, bool ignoreCache = false, bool forceLoad = false)
     {
         var directory = new FileInfo(msuPath).Directory!.FullName;
 
-        if (File.Exists(Path.Combine(directory, "msu-randomizer-output.txt")))
+        if (!forceLoad && File.Exists(Path.Combine(directory, "msu-randomizer-output.txt")))
         {
             return null;
         }
@@ -123,7 +123,6 @@ internal class MsuLookupService : IMsuLookupService
                 return cacheMsu;
             }
         }
-        
         
         var msuSettings = _msuUserOptions.GetMsuSettings(msuPath);
         
@@ -301,26 +300,22 @@ internal class MsuLookupService : IMsuLookupService
             // See if there are any alt tracks to add
             var alts = extraPcmFiles.Where(x => x != path && Regex.IsMatch(x.Replace(Path.Combine(directory, baseName), ""), $"-{trackNumber}[^0-9]")).ToList();
             if (!alts.Any()) continue;
+            var altIndex = 1;
             
             foreach (var alt in alts)
             {
-                var relativePath = Path.GetRelativePath(directory, alt);
-                var altName = new FileInfo(alt).Name;
-                if (relativePath.Contains(Path.DirectorySeparatorChar))
-                {
-                    altName = relativePath.Substring(0, relativePath.IndexOf(Path.DirectorySeparatorChar));
-                }
-                
                 tracks.Add(new Track
                 (
                     trackName: msuType.Tracks.FirstOrDefault(x => x.Number == track.Number)?.Name ?? $"Track #{trackNumber}",
                     number: track.Number,
-                    songName: $"Track #{trackNumber} ({altName})",
+                    songName: $"Track #{trackNumber} (alt {altIndex})",
                     path: alt,
                     isAlt: true
                 ){
                     IsCopied = trackNumber != track.Number
                 });
+
+                altIndex++;
             }
         }
 

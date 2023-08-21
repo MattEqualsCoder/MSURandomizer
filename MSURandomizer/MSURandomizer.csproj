@@ -9,7 +9,7 @@
     <FileVersion></FileVersion>
     <PackageIcon>MSURandomizerIcon.ico</PackageIcon>
     <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
-    <Version>0.9.9-beta.1</Version>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,10 +39,6 @@
     <Page Update="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="settings.yaml" />
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,9 @@
 
 namespace MSURandomizerLibrary.Models;
 
+/// <summary>
+/// Request for the MSURandomizerInitializationService for setting up the MSU Randomizer Library
+/// </summary>
 public class MsuRandomizerInitializationRequest
 {
     /// <summary>
@@ -35,4 +38,9 @@ public class MsuRandomizerInitializationRequest
     /// Settings
     /// </summary>
     public string? UserOptionsPath { get; set; }
+
+    /// <summary>
+    /// If the MSUs should be automatically looked up on initialization
+    /// </summary>
+    public bool LookupMsus { get; set; } = true;
 }

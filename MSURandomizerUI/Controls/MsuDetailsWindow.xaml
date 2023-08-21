@@ -9,7 +9,7 @@
         xmlns:msuRandomizerUi="clr-namespace:MSURandomizerUI"
         xmlns:msuRandomizerLibrary="clr-namespace:MSURandomizerLibrary;assembly=MSURandomizerLibrary"
         mc:Ignorable="d"
-        Title="{Binding Name}" Height="450" Width="800">
+        Title="{Binding Name}" Height="450" Width="800" x:ClassModifier="internal">
     <Window.DataContext>
         <models2:MsuDetailsViewModel></models2:MsuDetailsViewModel>
     </Window.DataContext>

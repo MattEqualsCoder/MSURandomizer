@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using GitHubReleaseChecker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -51,24 +52,13 @@ namespace MSURandomizer
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            var settingsStream =
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("MSURandomizer.settings.yaml");
-            if (settingsStream == null)
-            {
-                throw new InvalidOperationException("Missing RandomizerSettings stream");
-            }
-
-            var msuInitializationRequest = new MsuRandomizerInitializationRequest
-            {
-                MsuAppSettingsStream = settingsStream
-            };
-
-            msuInitializationRequest.MsuCachePath = "%LocalAppData%\\MSURandomizer";
+            var msuInitializationRequest = new MsuRandomizerInitializationRequest();
 
             #if DEBUG
             msuInitializationRequest.MsuTypeConfigPath = GetConfigDirectory();
             msuInitializationRequest.UserOptionsPath = "%LocalAppData%\\MSURandomizer\\msu-user-settings-debug.yml";
             #endif
+            
             _host.Services.GetRequiredService<IMsuRandomizerInitializationService>().Initialize(msuInitializationRequest);
 
             var userOptions = _host.Services.GetRequiredService<MsuUserOptions>();
@@ -92,8 +82,8 @@ namespace MSURandomizer
                     }
                 }
             }
-            
-            _host.Services.GetRequiredService<MsuWindow>().Show();
+
+            _host.Services.GetRequiredService<IMsuUiFactory>().OpenMsuWindow(SelectionMode.Multiple, false, out _);
         }
         
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

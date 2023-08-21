@@ -214,21 +214,9 @@ public class MsuTypeTests
     private MsuAppSettings GetAppSettings()
     {
         var service = new MsuMsuAppSettingsService();
-        var yamlPath = GetAppSettingsPath();
-        return service.Initialize(yamlPath);
+        return service.Initialize("");
     }
-    
-    private string GetAppSettingsPath()
-    {
-        var directory = new DirectoryInfo(Directory.GetCurrentDirectory());
-        while (directory != null && !directory.GetFiles("*.sln").Any())
-        {
-            directory = directory.Parent;
-        }
-
-        return directory != null ? Path.Combine(directory.FullName, "MSURandomizer", "settings.yaml") : "";
-    }
-
+   
     private MsuTypeService GetMsuTypeService(MsuTypeConfig? typeConfig, MsuAppSettings? appSettings)
     {
         var logger = TestHelpers.CreateMockLogger<MsuTypeService>();

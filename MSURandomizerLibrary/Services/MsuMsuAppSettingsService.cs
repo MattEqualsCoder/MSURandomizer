@@ -7,11 +7,11 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibrary.Services;
 
-public class MsuMsuAppSettingsService : IMsuAppSettingsService
+internal class MsuMsuAppSettingsService : IMsuAppSettingsService
 {
     private MsuAppSettings _settings { get; set; } = new();
     
-    public MsuAppSettings Initialize(Stream? stream)
+    public MsuAppSettings Initialize(Stream stream)
     {
         if (stream == null)
         {
@@ -23,8 +23,14 @@ public class MsuMsuAppSettingsService : IMsuAppSettingsService
         return _settings;
     }
 
-    public MsuAppSettings Initialize(string path)
+    public MsuAppSettings Initialize(string? path)
     {
+        if (string.IsNullOrEmpty(path))
+        {
+            LoadSettings(null);
+            return _settings;
+        }
+        
         if (!File.Exists(path))
         {
             throw new FileNotFoundException("Could not find MsuRandomizerSettings file {File}", path);
@@ -34,7 +40,7 @@ public class MsuMsuAppSettingsService : IMsuAppSettingsService
         return _settings;
     }
 
-    private void LoadSettings(string overrideYaml)
+    private void LoadSettings(string? overrideYaml)
     {
         var stream =
             Assembly.GetExecutingAssembly().GetManifestResourceStream("MSURandomizerLibrary.settings.yaml");
@@ -45,16 +51,25 @@ public class MsuMsuAppSettingsService : IMsuAppSettingsService
             var defaultYaml = reader.ReadToEnd();
             settings = Parse(defaultYaml);
         }
-        var overrideSettings = Parse(overrideYaml);
-        
-        // Pull in override settings if they are not null
-        foreach (var prop in typeof(MsuAppSettings).GetProperties())
+
+        if (!string.IsNullOrEmpty(overrideYaml))
         {
-            var value = prop.GetValue(overrideSettings);
-            if (value != null && prop.CanWrite)
+            var overrideSettings = Parse(overrideYaml);
+        
+            // Pull in override settings if they are not null
+            foreach (var prop in typeof(MsuAppSettings).GetProperties())
             {
-                prop.SetValue(settings, value);
+                var value = prop.GetValue(overrideSettings);
+                if (value != null && prop.CanWrite)
+                {
+                    prop.SetValue(settings, value);
+                }
             }
+        }
+
+        if (string.IsNullOrEmpty(settings.UserOptionsFilePath))
+        {
+            throw new InvalidOperationException("UserOptionsFilePath not specified in app settings file");
         }
 
         _settings = settings;

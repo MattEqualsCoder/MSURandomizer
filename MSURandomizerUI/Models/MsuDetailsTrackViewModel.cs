@@ -6,7 +6,7 @@ using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerUI.Models;
 
-public class MsuDetailsTrackViewModel : INotifyPropertyChanged
+internal class MsuDetailsTrackViewModel : INotifyPropertyChanged
 {
 
     public MsuDetailsTrackViewModel()

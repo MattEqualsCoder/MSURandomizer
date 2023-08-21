@@ -6,7 +6,7 @@ using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerUI.Controls;
 
-public partial class MsuDirectoryControl : UserControl
+internal partial class MsuDirectoryControl : UserControl
 {
     private MsuUserSettingsWindow? _parentWindow;
     
