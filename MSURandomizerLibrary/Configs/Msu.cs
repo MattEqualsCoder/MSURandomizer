@@ -74,5 +74,34 @@ public class Msu
                Tracks.Count >= 1;
     }
 
-    
+    /// <summary>
+    /// Returns the track that will play for the track number. Returns the valid fallback track if applicable.
+    /// </summary>
+    /// <param name="trackNumber">The track number to look up</param>
+    /// <returns>The first track for the requested track number, if one is found</returns>
+    public Track? GetTrackFor(int trackNumber)
+    {
+        return GetTracksFor(trackNumber).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Returns the tracks that would play for the provided track number. Returns the valid fallback tracks if applicable.
+    /// </summary>
+    /// <param name="trackNumber">The track number to look up</param>
+    /// <returns>The set of tracks for the requested track number</returns>
+    public IEnumerable<Track> GetTracksFor(int trackNumber)
+    {
+        if (SelectedMsuType == null)
+        {
+            return Tracks.Where(x => x.Number == trackNumber);
+        }
+
+        var typeTrack = SelectedMsuType.Tracks.FirstOrDefault(x => x.Number == trackNumber);
+        while (typeTrack != null && Tracks.All(x => x.Number != typeTrack.Number))
+        {
+            typeTrack = SelectedMsuType.Tracks.FirstOrDefault(x => x.Number == typeTrack.Fallback);
+        }
+
+        return Tracks.Where(x => x.Number == typeTrack?.Number);
+    }
 }

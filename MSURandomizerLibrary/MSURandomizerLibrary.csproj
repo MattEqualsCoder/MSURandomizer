@@ -14,7 +14,7 @@
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <IncludeSymbols>False</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>0.9.8-beta.18</Version>
+    <Version>1.0.0</Version>
     <TargetFrameworks>net7.0-windows;net7.0</TargetFrameworks>
   </PropertyGroup>
 
@@ -39,6 +39,7 @@
     </EmbeddedResource>
     <None Remove="yaml_tracks_rewrites.yml" />
     <EmbeddedResource Include="yaml_tracks_rewrites.yml" />
+    <None Remove="msu-randomizer-types.json" />
   </ItemGroup>
 
   <ItemGroup>

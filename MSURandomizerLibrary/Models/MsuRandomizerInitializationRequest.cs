@@ -35,4 +35,9 @@ public class MsuRandomizerInitializationRequest
     /// Settings
     /// </summary>
     public string? UserOptionsPath { get; set; }
+
+    /// <summary>
+    /// If the MSUs should be automatically looked up on initialization
+    /// </summary>
+    public bool LookupMsus { get; set; } = true;
 }

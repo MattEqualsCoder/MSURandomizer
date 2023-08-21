@@ -27,6 +27,7 @@ public partial class MsuWindow : Window
     private readonly IMsuUiFactory _msuUiFactory;
     private readonly ILogger<MsuWindow> _logger;
     private readonly MsuAppSettings _msuAppSettings;
+    private SelectionMode _selectionMode;
         
     public MsuWindow(ILogger<MsuWindow> logger, IMsuLookupService msuLookupService, MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, IMsuSelectorService msuSelectorService, IMsuUserOptionsService msuUserOptionsService, IMsuUiFactory msuUiFactory, MsuAppSettings msuAppSettings)
     {
@@ -54,7 +55,14 @@ public partial class MsuWindow : Window
         ToggleInput(false);
         MainGrid.Children.Add(MsuList);
         MsuList.SelectedMsusUpdated += MsuListOnSelectedMsusUpdated;
+        _selectionMode = selectionMode;
         _msuLookupService.OnMsuLookupComplete += (sender, args) => OnMsuLookupComplete(args.Msus);
+
+        if (!string.IsNullOrEmpty(_msuAppSettings.MsuWindowTitle))
+        {
+            Title = _msuAppSettings.MsuWindowTitle;
+        }
+        
         if (_msuLookupService.Status == MsuLoadStatus.Loaded)
         {
             Dispatcher.InvokeAsync(() => { OnMsuLookupComplete(_msuLookupService.Msus); });
@@ -101,8 +109,8 @@ public partial class MsuWindow : Window
         MsuList.IsEnabled = isEnabled;
         MsuTypesComboBox.IsEnabled = isEnabled;
         FilterComboBox.IsEnabled = isEnabled;
-        SelectAllButton.IsEnabled = isEnabled;
-        SelectNoneButton.IsEnabled = isEnabled;
+        SelectAllButton.IsEnabled = isEnabled && _selectionMode == SelectionMode.Multiple;
+        SelectNoneButton.IsEnabled = isEnabled && _selectionMode == SelectionMode.Multiple;
         SelectMsusButtons.IsEnabled = isEnabled;
         RandomMsuButton.IsEnabled = isEnabled;
         ShuffledMsuButton.IsEnabled = isEnabled;

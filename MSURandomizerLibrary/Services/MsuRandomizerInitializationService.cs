@@ -47,11 +47,14 @@ public class MsuRandomizerInitializationService : IMsuRandomizerInitializationSe
         
         InitializeCache(request);
 
-        Task.Run(() =>
+        if (request.LookupMsus)
         {
-            var msuLookupService = _serviceProvider.GetRequiredService<IMsuLookupService>();
-            msuLookupService.LookupMsus(userOptions.DefaultMsuPath, userOptions.MsuTypePaths); 
-        });
+            Task.Run(() =>
+            {
+                var msuLookupService = _serviceProvider.GetRequiredService<IMsuLookupService>();
+                msuLookupService.LookupMsus(userOptions.DefaultMsuPath, userOptions.MsuTypePaths); 
+            });
+        }
     }
 
     private void InitializeMsuTypes(MsuRandomizerInitializationRequest request, MsuAppSettings appSettings)

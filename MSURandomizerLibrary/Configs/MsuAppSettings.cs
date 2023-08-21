@@ -69,6 +69,16 @@ public class MsuAppSettings
     /// The name of an MSU type that should be forced to be used as output
     /// </summary>
     public string? ForcedMsuType { get; set; }
+    
+    /// <summary>
+    /// Where the MSU lookup cache file will be stored
+    /// </summary>
+    public string? MsuCachePath { get; set; }
+    
+    /// <summary>
+    /// The Windows title of the main MSU Window
+    /// </summary>
+    public string? MsuWindowTitle { get; set; }
 
     public string GetMsuName(string msuName)
     {

@@ -262,7 +262,11 @@ public class MsuDetailsService : IMsuDetailsService
                     artist: track.Artist,
                     album: track.Album,
                     url: track.Url
-                ));
+                )
+                {
+                    MsuName = trackInfo.Value.MsuName,
+                    MsuCreator = trackInfo.Value.MsuAuthor
+                });
             }
             // If there are alt tracks, we need to determine which file is which in case they've been swapped
             // manually or via script file
@@ -300,7 +304,11 @@ public class MsuDetailsService : IMsuDetailsService
                         album: subTrack.Album,
                         url: subTrack.Url,
                         isAlt: subTrack != track
-                    ));
+                    )
+                    {
+                        MsuName = trackInfo.Value.MsuName,
+                        MsuCreator = trackInfo.Value.MsuAuthor
+                    });
                 }
             }
         }

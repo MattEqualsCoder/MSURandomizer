@@ -58,6 +58,15 @@
                         Content="Options" />
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
                     <Button 
+                        Name="SelectMsusButtons"
+                        Margin="5 0 10 0" 
+                        MaxHeight="25" 
+                        VerticalAlignment="Bottom" 
+                        HorizontalAlignment="Right" 
+                        IsEnabled="{Binding CanGenerate}"
+                        Content="_Select MSU"
+                        Click="SelectMsusButtons_OnClick"/> 
+                    <Button 
                         Name="CancelButton"
                         Margin="5 0 10 0" 
                         MaxHeight="25" 
@@ -66,15 +75,6 @@
                         IsEnabled="{Binding CanGenerate}"
                         Content="_Cancel"
                         Click="CancelButton_OnClick"/>  
-                    <Button 
-                        Name="SelectMsusButtons"
-                        Margin="5 0 10 0" 
-                        MaxHeight="25" 
-                        VerticalAlignment="Bottom" 
-                        HorizontalAlignment="Right" 
-                        IsEnabled="{Binding CanGenerate}"
-                        Content="_Select MSU"
-                        Click="SelectMsusButtons_OnClick"/>  
                     <Button 
                         Name="RandomMsuButton"
                         Margin="5 0 10 0" 

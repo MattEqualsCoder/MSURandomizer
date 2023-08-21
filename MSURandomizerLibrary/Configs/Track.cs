@@ -34,6 +34,8 @@ public class Track
         Album = other.Album;
         IsAlt = other.IsAlt;
         Url = other.Url;
+        MsuName = other.MsuName;
+        MsuCreator = other.MsuCreator;
         OriginalPath = other.OriginalPath;
         OriginalMsu = other.OriginalMsu ?? other.Msu;
     }
@@ -66,10 +68,37 @@ public class Track
     {
         var artist = string.IsNullOrWhiteSpace(DisplayArtist) ? "" : $" by {DisplayArtist}";
         var album = string.IsNullOrWhiteSpace(DisplayAlbum) ? "" : $" from album {DisplayAlbum}";
-        if (!includeMsu)
+        if (!includeMsu || string.IsNullOrEmpty(MsuName))
             return $"{SongName}{artist}{album}";
         var creator = string.IsNullOrWhiteSpace(MsuCreator) ? "" : $" by {MsuCreator}";
         return $"{SongName}{artist}{album} from MSU Pack {MsuName}{creator}";
+    }
+
+    /// <summary>
+    /// Returns the MSU name and creator for the track
+    /// </summary>
+    /// <returns>A string of the MSU name and creator</returns>
+    public string? GetMsuName()
+    {
+        if (!string.IsNullOrEmpty(MsuName))
+        {
+            var creator = string.IsNullOrWhiteSpace(MsuCreator) ? "" : $" by {MsuCreator}";
+            return $"{MsuName}{creator}";
+        }
+        else if(OriginalMsu != null)
+        {
+            var creator = string.IsNullOrWhiteSpace(OriginalMsu.DisplayCreator) ? "" : $" by {OriginalMsu.DisplayCreator}";
+            return $"{OriginalMsu.DisplayName}{creator}";
+        }
+        else if (Msu != null)
+        {
+            var creator = string.IsNullOrWhiteSpace(Msu.DisplayCreator) ? "" : $" by {Msu.DisplayCreator}";
+            return $"{Msu.DisplayName}{creator}";
+        }
+        else
+        {
+            return null;
+        }
     }
     
     public bool MatchesAltOption(AltOptions option)
