@@ -1,9 +1,0 @@
-UserOptionsFilePath: "%LocalAppData%\\MSURandomizer\\msu-user-settings.yml"
-MsuTypeFilePath: "%LocalAppData%\\MSURandomizer\\Configs"
-ContinuousReshuffleSeconds: 60
-MsuWindowDisplayRandomButton: true
-MsuWindowDisplayShuffleButton: true
-MsuWindowDisplayContinuousButton: true
-MsuWindowDisplayOptionsButton: true
-MsuWindowDisplaySelectButton: false
-ForcedMsuType: 

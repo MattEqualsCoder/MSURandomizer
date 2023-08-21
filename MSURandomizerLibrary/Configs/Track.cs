@@ -1,15 +1,31 @@
 ﻿using System.Text.Json.Serialization;
-using YamlDotNet.Serialization;
 
 namespace MSURandomizerLibrary.Configs;
 
+/// <summary>
+/// Represents a single song under an MSU
+/// </summary>
 public class Track
 {
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public Track()
     {
         
     }
     
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="trackName">The name of the track in the MSU type</param>
+    /// <param name="number">The number of the track in the MSU type</param>
+    /// <param name="songName">The name of the song</param>
+    /// <param name="path">The path to the pcm file</param>
+    /// <param name="artist">The name of the artist(s)</param>
+    /// <param name="album">The name of the album</param>
+    /// <param name="url">Url to find the song</param>
+    /// <param name="isAlt">If this is an alt track or not</param>
     public Track(string trackName, int number, string songName, string path, string? artist = null,
         string? album = null, string? url = null, bool isAlt = false)
     {
@@ -24,6 +40,13 @@ public class Track
         OriginalPath = path;
     }
     
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="other">Track to copy details from</param>
+    /// <param name="number">Override for the track number in case of copying fallbacks</param>
+    /// <param name="path">The path to the pcm file</param>
+    /// <param name="trackName">Override for the track number in case of copying fallbacks</param>
     public Track(Track other, int? number = null, string? path = null, string? trackName = null)
     {
         TrackName = trackName ?? other.TrackName;
@@ -40,30 +63,106 @@ public class Track
         OriginalMsu = other.OriginalMsu ?? other.Msu;
     }
 
+    /// <summary>
+    /// The name of the track in the MSU type
+    /// </summary>
     public string TrackName { get; set; } = "";
+    
+    /// <summary>
+    /// The number of the track in the MSU type
+    /// </summary>
     public int Number { get; set; }
-    public string SongName { get; set; } = "";
+    
+    /// <summary>
+    /// The path to the original MSU the track is from
+    /// </summary>
     public string? MsuPath { get; set; }
+    
+    /// <summary>
+    /// The name of the original MSU the track is from
+    /// </summary>
     public string? MsuName { get; set; }
+    
+    /// <summary>
+    /// The creator of the original MSU the track is from
+    /// </summary>
     public string? MsuCreator { get; set; }
+    
+    /// <summary>
+    /// The path to the pcm file
+    /// </summary>
     public string Path { get; set; } = "";
+    
+    /// <summary>
+    /// The name of the song
+    /// </summary>
+    public string SongName { get; set; } = "";
+    
+    /// <summary>
+    /// The name of the artist(s) that created the song
+    /// </summary>
     public string? Artist { get; set; }
+    
+    /// <summary>
+    /// The name of the album the song is from
+    /// </summary>
     public string? Album { get; set; } 
+    
+    /// <summary>
+    /// Url to view/purchase/download the song from
+    /// </summary>
     public string? Url { get; set; }
+    
+    /// <summary>
+    /// Original path to the pcm file
+    /// </summary>
     public string? OriginalPath { get; set; }
+    
+    /// <summary>
+    /// If this is an alt track or not
+    /// </summary>
     public bool IsAlt { get; set; }
+    
+    /// <summary>
+    /// If this is copied from a fallback track
+    /// </summary>
     public bool IsCopied { get; set; }
+    
+    /// <summary>
+    /// The MSU this track is currently part of
+    /// </summary>
     [JsonIgnore]
     public Msu? Msu { get; set; }
+    
+    /// <summary>
+    /// The original MSU this track is from
+    /// </summary>
     [JsonIgnore]
     public Msu? OriginalMsu { get; set; }
+    
+    /// <summary>
+    /// The name of the artist(s) that created this song. If no artist is specified for the track, it pulls from the MSU
+    /// </summary>
     [JsonIgnore]
     public string? DisplayArtist => Artist ?? Msu?.Artist;
+    
+    /// <summary>
+    /// The name of the album the song is from. If no album is specified for the track, it pulls from the MSU
+    /// </summary>
     [JsonIgnore]
     public string? DisplayAlbum => Album ?? Msu?.Album;
+    
+    /// <summary>
+    /// The url to access the song. If no url is specified for the track, it pulls from the MSU
+    /// </summary>
     [JsonIgnore]
     public string? DisplayUrl => Url ?? Msu?.Url;
     
+    /// <summary>
+    /// Gets text to represent the song
+    /// </summary>
+    /// <param name="includeMsu">Include the details about the MSU that the track is from</param>
+    /// <returns>Text to display for the song</returns>
     public string GetDisplayText(bool includeMsu = true)
     {
         var artist = string.IsNullOrWhiteSpace(DisplayArtist) ? "" : $" by {DisplayArtist}";
@@ -101,6 +200,11 @@ public class Track
         }
     }
     
+    /// <summary>
+    /// If this track matches a user's alt track options
+    /// </summary>
+    /// <param name="option">The user selected option</param>
+    /// <returns>True if matches, false otherwise</returns>
     public bool MatchesAltOption(AltOptions option)
     {
         if (option == AltOptions.Disable)

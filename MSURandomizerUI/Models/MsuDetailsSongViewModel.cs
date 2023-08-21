@@ -2,7 +2,7 @@
 
 namespace MSURandomizerUI.Models;
 
-public class MsuDetailsSongViewModel
+internal class MsuDetailsSongViewModel
 {
     public MsuDetailsSongViewModel(Track track)
     {

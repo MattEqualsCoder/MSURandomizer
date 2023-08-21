@@ -7,7 +7,7 @@
         ResizeMode="NoResize"
         Closed="Window_Closed"
         Loaded="MSUContinuousShuffleWindow_OnLoaded"
-        Title="Continuous Reshuffle" Height="150" Width="250">
+        Title="Continuous Reshuffle" Height="150" Width="250" x:ClassModifier="internal">
     <Window.Resources>
         <ResourceDictionary Source="../Themes/Generic.xaml" />
     </Window.Resources>

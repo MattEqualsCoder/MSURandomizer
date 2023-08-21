@@ -10,7 +10,7 @@ using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerUI.Models;
 
-public sealed class MsuListViewModel : INotifyPropertyChanged
+internal sealed class MsuListViewModel : INotifyPropertyChanged
 {
     public MsuListViewModel()
     {

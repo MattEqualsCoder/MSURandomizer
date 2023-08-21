@@ -3,8 +3,16 @@ using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibrary;
 
+/// <summary>
+/// ServiceCollection extension for adding the MSU Randomizer services
+/// </summary>
 public static class MsuRandomizerServiceExtensions
 {
+    /// <summary>
+    /// Adds all required services for the MSU randomizer to the service collection
+    /// </summary>
+    /// <param name="services">The service collection object</param>
+    /// <returns>The service collection object</returns>
     public static IServiceCollection AddMsuRandomizerServices(this IServiceCollection services)
     {
         services.AddSingleton<IMsuUserOptionsService, MsuUserOptionsService>();

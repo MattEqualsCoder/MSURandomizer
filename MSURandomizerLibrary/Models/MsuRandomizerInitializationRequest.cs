@@ -2,6 +2,9 @@
 
 namespace MSURandomizerLibrary.Models;
 
+/// <summary>
+/// Request for the MSURandomizerInitializationService for setting up the MSU Randomizer Library
+/// </summary>
 public class MsuRandomizerInitializationRequest
 {
     /// <summary>

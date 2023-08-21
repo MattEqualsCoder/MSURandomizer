@@ -13,14 +13,14 @@ public interface IMsuAppSettingsService
     /// </summary>
     /// <param name="stream">The stream to read the settings from</param>
     /// <returns>The MSU App Settings</returns>
-    public MsuAppSettings Initialize(Stream? stream);
+    public MsuAppSettings Initialize(Stream stream);
     
     /// <summary>
     /// Initializes the MSU Randomizer App Settings
     /// </summary>
     /// <param name="path">The path of the file to read the settings from</param>
     /// <returns>The MSU App Settings</returns>
-    public MsuAppSettings Initialize(string path);
+    public MsuAppSettings Initialize(string? path);
 
     /// <summary>
     /// The loaded App Settings

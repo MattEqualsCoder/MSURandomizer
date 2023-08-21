@@ -2,7 +2,7 @@
 
 namespace MSURandomizerLibrary.Configs;
 
-public class TracksJson
+internal class TracksJson
 {
     [JsonPropertyName("name")]
     public string? Name { get; set; }
