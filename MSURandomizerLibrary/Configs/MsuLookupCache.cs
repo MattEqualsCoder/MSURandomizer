@@ -4,6 +4,7 @@ namespace MSURandomizerLibrary.Configs;
 
 internal class MsuLookupCache
 {
+    public int? CacheVersion { get; set; }
     public ConcurrentDictionary<string, MsuLookupCacheEntry> Data { get; set; } = new();
 }
 

@@ -23,7 +23,7 @@ public class MsuTypeTrack
     /// <summary>
     /// If there is another track this one goes along with with creating shuffled MSUs
     /// </summary>
-    public int PairedTrack { get; init; }
+    public int? PairedTrack { get; set; }
     
     /// <summary>
     /// If this is a track that's part of extended MSU support
