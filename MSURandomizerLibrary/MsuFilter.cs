@@ -23,5 +23,11 @@ public enum MsuFilter
     /// If all MSUs should be displayed
     /// </summary>
     [Description("All")]
-    All
+    All,
+    
+    /// <summary>
+    /// If favorite MSUs should be displayed
+    /// </summary>
+    [Description("Favorite")]
+    Favorite,
 }

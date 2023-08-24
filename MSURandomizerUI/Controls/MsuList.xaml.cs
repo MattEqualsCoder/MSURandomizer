@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using FontAwesome.WPF;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Services;
 using MSURandomizerUI.Models;
 
 namespace MSURandomizerUI.Controls;
@@ -18,14 +21,17 @@ public partial class MsuList : UserControl
 {
     private readonly IMsuUiFactory _msuUiFactory;
     private readonly List<string> _displayedErrors = new();
+    private readonly IMsuUserOptionsService _msuUserOptionsService;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="msuUiFactory"></param>
-    public MsuList(IMsuUiFactory msuUiFactory)
+    /// <param name="msuUserOptionsService"></param>
+    public MsuList(IMsuUiFactory msuUiFactory, IMsuUserOptionsService msuUserOptionsService)
     {
         _msuUiFactory = msuUiFactory;
+        _msuUserOptionsService = msuUserOptionsService;
         DataContext = new MsuListViewModel();
         InitializeComponent();
     }
@@ -66,7 +72,7 @@ public partial class MsuList : UserControl
         }
 
         MsuListView.SelectionMode = DataContext.SelectionMode;
-        MsuListView.ItemsSource = DataContext.AvailableMsus.OrderBy(x => x.Name);
+        MsuListView.ItemsSource = DataContext.AvailableMsus.OrderBy(x => !x.Settings.IsFavorite).ThenBy(x => x.Name);
         MsuListView.UnselectAll();
         if (SelectionMode == SelectionMode.Multiple)
         {
@@ -193,9 +199,40 @@ public partial class MsuList : UserControl
 
         _msuUiFactory.OpenMsuDetailsWindow(msu);
     }
+    
+    private void OpenFolderMenuItem_OnClick(object sender, RoutedEventArgs e)
+    { 
+        if (sender is not MenuItem { Tag: Msu msu })
+            return;
+
+        if (!File.Exists(msu.Path)) return;
+        var directory = new FileInfo(msu.Path).DirectoryName;
+        if (Directory.Exists(directory))
+            Process.Start("explorer.exe", directory);
+    }
 
     private void MsuListView_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
         e.Handled = true;
+    }
+
+    private void FavoriteBase_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: Msu msu, Content: StackPanel stackPanel} button)
+            return;
+        msu.Settings.IsFavorite = !msu.Settings.IsFavorite;
+        foreach (var imageAwesome in stackPanel.Children.Cast<ImageAwesome>())
+        {
+            var tag = imageAwesome.Tag as string;
+            if (tag == "True" && msu.Settings.IsFavorite || tag == "False" && !msu.Settings.IsFavorite)
+            {
+                imageAwesome.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                imageAwesome.Visibility = Visibility.Collapsed;
+            }
+        }
+        _msuUserOptionsService.SaveMsuSettings(msu);
     }
 }

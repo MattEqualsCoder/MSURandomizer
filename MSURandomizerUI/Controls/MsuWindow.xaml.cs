@@ -51,7 +51,7 @@ public partial class MsuWindow : Window
         _logger = logger;
         InitializeComponent();
 
-        MsuList = new MsuList(_msuUiFactory);
+        MsuList = new MsuList(_msuUiFactory, msuUserOptionsService);
     }
     
     /// <summary>

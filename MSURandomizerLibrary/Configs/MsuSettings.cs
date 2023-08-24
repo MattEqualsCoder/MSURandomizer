@@ -50,6 +50,17 @@ public class MsuSettings
     public string? Creator { get; set; }
     
     /// <summary>
+    /// If this is a favorite or not
+    /// </summary>
+    public bool IsFavorite { get; set; }
+
+    /// <summary>
+    /// If this is not a favorite
+    /// </summary>
+    [YamlIgnore]
+    public bool IsNotFavorite => IsFavorite != true;
+    
+    /// <summary>
     /// The MSU Type object that was specified by the user
     /// </summary>
     [YamlIgnore]
@@ -62,5 +73,6 @@ public class MsuSettings
     public bool HasSettings => !string.IsNullOrEmpty(MsuTypeName) 
                                  || !string.IsNullOrEmpty(Name) 
                                  || !string.IsNullOrEmpty(Creator) 
-                                 || AltOption != AltOptions.Randomize;
+                                 || AltOption != AltOptions.Randomize
+                                 || IsFavorite;
 }
