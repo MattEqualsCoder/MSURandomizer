@@ -2,7 +2,7 @@
 
 A multi game MSU randomizer originally created for the [SMZ3 Cas' Randomizer](https://github.com/Vivelin/SMZ3Randomizer). Select which MSUs you want as possibilities, then either have it shuffle them all together or have it pick a random one for you!
 
-![image](https://github.com/MattEqualsCoder/MSURandomizer/assets/63823784/aee49149-3148-43c0-bd03-460b24e958d1)
+![image](https://github.com/MattEqualsCoder/MSURandomizer/assets/63823784/ee1f36bb-e0cb-4c28-b1e1-fbb08d8caa9b)
 
 ## Features
 
@@ -14,6 +14,7 @@ A multi game MSU randomizer originally created for the [SMZ3 Cas' Randomizer](ht
 - **Convert MSUs of different types** - Combine ALttP and Super Metroid MSUs into a single SMZ3 MSU, or use an SMZ3 MSU for ALttP or Super Metroid! Or, if you have an old SMZ3 MSU built around the old Conn patch or the original SMZ3 Cas' MSU support, let the MSU Randomizer update them to match the new built-in MSU support for SMZ3.
 - **Compile detailed MSU information** - MSU providers can create [YAML files](Docs/yaml.md) to package along with their MSUs. This will allow the MSU Randomizer to pull information about the MSU such as its name and creator as well as track details such as song names and artists, then create a YAML file with the outputted MSU details so that you (or any application) can view the songs picked.
 - **Alternative track support** - Sometimes you just have too many ideas for a song! MSU creators can package in alternative pcm files for tracks which will be picked up and randomly selected instead of the default ones. The YAML detail files even allows for adding information for each of the alt tracks so that the MSU Randomizer will know which one was picked and save the relevant info to the output YAML file.
+- **Favorite MSU packs** - Favorite MSU packs so that they appear at the top of the list. You can also filter on just the MSU packs you've favorited!
 
 ## Setup
 
