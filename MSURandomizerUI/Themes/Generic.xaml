@@ -63,6 +63,26 @@
                         Value="0,0,0,3" />
         </Style>
         
+        <Style x:Key="MyButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Template">
+                        <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                        <Grid Background="{TemplateBinding Background}">
+                                                <ContentPresenter />
+                                        </Grid>
+                                </ControlTemplate>
+                        </Setter.Value>
+                </Setter>
+                
+                <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                        </Trigger>
+                </Style.Triggers>
+
+        </Style>
+        
         <controls:BoolToVisibilityConverter x:Key="VisibilityConverter" />
         <controls:EnumDescriptionConverter x:Key="EnumConverter" />
 

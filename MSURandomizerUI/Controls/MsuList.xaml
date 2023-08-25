@@ -6,6 +6,7 @@
              xmlns:msuRandomizerLibrary="clr-namespace:MSURandomizerLibrary"
              xmlns:models="clr-namespace:MSURandomizerLibrary.Models"
              xmlns:models1="clr-namespace:MSURandomizerUI.Models"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Loaded="MsuList_OnLoaded"
@@ -13,6 +14,9 @@
     <UserControl.DataContext>
         <models1:MsuListViewModel></models1:MsuListViewModel>
     </UserControl.DataContext>
+    <UserControl.Resources>
+        <ResourceDictionary Source="../Themes/Generic.xaml" />
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
@@ -27,33 +31,47 @@
         >
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Vertical" Margin="3">
-                        <StackPanel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Open _Details" Tag="{Binding }" Click="MenuItem_OnClick"></MenuItem>
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
-                        <Grid Margin="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding FullName}" TextWrapping="NoWrap" Grid.Column="0" TextAlignment="Left"/>
-                            <TextBlock Text="{Binding MsuTypeName}" TextWrapping="NoWrap" Grid.Column="1" TextAlignment="Right"/>
-                        </Grid>
-                        <Grid Margin="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Path}" TextWrapping="NoWrap" Grid.Column="0" FontSize="10" Foreground="DimGray" TextAlignment="Left"/>
-                            <StackPanel Orientation="Horizontal" Grid.Column="1" >
-                                <TextBlock Text="{Binding NumUniqueTracks}" TextWrapping="NoWrap" FontSize="10" Foreground="DimGray" TextAlignment="Right"/>
-                                <TextBlock Text=" Tracks" TextWrapping="NoWrap" FontSize="10" Foreground="DimGray" TextAlignment="Right"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Margin="0 0 5 0" BorderThickness="0" x:Name="FavoriteButton"
+                                Style="{StaticResource MyButtonStyle}" Background="Transparent" Click="FavoriteBase_OnClick" Tag="{Binding}">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:ImageAwesome Icon="Star" VerticalAlignment="Center" Tag="False" HorizontalAlignment="Center" Width="15" Foreground="Gray" Opacity="0.5" Visibility="{Binding Settings.IsNotFavorite, Converter={StaticResource VisibilityConverter}}" />
+                                <fa:ImageAwesome Icon="Star" VerticalAlignment="Center" Tag="True" HorizontalAlignment="Center" Width="15" Foreground="Goldenrod" Visibility="{Binding Settings.IsFavorite, Converter={StaticResource VisibilityConverter}}" />    
                             </StackPanel>
-                            
-                        </Grid>
-                    </StackPanel>
+                        </Button>
+                        <StackPanel Grid.Column="1" Orientation="Vertical" Margin="3">
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Open _Details" Tag="{Binding }" Click="MenuItem_OnClick"></MenuItem>
+                                    <MenuItem Header="Open _Folder" Tag="{Binding }" Click="OpenFolderMenuItem_OnClick"></MenuItem>
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                            <Grid Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding FullName}" TextWrapping="NoWrap" Grid.Column="0" TextAlignment="Left"/>
+                                <TextBlock Text="{Binding MsuTypeName}" TextWrapping="NoWrap" Grid.Column="1" TextAlignment="Right"/>
+                            </Grid>
+                            <Grid Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding AbbreviatedPath}" TextWrapping="NoWrap" Grid.Column="0" FontSize="10" Foreground="DimGray" TextAlignment="Left"/>
+                                <StackPanel Orientation="Horizontal" Grid.Column="1" >
+                                    <TextBlock Text="{Binding NumUniqueTracks}" TextWrapping="NoWrap" FontSize="10" Foreground="DimGray" TextAlignment="Right"/>
+                                    <TextBlock Text=" Tracks" TextWrapping="NoWrap" FontSize="10" Foreground="DimGray" TextAlignment="Right"/>
+                                </StackPanel>
+                                
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.ItemContainerStyle>

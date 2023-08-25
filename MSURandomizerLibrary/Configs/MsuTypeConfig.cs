@@ -133,7 +133,7 @@ internal class MsuTypeConfigTrack
     public bool IsIgnored { get; set; }
     
     [JsonPropertyName("pair")]
-    public int PairedTrack { get; set; }
+    public int? PairedTrack { get; set; }
     
     [JsonIgnore]
     public bool IsExtended { get; set; }

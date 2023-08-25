@@ -162,6 +162,46 @@ public class MsuSelectorServiceTests
     }
     
     [Test]
+    public void PairedTracksMsuTest()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 2) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+            },
+            out var msuTypes, out var msus, new Dictionary<int, int>() { { 1, 2 }});
+
+        for (var i = 0; i < 10; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null
+            });
+
+            Assert.That(response.Msu!.Tracks.First().MsuName == response.Msu!.Tracks.Last().MsuName);
+        }
+        
+    }
+    
+    [Test]
     public void ConvertMsusTest()
     {
         var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
@@ -240,12 +280,12 @@ public class MsuSelectorServiceTests
     }
 
 
-    private MsuSelectorService CreateMsuSelectorService(List<List<(int, int)>> msuTypeTracks, List<List<(int, int)>> msuTracks, out ICollection<MsuType> msuTypes, out ICollection<Msu> msus)
+    private MsuSelectorService CreateMsuSelectorService(List<List<(int, int)>> msuTypeTracks, List<List<(int, int)>> msuTracks, out ICollection<MsuType> msuTypes, out ICollection<Msu> msus, Dictionary<int, int>? pairs = null)
     {
         var logger = TestHelpers.CreateMockLogger<MsuSelectorService>();
         var lookupLogger = TestHelpers.CreateMockLogger<MsuLookupService>();
         var msuDetailsService = TestHelpers.CreateMockMsuDetailsService(null, null);
-        var msuTypeService = TestHelpers.CreateMockMsuTypeServiceMulti(msuTypeTracks, out var generatedMsuTypes);
+        var msuTypeService = TestHelpers.CreateMockMsuTypeServiceMulti(msuTypeTracks, out var generatedMsuTypes, pairs);
         var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
         var msuCacheService = TestHelpers.CreateMockMsuCacheService();
 

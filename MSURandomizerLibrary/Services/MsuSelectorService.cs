@@ -102,7 +102,7 @@ internal class MsuSelectorService : IMsuSelectorService
 
             if (msuTypeTrack.PairedTrack > 0 && selectedTracks.All(x => x.Number != msuTypeTrack.PairedTrack))
             {
-                var pairedTrack = tracks.Where(x => x.Number == msuTypeTrack.PairedTrack && x.MsuPath == track.MsuPath).Random(_random);
+                var pairedTrack = tracks.Where(x => x.Number == msuTypeTrack.PairedTrack && x.OriginalMsu == track.OriginalMsu).Random(_random);
                 if (pairedTrack != null)
                 {
                     pairedTrack.MsuName = pairedTrack.OriginalMsu?.DisplayName;

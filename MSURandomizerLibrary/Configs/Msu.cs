@@ -102,7 +102,7 @@ public class Msu
     /// The full path to the MSU
     /// </summary>
     public string Path { get; set; } = "";
-    
+
     /// <summary>
     /// The list of tracks in this MSU
     /// </summary>
@@ -155,7 +155,13 @@ public class Msu
     /// </summary>
     [JsonIgnore]
     public int NumUniqueTracks => Tracks.Select(x => x.Path).Distinct().Count();
-
+    
+    /// <summary>
+    /// The parent folder and msu file
+    /// </summary>
+    [JsonIgnore]
+    public string AbbreviatedPath => GetAbbreviatedPath();
+    
     /// <summary>
     /// If the MSU matches filter settings
     /// </summary>
@@ -166,6 +172,7 @@ public class Msu
     public bool MatchesFilter(MsuFilter filter, MsuType type, string? path)
     {
         return (filter == MsuFilter.All ||
+                (filter == MsuFilter.Favorite && Settings.IsFavorite) ||
                 (filter == MsuFilter.Compatible && SelectedMsuType?.IsCompatibleWith(type) == true) ||
                 (filter == MsuFilter.Exact && SelectedMsuType?.IsExactMatchWith(type) == true)) &&
                (string.IsNullOrEmpty(path) || Path.StartsWith(path)) &&
@@ -201,5 +208,12 @@ public class Msu
         }
 
         return Tracks.Where(x => x.Number == typeTrack?.Number);
+    }
+    
+    private string GetAbbreviatedPath()
+    {
+        var fileInfo = new FileInfo(Path);
+        var directory = fileInfo.Directory;
+        return $"{directory?.Name}{System.IO.Path.DirectorySeparatorChar}{fileInfo.Name}";
     }
 }

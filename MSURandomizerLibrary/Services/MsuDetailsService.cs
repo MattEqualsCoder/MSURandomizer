@@ -232,7 +232,12 @@ internal class MsuDetailsService : IMsuDetailsService
             var trackName = trackInfo.Key;
             var track = trackInfo.Value;
             var msuTypeTrack = msuType.Tracks.FirstOrDefault(x =>
-                x.Number == track.TrackNumber || x.YamlName == trackName || x.YamlNameSecondary == trackName);
+                x.YamlName == trackName || x.YamlNameSecondary == trackName);
+
+            if (msuTypeTrack == null && track.TrackNumber != null)
+            {
+                msuTypeTrack = msuType.Tracks.FirstOrDefault(x => x.Number == track.TrackNumber);
+            }
 
             if (msuTypeTrack == null)
             {
