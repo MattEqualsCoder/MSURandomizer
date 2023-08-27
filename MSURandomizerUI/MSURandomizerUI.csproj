@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>MattEqualsCoder.MSURandomizer.UI</PackageId>
-    <Version>1.1.3</Version>
+    <Version>1.1.4</Version>
     <PackageProjectUrl>https://github.com/MattEqualsCoder/MSURandomizer</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MattEqualsCoder/MSURandomizer</RepositoryUrl>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

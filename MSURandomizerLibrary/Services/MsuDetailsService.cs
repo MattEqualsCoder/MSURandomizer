@@ -46,7 +46,7 @@ internal class MsuDetailsService : IMsuDetailsService
         {
             PackName = msu.Name,
             PackAuthor = msu.Creator,
-            PackVersion = "1",
+            PackVersion = string.IsNullOrEmpty(msu.Version) ? "1" : msu.Version,
             Album = msu.Album,
             Artist = msu.Artist,
             Url = msu.Url,
