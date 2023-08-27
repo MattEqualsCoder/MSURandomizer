@@ -148,13 +148,38 @@ internal class MsuDetailsService : IMsuDetailsService
         {
             var altOutput = new MsuDetailsTrack()
             {
-                Name = altTrack.SongName,
-                Artist = altTrack.DisplayArtist,
-                Album = altTrack.DisplayAlbum,
-                Url = altTrack.DisplayUrl,
-                MsuAuthor = altTrack.MsuCreator,
-                MsuName = altTrack.MsuName
+                Name = altTrack.SongName
             };
+            
+            if (!string.IsNullOrEmpty(altTrack.OriginalMsu?.DisplayCreator) && altTrack.OriginalMsu?.DisplayCreator != msu.DisplayCreator)
+            {
+                altOutput.MsuAuthor = altTrack.OriginalMsu?.DisplayCreator;
+            }
+        
+            if (!string.IsNullOrEmpty(altTrack.OriginalMsu?.DisplayName) && altTrack.OriginalMsu?.DisplayName != msu.DisplayName)
+            {
+                altOutput.MsuName = altTrack.OriginalMsu?.DisplayName;
+            }
+        
+            if (!string.IsNullOrEmpty(altTrack.Artist) && altTrack.Artist != msu.Artist)
+            {
+                altOutput.Artist = altTrack.Artist;
+            }
+
+            if (!string.IsNullOrEmpty(altTrack.Artist) && altTrack.Artist != msu.Artist)
+            {
+                altOutput.Artist = altTrack.Artist;
+            }
+        
+            if (!string.IsNullOrEmpty(altTrack.Album) && altTrack.Album != msu.Album)
+            {
+                altOutput.Album = altTrack.Album;
+            }
+        
+            if (!string.IsNullOrEmpty(altTrack.Url) && altTrack.Url != msu.Url)
+            {
+                altOutput.Url = altTrack.Url;
+            }
             
             if (!altOutput.CalculateAltInfo(msu.Path, altTrack.Path))
             {
