@@ -291,7 +291,8 @@ internal class MsuDetailsService : IMsuDetailsService
                     path: pcmFilePath,
                     artist: track.Artist,
                     album: track.Album,
-                    url: track.Url
+                    url: track.Url,
+                    isBaseFile: true
                 )
                 {
                     MsuName = trackInfo.Value.MsuName,
@@ -333,7 +334,8 @@ internal class MsuDetailsService : IMsuDetailsService
                         artist: subTrack.Artist,
                         album: subTrack.Album,
                         url: subTrack.Url,
-                        isAlt: subTrack != track
+                        isAlt: subTrack != track,
+                        isBaseFile: path == basePcm
                     )
                     {
                         MsuName = trackInfo.Value.MsuName,

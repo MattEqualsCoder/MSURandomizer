@@ -34,7 +34,7 @@ internal class MsuSelectorService : IMsuSelectorService
         var validateResponse = ValidateRequest(request, validateSingleMsu: true, validateMsuType: true, validateOutputPath: true);
         if (validateResponse != null) return validateResponse;
         var convertedMsu = InternalConvertMsu(request.Msu!, request.OutputMsuType!);
-        ApplyTrackPreferences(convertedMsu);
+        convertedMsu.Tracks = convertedMsu.Tracks.Where(x => x.IsBaseFile).ToList();
         return SaveMsuInternal(convertedMsu, request.OutputPath!, null, request.EmptyFolder, request.OpenFolder!.Value);
     }
 
