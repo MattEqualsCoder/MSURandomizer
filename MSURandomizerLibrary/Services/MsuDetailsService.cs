@@ -46,7 +46,7 @@ internal class MsuDetailsService : IMsuDetailsService
         {
             PackName = msu.Name,
             PackAuthor = msu.Creator,
-            PackVersion = "1",
+            PackVersion = string.IsNullOrEmpty(msu.Version) ? "1" : msu.Version,
             Album = msu.Album,
             Artist = msu.Artist,
             Url = msu.Url,
@@ -148,13 +148,38 @@ internal class MsuDetailsService : IMsuDetailsService
         {
             var altOutput = new MsuDetailsTrack()
             {
-                Name = altTrack.SongName,
-                Artist = altTrack.DisplayArtist,
-                Album = altTrack.DisplayAlbum,
-                Url = altTrack.DisplayUrl,
-                MsuAuthor = altTrack.MsuCreator,
-                MsuName = altTrack.MsuName
+                Name = altTrack.SongName
             };
+            
+            if (!string.IsNullOrEmpty(altTrack.OriginalMsu?.DisplayCreator) && altTrack.OriginalMsu?.DisplayCreator != msu.DisplayCreator)
+            {
+                altOutput.MsuAuthor = altTrack.OriginalMsu?.DisplayCreator;
+            }
+        
+            if (!string.IsNullOrEmpty(altTrack.OriginalMsu?.DisplayName) && altTrack.OriginalMsu?.DisplayName != msu.DisplayName)
+            {
+                altOutput.MsuName = altTrack.OriginalMsu?.DisplayName;
+            }
+        
+            if (!string.IsNullOrEmpty(altTrack.Artist) && altTrack.Artist != msu.Artist)
+            {
+                altOutput.Artist = altTrack.Artist;
+            }
+
+            if (!string.IsNullOrEmpty(altTrack.Artist) && altTrack.Artist != msu.Artist)
+            {
+                altOutput.Artist = altTrack.Artist;
+            }
+        
+            if (!string.IsNullOrEmpty(altTrack.Album) && altTrack.Album != msu.Album)
+            {
+                altOutput.Album = altTrack.Album;
+            }
+        
+            if (!string.IsNullOrEmpty(altTrack.Url) && altTrack.Url != msu.Url)
+            {
+                altOutput.Url = altTrack.Url;
+            }
             
             if (!altOutput.CalculateAltInfo(msu.Path, altTrack.Path))
             {
@@ -266,7 +291,8 @@ internal class MsuDetailsService : IMsuDetailsService
                     path: pcmFilePath,
                     artist: track.Artist,
                     album: track.Album,
-                    url: track.Url
+                    url: track.Url,
+                    isBaseFile: true
                 )
                 {
                     MsuName = trackInfo.Value.MsuName,
@@ -308,7 +334,8 @@ internal class MsuDetailsService : IMsuDetailsService
                         artist: subTrack.Artist,
                         album: subTrack.Album,
                         url: subTrack.Url,
-                        isAlt: subTrack != track
+                        isAlt: subTrack != track,
+                        isBaseFile: path == basePcm
                     )
                     {
                         MsuName = trackInfo.Value.MsuName,

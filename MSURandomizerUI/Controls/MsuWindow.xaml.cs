@@ -206,8 +206,8 @@ public partial class MsuWindow : Window
             RandomMsuButton.Content = "_Select MSU";
             SelectMsusButtons.IsEnabled = true;
             RandomMsuButton.IsEnabled = true;
-            ShuffledMsuButton.IsEnabled = false;
-            ContinuousShuffledMsuButton.IsEnabled = false;
+            ShuffledMsuButton.IsEnabled = true;
+            ContinuousShuffledMsuButton.IsEnabled = true;
             SelectMsusButtons.Content = "_Select MSU";
         }
         else
@@ -234,13 +234,27 @@ public partial class MsuWindow : Window
         
         DataContext.SelectedMsus = msus.Select(x => x.Path).ToList();
         _msuUserOptionsService.Save();
-        var response = _msuSelectorService.PickRandomMsu(new MsuSelectorRequest()
+
+        if (DataContext.SelectedMsus.Count > 1)
         {
-            EmptyFolder = true,
-            Msus = msus,
-            OutputMsuType = msuType
-        });
-        ShowSelectorResponseMessage(response);
+            var response = _msuSelectorService.PickRandomMsu(new MsuSelectorRequest()
+            {
+                EmptyFolder = true,
+                Msus = msus,
+                OutputMsuType = msuType
+            });
+            ShowSelectorResponseMessage(response);
+        }
+        else
+        {
+            var response = _msuSelectorService.AssignMsu(new MsuSelectorRequest()
+            {
+                EmptyFolder = true,
+                Msu = msus.First(),
+                OutputMsuType = msuType
+            });
+            ShowSelectorResponseMessage(response);
+        }
     }
 
     /// <summary>

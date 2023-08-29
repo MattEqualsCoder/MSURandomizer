@@ -27,7 +27,9 @@ internal sealed class MsuListViewModel : INotifyPropertyChanged
     }
 
     public IReadOnlyCollection<Msu> AvailableMsus => _msuType == null ? new List<Msu>() :
-        _allMsus.Where(x => _msuFilter == null || x.MatchesFilter(_msuFilter.Value, _msuType, _basePath)).ToList();
+        _allMsus.Where(x => _msuFilter == null || x.MatchesFilter(_msuFilter.Value, _msuType, _basePath))
+                .Where(x => x.NumUniqueTracks > x.MsuType?.RequiredTrackNumbers.Count / 5)
+                .ToList();
 
     private IReadOnlyCollection<Msu> _allMsus = new List<Msu>();
 

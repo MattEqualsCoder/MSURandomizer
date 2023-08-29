@@ -27,7 +27,7 @@ public class Track
     /// <param name="url">Url to find the song</param>
     /// <param name="isAlt">If this is an alt track or not</param>
     public Track(string trackName, int number, string songName, string path, string? artist = null,
-        string? album = null, string? url = null, bool isAlt = false)
+        string? album = null, string? url = null, bool isAlt = false, bool isBaseFile = false)
     {
         TrackName = trackName;
         Number = number;
@@ -38,6 +38,7 @@ public class Track
         Url = url;
         IsAlt = isAlt;
         OriginalPath = path;
+        IsBaseFile = isBaseFile;
     }
     
     /// <summary>
@@ -56,6 +57,7 @@ public class Track
         Artist = other.Artist;
         Album = other.Album;
         IsAlt = other.IsAlt;
+        IsBaseFile = other.IsBaseFile;
         Url = other.Url;
         MsuName = other.MsuName;
         MsuCreator = other.MsuCreator;
@@ -127,6 +129,11 @@ public class Track
     /// If this is copied from a fallback track
     /// </summary>
     public bool IsCopied { get; set; }
+    
+    /// <summary>
+    /// If this is the current base pcm file, regardless of if it is an alt track or not
+    /// </summary>
+    public bool IsBaseFile { get; set; }
     
     /// <summary>
     /// The MSU this track is currently part of
@@ -207,7 +214,9 @@ public class Track
     /// <returns>True if matches, false otherwise</returns>
     public bool MatchesAltOption(AltOptions option)
     {
-        if (option == AltOptions.Disable)
+        if (option == AltOptions.LeaveAlone)
+            return IsBaseFile;
+        else if (option == AltOptions.Disable)
             return !IsAlt;
         else if (option == AltOptions.PreferAlt)
             return IsAlt;

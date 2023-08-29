@@ -229,7 +229,8 @@ internal class MsuLookupService : IMsuLookupService
                     trackName: $"Track #{x}",
                     number: int.Parse(x),
                     songName: $"Track #{x}",
-                    path: $"{directory}{Path.DirectorySeparatorChar}{baseName}-{x}.pcm"
+                    path: $"{directory}{Path.DirectorySeparatorChar}{baseName}-{x}.pcm",
+                    isBaseFile: true
                 ));
 
         return new Msu(
@@ -292,7 +293,8 @@ internal class MsuLookupService : IMsuLookupService
                 trackName: msuType.Tracks.FirstOrDefault(x => x.Number == track.Number)?.Name ?? $"Track #{trackNumber}",
                 number: track.Number,
                 songName: $"Track #{trackNumber}",
-                path: path
+                path: path,
+                isBaseFile: true
             ){
                 IsCopied = trackNumber != track.Number
             });
@@ -310,7 +312,8 @@ internal class MsuLookupService : IMsuLookupService
                     number: track.Number,
                     songName: $"Track #{trackNumber} (alt {altIndex})",
                     path: alt,
-                    isAlt: true
+                    isAlt: true,
+                    isBaseFile: false
                 ){
                     IsCopied = trackNumber != track.Number
                 });

@@ -53,7 +53,33 @@ public class MsuEndtoEndTests
             OutputPath = Path.Combine(TestHelpers.MsuTestFolder, "output", "output-msu.msu")
         });
 
-        VerifyResponse(response, msuType!, addSongInfo, true, false, true);
+        VerifyResponse(response, msuType!, addSongInfo, true, false, true, false);
+    }
+    
+    [Test]
+    public void SingleShuffledMsuTest()
+    {
+        var msuType = _msuTypeService.GetMsuType("A Link to the Past");
+        Assert.IsNotNull(msuType);
+
+        var msuCount = 1;
+        var altCount = 2;
+        var addSongInfo = true;
+        
+        TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
+        CreateMsus(msuType!, msuCount, altCount, addSongInfo);
+
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
+        VerifyMsus(msus, msuCount, altCount, addSongInfo);
+
+        var response = _msuSelectorService.CreateShuffledMsu(new MsuSelectorRequest()
+        {
+            Msus = msus.ToList(),
+            OutputMsuType = msuType,
+            OutputPath = Path.Combine(TestHelpers.MsuTestFolder, "output", "output-msu.msu")
+        });
+
+        VerifyResponse(response, msuType!, addSongInfo, true, false, false, false);
     }
     
     [Test]
@@ -79,7 +105,7 @@ public class MsuEndtoEndTests
             OutputPath = Path.Combine(TestHelpers.MsuTestFolder, "output", "output-msu.msu")
         });
 
-        VerifyResponse(response, msuType!, addSongInfo, false, false, false);
+        VerifyResponse(response, msuType!, addSongInfo, false, false, false, true);
     }
     
     [Test]
@@ -105,7 +131,7 @@ public class MsuEndtoEndTests
             OutputPath = Path.Combine(TestHelpers.MsuTestFolder, "output", "output-msu.msu")
         });
 
-        VerifyResponse(response, msuType!, addSongInfo, false, false, false);
+        VerifyResponse(response, msuType!, addSongInfo, false, false, false, false);
     }
     
     [Test]
@@ -130,10 +156,10 @@ public class MsuEndtoEndTests
             OutputPath = Path.Combine(TestHelpers.MsuTestFolder, "output", "output-msu.msu")
         });
 
-        VerifyResponse(response, msuType!, addSongInfo, false, true, false);
+        VerifyResponse(response, msuType!, addSongInfo, false, true, false, false);
     }
 
-    private void VerifyResponse(MsuSelectorResponse response, MsuType msuType, bool addSongInfo, bool shouldhaveMsuDetails, bool shouldHaveAlts, bool isShuffled)
+    private void VerifyResponse(MsuSelectorResponse response, MsuType msuType, bool addSongInfo, bool shouldhaveMsuDetails, bool shouldHaveAlts, bool isShuffled, bool allBaseTracks)
     {
         Assert.That(response.Msu, Is.Not.Null);
 
@@ -149,8 +175,15 @@ public class MsuEndtoEndTests
         var yamlText = File.ReadAllText(basePath + ".yml");
         var details = deserializer.Deserialize<MsuDetails>(yamlText);
         Assert.That(details, Is.Not.Null);
-        
-        Assert.That(details.Tracks!.Any(x => x.Value.Name!.Contains("Alt")));
+
+        if (allBaseTracks)
+        {
+            Assert.That(details.Tracks!.All(x => !x.Value.Name!.Contains("Alt")));
+        }
+        else
+        {
+            Assert.That(details.Tracks!.Any(x => x.Value.Name!.Contains("Alt")));    
+        }
         
         if (!isShuffled && !addSongInfo)
         {
