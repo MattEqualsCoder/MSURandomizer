@@ -23,5 +23,11 @@ public enum AltOptions
     /// Prefer alt tracks over base tracks if available
     /// </summary>
     [Description("Prefer Alt Tracks")]
-    PreferAlt
+    PreferAlt,
+    
+    /// <summary>
+    /// Don't change tracks at all
+    /// </summary>
+    [Description("Leave Tracks Alone")]
+    LeaveAlone
 }

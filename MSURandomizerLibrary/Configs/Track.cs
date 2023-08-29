@@ -214,7 +214,9 @@ public class Track
     /// <returns>True if matches, false otherwise</returns>
     public bool MatchesAltOption(AltOptions option)
     {
-        if (option == AltOptions.Disable)
+        if (option == AltOptions.LeaveAlone)
+            return IsBaseFile;
+        else if (option == AltOptions.Disable)
             return !IsAlt;
         else if (option == AltOptions.PreferAlt)
             return IsAlt;

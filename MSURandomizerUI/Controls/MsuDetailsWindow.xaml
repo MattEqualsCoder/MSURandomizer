@@ -79,7 +79,7 @@
                 </StackPanel>
             </controls:LabeledControl>
             
-            <controls:LabeledControl Text="Alt Tracks: ">
+            <controls:LabeledControl Text="Alt Track Shuffling: ">
                 <StackPanel>
                     <ComboBox
                               ItemsSource="{Binding Source={msuRandomizerUi:EnumBindingSource {x:Type msuRandomizerLibrary:AltOptions}}}"
