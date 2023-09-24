@@ -70,7 +70,7 @@ internal class MsuRandomizerInitializationService : IMsuRandomizerInitialization
                 throw new InvalidOperationException("Missing MSU Type configuration");
             }
             
-            msuTypePath = Environment.ExpandEnvironmentVariables(msuTypePath);
+            msuTypePath = ConvertPathSeparators(Environment.ExpandEnvironmentVariables(msuTypePath));
             if ((msuTypePath.ToLower().EndsWith(".json")) && File.Exists(msuTypePath))
             {
                 using var jsonStream = new FileStream(msuTypePath, FileMode.Open);
@@ -94,7 +94,7 @@ internal class MsuRandomizerInitializationService : IMsuRandomizerInitialization
             throw new InvalidOperationException("Missing User Settings Path configuration");
         }
         
-        var userOptionsPath = Environment.ExpandEnvironmentVariables(basePath);
+        var userOptionsPath = ConvertPathSeparators(Environment.ExpandEnvironmentVariables(basePath));
         var userOptionsService = _serviceProvider.GetRequiredService<IMsuUserOptionsService>();
         return userOptionsService.Initialize(userOptionsPath);
     }
@@ -108,6 +108,18 @@ internal class MsuRandomizerInitializationService : IMsuRandomizerInitialization
         if (string.IsNullOrEmpty(cachePath)) return;
         
         var msuCacheService = _serviceProvider.GetRequiredService<IMsuCacheService>();
-        msuCacheService.Initialize(Environment.ExpandEnvironmentVariables(cachePath));
+        msuCacheService.Initialize(ConvertPathSeparators(Environment.ExpandEnvironmentVariables(cachePath)));
+    }
+
+    private string ConvertPathSeparators(string path)
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            return path;
+        }
+        else
+        {
+            return path.Replace("\\", "/");
+        }
     }
 }

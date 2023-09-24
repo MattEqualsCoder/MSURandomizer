@@ -14,7 +14,7 @@
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <IncludeSymbols>False</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <TargetFrameworks>net7.0-windows;net7.0</TargetFrameworks>
     <PackageId>MattEqualsCoder.MSURandomizer.Library</PackageId>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

@@ -389,9 +389,19 @@ internal class MsuSelectorService : IMsuSelectorService
                 return false;
             }
         }
-        
-        if (destination.StartsWith(source.Substring(0,1)))
-            NativeMethods.CreateHardLink(destination, source, IntPtr.Zero);
+
+        if (destination.StartsWith(source.Substring(0, 1)))
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                NativeMethods.CreateHardLink(destination, source, IntPtr.Zero);
+            }
+            else
+            {
+                File.CreateSymbolicLink(destination, source);
+            }
+            
+        }
         else
             File.Copy(source, destination);
 
