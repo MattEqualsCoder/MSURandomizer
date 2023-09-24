@@ -42,6 +42,7 @@ internal class MsuCacheService : IMsuCacheService
 
         if (File.Exists(_cachePath))
         {
+            _logger.LogInformation("Loading MSU Cache from {Path}", _cachePath);
             var text = File.ReadAllText(_cachePath);
             var tempCache = JsonSerializer.Deserialize<MsuLookupCache>(text) ?? new MsuLookupCache();
             if (tempCache.CacheVersion == _currentCacheVersion)

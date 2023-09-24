@@ -14,7 +14,7 @@ public class Track
     {
         
     }
-    
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -26,6 +26,7 @@ public class Track
     /// <param name="album">The name of the album</param>
     /// <param name="url">Url to find the song</param>
     /// <param name="isAlt">If this is an alt track or not</param>
+    /// <param name="isBaseFile">If this is the base file and not an alt</param>
     public Track(string trackName, int number, string songName, string path, string? artist = null,
         string? album = null, string? url = null, bool isAlt = false, bool isBaseFile = false)
     {

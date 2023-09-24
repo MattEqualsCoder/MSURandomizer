@@ -120,7 +120,7 @@ public class MsuUserOptionsServiceTests
     private IMsuUserOptionsService GetMsuUserOptionsService(List<MsuType>? msuTypes)
     {
         var msuTypeService = CreateMockMsuTypeService(msuTypes);
-        return new MsuUserOptionsService(msuTypeService);
+        return new MsuUserOptionsService(msuTypeService, TestHelpers.CreateMockLogger<MsuUserOptionsService>());
     }
     
     private IMsuTypeService CreateMockMsuTypeService(List<MsuType>? msuTypes)
