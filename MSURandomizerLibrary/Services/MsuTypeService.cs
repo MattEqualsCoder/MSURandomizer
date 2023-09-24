@@ -56,6 +56,8 @@ internal class MsuTypeService : IMsuTypeService
             throw new FileNotFoundException($"MSU type directory {directory} not found");
         }
         
+        _logger.LogInformation("Loading MSU types from {directory}", directory);
+        
         var configs = new List<MsuTypeConfig>();
         foreach (var file in Directory.EnumerateFiles(directory, "tracks.json", SearchOption.AllDirectories))
         {
