@@ -42,6 +42,7 @@
     <None Remove="yaml_tracks_rewrites.yml" />
     <EmbeddedResource Include="yaml_tracks_rewrites.yml" />
     <None Remove="msu-randomizer-types.json" />
+    <EmbeddedResource Include="msu_types.json" />
   </ItemGroup>
 
   <ItemGroup>

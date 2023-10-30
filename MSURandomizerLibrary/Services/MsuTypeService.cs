@@ -40,6 +40,7 @@ internal class MsuTypeService : IMsuTypeService
         foreach (var data in configs)
         {
             data.DetermineBasicTracksNumbers();
+            data.Path = data.Meta.Path;
         }
         
         FinalizeConfigs(configs);

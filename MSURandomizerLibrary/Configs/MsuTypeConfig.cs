@@ -89,6 +89,9 @@ internal class MsuTypeConfigMeta
 {
     [JsonPropertyName("name")]
     public string Name { get; set; } = "";
+    
+    [JsonPropertyName("path")]
+    public string Path { get; set; } = "";
 
     [JsonPropertyName("selectable")]
     public bool? Selectable { get; set; } = true;
