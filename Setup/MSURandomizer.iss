@@ -49,7 +49,7 @@ Source: "netcorecheck.exe"; Flags: dontcopy noencryption
 Source: "netcorecheck_x64.exe"; Flags: dontcopy noencryption
 Source: "..\MSURandomizer\bin\Release\net7.0-windows\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: Is64BitInstallMode;
 Source: "..\MSURandomizer\bin\Release\net7.0-windows\win-x86\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: "not Is64BitInstallMode";
-Source: "..\ConfigRepo\resources\snes\*"; Excludes: "*.txt,*.bps"; DestDir: "{localappdata}\MSURandomizer\Configs\snes"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Source: "..\ConfigRepo\resources\snes\*"; Excludes: "*.txt,*.bps"; DestDir: "{localappdata}\MSURandomizer\Configs\snes"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
