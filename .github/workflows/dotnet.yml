@@ -36,7 +36,7 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       id: version
       run: |
-        $version = (Get-Item "MSURandomizer/MSURandomizer\bin\Release\net7.0-windows\win-x86\publish\MSURandomizer.exe").VersionInfo.ProductVersion
+        $version = (Get-Item "MSURandomizer\bin\Release\net7.0-windows\win-x86\publish\MSURandomizer.exe").VersionInfo.ProductVersion
         Write-Output "number=$version" >> $env:GITHUB_OUTPUT
       shell: pwsh
     - name: Building the Windows installer
