@@ -43,6 +43,11 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       run: "\"%programfiles(x86)%/Inno Setup 6/iscc.exe\" \"setup/MSURandomizer.iss\""
       shell: cmd
+    - name: Copy Nuget Packages
+      # if: ${{ github.event_name != 'pull_request' }}
+      working-directory: setup
+      run: "./CopyNugetPackages.ps1"
+      shell: pwsh
     # - name: Building the Linux 64bit package
     #   if: ${{ github.event_name != 'pull_request' }}
     #   working-directory: setup
