@@ -37,10 +37,10 @@ jobs:
       run: dotnet publish --os win --arch x86 -c Release MSURandomizer/MSURandomizer.csproj
     - name: Publish MSU Randomizer Library 
       if: ${{ github.event_name != 'pull_request' }}
-      run: dotnet publish -c Release MSURandomizerLibrary/MSURandomizerLibrary.csproj
+      run: dotnet publish --os win --arch x64 -c Release MSURandomizerLibrary/MSURandomizerLibrary.csproj
     - name: Publish MSU Randomizer UI Library
       if: ${{ github.event_name != 'pull_request' }}
-      run: dotnet publish -c Release MSURandomizerUI/MSURandomizerUI.csproj
+      run: dotnet publish --os win --arch x64 -c Release MSURandomizerUI/MSURandomizerUI.csproj
     # - name: Publish Linux 64bit
     #   # if: ${{ github.event_name != 'pull_request' }}
     #   run: dotnet publish --os linux --arch x64 -c MSURandomizer/MSURandomizer.csproj
