@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using FontAwesome.WPF;
+using Material.Icons.WPF;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
@@ -221,7 +221,7 @@ public partial class MsuList : UserControl
         if (sender is not Button { Tag: Msu msu, Content: StackPanel stackPanel} button)
             return;
         msu.Settings.IsFavorite = !msu.Settings.IsFavorite;
-        foreach (var imageAwesome in stackPanel.Children.Cast<ImageAwesome>())
+        foreach (var imageAwesome in stackPanel.Children.Cast<MaterialIcon>())
         {
             var tag = imageAwesome.Tag as string;
             if (tag == "True" && msu.Settings.IsFavorite || tag == "False" && !msu.Settings.IsFavorite)
