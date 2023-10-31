@@ -146,17 +146,6 @@ public class MsuTypeYamlTests
         return Path.Combine(_outputFolder, $"{sanitizedName}.yml");
     }
     
-    private string GetConfigDirectory()
-    {
-        var directory = new DirectoryInfo(Directory.GetCurrentDirectory());
-        while (directory != null && !directory.GetFiles("*.sln").Any())
-        {
-            directory = directory.Parent;
-        }
-
-        return directory != null ? Path.Combine(directory.FullName, "ConfigRepo", "resources") : "";
-    }
-    
     private MsuAppSettings GetAppSettings()
     {
         var service = new MsuMsuAppSettingsService();
@@ -183,7 +172,7 @@ public class MsuTypeYamlTests
         var msuTypeService = new MsuTypeService(logger, settingsService.MsuAppSettings);
         if (typeConfig == null)
         {
-            msuTypeService.LoadMsuTypes(GetConfigDirectory());    
+            msuTypeService.LoadMsuTypes();    
         }
 
         return msuTypeService;

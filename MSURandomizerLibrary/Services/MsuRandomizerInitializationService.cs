@@ -67,7 +67,10 @@ internal class MsuRandomizerInitializationService : IMsuRandomizerInitialization
 
             if (string.IsNullOrWhiteSpace(msuTypePath))
             {
-                throw new InvalidOperationException("Missing MSU Type configuration");
+                var stream =
+                    Assembly.GetExecutingAssembly().GetManifestResourceStream("MSURandomizerLibrary.msu_types.json");
+                msuTypeService.LoadMsuTypes(stream!);
+                return;
             }
             
             msuTypePath = msuTypePath.ExpandSpecialFolders();

@@ -160,21 +160,8 @@ public partial class MsuWindow : Window
 
         ToggleInput(true);
         
-        var availableMsuTypes = msus.Where(x => x.Tracks.Count > 0).Select(x => x.SelectedMsuType).Distinct().Where(x => x is { Selectable: true }).Cast<MsuType>();
+        var availableMsuTypes = _msuTypeService.MsuTypes.Where(x => x.Selectable).ToList();
 
-        // If we have SMZ3 legacy, make sure SMZ3 is added to the dropdown
-        var smz3MsuTypes = msus.Select(x => x.SelectedMsuType)
-            .Where(x => x != null && _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true)
-            .Distinct()
-            .Cast<MsuType>()
-            .ToList();
-        if (smz3MsuTypes.All(x => x.Selectable == false) && smz3MsuTypes.Count > 0)
-        {
-            var smz3MsuType = _msuTypeService.MsuTypes.First(x =>
-                x is { Selectable: true } && _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true);
-            availableMsuTypes = availableMsuTypes.Append(smz3MsuType).OrderBy(x => x.DisplayName);
-        }
-        
         MsuTypesComboBox.ItemsSource = availableMsuTypes.Select(x => x.DisplayName).ToList();
         MsuTypesComboBox.IsEnabled = availableMsuTypes.Any();
         if (availableMsuTypes.Any(x => x.DisplayName == DataContext.OutputMsuType))

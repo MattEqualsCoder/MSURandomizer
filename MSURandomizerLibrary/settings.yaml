@@ -13,7 +13,6 @@ ZeldaFirstMsuTypes:
   - SMZ3 Combo Randomizer
   - A Link to the Past
 UserOptionsFilePath: "%LocalAppData%\\MSURandomizer\\msu-user-settings.yml"
-MsuTypeFilePath: "%LocalAppData%\\MSURandomizer\\Configs"
 MsuCachePath: "%LocalAppData%\\MSURandomizer"
 ContinuousReshuffleSeconds: 60
 MsuWindowDisplayRandomButton: true

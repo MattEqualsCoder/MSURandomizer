@@ -20,6 +20,11 @@ public interface IMsuTypeService
     public void LoadMsuTypes(Stream stream);
 
     /// <summary>
+    /// Loads all MSU types from internal msu_types json
+    /// </summary>
+    public void LoadMsuTypes();
+
+    /// <summary>
     /// Gets a MSU type matching a name
     /// </summary>
     /// <param name="name">The name of the MSU type to lookup</param>

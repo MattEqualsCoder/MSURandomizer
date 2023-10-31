@@ -52,17 +52,6 @@ public class MsuTypeServiceTests
         Assert.That(msuTypeService.GetMsuTypeName(null), Is.EqualTo("Unknown"));
     }
     
-    private string GetConfigDirectory()
-    {
-        var directory = new DirectoryInfo(Directory.GetCurrentDirectory());
-        while (directory != null && !directory.GetFiles("*.sln").Any())
-        {
-            directory = directory.Parent;
-        }
-
-        return directory != null ? Path.Combine(directory.FullName, "ConfigRepo", "resources") : "";
-    }
-
     private MsuTypeService GetMsuTypeService(MsuTypeConfig? typeConfig, MsuAppSettings? appSettings)
     {
         var logger = TestHelpers.CreateMockLogger<MsuTypeService>();
@@ -70,7 +59,7 @@ public class MsuTypeServiceTests
         var msuTypeService = new MsuTypeService(logger, settingsService.MsuAppSettings);
         if (typeConfig == null)
         {
-            msuTypeService.LoadMsuTypes(GetConfigDirectory());    
+            msuTypeService.LoadMsuTypes();    
         }
 
         return msuTypeService;
