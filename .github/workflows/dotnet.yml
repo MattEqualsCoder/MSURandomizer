@@ -1,0 +1,70 @@
+name: .NET Build + Test + Publish
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        repo: 'MattEqualsCoder/ALttPMSUShuffler'
+        file: 'msu_types.json'
+        target: 'MSURandomizerLibrary/msu_types.json'
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 7.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore -p:PostBuildEvent=
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Build
+      if: ${{ github.event_name != 'pull_request' }}
+      run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= 
+    - name: Publish Windows 64bit
+      if: ${{ github.event_name != 'pull_request' }}
+      run: dotnet publish --os win --arch x64 -c Release MSURandomizer/MSURandomizer.csproj
+    - name: Publish Windows 32bit
+      if: ${{ github.event_name != 'pull_request' }}
+      run: dotnet publish --os win --arch x86 -c Release MSURandomizer/MSURandomizer.csproj
+    # - name: Publish Linux 64bit
+    #   # if: ${{ github.event_name != 'pull_request' }}
+    #   run: dotnet publish --os linux --arch x64 -c MSURandomizer/MSURandomizer.csproj
+    - name: Get version number
+      if: ${{ github.event_name != 'pull_request' }}
+      id: version
+      run: |
+        $version = (Get-Item "MSURandomizer\bin\Release\net7.0-windows\win-x86\publish\MSURandomizer.exe").VersionInfo.ProductVersion
+        Write-Output "number=$version" >> $env:GITHUB_OUTPUT
+      shell: pwsh
+    - name: Building the Windows installer
+      if: ${{ github.event_name != 'pull_request' }}
+      run: "\"%programfiles(x86)%/Inno Setup 6/iscc.exe\" \"setup/MSURandomizer.iss\""
+      shell: cmd
+    - name: Copy Nuget Packages
+      if: ${{ github.event_name != 'pull_request' }}
+      working-directory: setup
+      run: "./CopyNugetPackages.ps1"
+      shell: pwsh
+    # - name: Building the Linux 64bit package
+    #   if: ${{ github.event_name != 'pull_request' }}
+    #   working-directory: setup
+    #   run: "./LinuxBuildZipper.ps1"
+    #   shell: pwsh
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      if: ${{ github.event_name != 'pull_request' }}
+      with:
+        path: "setup/Output/*"
+        name: MSURandomizer_${{ steps.version.outputs.number }}

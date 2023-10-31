@@ -48,6 +48,13 @@ internal class MsuTypeService : IMsuTypeService
 
     public IReadOnlyCollection<MsuType> MsuTypes => _msuTypes;
 
+    public void LoadMsuTypes()
+    {
+        var stream =
+            Assembly.GetExecutingAssembly().GetManifestResourceStream("MSURandomizerLibrary.msu_types.json");
+        LoadMsuTypes(stream!);
+    }
+    
     public void LoadMsuTypes(string directory)
     {
         _msuTypes.Clear();
