@@ -55,7 +55,6 @@ namespace MSURandomizer
             var msuInitializationRequest = new MsuRandomizerInitializationRequest();
 
             #if DEBUG
-            msuInitializationRequest.MsuTypeConfigPath = GetConfigDirectory();
             msuInitializationRequest.UserOptionsPath = "%LocalAppData%\\MSURandomizer\\msu-user-settings-debug.yml";
             #endif
             
@@ -110,17 +109,5 @@ namespace MSURandomizer
             Process.Start(startInfo);
         }
         
-        #if DEBUG
-        public string GetConfigDirectory()
-        {
-            var directory = new DirectoryInfo(Directory.GetCurrentDirectory());
-            while (directory != null && !directory.GetFiles("*.sln").Any())
-            {
-                directory = directory.Parent;
-            }
-
-            return directory != null ? Path.Combine(directory.FullName, "ConfigRepo", "resources") : "";
-        }
-        #endif
     }
 }
