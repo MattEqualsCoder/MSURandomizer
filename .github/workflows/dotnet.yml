@@ -26,13 +26,12 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      if: ${{ github.event_name == 'pull_request' }}
       run: dotnet build --no-restore -p:PostBuildEvent=
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
     - name: Build
       if: ${{ github.event_name != 'pull_request' }}
       run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= 
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
     - name: Publish Windows 64bit
       if: ${{ github.event_name != 'pull_request' }}
       run: dotnet publish --os win --arch x64 -c Release MSURandomizer/MSURandomizer.csproj
