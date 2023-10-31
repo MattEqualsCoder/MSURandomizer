@@ -160,7 +160,7 @@ public partial class MsuWindow : Window
 
         ToggleInput(true);
         
-        var availableMsuTypes = _msuTypeService.MsuTypes.Where(x => x.Selectable).ToList();
+        var availableMsuTypes = _msuTypeService.MsuTypes.Where(x => x.Selectable).OrderBy(x => x.DisplayName).ToList();
 
         MsuTypesComboBox.ItemsSource = availableMsuTypes.Select(x => x.DisplayName).ToList();
         MsuTypesComboBox.IsEnabled = availableMsuTypes.Any();
