@@ -365,7 +365,7 @@ public class MsuEndtoEndTests
                 trackDetails.Alts.Add(new MsuDetailsTrack()
                 {
                     Name = $"MSU {testNumber} Track {track.Number} Alt {i}",
-                    Path = $"test-{testNumber}-msu-{track.Number}_Alt{i}.pcm",
+                    Path = $"test-{testNumber}-msu-{track.Number}_alt{i}.pcm",
                     Artist = addSongInfo ? $"Test Song Artist {testNumber}" : null,
                     Album = addSongInfo ? $"Test Song Album {testNumber}" : null,
                     Url = addSongInfo ? $"Test Song Url {testNumber}" : null,
