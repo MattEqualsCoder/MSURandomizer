@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
-using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
@@ -17,21 +15,19 @@ namespace MSURandomizerUI.Controls;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MsuWindow : Window
+public partial class MsuWindow
 {
     private readonly IMsuTypeService _msuTypeService;
     private readonly IMsuLookupService _msuLookupService;
     private readonly IMsuSelectorService _msuSelectorService;
     private readonly IMsuUserOptionsService _msuUserOptionsService;
     private readonly IMsuUiFactory _msuUiFactory;
-    private readonly ILogger<MsuWindow> _logger;
     private readonly MsuAppSettings _msuAppSettings;
     private SelectionMode _selectionMode;
-        
+
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="logger"></param>
     /// <param name="msuLookupService"></param>
     /// <param name="msuUserOptions"></param>
     /// <param name="msuTypeService"></param>
@@ -39,7 +35,7 @@ public partial class MsuWindow : Window
     /// <param name="msuUserOptionsService"></param>
     /// <param name="msuUiFactory"></param>
     /// <param name="msuAppSettings"></param>
-    public MsuWindow(ILogger<MsuWindow> logger, IMsuLookupService msuLookupService, MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, IMsuSelectorService msuSelectorService, IMsuUserOptionsService msuUserOptionsService, IMsuUiFactory msuUiFactory, MsuAppSettings msuAppSettings)
+    public MsuWindow(IMsuLookupService msuLookupService, MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, IMsuSelectorService msuSelectorService, IMsuUserOptionsService msuUserOptionsService, IMsuUiFactory msuUiFactory, MsuAppSettings msuAppSettings)
     {
         DataContext = msuUserOptions;
         _msuTypeService = msuTypeService;
@@ -48,7 +44,6 @@ public partial class MsuWindow : Window
         _msuUiFactory = msuUiFactory;
         _msuAppSettings = msuAppSettings;
         _msuLookupService = msuLookupService;
-        _logger = logger;
         InitializeComponent();
 
         MsuList = new MsuList(_msuUiFactory, msuUserOptionsService);
@@ -82,7 +77,7 @@ public partial class MsuWindow : Window
         MainGrid.Children.Add(MsuList);
         MsuList.SelectedMsusUpdated += MsuListOnSelectedMsusUpdated;
         _selectionMode = selectionMode;
-        _msuLookupService.OnMsuLookupComplete += (sender, args) => OnMsuLookupComplete(args.Msus);
+        _msuLookupService.OnMsuLookupComplete += (_, args) => OnMsuLookupComplete(args.Msus);
 
         if (!string.IsNullOrEmpty(_msuAppSettings.MsuWindowTitle))
         {
@@ -160,7 +155,7 @@ public partial class MsuWindow : Window
 
         ToggleInput(true);
         
-        var availableMsuTypes = _msuTypeService.MsuTypes.Where(x => x.Selectable).OrderBy(x => x.DisplayName).ToList();
+        var availableMsuTypes = _msuTypeService.MsuTypes.OrderBy(x => x.DisplayName).ToList();
 
         MsuTypesComboBox.ItemsSource = availableMsuTypes.Select(x => x.DisplayName).ToList();
         MsuTypesComboBox.IsEnabled = availableMsuTypes.Any();
