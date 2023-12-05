@@ -23,6 +23,7 @@ Download the latest exe installer from the [GitHub Releases](https://github.com/
 ## Planned Features
 
 - Possible built-in support for determining which track is currently playing.
+- Linux version
 
 ## Troubleshooting
 
