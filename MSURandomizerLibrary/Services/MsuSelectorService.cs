@@ -204,7 +204,7 @@ internal class MsuSelectorService : IMsuSelectorService
         
         if (emptyFolder)
         {
-            EmptyFolder(outputDirectory);
+            EmptyFolder(outputDirectory, outputFilename);
         }
 
         var msuPath = outputDirectory + Path.DirectorySeparatorChar + outputFilename + ".msu";
@@ -408,7 +408,7 @@ internal class MsuSelectorService : IMsuSelectorService
         return true;
     }
 
-    private void EmptyFolder(string path)
+    private void EmptyFolder(string path, string outputFile)
     {
         if (!Directory.Exists(path))
         {
@@ -419,6 +419,11 @@ internal class MsuSelectorService : IMsuSelectorService
         {
             try
             {
+                if (!Path.GetFileName(filePath).StartsWith(outputFile))
+                {
+                    continue;
+                }
+                
                 File.Delete(filePath);
                 if (filePath.EndsWith(".msu") && File.Exists(filePath.Replace(".msu", ".yml")))
                 {
