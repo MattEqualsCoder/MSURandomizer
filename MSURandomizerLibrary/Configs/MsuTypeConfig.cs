@@ -76,7 +76,8 @@ internal class MsuTypeConfig
                     IsUnused = track.IsUnused,
                     IsExtended = track.IsExtended,
                     PairedTrack = track.PairedTrack + copy.Modifier,
-                    IsIgnored = track.IsIgnored || copy.IgnoredTracks.Contains(track.Num!.Value + copy.Modifier) || track.IsExtended
+                    IsIgnored = track.IsIgnored || copy.IgnoredTracks.Contains(track.Num!.Value + copy.Modifier) || track.IsExtended,
+                    Description = track.Description
                 });
             }
         }
@@ -140,6 +141,9 @@ internal class MsuTypeConfigTrack
     
     [JsonIgnore]
     public bool IsExtended { get; set; }
+    
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
 }
 
 internal class MsuTypeConfigCopy

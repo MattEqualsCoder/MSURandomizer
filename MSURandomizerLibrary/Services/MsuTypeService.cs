@@ -214,7 +214,8 @@ internal class MsuTypeService : IMsuTypeService
             NonLooping = x.NonLooping,
             IsIgnored = x.IsIgnored || x.IsExtended,
             YamlName = TrackYamlNameRegex.Replace(string.IsNullOrWhiteSpace(x.Title) ? x.Name : x.Title, "").Replace(" ", "_").Replace("__", "_").ToLower(),
-            YamlNameSecondary = rewrite?[x.Num!.Value]
+            YamlNameSecondary = rewrite?[x.Num!.Value],
+            Description = x.Description
         });
 
         return new MsuType()
