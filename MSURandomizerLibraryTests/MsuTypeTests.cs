@@ -200,6 +200,29 @@ public class MsuTypeTests
         }
     }
     
+    [Test]
+    public void TestDescriptions()
+    {
+        var msuTypesWithDescriptions = new HashSet<string>()
+        {
+            "The Legend of Zelda: A Link to the Past",
+            "Super Metroid",
+            "Super Metroid / A Link to the Past Combination Randomizer",
+            "Super Metroid / A Link to the Past Combination Randomizer Legacy"
+        };
+        
+        var msuTypes = _msuTypeService.MsuTypes.Where(x => msuTypesWithDescriptions.Contains(x.Name))
+            .ToList();
+
+        foreach (var msuType in msuTypes)
+        {
+            foreach (var track in msuType.Tracks)
+            {
+                Assert.That(string.IsNullOrEmpty(track.Description), Is.Not.True, $"Description for MsuType {msuType.Name} track {track.Name} should not be empty");
+            }
+        }
+    }
+    
     private MsuAppSettings GetAppSettings()
     {
         var service = new MsuMsuAppSettingsService();

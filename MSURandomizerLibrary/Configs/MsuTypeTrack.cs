@@ -41,6 +41,11 @@ public class MsuTypeTrack
     public bool IsIgnored { get; init; }
     
     /// <summary>
+    /// The description of the track
+    /// </summary>
+    public string? Description { get; init; }
+    
+    /// <summary>
     /// The name of the track to appear in MSU details files
     /// </summary>
     public string? YamlName { get; set; }
