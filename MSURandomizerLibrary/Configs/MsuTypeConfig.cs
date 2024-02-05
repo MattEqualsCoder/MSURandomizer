@@ -75,7 +75,8 @@ internal class MsuTypeConfig
                     Fallback = track.Fallback + copy.Modifier,
                     IsUnused = track.IsUnused,
                     IsExtended = track.IsExtended,
-                    PairedTrack = track.PairedTrack + copy.Modifier,
+                    IsSpecial = track.IsSpecial,
+                    PairedTracks = track.PairedTracks?.Select(x => x + copy.Modifier).ToList(),
                     IsIgnored = track.IsIgnored || copy.IgnoredTracks.Contains(track.Num!.Value + copy.Modifier) || track.IsExtended,
                     Description = track.Description
                 });
@@ -136,8 +137,11 @@ internal class MsuTypeConfigTrack
     [JsonPropertyName("ignore")]
     public bool IsIgnored { get; set; }
     
-    [JsonPropertyName("pair")]
-    public int? PairedTrack { get; set; }
+    [JsonPropertyName("special_track")]
+    public bool IsSpecial { get; set; }
+    
+    [JsonPropertyName("paired_tracks")]
+    public List<int>? PairedTracks { get; set; }
     
     [JsonIgnore]
     public bool IsExtended { get; set; }

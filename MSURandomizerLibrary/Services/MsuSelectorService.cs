@@ -72,16 +72,40 @@ internal class MsuSelectorService : IMsuSelectorService
         var tracks = convertedMsu.SelectMany(x => x.ValidTracks).ToList();
         var selectedTracks = new List<Track>();
         var selectedPaths = new List<string>();
+
+        // If a track is currently playing, don't try to change it and keep any paired tracks is applicable
+        if (request.CurrentTrack != null)
+        {
+            selectedTracks.Add(request.CurrentTrack);
+            selectedPaths.Add(request.CurrentTrack.Path);
+
+            if (request.ShuffleStyle == MsuShuffleStyle.ShuffleWithPairedTracks)
+            {
+                var msuTypeTrack = msuType.Tracks.First(x => x.Number == request.CurrentTrack.Number);
+                if (msuTypeTrack.PairedTracks?.Any() == true)
+                {
+                    AddPairedTracks(msuTypeTrack, request.CurrentTrack, tracks, selectedTracks, selectedPaths);
+                }
+            }
+        }
+        
         foreach (var msuTypeTrack in msuType.Tracks.OrderBy(x => x.Number))
         {
             if (selectedTracks.Any(x => x.Number == msuTypeTrack.Number))
             {
                 continue;
             }
-            var possibleTracks = tracks.Where(x => x.Number == msuTypeTrack.Number);
+
+            List<Track> possibleTracks = tracks;
+
+            if ((request.ShuffleStyle is MsuShuffleStyle.StandardShuffle or MsuShuffleStyle.ShuffleWithPairedTracks) || (request.ShuffleStyle == MsuShuffleStyle.ChaosNonSpecialTracks && msuTypeTrack.IsSpecial))
+            {
+                possibleTracks = possibleTracks.Where(x => x.Number == msuTypeTrack.Number).ToList();
+            }
+            
             if (request.AvoidDuplicates == true && possibleTracks.Any(x => !selectedPaths.Contains(x.Path)))
             {
-                possibleTracks = possibleTracks.Where(x => !selectedPaths.Contains(x.Path));
+                possibleTracks = possibleTracks.Where(x => !selectedPaths.Contains(x.Path)).ToList();
             }
 
             var track = possibleTracks.Random(_random);
@@ -100,20 +124,9 @@ internal class MsuSelectorService : IMsuSelectorService
             selectedTracks.Add(track);
             selectedPaths.Add(track.Path);
 
-            if (msuTypeTrack.PairedTrack > 0 && selectedTracks.All(x => x.Number != msuTypeTrack.PairedTrack))
+            if (request.ShuffleStyle == MsuShuffleStyle.ShuffleWithPairedTracks && msuTypeTrack.PairedTracks?.Any() == true)
             {
-                var pairedTrack = tracks.Where(x => x.Number == msuTypeTrack.PairedTrack && x.OriginalMsu == track.OriginalMsu).Random(_random);
-                if (pairedTrack != null)
-                {
-                    pairedTrack.MsuName = pairedTrack.OriginalMsu?.DisplayName;
-                    pairedTrack.MsuCreator = pairedTrack.OriginalMsu?.DisplayCreator;
-                    pairedTrack.MsuPath = pairedTrack.OriginalMsu?.Path;
-                    pairedTrack.Artist = pairedTrack.DisplayArtist;
-                    pairedTrack.Album = pairedTrack.DisplayAlbum;
-                    pairedTrack.Url = pairedTrack.DisplayUrl;
-                    selectedTracks.Add(pairedTrack);
-                    selectedPaths.Add(pairedTrack.Path);
-                }
+                AddPairedTracks(msuTypeTrack, track, tracks, selectedTracks, selectedPaths);
             }
         }
         
@@ -132,6 +145,25 @@ internal class MsuSelectorService : IMsuSelectorService
         };
         
         return SaveMsuInternal(outputMsu, outputPath, request.PrevMsu, request.EmptyFolder, request.OpenFolder);
+    }
+
+    private void AddPairedTracks(MsuTypeTrack msuTypeTrack, Track track, List<Track> tracks, List<Track> selectedTracks, List<string> selectedPaths)
+    {
+        foreach (var pairedTrackNumber in msuTypeTrack.PairedTracks!.Where(x => selectedTracks.All(t => t.Number != x)))
+        {
+            var pairedTrack = tracks.Where(x => x.Number == pairedTrackNumber && x.OriginalMsu == track.OriginalMsu).Random(_random);
+            if (pairedTrack != null)
+            {
+                pairedTrack.MsuName = pairedTrack.OriginalMsu?.DisplayName;
+                pairedTrack.MsuCreator = pairedTrack.OriginalMsu?.DisplayCreator;
+                pairedTrack.MsuPath = pairedTrack.OriginalMsu?.Path;
+                pairedTrack.Artist = pairedTrack.DisplayArtist;
+                pairedTrack.Album = pairedTrack.DisplayAlbum;
+                pairedTrack.Url = pairedTrack.DisplayUrl;
+                selectedTracks.Add(pairedTrack);
+                selectedPaths.Add(pairedTrack.Path);
+            }
+        }
     }
 
     public MsuSelectorResponse SaveMsu(MsuSelectorRequest request)

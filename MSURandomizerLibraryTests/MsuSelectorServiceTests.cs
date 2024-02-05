@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
@@ -182,7 +183,7 @@ public class MsuSelectorServiceTests
                 new() { (1, 2) },
                 new() { (1, 2) },
             },
-            out var msuTypes, out var msus, new Dictionary<int, int>() { { 1, 2 }});
+            out var msuTypes, out var msus, new Dictionary<int, List<int>>() { { 1, new List<int>() { 2 } }});
 
         for (var i = 0; i < 10; i++)
         {
@@ -193,12 +194,59 @@ public class MsuSelectorServiceTests
                 OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
                 EmptyFolder = false,
                 OpenFolder = false,
-                PrevMsu = null
+                PrevMsu = null,
+                ShuffleStyle = MsuShuffleStyle.ShuffleWithPairedTracks
             });
 
             Assert.That(response.Msu!.Tracks.First().MsuName == response.Msu!.Tracks.Last().MsuName);
         }
+    }
+    
+    [Test]
+    public void NonPairedTracksMsuTest()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 2) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+            },
+            out var msuTypes, out var msus, new Dictionary<int, List<int>>() { { 1, new List<int>() { 2 } }});
+
+        var anyNotMatched = false;
         
+        for (var i = 0; i < 10; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+            });
+
+            if (response.Msu!.Tracks.First().MsuName != response.Msu!.Tracks.Last().MsuName)
+            {
+                anyNotMatched = true;
+                break;
+            }
+        }
+        
+        Assert.That(anyNotMatched, Is.True);
     }
     
     [Test]
@@ -280,7 +328,7 @@ public class MsuSelectorServiceTests
     }
 
 
-    private MsuSelectorService CreateMsuSelectorService(List<List<(int, int)>> msuTypeTracks, List<List<(int, int)>> msuTracks, out ICollection<MsuType> msuTypes, out ICollection<Msu> msus, Dictionary<int, int>? pairs = null)
+    private MsuSelectorService CreateMsuSelectorService(List<List<(int, int)>> msuTypeTracks, List<List<(int, int)>> msuTracks, out ICollection<MsuType> msuTypes, out ICollection<Msu> msus, Dictionary<int, List<int>>? pairs = null)
     {
         var logger = TestHelpers.CreateMockLogger<MsuSelectorService>();
         var lookupLogger = TestHelpers.CreateMockLogger<MsuLookupService>();
