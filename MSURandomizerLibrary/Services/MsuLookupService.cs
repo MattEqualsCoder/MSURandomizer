@@ -50,7 +50,7 @@ internal class MsuLookupService : IMsuLookupService
 
         var msus = new ConcurrentBag<Msu>();
 
-        Parallel.ForEach((msusToLoad), loadInfo =>
+        Parallel.ForEach(msusToLoad, new ParallelOptions() { MaxDegreeOfParallelism = 5 }, loadInfo =>
         {
             var msu = LoadMsu(loadInfo.Item1, loadInfo.Item2, false, ignoreCache);
             if (msu != null)
@@ -247,7 +247,9 @@ internal class MsuLookupService : IMsuLookupService
 
     private Msu LoadBasicMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, MsuDetails? msuDetails)
     {
-        var trackNumbers = pcmFiles
+        var allPcmFiles = pcmFiles.ToList();
+        
+        var trackNumbers = allPcmFiles
             .Select(x =>
                 Path.GetFileName(x).Replace($"{baseName}-", "").Replace(".pcm", "", StringComparison.OrdinalIgnoreCase))
             .Where(x => int.TryParse(x, out _))
@@ -255,7 +257,7 @@ internal class MsuLookupService : IMsuLookupService
             .ToHashSet();
 
         var basicPcmFiles = trackNumbers.Select(x => Path.Combine(directory, $"{baseName}-{x}.pcm")).ToList();
-        var extraPcmFiles = pcmFiles.Where(x => !basicPcmFiles.Contains(x));
+        var extraPcmFiles = allPcmFiles.Where(x => !basicPcmFiles.Contains(x)).ToList();
         
         var tracks = new List<Track>();
         foreach (var track in msuType.Tracks)
@@ -278,7 +280,7 @@ internal class MsuLookupService : IMsuLookupService
                 continue;
             }
 
-            var path = pcmFiles.FirstOrDefault(x =>
+            var path = allPcmFiles.FirstOrDefault(x =>
                 x.Equals($"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm",
                     StringComparison.OrdinalIgnoreCase));
 

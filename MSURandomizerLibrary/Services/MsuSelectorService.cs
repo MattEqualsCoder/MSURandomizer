@@ -88,6 +88,8 @@ internal class MsuSelectorService : IMsuSelectorService
                 }
             }
         }
+
+        var specialTrackNumbers = msuType.Tracks.Where(x => x.IsSpecial).Select(x => x.Number).ToHashSet();
         
         foreach (var msuTypeTrack in msuType.Tracks.OrderBy(x => x.Number))
         {
@@ -98,11 +100,47 @@ internal class MsuSelectorService : IMsuSelectorService
 
             List<Track> possibleTracks = tracks;
 
-            if ((request.ShuffleStyle is MsuShuffleStyle.StandardShuffle or MsuShuffleStyle.ShuffleWithPairedTracks) || (request.ShuffleStyle == MsuShuffleStyle.ChaosNonSpecialTracks && msuTypeTrack.IsSpecial))
+            if ((request.ShuffleStyle is MsuShuffleStyle.StandardShuffle or MsuShuffleStyle.ShuffleWithPairedTracks))
             {
                 possibleTracks = possibleTracks.Where(x => x.Number == msuTypeTrack.Number).ToList();
+            } 
+            else if (request.ShuffleStyle == MsuShuffleStyle.ChaosNonSpecialTracks)
+            {
+                if (msuTypeTrack.IsSpecial)
+                {
+                    possibleTracks = possibleTracks.Where(x => x.Number == msuTypeTrack.Number).ToList();
+                }
+                else
+                {
+                    possibleTracks = possibleTracks.Where(t => !specialTrackNumbers.Contains(t.Number)).ToList();
+                }
             }
-            
+            else if (request.ShuffleStyle == MsuShuffleStyle.ChaosAllTracks)
+            {
+                if (_random.Next(0, 100) < request.ChaosShuffleChance)
+                {
+                    if (msuTypeTrack.IsSpecial)
+                    {
+                        possibleTracks = possibleTracks.Where(t => !specialTrackNumbers.Contains(t.Number)).ToList();
+                    }
+                    else
+                    {
+                        possibleTracks = possibleTracks.Where(t => specialTrackNumbers.Contains(t.Number)).ToList();
+                    }
+                }
+                else
+                {
+                    if (msuTypeTrack.IsSpecial)
+                    {
+                        possibleTracks = possibleTracks.Where(t => specialTrackNumbers.Contains(t.Number)).ToList();
+                    }
+                    else
+                    {
+                        possibleTracks = possibleTracks.Where(t => !specialTrackNumbers.Contains(t.Number)).ToList();
+                    }
+                }
+            }
+
             if (request.AvoidDuplicates == true && possibleTracks.Any(x => !selectedPaths.Contains(x.Path)))
             {
                 possibleTracks = possibleTracks.Where(x => !selectedPaths.Contains(x.Path)).ToList();
@@ -120,6 +158,7 @@ internal class MsuSelectorService : IMsuSelectorService
             track.Artist = track.DisplayArtist;
             track.Album = track.DisplayAlbum;
             track.Url = track.DisplayUrl;
+            track.Number = msuTypeTrack.Number;
 
             selectedTracks.Add(track);
             selectedPaths.Add(track.Path);
@@ -267,7 +306,11 @@ internal class MsuSelectorService : IMsuSelectorService
             
             try
             {
-                if (CreatePcmFile(source, destination))
+                if (source == destination)
+                {
+                    _logger.LogInformation("Skipped PCM {Source}", source);
+                }
+                else if (CreatePcmFile(source, destination))
                 {
                     _logger.LogInformation("Created PCM {Source} => {Destination}", source, destination);
                     tracks.Add(new Track(track, number: trackNumber, path: destination, trackName: trackName) { OriginalMsu = track.OriginalMsu });

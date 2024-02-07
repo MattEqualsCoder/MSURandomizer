@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="MSURandomizerCrossPlatform/App.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/MainWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

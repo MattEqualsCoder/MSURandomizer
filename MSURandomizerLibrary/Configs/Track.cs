@@ -32,6 +32,7 @@ public class Track
     {
         TrackName = trackName;
         Number = number;
+        OriginalTrackNumber = number;
         SongName = songName;
         Path = path;
         Artist = artist;
@@ -53,6 +54,7 @@ public class Track
     {
         TrackName = trackName ?? other.TrackName;
         Number = number ?? other.Number;
+        OriginalTrackNumber = other.OriginalTrackNumber;
         SongName = other.SongName;
         Path = path ?? other.Path;
         Artist = other.Artist;
@@ -135,6 +137,11 @@ public class Track
     /// If this is the current base pcm file, regardless of if it is an alt track or not
     /// </summary>
     public bool IsBaseFile { get; set; }
+    
+    /// <summary>
+    /// The number the track was shuffled as
+    /// </summary>
+    public int OriginalTrackNumber { get; set; }
     
     /// <summary>
     /// The MSU this track is currently part of

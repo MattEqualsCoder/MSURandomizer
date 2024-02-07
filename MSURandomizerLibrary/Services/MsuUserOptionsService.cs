@@ -62,6 +62,13 @@ internal class MsuUserOptionsService : IMsuUserOptionsService
     public void Save()
     {
         if (_options == null) return;
+        
+        var directory = Path.GetDirectoryName(_settingsFilePath);
+        if (!Directory.Exists(directory) && !string.IsNullOrEmpty(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+        
         var yaml = _serializer.Serialize(_options);
         File.WriteAllText(_settingsFilePath, yaml);
     }

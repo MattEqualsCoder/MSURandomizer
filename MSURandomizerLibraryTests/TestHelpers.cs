@@ -73,7 +73,7 @@ public abstract class TestHelpers
         return CreateMockMsuTypeService(msuTypes);
     }
     
-    public static IMsuTypeService CreateMockMsuTypeServiceMulti(List<List<(int, int)>> msuTypeTracks, out List<MsuType> msuTypes, Dictionary<int, List<int>>? pairs = null)
+    public static IMsuTypeService CreateMockMsuTypeServiceMulti(List<List<(int, int)>> msuTypeTracks, out List<MsuType> msuTypes, Dictionary<int, List<int>>? pairs = null, int? specialTrack = null)
     {
         msuTypes = new List<MsuType>();
 
@@ -94,7 +94,8 @@ public abstract class TestHelpers
                 {
                     Number = x,
                     Name = $"MSU Type {currentIndex} Track {x}",
-                    PairedTracks = pairs != null && pairs.ContainsKey(x) ? pairs[x] : null
+                    PairedTracks = pairs != null && pairs.ContainsKey(x) ? pairs[x] : null,
+                    IsSpecial = x == specialTrack
                 })
             });
 

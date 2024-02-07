@@ -1,0 +1,28 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:msuRandomizerCrossPlatform="clr-namespace:MSURandomizerCrossPlatform"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
+        Width="500" Height="300"
+        x:Class="MSURandomizerCrossPlatform.MainWindow"
+        x:DataType="msuRandomizerCrossPlatform:MainWindowViewModel"
+        Title="MSURandomizerCrossPlatform">
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Margin="0 2 2 2">Connector: </Label>
+            <ComboBox ItemsSource="{Binding Connectors}" SelectedIndex="0" MinWidth="200" SelectionChanged="SelectingItemsControl_OnSelectionChanged"></ComboBox>
+            <Label Margin="2 2 2 2" IsVisible="{Binding IsConnected}">Connected</Label>
+            <Label Margin="2 2 2 2" IsVisible="{Binding IsConnectorConnecting}">Connecting</Label>
+            <Label Margin="2 2 2 2" IsVisible="{Binding IsDisconnected}">Disconnected</Label>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="2 4">
+            <TextBlock>Track: </TextBlock>
+            <TextBlock Text="{Binding CurrentTrack}" Padding="5 0"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="2 4">
+            <TextBlock>Song: </TextBlock>
+            <TextBlock Text="{Binding CurrentSong}" Padding="5 0"></TextBlock>
+        </StackPanel>
+    </StackPanel>
+</Window>
