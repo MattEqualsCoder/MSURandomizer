@@ -158,13 +158,13 @@ public partial class MsuMonitorWindow : Window
         
         if (_snesConnectorService != null)
         {
-            _snesConnectorService.OnConnected += SnesConnectorServiceOnOnConnected;
-            _snesConnectorService.OnDisconnected += SnesConnectorServiceOnOnDisconnected;    
+            _snesConnectorService.OnConnected -= SnesConnectorServiceOnOnConnected;
+            _snesConnectorService.OnDisconnected -= SnesConnectorServiceOnOnDisconnected;    
         }
 
         if (_msuMonitorService != null)
         {
-            _msuMonitorService.MsuShuffled += MsuMonitorServiceOnMsuShuffled;    
+            _msuMonitorService.MsuShuffled -= MsuMonitorServiceOnMsuShuffled;    
         }
     }
 }

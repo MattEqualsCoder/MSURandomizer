@@ -52,6 +52,7 @@ internal class MsuMonitorService(
 
     public void Stop()
     {
+        logger.LogInformation("Stop monitor");
         _cts.Cancel();
         gameService.OnTrackChanged -= GameServiceOnOnTrackChanged;
         gameService.Disconnect();

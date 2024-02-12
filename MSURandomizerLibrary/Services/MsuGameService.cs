@@ -59,6 +59,10 @@ internal class MsuGameService(ILogger<MsuGameService> logger, ISnesConnectorServ
 
     public void Disconnect()
     {
+        foreach (var request in _currentRequests)
+        {
+            snesConnectorService.RemoveRecurringRequest(request);
+        }
         snesConnectorService.Disconnect();
     }
 
