@@ -204,12 +204,28 @@ internal class MsuDetailsService : IMsuDetailsService
             using var sha1 = SHA1.Create();
             yamlHash = BitConverter.ToString(sha1.ComputeHash(Encoding.UTF32.GetBytes(yamlText))).Replace("-", "");
             error = null;
-            return _deserializer.Deserialize<MsuDetails>(yamlText);
+            
+            for (var i = 0; i < 3; i++)
+            {
+                try
+                {
+                    return _deserializer.Deserialize<MsuDetails>(yamlText);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Temp failure loading YAML file {Path}", yamlPath);
+                    if (i == 2)
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return null;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Could not parse YAML file {Path}", yamlPath);
-            _logger.LogDebug(yamlText);
+            _logger.LogError(e, "Could not load YAML file for MSU Details {Path}", yamlPath);
             error = $"Could not load YAML file for MSU Details: {e.Message}";
             yamlHash = "";
             return null;
