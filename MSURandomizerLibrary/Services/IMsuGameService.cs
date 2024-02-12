@@ -36,4 +36,14 @@ public interface IMsuGameService : IDisposable
     /// <param name="msuType">The MSU type</param>
     /// <returns>True if the MSU type can have the current playing song read, false otherwise</returns>
     public bool IsMsuTypeCompatible(MsuType msuType);
+    
+    /// <summary>
+    /// Gets the Lua Script folder
+    /// </summary>
+    public string LuaScriptFolder { get; }
+
+    /// <summary>
+    /// Installs the Lua Script folder to the set folder
+    /// </summary>
+    public void InstallLuaScripts(bool force = false);
 }

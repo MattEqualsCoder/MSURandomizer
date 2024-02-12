@@ -71,6 +71,8 @@ namespace MSURandomizer
             {
                 _ = CheckVersion(version.ProductVersion ?? "", userOptions.PromptOnPreRelease);
             }
+            
+            _host.Services.GetRequiredService<IMsuGameService>().InstallLuaScripts();
 
             _host.Services.GetRequiredService<IMsuUiFactory>().OpenMsuWindow(SelectionMode.Multiple, false, out _);
         }

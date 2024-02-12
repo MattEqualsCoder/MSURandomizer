@@ -3,10 +3,11 @@ using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.GameConnectors;
 using MSURandomizerLibrary.Models;
 using SnesConnectorLibrary;
+using SnesConnectorLibrary.Lua;
 
 namespace MSURandomizerLibrary.Services;
 
-internal class MsuGameService(ILogger<MsuGameService> logger, ISnesConnectorService snesConnectorService)
+internal class MsuGameService(ILogger<MsuGameService> logger, ISnesConnectorService snesConnectorService, MsuAppSettings appSettings, IMsuUserOptionsService userOptions)
     : IMsuGameService
 {
     private IGameConnector? _currentGame;
@@ -19,6 +20,20 @@ internal class MsuGameService(ILogger<MsuGameService> logger, ISnesConnectorServ
     };
 
     public event TrackNumberChangedEventHandler? OnTrackChanged;
+
+    public string LuaScriptFolder => appSettings.DefaultLuaDirectory;
+    
+    public void InstallLuaScripts(bool force = false)
+    {
+        if (!force && userOptions.MsuUserOptions.LuaScriptVersion == LuaScriptVersion.VersionNumber)
+        {
+            return;
+        }
+
+        snesConnectorService.CreateLuaScriptsFolder(LuaScriptFolder);
+        userOptions.MsuUserOptions.LuaScriptVersion = LuaScriptVersion.VersionNumber;
+        userOptions.Save();
+    }
 
     public void SetMsuType(MsuType msuType)
     {

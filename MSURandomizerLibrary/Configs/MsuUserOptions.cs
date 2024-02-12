@@ -104,6 +104,11 @@ public class MsuUserOptions
     public bool OpenMonitorWindow { get; set; } = true;
     
     /// <summary>
+    /// The version of the installed Lua scripts
+    /// </summary>
+    public int? LuaScriptVersion { get; set; }
+    
+    /// <summary>
     /// Specific directories to load for specific MSU types
     /// </summary>
     [YamlIgnore] public Dictionary<MsuType, string> MsuTypePaths { get; set; } = new();
