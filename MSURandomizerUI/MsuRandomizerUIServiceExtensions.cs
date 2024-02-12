@@ -24,6 +24,8 @@ public static class MsuRandomizerUIServiceExtensions
         services.AddTransient<MsuUserSettingsWindow>();
         services.AddTransient<MsuContinuousShuffleWindow>();
         services.AddTransient<MsuDetailsWindow>();
+        services.AddTransient<MsuMonitorWindow>();
+        services.AddTransient<MsuCurrentPlayingTrackControl>();
         
         return services;
     }

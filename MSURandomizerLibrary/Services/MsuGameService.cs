@@ -12,6 +12,12 @@ internal class MsuGameService(ILogger<MsuGameService> logger, ISnesConnectorServ
     private IGameConnector? _currentGame;
     private readonly List<SnesRecurringMemoryRequest> _currentRequests = [];
 
+    private readonly Dictionary<string, Type> _connectors = new()
+    {
+        { "A Link to the Past", typeof(LttPGameConnector) },
+        { "Super Metroid / A Link to the Past Combination Randomizer", typeof(SMZ3GameConnector) }
+    };
+
     public event TrackNumberChangedEventHandler? OnTrackChanged;
 
     public void SetMsuType(MsuType msuType)
@@ -20,14 +26,14 @@ internal class MsuGameService(ILogger<MsuGameService> logger, ISnesConnectorServ
         {
             snesConnectorService.RemoveRecurringRequest(request);
         }
-        
-        if (msuType.Name == "A Link to the Past")
+
+        if (_connectors.TryGetValue(msuType.Name, out var type))
         {
-            _currentGame = new LttPGameConnector();
+            _currentGame = Activator.CreateInstance(type) as IGameConnector;
         }
-        else if (msuType.Name == "Super Metroid / A Link to the Past Combination Randomizer")
+        else
         {
-            _currentGame = new SMZ3GameConnector();
+            return;
         }
 
         if (_currentGame == null)
@@ -51,7 +57,14 @@ internal class MsuGameService(ILogger<MsuGameService> logger, ISnesConnectorServ
         
     }
 
+    public void Disconnect()
+    {
+        snesConnectorService.Disconnect();
+    }
+
     public MsuTypeTrack? CurrentTrack { get; private set; }
+    
+    public bool IsMsuTypeCompatible(MsuType msuType) => _connectors.ContainsKey(msuType.Name);
 
     public void Dispose()
     {

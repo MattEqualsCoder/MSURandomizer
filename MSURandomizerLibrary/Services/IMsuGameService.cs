@@ -19,9 +19,21 @@ public interface IMsuGameService : IDisposable
     /// </summary>
     /// <param name="msuType">The MSU type</param>
     public void SetMsuType(MsuType msuType);
+
+    /// <summary>
+    /// Disconnects from the current SNES connector
+    /// </summary>
+    public void Disconnect();
     
     /// <summary>
     /// The current MsuTypeTrack being played
     /// </summary>
     public MsuTypeTrack? CurrentTrack { get; }
+
+    /// <summary>
+    /// returns if a given MSU type is configured for the game service to read the current playing song
+    /// </summary>
+    /// <param name="msuType">The MSU type</param>
+    /// <returns>True if the MSU type can have the current playing song read, false otherwise</returns>
+    public bool IsMsuTypeCompatible(MsuType msuType);
 }

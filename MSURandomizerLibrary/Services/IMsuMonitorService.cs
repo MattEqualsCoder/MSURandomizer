@@ -12,6 +12,11 @@ public interface IMsuMonitorService : IDisposable
     /// Event for when the current playing track has changed
     /// </summary>
     public event MsuTrackChangedEventHandler? MsuTrackChanged;
+    
+    /// <summary>
+    /// Event for when the MSU has been reshuffled
+    /// </summary>
+    public event EventHandler? MsuShuffled;
 
     /// <summary>
     /// Starts shuffling the MSU on a certain interval

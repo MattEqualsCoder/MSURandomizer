@@ -48,6 +48,12 @@
                                 <ContextMenu>
                                     <MenuItem Header="Open _Details" Tag="{Binding }" Click="MenuItem_OnClick"></MenuItem>
                                     <MenuItem Header="Open _Folder" Tag="{Binding }" Click="OpenFolderMenuItem_OnClick"></MenuItem>
+                                    <MenuItem Header="Open _Monitor Window" 
+                                              Tag="{Binding }" 
+                                              Click="MonitorWindowMenuItem_OnClick" 
+                                              IsEnabled="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.MsuMonitorWindowEnabled, Mode=TwoWay}"
+                                              Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.MsuMonitorWindowMenuItemVisibility}"
+                                    ></MenuItem>
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                             <Grid Margin="0">

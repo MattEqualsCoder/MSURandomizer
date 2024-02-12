@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
@@ -10,7 +11,7 @@ using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerUI.Models;
 
-internal sealed class MsuListViewModel : INotifyPropertyChanged
+internal sealed class MsuListViewModel : ViewModel
 {
     public MsuListViewModel()
     {
@@ -102,6 +103,21 @@ internal sealed class MsuListViewModel : INotifyPropertyChanged
             AvailableMsusUpdated?.Invoke(this, new MsuListEventArgs(AvailableMsus, null));
         }
     }
+
+    private Visibility _msuMonitorWindowMenuItemVisibility = Visibility.Visible;
+    public Visibility MsuMonitorWindowMenuItemVisibility
+    {
+        get => _msuMonitorWindowMenuItemVisibility;
+        set => SetField(ref _msuMonitorWindowMenuItemVisibility, value);
+    }
+
+    private bool _msuMonitorWindowEnabled = true;
+    public bool MsuMonitorWindowEnabled
+    {
+        get => _msuMonitorWindowEnabled;
+        set => SetField(ref _msuMonitorWindowEnabled, value);
+    }
+    
     
     private void MsuLookupServiceOnOnMsuLookupComplete(object? sender, MsuListEventArgs e)
     {
@@ -109,23 +125,9 @@ internal sealed class MsuListViewModel : INotifyPropertyChanged
         Errors = e.Errors?.ToDictionary(x => x.Key, x => x.Value);
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
     public event EventHandler<MsuListEventArgs>? MsuListUpdated;
     
     public event EventHandler<MsuListEventArgs>? AvailableMsusUpdated;
 
     public IDictionary<string, string>? Errors { get; set; }
-
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    private void SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return;
-        field = value;
-        OnPropertyChanged(propertyName);
-    }
 }

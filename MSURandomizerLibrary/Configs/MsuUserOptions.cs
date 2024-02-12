@@ -1,4 +1,5 @@
-﻿using YamlDotNet.Serialization;
+﻿using SnesConnectorLibrary;
+using YamlDotNet.Serialization;
 
 namespace MSURandomizerLibrary.Configs;
 
@@ -71,11 +72,36 @@ public class MsuUserOptions
     /// User settings for different MSUs
     /// </summary>
     public ICollection<MsuSettings> MsuSettings { get; set; } = new List<MsuSettings>();
+
+    /// <summary>
+    /// Display format for the current playing track info
+    /// </summary>
+    public TrackDisplayFormat TrackDisplayFormat { get; set; } = TrackDisplayFormat.Vertical;
+    
+    /// <summary>
+    /// Path to write the currently playing song to
+    /// </summary>
+    public string? MsuCurrentSongOutputFilePath { get; set; }
     
     /// <summary>
     /// How the MSU should be generated
     /// </summary>
     public MsuRandomizationStyle RandomizationStyle { get; set; }
+    
+    /// <summary>
+    /// How multiple MSUs should be shuffled
+    /// </summary>
+    public MsuShuffleStyle MsuShuffleStyle { get; set; }
+
+    /// <summary>
+    /// Settings for connecting to the SNES
+    /// </summary>
+    public SnesConnectorSettings SnesConnectorSettings { get; set; } = new();
+
+    /// <summary>
+    /// If the monitor window should be opened 
+    /// </summary>
+    public bool OpenMonitorWindow { get; set; } = true;
     
     /// <summary>
     /// Specific directories to load for specific MSU types

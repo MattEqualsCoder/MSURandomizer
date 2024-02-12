@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using GitHubReleaseChecker;
@@ -14,7 +15,7 @@ using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
 using MSURandomizerUI;
-using MSURandomizerUI.Controls;
+using Serilog;
 
 namespace MSURandomizer
 {
@@ -28,15 +29,20 @@ namespace MSURandomizer
         
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.File(LogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30)
+#if DEBUG
+                .WriteTo.Console()
+                .WriteTo.Debug()
+#endif
+                .CreateLogger();
+            
             _host = Host.CreateDefaultBuilder(e.Args)
+                .UseSerilog()
                 .ConfigureLogging(logging =>
                 {
-                    logging.AddFile($"%LocalAppData%\\MSURandomizer\\msu-{DateTime.UtcNow:yyyyMMdd}.log", options =>
-                    {
-                        options.Append = true;
-                        options.FileSizeLimitBytes = 52428800;
-                        options.MaxRollingFiles = 5;
-                    });
+                    logging.AddSerilog(Log.Logger);
                 })
                 .ConfigureServices(services =>
                 {
@@ -55,7 +61,7 @@ namespace MSURandomizer
             var msuInitializationRequest = new MsuRandomizerInitializationRequest();
 
             #if DEBUG
-            msuInitializationRequest.UserOptionsPath = "%LocalAppData%\\MSURandomizer\\msu-user-settings-debug.yml";
+            msuInitializationRequest.UserOptionsPath = Path.Combine(AppDataFolder, "msu-user-settings-debug.yml");
             #endif
             
             _host.Services.GetRequiredService<IMsuRandomizerInitializationService>().Initialize(msuInitializationRequest);
@@ -63,26 +69,31 @@ namespace MSURandomizer
             var userOptions = _host.Services.GetRequiredService<MsuUserOptions>();
             if (userOptions.PromptOnUpdate)
             {
-                var newerHubRelease = _host.Services.GetRequiredService<IGitHubReleaseCheckerService>()
-                    .GetGitHubReleaseToUpdateTo("MattEqualsCoder", "MSURandomizer", version.ProductVersion ?? "", userOptions.PromptOnPreRelease);
-
-                if (newerHubRelease != null)
-                {
-                    var response = MessageBox.Show("A new version of the MSU Randomizer is now available!\n" +
-                                    "Do you want to open up the GitHub release page for the update?\n" +
-                                    "\n" +
-                                    "You can disable this check in the options window.", "MSU Randomizer Update",
-                        MessageBoxButton.YesNo);
-
-                    if (response == MessageBoxResult.Yes)
-                    {
-                        var url = newerHubRelease.Url.Replace("&", "^&");
-                        Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-                    }
-                }
+                _ = CheckVersion(version.ProductVersion ?? "", userOptions.PromptOnPreRelease);
             }
 
             _host.Services.GetRequiredService<IMsuUiFactory>().OpenMsuWindow(SelectionMode.Multiple, false, out _);
+        }
+
+        private async Task CheckVersion(string version, bool promptOnPreRelease)
+        {
+            var newerHubRelease = await _host!.Services.GetRequiredService<IGitHubReleaseCheckerService>()
+                .GetGitHubReleaseToUpdateToAsync("MattEqualsCoder", "MSURandomizer", version, promptOnPreRelease);
+
+            if (newerHubRelease != null)
+            {
+                var response = MessageBox.Show("A new version of the MSU Randomizer is now available!\n" +
+                                               "Do you want to open up the GitHub release page for the update?\n" +
+                                               "\n" +
+                                               "You can disable this check in the options window.", "MSU Randomizer Update",
+                    MessageBoxButton.YesNo);
+
+                if (response == MessageBoxResult.Yes)
+                {
+                    var url = newerHubRelease.Url.Replace("&", "^&");
+                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                }
+            }
         }
         
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -99,15 +110,21 @@ namespace MSURandomizer
                 MessageBoxButton.YesNo);
             
             if (response != MessageBoxResult.Yes) return;
-            var logFileLocation = Environment.ExpandEnvironmentVariables("%LocalAppData%\\MSURandomizer");
             var startInfo = new ProcessStartInfo
             {
-                Arguments = logFileLocation, 
+                Arguments = AppDataFolder, 
                 FileName = "explorer.exe"
             };
 
             Process.Start(startInfo);
         }
+        
+        private static string AppDataFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MSURandomizer");
+#if DEBUG
+        private static string LogPath => Path.Combine(AppDataFolder, "msu-randomizer-debug_.log");
+#else
+        private static string LogPath => Path.Combine(AppDataFolder, "msu-randomizer.log");
+#endif
         
     }
 }

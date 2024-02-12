@@ -24,6 +24,7 @@ public partial class MsuWindow
     private readonly IMsuUiFactory _msuUiFactory;
     private readonly MsuAppSettings _msuAppSettings;
     private SelectionMode _selectionMode;
+    private int _currentSelectedMsuCount;
 
     /// <summary>
     /// Constructor
@@ -34,19 +35,21 @@ public partial class MsuWindow
     /// <param name="msuSelectorService"></param>
     /// <param name="msuUserOptionsService"></param>
     /// <param name="msuUiFactory"></param>
-    /// <param name="msuAppSettings"></param>
-    public MsuWindow(IMsuLookupService msuLookupService, MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, IMsuSelectorService msuSelectorService, IMsuUserOptionsService msuUserOptionsService, IMsuUiFactory msuUiFactory, MsuAppSettings msuAppSettings)
+    /// <param name="msuAppSettingsService"></param>
+    public MsuWindow(IMsuLookupService msuLookupService, MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, IMsuSelectorService msuSelectorService, IMsuUserOptionsService msuUserOptionsService, IMsuUiFactory msuUiFactory, IMsuAppSettingsService msuAppSettingsService)
     {
         DataContext = msuUserOptions;
         _msuTypeService = msuTypeService;
         _msuSelectorService = msuSelectorService;
         _msuUserOptionsService = msuUserOptionsService;
         _msuUiFactory = msuUiFactory;
-        _msuAppSettings = msuAppSettings;
+        _msuAppSettings = msuAppSettingsService.MsuAppSettings;
         _msuLookupService = msuLookupService;
         InitializeComponent();
-
-        MsuList = new MsuList(_msuUiFactory, msuUserOptionsService);
+        
+        MsuList = new MsuList(_msuUiFactory, msuUserOptionsService, msuAppSettingsService);
+        MsuList.MsuMonitorWindowOpened += (sender, args) => UpdateMsuButtons(_currentSelectedMsuCount);
+        MsuList.MsuMonitorWindowClosed += (sender, args) => UpdateMsuButtons(_currentSelectedMsuCount);
     }
     
     /// <summary>
@@ -76,6 +79,8 @@ public partial class MsuWindow
         ToggleInput(false);
         MainGrid.Children.Add(MsuList);
         MsuList.SelectedMsusUpdated += MsuListOnSelectedMsusUpdated;
+        MsuList.MsuMonitorWindowOpened += (sender, args) => UpdateMsuButtons(_currentSelectedMsuCount);
+        MsuList.MsuMonitorWindowClosed += (sender, args) => UpdateMsuButtons(_currentSelectedMsuCount);
         _selectionMode = selectionMode;
         _msuLookupService.OnMsuLookupComplete += (_, args) => OnMsuLookupComplete(args.Msus);
 
@@ -171,8 +176,13 @@ public partial class MsuWindow
 
     private void MsuListOnSelectedMsusUpdated(object? sender, MsuListEventArgs e)
     {
-        var msuCount = e.Msus.Count;
+        UpdateMsuButtons(e.Msus.Count);
+    }
 
+    private void UpdateMsuButtons(int msuCount)
+    {
+        _currentSelectedMsuCount = msuCount;
+        var canOpenWindow = MsuList.MsuMonitorWindow == null;
         if (msuCount == 0)
         {
             SelectMsusButtons.Content = "_Select MSU";
@@ -186,27 +196,27 @@ public partial class MsuWindow
         {
             SelectMsusButtons.Content = "_Select MSU";
             RandomMsuButton.Content = "_Select MSU";
-            SelectMsusButtons.IsEnabled = true;
-            RandomMsuButton.IsEnabled = true;
-            ShuffledMsuButton.IsEnabled = true;
-            ContinuousShuffledMsuButton.IsEnabled = true;
+            SelectMsusButtons.IsEnabled = canOpenWindow;
+            RandomMsuButton.IsEnabled = canOpenWindow;
+            ShuffledMsuButton.IsEnabled = canOpenWindow;
+            ContinuousShuffledMsuButton.IsEnabled = canOpenWindow;
             SelectMsusButtons.Content = "_Select MSU";
         }
         else
         {
             SelectMsusButtons.Content = $"_Select {msuCount} MSUs";
             RandomMsuButton.Content = "Pick _Random MSU";
-            SelectMsusButtons.IsEnabled = true;
-            RandomMsuButton.IsEnabled = true;
-            ShuffledMsuButton.IsEnabled = true;
-            ContinuousShuffledMsuButton.IsEnabled = true;
+            SelectMsusButtons.IsEnabled = canOpenWindow;
+            RandomMsuButton.IsEnabled = canOpenWindow;
+            ShuffledMsuButton.IsEnabled = canOpenWindow;
+            ContinuousShuffledMsuButton.IsEnabled = canOpenWindow;
         }
     }
 
     private void RandomMsuButton_OnClick(object sender, RoutedEventArgs e)
     {
         var msus = MsuList.SelectedMsus;
-        var window = new MsuCreateWindow(DataContext, MsuRandomizationStyle.Single);
+        var window = new MsuCreateWindow(DataContext, MsuRandomizationStyle.Single, _msuAppSettings);
         if (window.ShowDialog() != true) return;
         var msuType = SelectedMsuType;
         if (msuType == null)
@@ -225,7 +235,15 @@ public partial class MsuWindow
                 Msus = msus,
                 OutputMsuType = msuType
             });
-            ShowSelectorResponseMessage(response);
+            
+            if (!response.Successful)
+            {
+                ShowSelectorResponseMessage(response);
+            }
+            else if (DataContext.OpenMonitorWindow && response.Msu != null)
+            {
+                MsuList.OpenMsuMonitorWindow(response.Msu);
+            }
         }
         else
         {
@@ -235,7 +253,15 @@ public partial class MsuWindow
                 Msu = msus.First(),
                 OutputMsuType = msuType
             });
-            ShowSelectorResponseMessage(response);
+            
+            if (!response.Successful)
+            {
+                ShowSelectorResponseMessage(response);
+            }
+            else if (DataContext.OpenMonitorWindow && response.Msu != null)
+            {
+                MsuList.OpenMsuMonitorWindow(response.Msu);
+            }
         }
     }
 
@@ -251,7 +277,7 @@ public partial class MsuWindow
     private void ShuffledMsuButton_OnClick(object sender, RoutedEventArgs e)
     {
         var msus = MsuList.SelectedMsus;
-        var window = new MsuCreateWindow(DataContext, MsuRandomizationStyle.Shuffled);
+        var window = new MsuCreateWindow(DataContext, MsuRandomizationStyle.Shuffled, _msuAppSettings);
         if (window.ShowDialog() != true) return;
         var msuType = SelectedMsuType;
         if (msuType == null)
@@ -261,19 +287,29 @@ public partial class MsuWindow
 
         DataContext.SelectedMsus = msus.Select(x => x.Path).ToList();
         _msuUserOptionsService.Save();
+        
         var response = _msuSelectorService.CreateShuffledMsu(new MsuSelectorRequest()
         {
             EmptyFolder = true,
             Msus = msus,
-            OutputMsuType = msuType
+            OutputMsuType = msuType,
+            ShuffleStyle = DataContext.MsuShuffleStyle
         });
-        ShowSelectorResponseMessage(response);
+        
+        if (!response.Successful)
+        {
+            ShowSelectorResponseMessage(response);
+        }
+        else if (DataContext.OpenMonitorWindow && response.Msu != null)
+        {
+            MsuList.OpenMsuMonitorWindow(response.Msu);
+        }
     }
     
     private void ContinuousMsuButton_OnClick(object sender, RoutedEventArgs e)
     {
         var msus = MsuList.SelectedMsus;
-        var window = new MsuCreateWindow(DataContext, MsuRandomizationStyle.Continuous);
+        var window = new MsuCreateWindow(DataContext, MsuRandomizationStyle.Continuous, _msuAppSettings);
         if (window.ShowDialog() != true) return;
         var msuType = SelectedMsuType;
         if (msuType == null)
@@ -283,7 +319,7 @@ public partial class MsuWindow
 
         DataContext.SelectedMsus = msus.Select(x => x.Path).ToList();
         _msuUserOptionsService.Save();
-        _msuUiFactory.OpenContinousShuffleWindow();
+        MsuList.OpenMsuMonitorWindow();
     }
 
     private void OptionsButton_OnClick(object sender, RoutedEventArgs e)

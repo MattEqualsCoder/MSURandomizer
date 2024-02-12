@@ -197,9 +197,10 @@ internal class MsuDetailsService : IMsuDetailsService
 
     private MsuDetails? InternalGetMsuDetails(string yamlPath, out string yamlHash, out string? error)
     {
+        var yamlText = "";
         try
         {
-            var yamlText = File.ReadAllText(yamlPath);
+            yamlText = File.ReadAllText(yamlPath);
             using var sha1 = SHA1.Create();
             yamlHash = BitConverter.ToString(sha1.ComputeHash(Encoding.UTF32.GetBytes(yamlText))).Replace("-", "");
             error = null;
@@ -208,7 +209,8 @@ internal class MsuDetailsService : IMsuDetailsService
         catch (Exception e)
         {
             _logger.LogError(e, "Could not parse YAML file {Path}", yamlPath);
-            error = $"Could not load YAML file: {e.Message}";
+            _logger.LogDebug(yamlText);
+            error = $"Could not load YAML file for MSU Details: {e.Message}";
             yamlHash = "";
             return null;
         }
@@ -368,7 +370,7 @@ internal class MsuDetailsService : IMsuDetailsService
         {
             _logger.LogError(e, "Unable to parse generic MSU yaml file for {Directory}{Separator}{BaseName}.msu", msuDirectory, Path.DirectorySeparatorChar, msuBaseName);
             Console.WriteLine(e);
-            error = $"Could not load YAML file: {e.Message}";
+            error = $"Could not load YAML file for converting: {e.Message}";
             return null;
         }
     }

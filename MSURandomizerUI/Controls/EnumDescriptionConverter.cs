@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Data;
 
@@ -8,39 +9,27 @@ namespace MSURandomizerUI.Controls;
 
 internal class EnumDescriptionConverter : IValueConverter
 {
-    private string GetEnumDescription(Enum enumObj)
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        FieldInfo fieldInfo = enumObj.GetType().GetField(enumObj.ToString())!;
+        var enumValue = (Enum)value!;
+        return enumValue.GetDescription();
+    }
 
-        object[] attribArray = fieldInfo.GetCustomAttributes(false);
-
-        if (attribArray.Length == 0)
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        var enumValues = Enum.GetValues(targetType);
+        if (value == null)
         {
-            return enumObj.ToString();
+            return enumValues.GetValue(0)!;
+        }
+        var descriptions = enumValues.Cast<Enum>().ToDictionary(x => x.GetDescription() as object, x => x);
+        if (descriptions.TryGetValue(value, out var description))
+        {
+            return description;
         }
         else
         {
-            DescriptionAttribute? attrib = null;
-
-            foreach (var att in attribArray)
-            {
-                if (att is DescriptionAttribute attribTemp)
-                    attrib = attribTemp;
-            }
-
-            return attrib != null ? attrib.Description : enumObj.ToString();
+            return enumValues.GetValue(0)!;
         }
-    }
-
-    object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        Enum myEnum = (Enum)value;
-        string description = GetEnumDescription(myEnum);
-        return description;
-    }
-
-    object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        return string.Empty;
     }
 }

@@ -22,16 +22,19 @@ public partial class MsuList : UserControl
     private readonly IMsuUiFactory _msuUiFactory;
     private readonly List<string> _displayedErrors = new();
     private readonly IMsuUserOptionsService _msuUserOptionsService;
+    private readonly IMsuAppSettingsService _msuAppSettingsService;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="msuUiFactory"></param>
     /// <param name="msuUserOptionsService"></param>
-    public MsuList(IMsuUiFactory msuUiFactory, IMsuUserOptionsService msuUserOptionsService)
+    /// <param name="msuAppSettingsService"></param>
+    public MsuList(IMsuUiFactory msuUiFactory, IMsuUserOptionsService msuUserOptionsService, IMsuAppSettingsService msuAppSettingsService)
     {
         _msuUiFactory = msuUiFactory;
         _msuUserOptionsService = msuUserOptionsService;
+        _msuAppSettingsService = msuAppSettingsService;
         DataContext = new MsuListViewModel();
         InitializeComponent();
     }
@@ -48,6 +51,9 @@ public partial class MsuList : UserControl
     internal void SetDataContext(MsuListViewModel model)
     {
         DataContext = model;
+        model.MsuMonitorWindowMenuItemVisibility = _msuAppSettingsService.MsuAppSettings.DisableMsuMonitorWindow == true
+            ? Visibility.Collapsed
+            : Visibility.Visible;
         model.MsuListUpdated += ViewModelOnMsuListUpdated;
         model.AvailableMsusUpdated += ViewModelOnAvailableMsusUpdated;
         UpdateSelectedItems();
@@ -174,6 +180,11 @@ public partial class MsuList : UserControl
     }
 
     /// <summary>
+    /// The opened MSU Monitor Windows
+    /// </summary>
+    public MsuMonitorWindow? MsuMonitorWindow { get; private set; }
+
+    /// <summary>
     /// The currently selected MSUs
     /// </summary>
     public ICollection<Msu> SelectedMsus => MsuListView.SelectedItems.Cast<Msu>().ToList();
@@ -182,6 +193,41 @@ public partial class MsuList : UserControl
     /// Event that is fired when the currently selected MSUs has changed
     /// </summary>
     public event EventHandler<MsuListEventArgs>? SelectedMsusUpdated;
+
+    /// <summary>
+    /// Event for when the MSU monitor window is opened
+    /// </summary>
+    public event EventHandler? MsuMonitorWindowOpened;
+    
+    /// <summary>
+    /// Event for when the MSU monitor window is closed
+    /// </summary>
+    public event EventHandler? MsuMonitorWindowClosed;
+    
+    /// <summary>
+    /// Opens the MSU Monitor window
+    /// </summary>
+    /// <param name="msu">The MSU to open for the MSU monitor</param>
+    /// <returns></returns>
+    public MsuMonitorWindow? OpenMsuMonitorWindow(Msu? msu = null)
+    {
+        if (_msuAppSettingsService.MsuAppSettings.DisableMsuMonitorWindow == true || MsuMonitorWindow != null)
+        {
+            return null;
+        }
+        
+        MsuMonitorWindow = msu == null ? _msuUiFactory.OpenMsuMonitorWindow() : _msuUiFactory.OpenMsuMonitorWindow(msu);
+        DataContext.MsuMonitorWindowEnabled = false;
+        MsuMonitorWindowOpened?.Invoke(this, EventArgs.Empty);
+        MsuMonitorWindow.Closed += (_, _) =>
+        {
+            MsuMonitorWindow = null;
+            DataContext.MsuMonitorWindowEnabled = true;
+            MsuMonitorWindowClosed?.Invoke(this, EventArgs.Empty);
+        };
+
+        return MsuMonitorWindow;
+    }
 
     private void MsuList_OnLoaded(object sender, RoutedEventArgs e)
     {
@@ -218,7 +264,7 @@ public partial class MsuList : UserControl
 
     private void FavoriteBase_OnClick(object sender, RoutedEventArgs e)
     {
-        if (sender is not Button { Tag: Msu msu, Content: StackPanel stackPanel} button)
+        if (sender is not Button { Tag: Msu msu, Content: StackPanel stackPanel})
             return;
         msu.Settings.IsFavorite = !msu.Settings.IsFavorite;
         foreach (var imageAwesome in stackPanel.Children.Cast<MaterialIcon>())
@@ -234,5 +280,14 @@ public partial class MsuList : UserControl
             }
         }
         _msuUserOptionsService.SaveMsuSettings(msu);
+    }
+
+    private void MonitorWindowMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: Msu msu })
+            return;
+
+        if (!File.Exists(msu.Path)) return;
+        OpenMsuMonitorWindow(msu);
     }
 }
