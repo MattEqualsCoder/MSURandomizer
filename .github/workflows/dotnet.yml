@@ -30,8 +30,8 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Build
-      if: ${{ github.event_name != 'pull_request' }}
-      #run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= 
+      #if: ${{ github.event_name != 'pull_request' }}
+      run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= 
     - name: Publish Windows 64bit
       #if: ${{ github.event_name != 'pull_request' }}
       run: dotnet publish --os win --arch x64 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
