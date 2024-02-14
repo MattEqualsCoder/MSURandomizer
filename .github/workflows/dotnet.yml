@@ -42,11 +42,11 @@ jobs:
     #   # if: ${{ github.event_name != 'pull_request' }}
     #   run: dotnet publish --os linux --arch x64 -c MSURandomizer/MSURandomizer.csproj
     - name: Get version number
-      if: ${{ github.event_name != 'pull_request' }}
+      #if: ${{ github.event_name != 'pull_request' }}
       id: version
       run: |
         $version = (Get-Item "MSURandomizer\bin\Release\net8.0-windows\win-x86\publish\MSURandomizer.exe").VersionInfo.ProductVersion
-        $version = $vresion -replace '+.*', ''
+        $version = $version -replace "\+.*"", ""
         Write-Output "number=$version" >> $env:GITHUB_OUTPUT
       shell: pwsh
     - name: Building the Windows installer
