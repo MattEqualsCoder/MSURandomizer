@@ -34,6 +34,7 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Button Grid.Column="0" Margin="0 0 5 0" BorderThickness="0" x:Name="FavoriteButton"
@@ -43,10 +44,25 @@
                                 <wpf:MaterialIcon Kind="Star" VerticalAlignment="Center" Tag="True" HorizontalAlignment="Center" Width="15" Foreground="Goldenrod" Visibility="{Binding Settings.IsFavorite, Converter={StaticResource VisibilityConverter}}" /> 
                             </StackPanel>
                         </Button>
-                        <StackPanel Grid.Column="1" Orientation="Vertical" Margin="3">
+                        <Button Grid.Column="1" Margin="0 0 5 0" BorderThickness="0" x:Name="FrequencyButton"
+                                Style="{StaticResource MyButtonStyle}" Background="Transparent" Tag="{Binding}" Click="FrequencyButton_OnClick">
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Shuffle the default amount" Tag="{Binding }" Click="ShuffleDefaultFrequencyMenuItem_OnClick"></MenuItem>
+                                    <MenuItem Header="Shuffle more frequently" Tag="{Binding }" Click="ShuffleMoreFrequentMenuItem_OnClick"></MenuItem>
+                                    <MenuItem Header="Shuffle less frequently" Tag="{Binding }" Click="ShuffleLessFrequentMenuItem_OnClick"></MenuItem>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                            <StackPanel Orientation="Horizontal">
+                                <wpf:MaterialIcon Kind="CircleOutline" VerticalAlignment="Center" Tag="0" HorizontalAlignment="Center" Width="15" Foreground="Gray" Opacity="0.5" Visibility="{Binding Settings.IsDefaultFrequency, Converter={StaticResource VisibilityConverter}}" />
+                                <wpf:MaterialIcon Kind="ChevronUpCircleOutline" VerticalAlignment="Center" Tag="2" HorizontalAlignment="Center" Width="15" Foreground="Green" Visibility="{Binding Settings.IsMoreFrequent, Converter={StaticResource VisibilityConverter}}" />
+                                <wpf:MaterialIcon Kind="ChevronDownCircleOutline" VerticalAlignment="Center" Tag="1" HorizontalAlignment="Center" Width="15" Foreground="Red" Visibility="{Binding Settings.IsLessFrequent, Converter={StaticResource VisibilityConverter}}" />
+                            </StackPanel>
+                        </Button>
+                        <StackPanel Grid.Column="2" Orientation="Vertical" Margin="3">
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Open _Details" Tag="{Binding }" Click="MenuItem_OnClick"></MenuItem>
+                                    <MenuItem Header="Open _Details" Tag="{Binding }" Click="OpenMenuDetailsMenuItem_OnClick"></MenuItem>
                                     <MenuItem Header="Open _Folder" Tag="{Binding }" Click="OpenFolderMenuItem_OnClick"></MenuItem>
                                     <MenuItem Header="Open _Monitor Window" 
                                               Tag="{Binding }" 

@@ -419,6 +419,123 @@ public class MsuSelectorServiceTests
     }
     
     [Test]
+    public void FrequencyTestDefault()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 100) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 100) },
+                new() { (1, 100) },
+            },
+            out var msuTypes, out var msus);
+
+        msus.First().Settings.ShuffleFrequency = ShuffleFrequency.Default;
+        msus.Last().Settings.ShuffleFrequency = ShuffleFrequency.Default;
+
+        var firstMsuCount = 0;
+        for (var i = 0; i < 100; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                ShuffleStyle = MsuShuffleStyle.ShuffleWithPairedTracks
+            });
+
+            firstMsuCount += response.Msu!.Tracks.Count(x => x.OriginalMsu == msus.First());
+        }
+        
+        var percentage = firstMsuCount / 10000.0;
+        
+        Assert.That(percentage is > 0.42 and < 0.58, Is.True);
+    }
+    
+    [Test]
+    public void FrequencyTestMoreFrequent()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 100) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 100) },
+                new() { (1, 100) },
+            },
+            out var msuTypes, out var msus);
+
+        msus.First().Settings.ShuffleFrequency = ShuffleFrequency.MoreFrequent;
+        msus.Last().Settings.ShuffleFrequency = ShuffleFrequency.Default;
+
+        var firstMsuCount = 0;
+        for (var i = 0; i < 100; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                ShuffleStyle = MsuShuffleStyle.ShuffleWithPairedTracks
+            });
+
+            firstMsuCount += response.Msu!.Tracks.Count(x => x.OriginalMsu == msus.First());
+        }
+        
+        var percentage = firstMsuCount / 10000.0;
+        
+        Assert.That(percentage is > 0.58, Is.True);
+    }
+    
+    [Test]
+    public void FrequencyTestLessFrequent()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 100) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 100) },
+                new() { (1, 100) },
+            },
+            out var msuTypes, out var msus);
+
+        msus.First().Settings.ShuffleFrequency = ShuffleFrequency.LessFrequent;
+        msus.Last().Settings.ShuffleFrequency = ShuffleFrequency.Default;
+
+        var firstMsuCount = 0;
+        for (var i = 0; i < 100; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                ShuffleStyle = MsuShuffleStyle.ShuffleWithPairedTracks
+            });
+
+            firstMsuCount += response.Msu!.Tracks.Count(x => x.OriginalMsu == msus.First());
+        }
+        
+        var percentage = firstMsuCount / 10000.0;
+        
+        Assert.That(percentage is < 0.42, Is.True);
+    }
+    
+    [Test]
     public void ConvertMsusTest()
     {
         var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
