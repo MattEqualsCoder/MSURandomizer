@@ -59,6 +59,9 @@ internal class MsuSelectorService : IMsuSelectorService
         return SaveMsuInternal(convertedMsu, request.OutputPath!, null, request.EmptyFolder, request.OpenFolder);
     }
 
+    private MsuSelectorRequest? _previousRequest;
+    private List<Track>? _previousTracks;
+    
     public MsuSelectorResponse CreateShuffledMsu(MsuSelectorRequest request)
     {
         var validateResponse = ValidateRequest(request, validateMultipleMsus: true, validateMsuType: true, validateOutputPath: true);
@@ -67,9 +70,39 @@ internal class MsuSelectorService : IMsuSelectorService
         ICollection<Msu> msus = request.Msus!;
         MsuType msuType = request.OutputMsuType!;
         string outputPath = request.OutputPath!;
+
+        var tracks = new List<Track>();
+        if (_previousRequest == request && _previousTracks != null)
+        {
+            tracks = _previousTracks;
+        }
+        else
+        {
+            var convertedMsus = InternalConvertMsus(msus, msuType);
         
-        var convertedMsu = InternalConvertMsus(msus, msuType);
-        var tracks = convertedMsu.SelectMany(x => x.ValidTracks).ToList();
+            foreach (var convertedMsu in convertedMsus)
+            {
+                var numToAdd = 2;
+            
+                if (convertedMsu.Settings.ShuffleFrequency == ShuffleFrequency.LessFrequent)
+                {
+                    numToAdd = 1;
+                }
+                else if (convertedMsu.Settings.ShuffleFrequency == ShuffleFrequency.MoreFrequent)
+                {
+                    numToAdd = 4;
+                }
+
+                for (var i = 0; i < numToAdd; i++)
+                {
+                    tracks.AddRange(convertedMsu.Tracks);
+                }
+            }
+
+            _previousRequest = request;
+            _previousTracks = tracks;
+        }
+        
         var selectedTracks = new List<Track>();
         var selectedPaths = new List<string>();
 
@@ -82,7 +115,7 @@ internal class MsuSelectorService : IMsuSelectorService
             if (request.ShuffleStyle == MsuShuffleStyle.ShuffleWithPairedTracks)
             {
                 var msuTypeTrack = msuType.Tracks.First(x => x.Number == request.CurrentTrack.Number);
-                if (msuTypeTrack.PairedTracks?.Any() == true)
+                if (msuTypeTrack.PairedTracks?.Count > 0)
                 {
                     AddPairedTracks(msuTypeTrack, request.CurrentTrack, tracks, selectedTracks, selectedPaths);
                 }
@@ -166,7 +199,7 @@ internal class MsuSelectorService : IMsuSelectorService
             selectedTracks.Add(track);
             selectedPaths.Add(track.Path);
             
-            if (request.ShuffleStyle == MsuShuffleStyle.ShuffleWithPairedTracks && msuTypeTrack.PairedTracks?.Any() == true)
+            if (request.ShuffleStyle == MsuShuffleStyle.ShuffleWithPairedTracks && msuTypeTrack.PairedTracks?.Count > 0)
             {
                 AddPairedTracks(msuTypeTrack, track, tracks, selectedTracks, selectedPaths);
             }

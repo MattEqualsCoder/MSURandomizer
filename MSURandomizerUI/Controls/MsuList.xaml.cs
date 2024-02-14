@@ -238,7 +238,7 @@ public partial class MsuList : UserControl
         SelectedMsusUpdated?.Invoke(this, new MsuListEventArgs(MsuListView.SelectedItems.Cast<Msu>().ToList(), null));
     }
 
-    private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+    private void OpenMenuDetailsMenuItem_OnClick(object sender, RoutedEventArgs e)
     { 
         if (sender is not MenuItem { Tag: Msu msu })
             return;
@@ -289,5 +289,71 @@ public partial class MsuList : UserControl
 
         if (!File.Exists(msu.Path)) return;
         OpenMsuMonitorWindow(msu);
+    }
+
+    private void ShuffleDefaultFrequencyMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: Msu msu, Parent: ContextMenu { PlacementTarget: Button { Content: StackPanel stackPanel} } } )
+            return;
+
+        if (msu.Settings.ShuffleFrequency == ShuffleFrequency.Default)
+            return;
+        
+        msu.Settings.ShuffleFrequency = ShuffleFrequency.Default;
+        UpdateFrequencyIcons(msu, stackPanel);
+        _msuUserOptionsService.SaveMsuSettings(msu);
+    }
+
+    private void ShuffleMoreFrequentMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: Msu msu, Parent: ContextMenu { PlacementTarget: Button { Content: StackPanel stackPanel} } } )
+            return;
+        
+        if (msu.Settings.ShuffleFrequency == ShuffleFrequency.MoreFrequent)
+            return;
+        
+        msu.Settings.ShuffleFrequency = ShuffleFrequency.MoreFrequent;
+        UpdateFrequencyIcons(msu, stackPanel);
+        _msuUserOptionsService.SaveMsuSettings(msu);
+    }
+
+    private void ShuffleLessFrequentMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: Msu msu, Parent: ContextMenu { PlacementTarget: Button { Content: StackPanel stackPanel} } } )
+            return;
+        
+        if (msu.Settings.ShuffleFrequency == ShuffleFrequency.LessFrequent)
+            return;
+        
+        msu.Settings.ShuffleFrequency = ShuffleFrequency.LessFrequent;
+        UpdateFrequencyIcons(msu, stackPanel);
+        _msuUserOptionsService.SaveMsuSettings(msu);
+    }
+
+    private void UpdateFrequencyIcons(Msu msu, StackPanel stackPanel)
+    {
+        foreach (var imageAwesome in stackPanel.Children.Cast<MaterialIcon>())
+        {
+            if (!int.TryParse(imageAwesome.Tag as string, out var intValue))
+            {
+                break;
+            }
+
+            var enumValue = (ShuffleFrequency)intValue;
+
+            imageAwesome.Visibility =
+                enumValue == msu.Settings.ShuffleFrequency ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
+
+    private void FrequencyButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button || button.ContextMenu == null)
+            return;
+        
+        ContextMenu contextMenu = button.ContextMenu;
+        contextMenu.PlacementTarget = button;
+        contextMenu.IsOpen = true;
+        e.Handled = true;
     }
 }

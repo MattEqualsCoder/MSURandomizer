@@ -53,12 +53,35 @@ public class MsuSettings
     /// If this is a favorite or not
     /// </summary>
     public bool IsFavorite { get; set; }
+    
+    /// <summary>
+    /// How frequent this MSU should come up
+    /// </summary>
+    public ShuffleFrequency ShuffleFrequency { get; set; }
 
     /// <summary>
     /// If this is not a favorite
     /// </summary>
     [YamlIgnore]
     public bool IsNotFavorite => IsFavorite != true;
+
+    /// <summary>
+    /// If this is to be shuffled the default amount
+    /// </summary>
+    [YamlIgnore]
+    public bool IsDefaultFrequency => ShuffleFrequency == ShuffleFrequency.Default;
+    
+    /// <summary>
+    /// If this is to be shuffled twice as much
+    /// </summary>
+    [YamlIgnore]
+    public bool IsMoreFrequent => ShuffleFrequency == ShuffleFrequency.MoreFrequent;
+    
+    /// <summary>
+    /// If this is to be shuffled half as much
+    /// </summary>
+    [YamlIgnore]
+    public bool IsLessFrequent => ShuffleFrequency == ShuffleFrequency.LessFrequent;
     
     /// <summary>
     /// The MSU Type object that was specified by the user
@@ -74,5 +97,6 @@ public class MsuSettings
                                  || !string.IsNullOrEmpty(Name) 
                                  || !string.IsNullOrEmpty(Creator) 
                                  || AltOption != AltOptions.Randomize
-                                 || IsFavorite;
+                                 || IsFavorite
+                                 || ShuffleFrequency != ShuffleFrequency.Default;
 }
