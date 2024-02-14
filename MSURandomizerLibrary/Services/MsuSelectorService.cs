@@ -152,15 +152,16 @@ internal class MsuSelectorService : IMsuSelectorService
                 continue;
             }
 
-            track = new Track(track);
-
-            track.MsuName = track.OriginalMsu?.DisplayName;
-            track.MsuCreator = track.OriginalMsu?.DisplayCreator;
-            track.MsuPath = track.OriginalMsu?.Path;
-            track.Artist = track.DisplayArtist;
-            track.Album = track.DisplayAlbum;
-            track.Url = track.DisplayUrl;
-            track.Number = msuTypeTrack.Number;
+            track = new Track(track)
+            {
+                MsuName = track.OriginalMsu?.DisplayName,
+                MsuCreator = track.OriginalMsu?.DisplayCreator,
+                MsuPath = track.OriginalMsu?.Path,
+                Artist = track.DisplayArtist,
+                Album = track.DisplayAlbum,
+                Url = track.DisplayUrl,
+                Number = msuTypeTrack.Number
+            };
 
             selectedTracks.Add(track);
             selectedPaths.Add(track.Path);
