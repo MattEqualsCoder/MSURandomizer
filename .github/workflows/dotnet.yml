@@ -46,7 +46,7 @@ jobs:
       id: version
       run: |
         $version = (Get-Item "MSURandomizer\bin\Release\net8.0-windows\win-x86\publish\MSURandomizer.exe").VersionInfo.ProductVersion
-        $version = $vresion -replace '+.*', ''
+        $version = $version -replace "\+.*", ""
         Write-Output "number=$version" >> $env:GITHUB_OUTPUT
       shell: pwsh
     - name: Building the Windows installer
@@ -64,7 +64,7 @@ jobs:
     #   run: "./LinuxBuildZipper.ps1"
     #   shell: pwsh
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: ${{ github.event_name != 'pull_request' }}
       with:
         path: "setup/Output/*"

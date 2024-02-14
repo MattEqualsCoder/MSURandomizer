@@ -222,7 +222,7 @@ internal class MsuLookupService : IMsuLookupService
     {
         var tracks = pcmFiles
             .Select(x =>
-                Path.GetFileName(x).Replace($"{baseName}-", "").Replace(".pcm", "", StringComparison.OrdinalIgnoreCase))
+                Path.GetFileName(x).Replace($"{baseName}-", "", StringComparison.OrdinalIgnoreCase).Replace(".pcm", "", StringComparison.OrdinalIgnoreCase))
             .Where(x => int.TryParse(x, out _))
             .Select(x => new Track
                 (
@@ -251,7 +251,7 @@ internal class MsuLookupService : IMsuLookupService
         
         var trackNumbers = allPcmFiles
             .Select(x =>
-                Path.GetFileName(x).Replace($"{baseName}-", "").Replace(".pcm", "", StringComparison.OrdinalIgnoreCase))
+                Path.GetFileName(x).Replace($"{baseName}-", "", StringComparison.OrdinalIgnoreCase).Replace(".pcm", "", StringComparison.OrdinalIgnoreCase))
             .Where(x => int.TryParse(x, out _))
             .Select(int.Parse)
             .ToHashSet();
@@ -340,7 +340,7 @@ internal class MsuLookupService : IMsuLookupService
     {
         var trackNumbers = pcmFiles
             .Select(x =>
-                Path.GetFileName(x).Replace($"{baseName}-", "").Replace(".pcm", "", StringComparison.OrdinalIgnoreCase))
+                Path.GetFileName(x).Replace($"{baseName}-", "", StringComparison.OrdinalIgnoreCase).Replace(".pcm", "", StringComparison.OrdinalIgnoreCase))
             .Where(x => int.TryParse(x, out _))
             .Select(int.Parse)
             .ToHashSet();
