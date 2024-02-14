@@ -34,10 +34,10 @@ jobs:
       run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= 
     - name: Publish Windows 64bit
       if: ${{ github.event_name != 'pull_request' }}
-      run: dotnet publish --os win --arch x64 -c Release MSURandomizer/MSURandomizer.csproj
+      run: dotnet publish --os win --arch x64 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
     - name: Publish Windows 32bit
       if: ${{ github.event_name != 'pull_request' }}
-      run: dotnet publish --os win --arch x86 -c Release MSURandomizer/MSURandomizer.csproj
+      run: dotnet publish --os win --arch x86 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
     # - name: Publish Linux 64bit
     #   # if: ${{ github.event_name != 'pull_request' }}
     #   run: dotnet publish --os linux --arch x64 -c MSURandomizer/MSURandomizer.csproj
