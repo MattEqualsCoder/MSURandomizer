@@ -7,7 +7,7 @@ using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerUI.Models;
 
-internal class MsuDetailsViewModel : INotifyPropertyChanged
+internal class MsuDetailsViewModel : ViewModel
 {
     private string _name;
     private string _creator;
@@ -100,21 +100,6 @@ internal class MsuDetailsViewModel : INotifyPropertyChanged
     public ICollection<string> MsuTypeNames { get; }
     
     public ICollection<MsuDetailsTrackViewModel> Tracks { get; }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
-    }
 
     public void CheckChanges(string? name = null, string? creator = null, string? msuTypeName = null)
     {

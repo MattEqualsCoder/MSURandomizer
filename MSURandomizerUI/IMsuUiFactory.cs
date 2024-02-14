@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Models;
 using MSURandomizerUI.Controls;
 
 namespace MSURandomizerUI;
@@ -54,4 +55,24 @@ public interface IMsuUiFactory
     /// <param name="selectedOptions">The object of the opens selected by the user</param>
     /// <returns>True if the user accepted the dialog, false otherwise</returns>
     public bool OpenMsuWindow(SelectionMode selectionMode, bool asDialog, out MsuUserOptions selectedOptions);
+
+    /// <summary>
+    /// Opens the MSU Monitor for continuously shuffling a request
+    /// </summary>
+    /// <param name="request">The request to use for reshuffling</param>
+    /// <returns>The opened MSU Monitor Window</returns>
+    public MsuMonitorWindow OpenMsuMonitorWindow(MsuSelectorRequest request);
+
+    /// <summary>
+    /// Opens the MSU Monitor for displaying the current song
+    /// </summary>
+    /// <param name="msu">The MSU to use for the song information</param>
+    /// <returns>The opened MSU Monitor Window</returns>
+    public MsuMonitorWindow OpenMsuMonitorWindow(Msu msu);
+
+    /// <summary>
+    /// Opens the MSU Monitor using the user options
+    /// </summary>
+    /// <returns>The opened MSU Monitor Window</returns>
+    public MsuMonitorWindow OpenMsuMonitorWindow();
 }

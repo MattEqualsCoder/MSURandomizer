@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerUI.Models;
 
 namespace MSURandomizerUI.Controls;
 
@@ -12,27 +13,24 @@ namespace MSURandomizerUI.Controls;
 /// </summary>
 internal partial class MsuCreateWindow : Window
 {
-    public new readonly MsuUserOptions DataContext;
-    private MsuRandomizationStyle _randomizationStyle;
+    private readonly MsuCreateViewModel _model;
+    private readonly MsuUserOptions _userOptions;
 
-    public MsuCreateWindow(MsuUserOptions model, MsuRandomizationStyle randomizationStyle)
+    public MsuCreateWindow(MsuUserOptions model, MsuRandomizationStyle randomizationStyle, MsuAppSettings appSettings)
     {
-        _randomizationStyle = randomizationStyle;
+        _userOptions = model;
+        _userOptions.RandomizationStyle = randomizationStyle;
         InitializeComponent();
-        DataContext = model;
+        DataContext = _model = new MsuCreateViewModel(model, appSettings);
         Title = "MSU Generation Details";
-        OpenFolderOnCreateCheckBox.IsEnabled = randomizationStyle != MsuRandomizationStyle.Continuous;
-        AvoidDuplicatesCheckBox.IsEnabled = randomizationStyle != MsuRandomizationStyle.Single;
-        OpenFolderOnCreateCheckBox.IsChecked = model.OpenFolderOnCreate;
-        AvoidDuplicatesCheckBox.IsChecked = model.AvoidDuplicates;
     }
 
     private void GenerateFolderButton_Click(object sender, RoutedEventArgs e)
     {
         var value = OpenFolderDialog();
         if (string.IsNullOrEmpty(value)) return;
-        DataContext.OutputRomPath = null;
-        DataContext.OutputFolderPath = value;
+        _userOptions.OutputRomPath = null;
+        _userOptions.OutputFolderPath = value;
         Generate();
     }
 
@@ -45,17 +43,14 @@ internal partial class MsuCreateWindow : Window
     {
         var value = OpenFileDialog();
         if (string.IsNullOrEmpty(value)) return;
-        DataContext.OutputRomPath = value;
-        DataContext.OutputFolderPath = null;
+        _userOptions.OutputRomPath = value;
+        _userOptions.OutputFolderPath = null;
         Generate();
     }
 
     private void Generate()
     {
-        DataContext.RandomizationStyle = _randomizationStyle;
-        DataContext.Name = NameTextBox.Text;
-        DataContext.OpenFolderOnCreate = OpenFolderOnCreateCheckBox.IsChecked == true;
-        DataContext.AvoidDuplicates = AvoidDuplicatesCheckBox.IsChecked == true;
+        _model.UpdateSettings(_userOptions);
         DialogResult = true;
         Close();
     }
@@ -74,14 +69,12 @@ internal partial class MsuCreateWindow : Window
 
     private string OpenFolderDialog(string initDirectory = "")
     {
-        using var dialog = new CommonOpenFileDialog
-        {
-            EnsurePathExists = true,
-            Title = "Select output folder",
-            InitialDirectory = Directory.Exists(initDirectory) ? initDirectory : "",
-            IsFolderPicker = true
-        };
-            
+        using var dialog = new CommonOpenFileDialog();
+        dialog.EnsurePathExists = true;
+        dialog.Title = "Select output folder";
+        dialog.InitialDirectory = Directory.Exists(initDirectory) ? initDirectory : "";
+        dialog.IsFolderPicker = true;
+
         return dialog.ShowDialog(this) == CommonFileDialogResult.Ok ? dialog.FileName : initDirectory;
     }
 }

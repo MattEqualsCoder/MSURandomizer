@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="MSURandomizerUI.Controls.MsuCurrentPlayingTrackControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:MSURandomizerUI"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="600"
+             Unloaded="MsuCurrentPlayingTrackControl_OnUnloaded">
+    <DockPanel Background="#212121">
+        <Canvas ClipToBounds="True" Name="OuterCanvas">
+            <TextBlock Foreground="#dddddd" FontSize="16" Padding="10" Name="SongTextBlock">
+                No song detected. Connect to one of the Snes Connectors.
+            </TextBlock>
+        </Canvas>
+    </DockPanel>
+</UserControl>

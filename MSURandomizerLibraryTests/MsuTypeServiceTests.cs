@@ -14,7 +14,7 @@ public class MsuTypeServiceTests
     public void LoadMsuTypesTest()
     {
         var msuTypeService = GetMsuTypeService(null, null);
-        Assert.IsNotEmpty(msuTypeService.MsuTypes, "No MSU types loaded");
+        Assert.That(msuTypeService.MsuTypes, Is.Not.Empty, "No MSU types loaded");
         Assert.That(msuTypeService.MsuTypes.Any(x => x.Name == "The Legend of Zelda: A Link to the Past"), Is.True, "MSU type list missing A Link to the Past");
         Assert.That(msuTypeService.MsuTypes.Any(x => x.Name == "Super Metroid"), Is.True, "MSU type list missing Super Metroid");
         Assert.That(msuTypeService.MsuTypes.Any(x => x.Name == "Super Metroid / A Link to the Past Combination Randomizer"), Is.True, "MSU type list missing SMZ3");
@@ -32,8 +32,8 @@ public class MsuTypeServiceTests
             }
         });
         
-        Assert.IsNotNull(msuTypeService.GetMsuType("The Legend of Zelda: A Link to the Past"), "Could not find MSU type by \"The Legend of Zelda: A Link to the Past\"");
-        Assert.IsNotNull(msuTypeService.GetMsuType("LTTP"), "Could not find MSU type by \"LTTP\"");
+        Assert.That(msuTypeService.GetMsuType("The Legend of Zelda: A Link to the Past"), Is.Not.Null, "Could not find MSU type by \"The Legend of Zelda: A Link to the Past\"");
+        Assert.That(msuTypeService.GetMsuType("LTTP"), Is.Not.Null, "Could not find MSU type by \"LTTP\"");
     }
     
     [Test]

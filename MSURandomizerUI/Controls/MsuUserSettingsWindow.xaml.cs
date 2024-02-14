@@ -2,8 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Windows;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
+using MSURandomizerUI.Models;
 
 namespace MSURandomizerUI.Controls;
 
@@ -12,26 +14,27 @@ namespace MSURandomizerUI.Controls;
 /// </summary>
 internal partial class MsuUserSettingsWindow : Window
 {
-    public new readonly MsuUserOptions DataContext;
-
+    private readonly MsuUserOptionsViewModel _model;
+    private readonly MsuUserOptions _msuUserOptions;
     private readonly List<MsuDirectoryControl> _directoryControls = new();
-    
-    private bool _originalPromptOnUpdate { get; set; } = true;
-    private bool _originalPromptOnPreRelease { get; set; }
+    private readonly string _defaultMsuOutputTextFile;
         
-    public MsuUserSettingsWindow(MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService)
+    public MsuUserSettingsWindow(MsuUserOptions msuUserOptions, IMsuTypeService msuTypeService, MsuAppSettings msuAppSettings)
     {
-        DataContext = msuUserOptions;
         InitializeComponent();
+        _msuUserOptions = msuUserOptions;
+        _defaultMsuOutputTextFile = msuAppSettings.DefaultMsuCurrentSongOutputFilePath ?? Path.Combine(Directory.GetCurrentDirectory(), "current_song.txt");
+        DataContext = _model = new MsuUserOptionsViewModel(msuUserOptions);
+        if (string.IsNullOrWhiteSpace(_model.MsuCurrentSongOutputFilePath))
+        {
+            _model.MsuCurrentSongOutputFilePath = _defaultMsuOutputTextFile;
+        }
         AddDirectoryControl(null, msuUserOptions.DefaultMsuPath);
         foreach(var msuType in msuTypeService.MsuTypes.Where(x => x.Selectable).OrderBy(x => x.DisplayName))
         {
             msuUserOptions.MsuTypePaths.TryGetValue(msuType, out var typePath);
             AddDirectoryControl(msuType, typePath);
         }
-
-        PromptOnUpdateCheckBox.IsChecked = _originalPromptOnUpdate = msuUserOptions.PromptOnUpdate;
-        PromptOnPreReleaseCheckBox.IsChecked = _originalPromptOnPreRelease = msuUserOptions.PromptOnPreRelease;
     }
 
     public void AddDirectoryControl(MsuType? msuType, string? path)
@@ -50,51 +53,43 @@ internal partial class MsuUserSettingsWindow : Window
 
     private void SaveButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var hasModified = false;
-            
-        // Update options to match what the user has set
-        foreach (var control in _directoryControls)
+        if (!_model.HasBeenModified && !_directoryControls.Any(x => x.Model.HasBeenModified))
         {
-            hasModified |= control.HasModified;
-            if (control.MsuType == null)
-            {
-                DataContext.DefaultMsuPath = control.MsuDirectory;
-            }
-            else if (!string.IsNullOrWhiteSpace(control.MsuDirectory) && Directory.Exists(control.MsuDirectory))
-            {
-                DataContext.MsuTypePaths[control.MsuType] = control.MsuDirectory;
-                DataContext.MsuTypeNamePaths[control.MsuType.DisplayName] = control.MsuDirectory;
-            }
-            else if (string.IsNullOrWhiteSpace(control.MsuDirectory) &&
-                     DataContext.MsuTypeNamePaths.ContainsKey(control.MsuType.DisplayName))
-            {
-                DataContext.MsuTypePaths.Remove(control.MsuType);
-                DataContext.MsuTypeNamePaths.Remove(control.MsuType.DisplayName);
-            }
-        }
-
-        if (_originalPromptOnUpdate != PromptOnUpdateCheckBox.IsChecked)
-        {
-            DataContext.PromptOnUpdate = PromptOnUpdateCheckBox.IsChecked ?? false;
-            hasModified = true;
+            Close();
+            return;
         }
         
-        if (_originalPromptOnPreRelease != PromptOnPreReleaseCheckBox.IsChecked)
+        _model.UpdateSettings(_msuUserOptions);
+        foreach (var control in _directoryControls)
         {
-            DataContext.PromptOnPreRelease = PromptOnPreReleaseCheckBox.IsChecked ?? false;
-            hasModified = true;
+            control.Model.UpdateSettings(_msuUserOptions);
         }
-
-        if (hasModified)
-        {
-            DialogResult = true;
-        }
+            
+        DialogResult = true;
             
         Close();
     }
 
-    private void PromptOnUpdateCheckBox_OnChecked(object sender, RoutedEventArgs e)
+    private void SelectFileButton_OnClick(object sender, RoutedEventArgs e)
     {
-        PromptOnPreReleaseCheckBox.IsEnabled = PromptOnUpdateCheckBox.IsChecked ?? false;
+        var filePath = string.IsNullOrWhiteSpace(_model.MsuCurrentSongOutputFilePath)
+            ? _defaultMsuOutputTextFile
+            : _model.MsuCurrentSongOutputFilePath;
+        var file = new FileInfo(filePath);
+        using var dialog = new CommonOpenFileDialog();
+        dialog.Title = "Select Current Song File";
+        dialog.InitialDirectory = file.DirectoryName;
+
+        if (dialog.ShowDialog(this) == CommonFileDialogResult.Ok && dialog.FileName != _model.MsuCurrentSongOutputFilePath)
+        {
+            _model.MsuCurrentSongOutputFilePath = dialog.FileName;
+            OutputFolderTextBox.Text = dialog.FileName;
+            ClearFolderButton.IsEnabled = !string.IsNullOrWhiteSpace(dialog.FileName);
+        }
+    }
+
+    private void ClearFolderButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        _model.MsuCurrentSongOutputFilePath = _defaultMsuOutputTextFile;
     }
 }

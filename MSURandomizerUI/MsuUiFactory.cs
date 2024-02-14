@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
 using MSURandomizerUI.Controls;
 using MSURandomizerUI.Models;
@@ -103,4 +105,68 @@ internal class MsuUiFactory : IMsuUiFactory
             return true;
         }
     }
+
+    public MsuMonitorWindow OpenMsuMonitorWindow(MsuSelectorRequest request)
+    {
+        var window = _serviceProvider.GetRequiredService<MsuMonitorWindow>();
+        window.Show(request);
+        return window;
+    }
+
+    public MsuMonitorWindow OpenMsuMonitorWindow(Msu msu)
+    {
+        var window = _serviceProvider.GetRequiredService<MsuMonitorWindow>();
+        window.Show(msu);
+        return window;
+    }
+
+    public MsuMonitorWindow OpenMsuMonitorWindow()
+    {
+        var options = _msuUserOptionsService.MsuUserOptions;
+        
+        if (string.IsNullOrEmpty(options.OutputMsuType))
+        {
+            _logger.LogError("No output MSU type selected");
+            throw new InvalidOperationException("No output MSU type selected");
+        }
+        
+        var msus = _msuLookupService.Msus
+            .Where(x => options.SelectedMsus?.Contains(x.Path) == true)
+            .ToList();
+        
+        if (!msus.Any())
+        {
+            _logger.LogError("No valid MSUs selected");
+            throw new InvalidOperationException("No valid MSUs selected");
+        }
+        
+        var msuType = _msuTypeService.GetMsuType(options.OutputMsuType);
+
+        if (msuType == null)
+        {
+            _logger.LogError("Invalid MSU type");
+            throw new InvalidOperationException("Invalid MSU type");
+        }
+        
+        var outputPath = !string.IsNullOrEmpty(options.OutputFolderPath) 
+            ? Path.Combine(options.OutputFolderPath, $"{options.Name}.msu") 
+            : options.OutputRomPath;
+
+        if (string.IsNullOrWhiteSpace(outputPath))
+        {
+            _logger.LogError("No output path");
+            throw new InvalidOperationException("No output path");
+        }
+
+        return OpenMsuMonitorWindow(new MsuSelectorRequest()
+        {
+            Msus = msus,
+            OutputMsuType = msuType,
+            OutputPath = outputPath,
+            AvoidDuplicates = options.AvoidDuplicates,
+            ShuffleStyle = options.MsuShuffleStyle,
+            OpenFolder = false
+        });
+    }
+
 }

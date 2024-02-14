@@ -6,7 +6,7 @@ using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerUI.Models;
 
-internal class MsuDetailsTrackViewModel : INotifyPropertyChanged
+internal class MsuDetailsTrackViewModel : ViewModel
 {
 
     public MsuDetailsTrackViewModel()
@@ -40,20 +40,4 @@ internal class MsuDetailsTrackViewModel : INotifyPropertyChanged
     public string TrackNameText => $"{TrackNumber} - {TrackName}";
     
     public ICollection<MsuDetailsSongViewModel> Songs { get; }
-
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
-    }
 }

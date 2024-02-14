@@ -7,7 +7,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibraryTests;
 
-public class MsuEndtoEndTests
+public class MsuEndtoEndTests : IDisposable
 {
     private MsuTypeService _msuTypeService = null!;
     private MsuLookupService _msuLookupService = null!;
@@ -34,7 +34,7 @@ public class MsuEndtoEndTests
     public void ShuffledMsuTest()
     {
         var msuType = _msuTypeService.GetMsuType("A Link to the Past");
-        Assert.IsNotNull(msuType);
+        Assert.That(msuType, Is.Not.Null);
 
         var msuCount = 3;
         var altCount = 2;
@@ -60,7 +60,7 @@ public class MsuEndtoEndTests
     public void SingleShuffledMsuTest()
     {
         var msuType = _msuTypeService.GetMsuType("A Link to the Past");
-        Assert.IsNotNull(msuType);
+        Assert.That(msuType, Is.Not.Null);
 
         var msuCount = 1;
         var altCount = 2;
@@ -86,7 +86,7 @@ public class MsuEndtoEndTests
     public void AssignMsuTest()
     {
         var msuType = _msuTypeService.GetMsuType("A Link to the Past");
-        Assert.IsNotNull(msuType);
+        Assert.That(msuType, Is.Not.Null);
 
         var msuCount = 1;
         var altCount = 2;
@@ -112,7 +112,7 @@ public class MsuEndtoEndTests
     public void RandomMsuTest()
     {
         var msuType = _msuTypeService.GetMsuType("A Link to the Past");
-        Assert.IsNotNull(msuType);
+        Assert.That(msuType, Is.Not.Null);
 
         var msuCount = 2;
         var altCount = 2;
@@ -138,7 +138,7 @@ public class MsuEndtoEndTests
     public void SaveMsuTest()
     {
         var msuType = _msuTypeService.GetMsuType("A Link to the Past");
-        Assert.IsNotNull(msuType);
+        Assert.That(msuType, Is.Not.Null);
 
         var msuCount = 1;
         var altCount = 2;
@@ -447,5 +447,10 @@ public class MsuEndtoEndTests
         using var stream1 = File.OpenRead(filename);
         fileHash = BitConverter.ToString(_sha1.ComputeHash(stream1)).Replace("-", "");
     }
-    
+
+    public void Dispose()
+    {
+        _sha1.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }

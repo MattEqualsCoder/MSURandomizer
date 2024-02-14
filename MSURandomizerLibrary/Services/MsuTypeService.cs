@@ -209,10 +209,11 @@ internal class MsuTypeService : IMsuTypeService
             Name = string.IsNullOrWhiteSpace(x.Title) ? x.Name : x.Title,
             Number = x.Num!.Value,
             Fallback = x.Fallback,
-            PairedTrack = x.PairedTrack,
+            PairedTracks = x.PairedTracks,
             IsExtended = x.IsExtended,
             NonLooping = x.NonLooping,
             IsIgnored = x.IsIgnored || x.IsExtended,
+            IsSpecial = x.IsSpecial,
             YamlName = TrackYamlNameRegex.Replace(string.IsNullOrWhiteSpace(x.Title) ? x.Name : x.Title, "").Replace(" ", "_").Replace("__", "_").ToLower(),
             YamlNameSecondary = rewrite?[x.Num!.Value],
             Description = x.Description

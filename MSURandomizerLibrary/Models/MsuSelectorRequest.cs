@@ -62,4 +62,19 @@ public class MsuSelectorRequest
     /// If duplicate tracks should be avoided
     /// </summary>
     public bool? AvoidDuplicates { get; set; }
+    
+    /// <summary>
+    /// The shuffling style
+    /// </summary>
+    public MsuShuffleStyle ShuffleStyle { get; set; }
+
+    /// <summary>
+    /// The chance of the chaos shuffler changing track type
+    /// </summary>
+    public int ChaosShuffleChance { get; set; } = 5;
+    
+    /// <summary>
+    /// The current track being played
+    /// </summary>
+    public Track? CurrentTrack { get; set; }
 }

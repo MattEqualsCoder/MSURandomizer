@@ -32,6 +32,7 @@ public class Track
     {
         TrackName = trackName;
         Number = number;
+        OriginalTrackNumber = number;
         SongName = songName;
         Path = path;
         Artist = artist;
@@ -53,6 +54,7 @@ public class Track
     {
         TrackName = trackName ?? other.TrackName;
         Number = number ?? other.Number;
+        OriginalTrackNumber = other.OriginalTrackNumber;
         SongName = other.SongName;
         Path = path ?? other.Path;
         Artist = other.Artist;
@@ -137,6 +139,11 @@ public class Track
     public bool IsBaseFile { get; set; }
     
     /// <summary>
+    /// The number the track was shuffled as
+    /// </summary>
+    public int OriginalTrackNumber { get; set; }
+    
+    /// <summary>
     /// The MSU this track is currently part of
     /// </summary>
     [JsonIgnore]
@@ -179,6 +186,70 @@ public class Track
             return $"{SongName}{artist}{album}";
         var creator = string.IsNullOrWhiteSpace(MsuCreator) ? "" : $" by {MsuCreator}";
         return $"{SongName}{artist}{album} from MSU Pack {MsuName}{creator}";
+    }
+
+    /// <summary>
+    /// Gets the text to represent the song
+    /// </summary>
+    /// <param name="format">The format to use for song text</param>
+    /// <returns>The text to represent the song</returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public string GetDisplayText(TrackDisplayFormat format)
+    {
+        var builder = new TrackDisplayTextBuilder(this);
+        
+        switch (format)
+        {
+            case TrackDisplayFormat.Horizontal:
+            {
+                if (string.IsNullOrWhiteSpace(DisplayArtist) && string.IsNullOrWhiteSpace(DisplayAlbum))
+                {
+                    return builder.AddSongName("{0}")
+                        .AddMsuNameAndCreator("from {0}")
+                        .ToString();
+                }
+
+                return builder.AddAlbum("{0} -")
+                    .AddSongName("{0}")
+                    .AddArtist("({0})")
+                    .ToString();
+            }
+            case TrackDisplayFormat.Vertical:
+            {
+                return builder.AddMsuNameAndCreator("MSU: {0}")
+                    .AddAlbum("Album: {0}")
+                    .AddSongName("Song: {0}")
+                    .AddArtist("Artist: {0}")
+                    .ToString("\r\n");
+            }
+            case TrackDisplayFormat.HorizonalWithMsu:
+            {
+                return builder.AddAlbum("{0}:")
+                    .AddSongName("{0}")
+                    .AddArtist("- {0}")
+                    .AddMsuNameAndCreator("(MSU: {0})")
+                    .ToString();
+            }
+            case TrackDisplayFormat.SentenceStyle:
+            {
+                return builder.AddSongName("{0}")
+                    .AddArtist("by {0}")
+                    .AddAlbum("from album {0}")
+                    .AddMsuNameAndCreator("from MSU Pack {0}")
+                    .ToString();
+            }
+            case TrackDisplayFormat.SpeechStyle:
+            {
+                return builder.AddSongName("{0}")
+                    .AddArtist("by {0}")
+                    .AddAlbum("from album {0}")
+                    .AddMsuName("from MSU Pack {0}")
+                    .AddMsuCreator("by {0}")
+                    .ToString("; ");
+            }
+            default:
+                throw new ArgumentOutOfRangeException(nameof(format), format, null);
+        }
     }
 
     /// <summary>

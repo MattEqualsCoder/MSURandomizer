@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
@@ -182,7 +183,7 @@ public class MsuSelectorServiceTests
                 new() { (1, 2) },
                 new() { (1, 2) },
             },
-            out var msuTypes, out var msus, new Dictionary<int, int>() { { 1, 2 }});
+            out var msuTypes, out var msus, new Dictionary<int, List<int>>() { { 1, new List<int>() { 2 } }});
 
         for (var i = 0; i < 10; i++)
         {
@@ -193,12 +194,228 @@ public class MsuSelectorServiceTests
                 OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
                 EmptyFolder = false,
                 OpenFolder = false,
-                PrevMsu = null
+                PrevMsu = null,
+                ShuffleStyle = MsuShuffleStyle.ShuffleWithPairedTracks
             });
 
             Assert.That(response.Msu!.Tracks.First().MsuName == response.Msu!.Tracks.Last().MsuName);
         }
+    }
+    
+    [Test]
+    public void PairedTracksCurrentTrackSetMsuTest()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 2) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+            },
+            out var msuTypes, out var msus, new Dictionary<int, List<int>>() { { 1, new List<int>() { 2 } }, { 2, new List<int>() { 1 } } });
+
+        var playedTrack = msus.Last().Tracks.Last();
+        playedTrack.MsuName = playedTrack.Msu?.DisplayName;
+        playedTrack.OriginalMsu = playedTrack.Msu;
         
+        for (var i = 0; i < 10; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                ShuffleStyle = MsuShuffleStyle.ShuffleWithPairedTracks,
+                CurrentTrack = playedTrack
+            });
+
+            Assert.That(response.Msu!.Tracks.First().MsuName == response.Msu!.Tracks.Last().MsuName);
+            Assert.That(response.Msu!.Tracks.First().MsuName == playedTrack.MsuName);
+        }
+    }
+    
+    [Test]
+    public void NonPairedTracksMsuTest()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 2) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+                new() { (1, 2) },
+            },
+            out var msuTypes, out var msus, new Dictionary<int, List<int>>() { { 1, new List<int>() { 2 } }});
+
+        var anyNotMatched = false;
+        
+        for (var i = 0; i < 10; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+            });
+
+            if (response.Msu!.Tracks.First().MsuName != response.Msu!.Tracks.Last().MsuName)
+            {
+                anyNotMatched = true;
+                break;
+            }
+        }
+        
+        Assert.That(anyNotMatched, Is.True);
+    }
+    
+    [Test]
+    public void SpecialTracksMsuTest()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 3) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+            },
+            out var msuTypes, out var msus, new Dictionary<int, List<int>>() { { 1, new List<int>() { 2 } }}, 1);
+
+        var anyNotMatchedTrack2 = false;
+        var anyNotMatchedTrack3 = false;
+        
+        for (var i = 0; i < 10; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                ShuffleStyle = MsuShuffleStyle.ChaosNonSpecialTracks
+            });
+
+            var tracks = response.Msu?.Tracks.OrderBy(x => x.Number).ToList() ?? new List<Track>();
+            
+            Assert.That(tracks[0].OriginalTrackNumber, Is.EqualTo(tracks[0].Number));
+
+            if (tracks[1].OriginalTrackNumber != tracks[1].Number)
+            {
+                anyNotMatchedTrack2 = true;
+            }
+            if (tracks[2].OriginalTrackNumber != tracks[2].Number)
+            {
+                anyNotMatchedTrack3 = true;
+            }
+        }
+        
+        Assert.That(anyNotMatchedTrack2, Is.True);
+        Assert.That(anyNotMatchedTrack3, Is.True);
+    }
+    
+    [Test]
+    public void ChaosTracksMsuTest()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 3) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+                new() { (1, 3) },
+            },
+            out var msuTypes, out var msus, new Dictionary<int, List<int>>() { { 1, new List<int>() { 2 } }}, 1);
+
+        var anyNotMatchedTrack1 = false;
+        var anyNotMatchedTrack2 = false;
+        var anyNotMatchedTrack3 = false;
+        
+        for (var i = 0; i < 1000; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                ShuffleStyle = MsuShuffleStyle.ChaosAllTracks
+            });
+
+            var tracks = response.Msu?.Tracks.OrderBy(x => x.Number).ToList() ?? new List<Track>();
+            
+            if (tracks[0].OriginalTrackNumber != 1)
+            {
+                anyNotMatchedTrack1 = true;
+            }
+            if (tracks[1].OriginalTrackNumber == 1)
+            {
+                anyNotMatchedTrack2 = true;
+            }
+            if (tracks[2].OriginalTrackNumber == 1)
+            {
+                anyNotMatchedTrack3 = true;
+            }
+
+            if (anyNotMatchedTrack1 && anyNotMatchedTrack2 && anyNotMatchedTrack3)
+            {
+                break;
+            }
+        }
+        
+        Assert.That(anyNotMatchedTrack1, Is.True);
+        Assert.That(anyNotMatchedTrack2, Is.True);
+        Assert.That(anyNotMatchedTrack3, Is.True);
     }
     
     [Test]
@@ -280,12 +497,12 @@ public class MsuSelectorServiceTests
     }
 
 
-    private MsuSelectorService CreateMsuSelectorService(List<List<(int, int)>> msuTypeTracks, List<List<(int, int)>> msuTracks, out ICollection<MsuType> msuTypes, out ICollection<Msu> msus, Dictionary<int, int>? pairs = null)
+    private MsuSelectorService CreateMsuSelectorService(List<List<(int, int)>> msuTypeTracks, List<List<(int, int)>> msuTracks, out ICollection<MsuType> msuTypes, out ICollection<Msu> msus, Dictionary<int, List<int>>? pairs = null, int? specialTrack = null)
     {
         var logger = TestHelpers.CreateMockLogger<MsuSelectorService>();
         var lookupLogger = TestHelpers.CreateMockLogger<MsuLookupService>();
         var msuDetailsService = TestHelpers.CreateMockMsuDetailsService(null, null);
-        var msuTypeService = TestHelpers.CreateMockMsuTypeServiceMulti(msuTypeTracks, out var generatedMsuTypes, pairs);
+        var msuTypeService = TestHelpers.CreateMockMsuTypeServiceMulti(msuTypeTracks, out var generatedMsuTypes, pairs, specialTrack);
         var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
         var msuCacheService = TestHelpers.CreateMockMsuCacheService();
 

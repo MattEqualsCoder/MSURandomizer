@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MSURandomizerLibrary.Services;
+using SnesConnectorLibrary;
 
 namespace MSURandomizerLibrary;
 
@@ -27,6 +28,10 @@ public static class MsuRandomizerServiceExtensions
         services.AddSingleton<IMsuLookupService, MsuLookupService>();
         services.AddSingleton<IMsuSelectorService, MsuSelectorService>();
         services.AddSingleton<IMsuRandomizerInitializationService, MsuRandomizerInitializationService>();
+        services.AddSingleton<IMsuGameService, MsuGameService>();
+        services.AddSingleton<IMsuMonitorService, MsuMonitorService>();
+
+        services.AddSnesConnectorServices();
         
         return services;
     }

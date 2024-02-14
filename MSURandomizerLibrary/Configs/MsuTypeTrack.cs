@@ -21,9 +21,9 @@ public class MsuTypeTrack
     public int Fallback { get; init; }
     
     /// <summary>
-    /// If there is another track this one goes along with with creating shuffled MSUs
+    /// If there are other tracks this one goes along with with creating shuffled MSUs
     /// </summary>
-    public int? PairedTrack { get; set; }
+    public List<int>? PairedTracks { get; set; }
     
     /// <summary>
     /// If this is a track that's part of extended MSU support
@@ -39,6 +39,11 @@ public class MsuTypeTrack
     /// If this track should be ignored or not as it's not used
     /// </summary>
     public bool IsIgnored { get; init; }
+    
+    /// <summary>
+    /// If this is a special track that shouldn't be included in "shuffle all tracks" mode
+    /// </summary>
+    public bool IsSpecial { get; init; }
     
     /// <summary>
     /// The description of the track

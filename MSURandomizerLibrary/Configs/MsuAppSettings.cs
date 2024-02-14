@@ -84,6 +84,23 @@ public class MsuAppSettings
     public string? MsuWindowTitle { get; set; }
 
     /// <summary>
+    /// Disable opening the MSU Monitor window
+    /// </summary>
+    public bool? DisableMsuMonitorWindow { get; set; }
+
+    /// <summary>
+    /// Default directory for writing the currently playing song to
+    /// </summary>
+    public string? DefaultMsuCurrentSongOutputFilePath { get; set; } = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MSURandomizer", "current_song.txt");
+    
+    /// <summary>
+    /// Default directory for lua scripts to be added
+    /// </summary>
+    public string DefaultLuaDirectory { get; set; } = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MSURandomizer", "Lua");
+    
+    /// <summary>
     /// Retrieves the MSU Type name if found, using any overrides if specified in the app settings
     /// </summary>
     /// <param name="msuName"></param>
