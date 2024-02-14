@@ -46,7 +46,7 @@ jobs:
       id: version
       run: |
         $version = (Get-Item "MSURandomizer\bin\Release\net8.0-windows\win-x86\publish\MSURandomizer.exe").VersionInfo.ProductVersion
-        $version = $version -replace "\+.*"", ""
+        $version = $version -replace "\+.*", ""
         Write-Output "number=$version" >> $env:GITHUB_OUTPUT
       shell: pwsh
     - name: Building the Windows installer
