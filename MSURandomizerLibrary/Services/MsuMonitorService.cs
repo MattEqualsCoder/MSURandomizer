@@ -14,7 +14,7 @@ internal class MsuMonitorService(
 {
     private Msu? _currentMsu;
     private Track? _currentTrack;
-    private readonly CancellationTokenSource _cts = new();
+    private CancellationTokenSource _cts = new();
     private string? _outputPath;
 
     public event MsuTrackChangedEventHandler? MsuTrackChanged;
@@ -29,6 +29,7 @@ internal class MsuMonitorService(
         gameService.OnTrackChanged += GameServiceOnOnTrackChanged;
         _currentMsu = null;
         _currentTrack = null;
+        _cts = new CancellationTokenSource();
         
         do
         {
