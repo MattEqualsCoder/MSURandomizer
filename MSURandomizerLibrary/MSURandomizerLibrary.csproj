@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MattEqualsCoder.SnesConnectorLibrary" Version="0.1.5" />
+    <PackageReference Include="MattEqualsCoder.SnesConnectorLibrary" Version="0.1.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageReference Include="YamlDotNet" Version="15.1.1" />
