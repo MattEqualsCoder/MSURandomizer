@@ -30,6 +30,13 @@ public interface IMsuCacheService
     /// <param name="pcmFiles">The list of all PCM files for the MSU</param>
     /// <param name="saveCache">If the cache should be immediately saved after the MSU is added to it</param>
     public void Put(Msu msu, string yamlHash, ICollection<string> pcmFiles, bool saveCache);
+    
+    /// <summary>
+    /// Removes an MSU from the cache
+    /// </summary>
+    /// <param name="msuPath">The path to the MSU file</param>
+    /// <param name="saveCache">If the cache should be immediately saved after the MSU is removed</param>
+    public void Remove(string msuPath, bool saveCache);
 
     /// <summary>
     /// Saves the cache to the path specified in the Initialize method

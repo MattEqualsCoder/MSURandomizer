@@ -161,7 +161,7 @@ public class Msu
     /// </summary>
     [JsonIgnore]
     public string AbbreviatedPath => GetAbbreviatedPath();
-    
+
     /// <summary>
     /// If the MSU matches filter settings
     /// </summary>
@@ -171,12 +171,20 @@ public class Msu
     /// <returns>True if matches, false otherwise</returns>
     public bool MatchesFilter(MsuFilter filter, MsuType type, string? path)
     {
-        return (filter == MsuFilter.All ||
-                (filter == MsuFilter.Favorite && Settings.IsFavorite) ||
-                (filter == MsuFilter.Compatible && SelectedMsuType?.IsCompatibleWith(type) == true) ||
-                (filter == MsuFilter.Exact && SelectedMsuType?.IsExactMatchWith(type) == true)) &&
-               (string.IsNullOrEmpty(path) || Path.StartsWith(path)) &&
-               Tracks.Count >= 1;
+        return MatchesFilterType(filter, type) && MatchesPath(path) && Tracks.Count >= 1;
+    }
+
+    private bool MatchesFilterType(MsuFilter filter, MsuType type)
+    {
+        return filter == MsuFilter.All ||
+               (filter == MsuFilter.Favorite && Settings.IsFavorite) ||
+               (filter == MsuFilter.Compatible && SelectedMsuType?.IsCompatibleWith(type) == true) ||
+               (filter == MsuFilter.Exact && SelectedMsuType?.IsExactMatchWith(type) == true);
+    }
+
+    private bool MatchesPath(string? path)
+    {
+        return string.IsNullOrEmpty(path) || Path.StartsWith(path);
     }
 
     /// <summary>

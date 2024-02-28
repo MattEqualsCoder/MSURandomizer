@@ -56,7 +56,7 @@ public class MsuTypeServiceTests
     {
         var logger = TestHelpers.CreateMockLogger<MsuTypeService>();
         var settingsService = TestHelpers.CreateMsuAppSettingsService(appSettings);
-        var msuTypeService = new MsuTypeService(logger, settingsService.MsuAppSettings);
+        var msuTypeService = new MsuTypeService(logger, settingsService);
         if (typeConfig == null)
         {
             msuTypeService.LoadMsuTypes();    

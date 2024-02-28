@@ -403,7 +403,7 @@ public class MsuEndtoEndTests : IDisposable
     {
         var logger = TestHelpers.CreateMockLogger<MsuTypeService>();
         var settingsService = TestHelpers.CreateMsuAppSettingsService(appSettings);
-        var msuTypeService = new MsuTypeService(logger, settingsService.MsuAppSettings);
+        var msuTypeService = new MsuTypeService(logger, settingsService);
         if (typeConfig == null)
         {
             msuTypeService.LoadMsuTypes();    
@@ -416,7 +416,8 @@ public class MsuEndtoEndTests : IDisposable
     {
         var logger = TestHelpers.CreateMockLogger<MsuLookupService>();
         var msuCacheService = TestHelpers.CreateMockMsuCacheService();
-        return new MsuLookupService(logger, _msuTypeService, new MsuUserOptions(), _msuDetailsService, appSettings ?? new MsuAppSettings(), msuCacheService);
+        var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
+        return new MsuLookupService(logger, _msuTypeService, _msuDetailsService, appSettings ?? new MsuAppSettings(), msuCacheService, msuUserOptionsService);
     }
 
     private MsuSelectorService CreateMsuSelectorService()

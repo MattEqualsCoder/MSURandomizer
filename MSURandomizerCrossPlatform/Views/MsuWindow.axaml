@@ -1,0 +1,110 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:MSURandomizerCrossPlatform.Views"
+        xmlns:viewModels="clr-namespace:MSURandomizerCrossPlatform.ViewModels"
+        xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="MSURandomizerCrossPlatform.Views.MsuWindow"
+        Title="MSU Randomizer"
+        Icon="/Assets/MSURandomizerIcon.ico"
+        x:DataType="viewModels:MsuWindowViewModel"
+        Loaded="Control_OnLoaded">
+    <Design.DataContext>
+        <viewModels:MsuWindowViewModel/>
+    </Design.DataContext>
+    <LayoutTransformControl Name="MainLayout">
+        <DockPanel Name="BodyPanel">
+           <Grid ColumnDefinitions="*, Auto, Auto, Auto, Auto" DockPanel.Dock="Top" Margin="5">
+                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="5">
+                    <TextBlock>Output MSU Type</TextBlock>
+                    <ComboBox
+                        ItemsSource="{Binding MsusTypes}"
+                        SelectedItem="{Binding SelectedMsuType, Mode=TwoWay}"
+                        SelectionChanged="MsuTypeComboBox_OnSelectionChanged"
+                        IsEnabled="{Binding !AreMsusLoading}"
+                    >
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Column="1" Margin="5" MinWidth="150">
+                    <TextBlock>Filter</TextBlock>
+                    <controls:EnumComboBox 
+                        EnumType="{Binding Filter, Converter={StaticResource TypeConverter}}"
+                        Value="{Binding Filter, Mode=TwoWay}"
+                        ValueChanged="EnumComboBox_OnValueChanged"
+                        IsEnabled="{Binding !AreMsusLoading}"
+                    >
+                    </controls:EnumComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Column="2" Margin="5" MinWidth="100">
+                    <TextBlock></TextBlock>
+                    <Button Name="SelectAllButton" 
+                            Click="SelectAllButton_OnClick"
+                            IsEnabled="{Binding !AreMsusLoading}"
+                    >
+                        Select All
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Column="3" Margin="5" MinWidth="100">
+                    <TextBlock></TextBlock>
+                    <Button Name="SelectNoneButton" 
+                            Click="SelectNoneButton_OnClick"
+                            IsEnabled="{Binding !AreMsusLoading}"
+                    >
+                        Select None
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Column="4" Margin="5">
+                    <TextBlock></TextBlock>
+                    <Button Name="SettingsButton" Click="SettingsButton_OnClick" Height="24.5">
+                        <avalonia:MaterialIcon Kind="Settings"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <Grid ColumnDefinitions="*, Auto" DockPanel.Dock="Bottom" Margin="5">
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding MsuCountText}" Margin="5" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Name="SelectMsuButton" 
+                            Margin="5" 
+                            Content="{Binding SelectMsusText}" 
+                            IsEnabled="{Binding IsSelectMsuEnabled}"
+                            IsVisible="{Binding IsSelectMsuVisible}" 
+                            Click="SelectMsuButton_OnClick"
+                    />
+                    <Button Name="CancelButton" 
+                            Margin="5" 
+                            Content="_Cancel" 
+                            IsEnabled="{Binding IsCancelEnabled}"
+                            IsVisible="{Binding IsCancelVisible}"
+                            Click="CancelButton_OnClick"
+                    />
+                    <Button Name="RandomMsuButton" 
+                            Margin="5" 
+                            Content="{Binding RandomMsuText}"
+                            IsEnabled="{Binding IsRandomMsuEnabled}"
+                            IsVisible="{Binding IsRandomMsuVisible}"
+                            Click="RandomMsuButton_OnClick"
+                    />
+                    <Button Name="ShuffledMsuButton" 
+                            Margin="5" 
+                            Content="Create _Shuffled MSU" 
+                            IsEnabled="{Binding IsShuffledMsuEnabled}"
+                            IsVisible="{Binding IsShuffledMsuVisible}"
+                            Click="ShuffledMsuButton_OnClick"
+                    />
+                    <Button Name="ContinuousShuffleButton" 
+                            Margin="5" 
+                            Content="_Continuously Shuffled MSU" 
+                            IsEnabled="{Binding IsContinuousShuffleEnabled}"
+                            IsVisible="{Binding IsContinuousShuffleVisible}"
+                            Click="ContinuousShuffleButton_OnClick"
+                    />
+                </StackPanel>
+                
+            </Grid>
+            <views:MsuList Name="MsuList" />
+        </DockPanel>
+    </LayoutTransformControl>
+</Window>

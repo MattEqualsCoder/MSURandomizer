@@ -20,6 +20,10 @@ internal class MsuMonitorService(
     public event MsuTrackChangedEventHandler? MsuTrackChanged;
 
     public event EventHandler? MsuShuffled;
+    
+    public event EventHandler? MsuMonitorStarted;
+    
+    public event EventHandler? MsuMonitorStopped;
 
     public async Task StartShuffle(MsuSelectorRequest request, int seconds = 60)
     {
@@ -29,6 +33,7 @@ internal class MsuMonitorService(
         gameService.OnTrackChanged += GameServiceOnOnTrackChanged;
         _currentMsu = null;
         _currentTrack = null;
+        MsuMonitorStarted?.Invoke(this, EventArgs.Empty);
         _cts = new CancellationTokenSource();
         
         do
@@ -49,6 +54,7 @@ internal class MsuMonitorService(
         gameService.OnTrackChanged += GameServiceOnOnTrackChanged;
         _currentMsu = msu;
         _currentTrack = null;
+        MsuMonitorStarted?.Invoke(this, EventArgs.Empty);
     }
 
     public void Stop()
@@ -59,6 +65,7 @@ internal class MsuMonitorService(
         gameService.Disconnect();
         _currentMsu = null;
         _currentTrack = null;
+        MsuMonitorStopped?.Invoke(this, EventArgs.Empty);
     }
 
     private void UpdateOutputPath()

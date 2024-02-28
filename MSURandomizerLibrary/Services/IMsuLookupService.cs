@@ -46,6 +46,11 @@ public interface IMsuLookupService
     public MsuLoadStatus Status { get; set; }
     
     /// <summary>
+    /// Event fired off when the MSU lookup starts
+    /// </summary>
+    public event EventHandler? OnMsuLookupStarted;
+    
+    /// <summary>
     /// Event fired off when the MSU lookup is completed
     /// </summary>
     public event EventHandler<MsuListEventArgs>? OnMsuLookupComplete;

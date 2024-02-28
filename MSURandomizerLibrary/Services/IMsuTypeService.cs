@@ -54,4 +54,9 @@ public interface IMsuTypeService
     /// The collection of MSU types previously loaded
     /// </summary>
     public IReadOnlyCollection<MsuType> MsuTypes { get; }
+
+    /// <summary>
+    /// Event for MSU loading finishing
+    /// </summary>
+    public event EventHandler? OnMsuTypeLoadComplete;
 }

@@ -1,0 +1,44 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
+        xmlns:viewModels="clr-namespace:MSURandomizerCrossPlatform.ViewModels"
+        xmlns:views="clr-namespace:MSURandomizerCrossPlatform.Views"
+        mc:Ignorable="d"
+        d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="MSURandomizerCrossPlatform.Views.MsuMonitorWindow"
+        Title="MSU Randomizer | Current Playing Song"
+        Icon="/Assets/MSURandomizerIcon.ico"
+        Closed="TopLevel_OnClosed"
+        x:DataType="viewModels:MsuMonitorWindowViewModel">
+    <LayoutTransformControl Name="MainLayout">
+        <DockPanel>
+            <controls:HeaderFooter DockPanel.Dock="Bottom" Padding="5">
+                <Grid ColumnDefinitions="Auto,*">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <controls:EnumComboBox
+                            EnumType="{Binding ConnectorType, Converter={StaticResource TypeConverter}}"
+                            Value="{Binding ConnectorType, Mode=TwoWay}"
+                            MinWidth="150"
+                            ValueChanged="SnesConnectoTypeEnumComboBox_OnValueChanged"
+                        />
+                        <TextBlock Text="{Binding ConnectionStatus}" VerticalAlignment="Center" Margin="5 0 0 0"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding LastUpdateTimeText}" VerticalAlignment="Center" TextAlignment="Right"/>
+                </Grid>
+            </controls:HeaderFooter>
+            <Grid>
+                <TextBlock IsVisible="{Binding HasErrorMessage}" 
+                           Text="{Binding ErrorMessage}" 
+                           Padding="10"
+                           FontSize="16"
+                ></TextBlock>
+                <Grid IsVisible="{Binding !HasErrorMessage}">
+                    <views:CurrentPlayingTrackControl></views:CurrentPlayingTrackControl>
+                </Grid>
+            </Grid>
+            
+        </DockPanel>
+    </LayoutTransformControl>
+</Window>

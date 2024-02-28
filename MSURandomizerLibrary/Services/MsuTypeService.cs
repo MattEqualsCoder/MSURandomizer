@@ -14,10 +14,10 @@ internal class MsuTypeService : IMsuTypeService
     
     private readonly ILogger<MsuTypeService> _logger;
     private readonly List<MsuType> _msuTypes = new();
-    private readonly MsuAppSettings _msuAppSettings;
+    private readonly IMsuAppSettingsService _msuAppSettings;
     private Dictionary<string, Dictionary<int, string>> _msuTypeTrackYamlRewrites = new();
 
-    public MsuTypeService(ILogger<MsuTypeService> logger, MsuAppSettings randomizerMsuAppSettings)
+    public MsuTypeService(ILogger<MsuTypeService> logger, IMsuAppSettingsService randomizerMsuAppSettings)
     {
         _logger = logger;
         _msuAppSettings = randomizerMsuAppSettings;
@@ -47,6 +47,8 @@ internal class MsuTypeService : IMsuTypeService
     }
 
     public IReadOnlyCollection<MsuType> MsuTypes => _msuTypes;
+    
+    public event EventHandler? OnMsuTypeLoadComplete;
 
     public void LoadMsuTypes()
     {
@@ -105,12 +107,12 @@ internal class MsuTypeService : IMsuTypeService
     }
 
     public MsuType? GetSMZ3MsuType() => MsuTypes.FirstOrDefault(x =>
-        (_msuAppSettings.Smz3MsuTypes?.Contains(x.Name) == true ||
-         _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true) && x.Selectable);
+        (_msuAppSettings.MsuAppSettings.Smz3MsuTypes?.Contains(x.Name) == true ||
+         _msuAppSettings.MsuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true) && x.Selectable);
 
     public MsuType? GetSMZ3LegacyMSUType() => MsuTypes.FirstOrDefault(x =>
-        (_msuAppSettings.Smz3MsuTypes?.Contains(x.Name) == true ||
-         _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true) && !x.Selectable);
+        (_msuAppSettings.MsuAppSettings.Smz3MsuTypes?.Contains(x.Name) == true ||
+         _msuAppSettings.MsuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true) && !x.Selectable);
 
     private void LoadYamlTrackRewrites()
     {
@@ -146,6 +148,8 @@ internal class MsuTypeService : IMsuTypeService
         }
         
         SetupConversions(configs);
+        
+        OnMsuTypeLoadComplete?.Invoke(this, EventArgs.Empty);
     }
 
     private void SetupConversions(IEnumerable<MsuTypeConfig> configs)
@@ -153,12 +157,12 @@ internal class MsuTypeService : IMsuTypeService
         // Create conversions from the copy part of the configs
         foreach (var config in configs.Where(x => x.CanCopy))
         {
-            var msuName = _msuAppSettings.GetMsuTypeName(config.Name);
+            var msuName = _msuAppSettings.MsuAppSettings.GetMsuTypeName(config.Name);
             var msuType = _msuTypes.First(x => x.DisplayName == msuName);
             foreach (var copyDetails in config.Copy!)
             {
                 var otherConfig = configs.First(x => x.Path == copyDetails.Msu || x.Name == copyDetails.Msu);
-                var otherMsuType = _msuTypes.First(x => x.DisplayName == _msuAppSettings.GetMsuTypeName(otherConfig.Name));
+                var otherMsuType = _msuTypes.First(x => x.DisplayName == _msuAppSettings.MsuAppSettings.GetMsuTypeName(otherConfig.Name));
                 msuType.Conversions[otherMsuType] = x => x + copyDetails.Modifier;
                 otherMsuType.Conversions[msuType] = x => x - copyDetails.Modifier;
             }
@@ -166,13 +170,13 @@ internal class MsuTypeService : IMsuTypeService
             foreach (var exactMatch in config.Meta.ExactMatches)
             {
                 var otherConfig = configs.First(x => x.Path == exactMatch || x.Name == exactMatch);
-                var otherMsuType = _msuTypes.First(x => x.DisplayName == _msuAppSettings.GetMsuTypeName(otherConfig.Name));
+                var otherMsuType = _msuTypes.First(x => x.DisplayName == _msuAppSettings.MsuAppSettings.GetMsuTypeName(otherConfig.Name));
                 msuType.ExactMatches.Add(otherMsuType);
                 otherMsuType.ExactMatches.Add(msuType);
             }
         }
 
-        var smz3Types = _msuTypes.Where(x => _msuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true);
+        var smz3Types = _msuTypes.Where(x => _msuAppSettings.MsuAppSettings.Smz3MsuTypes?.Contains(x.DisplayName) == true);
         var smz3One = smz3Types.FirstOrDefault();
         var smz3Two = smz3Types.LastOrDefault();
 
@@ -222,7 +226,7 @@ internal class MsuTypeService : IMsuTypeService
         return new MsuType()
         {
             Name = config.Name,
-            DisplayName = _msuAppSettings.GetMsuTypeName(config.Name),
+            DisplayName = _msuAppSettings.MsuAppSettings.GetMsuTypeName(config.Name),
             Selectable = config.Meta.Selectable != false,
             Tracks = tracks,
             RequiredTrackNumbers = tracks.Where(x => !x.IsIgnored).Select(x => x.Number).ToHashSet(),

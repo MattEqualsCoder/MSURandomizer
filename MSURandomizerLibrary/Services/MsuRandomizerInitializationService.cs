@@ -22,29 +22,44 @@ internal class MsuRandomizerInitializationService : IMsuRandomizerInitialization
     
     public void Initialize(MsuRandomizerInitializationRequest request)
     {
-        var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-        _logger.LogInformation("Initializing MSU Randomizer Library {Version}", version.ProductVersion ?? "");
-        
-        var appSettings = request.MsuAppSettingsStream == null
-            ? _msuAppSettingsService.Initialize(request.MsuAppSettingsPath)
-            : _msuAppSettingsService.Initialize(request.MsuAppSettingsStream);
-
-        if (appSettings == null)
+        if (request.InitializeAppSettings)
         {
-            throw new InvalidOperationException("Unable to initialize MSU Randomizer App Settings");
+            var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+            _logger.LogInformation("Initializing MSU Randomizer Library {Version}", version.ProductVersion ?? "");
+            
+            var settings = request.MsuAppSettingsStream == null
+                ? _msuAppSettingsService.Initialize(request.MsuAppSettingsPath)
+                : _msuAppSettingsService.Initialize(request.MsuAppSettingsStream);
+
+            if (settings == null)
+            {
+                throw new InvalidOperationException("Unable to initialize MSU Randomizer App Settings");
+            }
         }
 
-        InitializeMsuTypes(request, appSettings);
-        var userOptions = InitializeUserOptions(request, appSettings);
-        
-        InitializeCache(request, appSettings);
+        var appSettings = _msuAppSettingsService.MsuAppSettings;
 
+        if (request.InitializeMsuTypes)
+        {
+            InitializeMsuTypes(request, appSettings);    
+        }
+
+        if (request.InitializeUserOptions)
+        {
+            InitializeUserOptions(request, appSettings);    
+        }
+        
+        if (request.InitializeCache)
+        {
+            InitializeCache(request, appSettings);    
+        }
+        
         if (request.LookupMsus)
         {
-            Task.Run(() =>
+            _ = Task.Run(() =>
             {
                 var msuLookupService = _serviceProvider.GetRequiredService<IMsuLookupService>();
-                msuLookupService.LookupMsus(userOptions.DefaultMsuPath, userOptions.MsuTypePaths); 
+                msuLookupService.LookupMsus();
             });
         }
     }
@@ -88,6 +103,10 @@ internal class MsuRandomizerInitializationService : IMsuRandomizerInitialization
         var basePath = string.IsNullOrWhiteSpace(request.UserOptionsPath)
             ? msuAppSettings.UserOptionsFilePath
             : request.UserOptionsPath;
+        
+#if DEBUG
+        basePath = basePath?.Replace("msu-user-settings.yml", "msu-user-settings-debug.yml");
+#endif
         
         if (string.IsNullOrWhiteSpace(basePath))
         {

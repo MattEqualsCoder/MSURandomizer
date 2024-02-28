@@ -17,7 +17,7 @@ internal class MsuCacheService : IMsuCacheService
     };
     
     private string _cachePath = "";
-    private bool _hasPut;
+    private bool _hasUpdated;
     private bool _initialized;
 
     public MsuCacheService(IMsuTypeService msuTypeService, ILogger<MsuCacheService> logger, MsuUserOptions msuUserOptions)
@@ -89,8 +89,20 @@ internal class MsuCacheService : IMsuCacheService
             PcmFileList = string.Join(";", pcmFiles.Order())
         };
 
-        _hasPut = true;
+        _hasUpdated = true;
 
+        if (saveCache)
+        {
+            Save();
+        }
+    }
+
+    public void Remove(string msuPath, bool saveCache)
+    {
+        _cache.Data.TryRemove(msuPath, out _);
+
+        _hasUpdated = true;
+        
         if (saveCache)
         {
             Save();
@@ -99,7 +111,7 @@ internal class MsuCacheService : IMsuCacheService
 
     public void Save()
     {
-        if (!_initialized || !_hasPut) return;
+        if (!_initialized || !_hasUpdated) return;
         try
         {
             var text = JsonSerializer.Serialize(_cache);

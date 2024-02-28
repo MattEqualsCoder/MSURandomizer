@@ -107,6 +107,11 @@ public class MsuUserOptions
     /// The version of the installed Lua scripts
     /// </summary>
     public int? LuaScriptVersion { get; set; }
+
+    /// <summary>
+    /// The scale factor for the UI
+    /// </summary>
+    public double UiScaling { get; set; } = 1;
     
     /// <summary>
     /// Specific directories to load for specific MSU types

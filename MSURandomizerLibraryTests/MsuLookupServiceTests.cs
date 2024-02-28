@@ -107,6 +107,7 @@ public class MsuLookupServiceTests
         var msuTypeService = TestHelpers.CreateMockMsuTypeService(tracks, out var msuTypes);
         var msuDetailsService = TestHelpers.CreateMockMsuDetailsService(null, null);
         var msuCacheService = TestHelpers.CreateMockMsuCacheService();
-        return new MsuLookupService(logger, msuTypeService, new MsuUserOptions(), msuDetailsService, new MsuAppSettings(), msuCacheService);
+        var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
+        return new MsuLookupService(logger, msuTypeService, msuDetailsService, new MsuAppSettings(), msuCacheService, msuUserOptionsService);
     }
 }

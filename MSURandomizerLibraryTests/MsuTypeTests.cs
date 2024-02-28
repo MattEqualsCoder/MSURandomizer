@@ -233,7 +233,7 @@ public class MsuTypeTests
     {
         var logger = TestHelpers.CreateMockLogger<MsuTypeService>();
         var settingsService = TestHelpers.CreateMsuAppSettingsService(appSettings);
-        var msuTypeService = new MsuTypeService(logger, settingsService.MsuAppSettings);
+        var msuTypeService = new MsuTypeService(logger, settingsService);
         if (typeConfig == null)
         {
             msuTypeService.LoadMsuTypes();    
@@ -247,7 +247,8 @@ public class MsuTypeTests
         var logger = TestHelpers.CreateMockLogger<MsuLookupService>();
         var msuDetailsService = TestHelpers.CreateMockMsuDetailsService(null, null);
         var msuCacheService = TestHelpers.CreateMockMsuCacheService();
-        return new MsuLookupService(logger, _msuTypeService, new MsuUserOptions(), msuDetailsService, appSettings ?? new MsuAppSettings(), msuCacheService);
+        var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
+        return new MsuLookupService(logger, _msuTypeService, msuDetailsService, appSettings ?? new MsuAppSettings(), msuCacheService, msuUserOptionsService);
     }
     
 }

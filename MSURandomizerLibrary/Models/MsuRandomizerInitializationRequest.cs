@@ -43,4 +43,24 @@ public class MsuRandomizerInitializationRequest
     /// If the MSUs should be automatically looked up on initialization
     /// </summary>
     public bool LookupMsus { get; set; } = true;
+    
+    /// <summary>
+    /// If the MSU cache should be setup
+    /// </summary>
+    public bool InitializeCache { get; set; } = true;
+
+    /// <summary>
+    /// If the user options should be initialized
+    /// </summary>
+    public bool InitializeUserOptions { get; set; } = true;
+
+    /// <summary>
+    /// If the MSU types should be initialized
+    /// </summary>
+    public bool InitializeMsuTypes { get; set; } = true;
+
+    /// <summary>
+    /// If the app settings should be initialized
+    /// </summary>
+    public bool InitializeAppSettings { get; set; } = true;
 }

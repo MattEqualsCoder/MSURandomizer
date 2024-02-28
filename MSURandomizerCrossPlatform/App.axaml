@@ -1,14 +1,23 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:msuRandomizerCrossPlatform="clr-namespace:MSURandomizerCrossPlatform"
              x:Class="MSURandomizerCrossPlatform.App"
+             xmlns:local="using:MSURandomizerCrossPlatform"
+             xmlns:converters="clr-namespace:AvaloniaControls.Converters;assembly=AvaloniaControls"
              RequestedThemeVariant="Dark">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+  
      <Application.Resources>
-         <msuRandomizerCrossPlatform:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+         <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
+         <converters:NullableBoolToStringConverter x:Key="NullableBoolToStringConverter" />
+         <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+         <converters:TypeConverter x:Key="TypeConverter" />
      </Application.Resources>
-    <Application.Styles>
-        <SimpleTheme />
-    </Application.Styles>
+             
+     <Application.Styles>
+         <SimpleTheme />
+         <StyleInclude Source="avares://AvaloniaControls/Themes/Themes.axaml"></StyleInclude>
+     </Application.Styles>
 </Application>

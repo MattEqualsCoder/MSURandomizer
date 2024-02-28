@@ -4,7 +4,27 @@
     <option name="projectPerEditor">
       <map>
         <entry key="MSURandomizerCrossPlatform/App.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Controls/MsuDetailsWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Controls/MsuGenerationWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Controls/MsuList.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Controls/MsuMonitorWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Controls/MsuWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Controls/SettingsWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
         <entry key="MSURandomizerCrossPlatform/MainWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Views/CurrentPlayingTrackControl.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Views/MainWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Views/MsuDetailsWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Views/MsuGenerationWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Views/MsuList.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Views/MsuListViewModel.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Views/MsuMonitorPanel.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Views/MsuMonitorWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Views/MsuWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatform/Views/SettingsWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
+        <entry key="MSURandomizerCrossPlatformOld/App.axaml" value="MSURandomizerCrossPlatformOld/MSURandomizerCrossPlatformOld.csproj" />
+        <entry key="MSURandomizerCrossPlatformOld/Controls/MsuDetailsWindow.axaml" value="MSURandomizerCrossPlatformOld/MSURandomizerCrossPlatformOld.csproj" />
+        <entry key="MSURandomizerUIAvalonia/App.axaml" value="MSURandomizerUIAvalonia/MSURandomizerUIAvalonia.csproj" />
+        <entry key="MSURandomizerUIAvalonia/MainWindow.axaml" value="MSURandomizerUIAvalonia/MSURandomizerUIAvalonia.csproj" />
       </map>
     </option>
   </component>

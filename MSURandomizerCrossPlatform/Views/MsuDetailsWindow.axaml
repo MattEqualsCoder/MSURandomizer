@@ -1,0 +1,84 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:MSURandomizerCrossPlatform.ViewModels"
+        xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
+        mc:Ignorable="d"
+        d:DesignWidth="800" 
+        d:DesignHeight="600"
+        Width="800" 
+        Height="600"
+        x:Class="MSURandomizerCrossPlatform.Views.MsuDetailsWindow"
+        Title="Msu Details Window"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Assets/MSURandomizerIcon.ico"
+        x:DataType="viewModels:MsuDetailsWindowViewModel">
+    <LayoutTransformControl Name="MainLayout">
+        <DockPanel>
+            <controls:HeaderFooter DockPanel.Dock="Bottom" >
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                    <Button Margin="5" x:Name="SaveButton" Click="SaveButton_OnClick" IsEnabled="{Binding HasBeenModified}">Save Msu Settings</Button>
+                    <Button Margin="5" x:Name="CloseButton" Click="CloseButton_OnClick">Cancel</Button>
+                </StackPanel>
+            </controls:HeaderFooter>
+            <ScrollViewer>
+                <StackPanel Orientation="Vertical" Grid.IsSharedSizeScope="True" Margin="10">
+                    <controls:LabeledControl Text="Name Override:">
+                        <TextBox Text="{Binding Name}"
+                                 IsReadOnly="{Binding !CanEditDetails}"
+                                 IsEnabled="{Binding CanEditDetails}"
+                                 Watermark="{Binding DefaultMsuName}"
+                        ></TextBox>
+                    </controls:LabeledControl>
+                    <controls:LabeledControl Text="Creator Override:">
+                        <TextBox Text="{Binding Creator}"
+                                 IsReadOnly="{Binding !CanEditDetails}"
+                                 IsEnabled="{Binding CanEditDetails}"
+                                 Watermark="{Binding DefaultCreator}"
+                        ></TextBox>
+                    </controls:LabeledControl>
+                    <controls:LabeledControl Text="MSU Type Override:">
+                        <ComboBox ItemsSource="{Binding MsuTypeNames}"
+                                  SelectedItem="{Binding MsuTypeName}"
+                        ></ComboBox>
+                    </controls:LabeledControl>
+                    <controls:LabeledControl Text="Alt Track Shuffling:">
+                        <controls:EnumComboBox
+                            EnumType="{Binding AltOption, Converter={StaticResource TypeConverter}}"
+                            Value="{Binding AltOption, Mode=TwoWay}"
+                        ></controls:EnumComboBox>
+                    </controls:LabeledControl>
+                    <controls:LabeledControl Text="MSU Path:">
+                        <TextBlock Text="{Binding MsuPath}" VerticalAlignment="Center" Margin="0 5 0 0"></TextBlock>
+                    </controls:LabeledControl>
+            
+                    <controls:CardControl HeaderText="Tracks" Margin="0 5 0 0">
+                        <ItemsControl ItemsSource="{Binding Tracks}" >
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Vertical" Margin="5" IsVisible="{Binding Display}">
+                                        <TextBlock Text="{Binding TrackDisplay}"></TextBlock>
+                                        <ItemsControl ItemsSource="{Binding Songs}" Margin="0 2 0 0" >
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Vertical" Margin="8 2 0 0">
+                                                        <TextBlock Text="{Binding SongDetails}" TextWrapping="Wrap"></TextBlock>
+                                                        <controls:LinkControl x:Name="TrackLinkButton" Click="TrackLinkButton_OnClick" Tag="{Binding DisplayUrl}"></controls:LinkControl>
+                                                        <TextBlock Text="{Binding Path}" Foreground="Gray" Margin="10 0 0 0"></TextBlock>
+                                                        <Decorator></Decorator>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Separator Margin="0 10 0 0"></Separator>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </controls:CardControl>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </LayoutTransformControl>
+</Window>

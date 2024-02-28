@@ -1,0 +1,96 @@
+using System.Collections.Generic;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
+using Avalonia.Threading;
+using AvaloniaControls;
+using AvaloniaControls.ControlServices;
+using MSURandomizerCrossPlatform.Services;
+using MSURandomizerCrossPlatform.ViewModels;
+using MSURandomizerLibrary;
+
+namespace MSURandomizerCrossPlatform.Views;
+
+public partial class MsuGenerationWindow : Window
+{
+    private readonly MsuGenerationWindowService? _service;
+    
+    public MsuGenerationWindow()
+    {
+        InitializeComponent();
+
+        if (Design.IsDesignMode)
+        {
+            DataContext = new MsuGenerationViewModel();
+            return;
+        }
+
+        _service = ControlServiceFactory.GetControlService<MsuGenerationWindowService>();
+    }
+
+    public bool DialogResult { get; private set; }
+
+    public void ShowDialog(Window window, MsuRandomizationStyle style, string outputMsuType, ICollection<string> selectedMsus)
+    {
+        DataContext = _service?.InitializeModel(style, outputMsuType, selectedMsus);
+        Owner = window;
+        ShowDialog(window);
+    }
+    
+    private void SelectRomButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        TaskService.Instance.RunTask(OpenFileDialog);
+    }
+
+    private void SelectFolderButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        TaskService.Instance.RunTask(OpenFolderDialog);
+    }
+
+    private async void OpenFileDialog()
+    {
+        if (_service == null)
+        {
+            return;
+        }
+        
+        var previousFolder = _service.Model.OutputRomPath ?? _service.Model.OutputFolderPath;
+        var path = await CrossPlatformTools.OpenFileDialogAsync(this, FileInputControlType.OpenFile, "Rom Files:*.sfc,*.gb,*.gbc", previousFolder);
+        if (path is not IStorageFile file || file.TryGetLocalPath() == null)
+        {
+            return;
+        }
+
+        _service?.SaveFile(file.TryGetLocalPath()!);
+        
+        DialogResult = true;
+        
+        Dispatcher.UIThread.Invoke(Close);
+    }
+    
+    private async void OpenFolderDialog()
+    {
+        if (_service == null)
+        {
+            return;
+        }
+        
+        var previousFolder = _service.Model.OutputFolderPath ?? _service.Model.OutputRomPath;
+        var path = await CrossPlatformTools.OpenFileDialogAsync(this, FileInputControlType.Folder, "", previousFolder);
+        if (path is not IStorageFolder file || file.TryGetLocalPath() == null)
+        {
+            return;
+        }
+
+        _service?.SaveFolder(file.TryGetLocalPath()!);
+
+        DialogResult = true;
+
+        Dispatcher.UIThread.Invoke(Close);
+    }
+
+    private void CancelButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+}

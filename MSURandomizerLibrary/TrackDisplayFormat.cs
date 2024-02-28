@@ -37,6 +37,6 @@ public enum TrackDisplayFormat
     /// Expanded sentence-style: displays track and MSU pack info in a single
     /// (long) line split apart with semi-colons for text-to-speech
     /// </summary>
-    [Description("Sentence: \"Majestic Castle by Koji Kondo; from album A Link to the Past OST; from MSU pack ALttP Music; by SomeMSUCreator\"")]
+    [Description("Sentence (speech style): \"Majestic Castle by Koji Kondo; from album A Link to the Past OST; from MSU pack ALttP Music; by SomeMSUCreator\"")]
     SpeechStyle,
 }

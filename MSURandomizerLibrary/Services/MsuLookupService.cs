@@ -10,21 +10,22 @@ internal class MsuLookupService : IMsuLookupService
 {
     private readonly ILogger<MsuLookupService> _logger;
     private readonly IMsuTypeService _msuTypeService;
-    private readonly MsuUserOptions _msuUserOptions;
+    private readonly IMsuUserOptionsService _msuUserOptionsService;
     private readonly IMsuDetailsService _msuDetailsService;
     private readonly MsuAppSettings _msuAppSettings;
     private readonly IMsuCacheService _msuCacheService;
     private readonly Dictionary<string, string> _errors = new();
     private IReadOnlyCollection<Msu> _msus = new List<Msu>();
+    private MsuUserOptions _msuUserOptions => _msuUserOptionsService.MsuUserOptions;
 
-    public MsuLookupService(ILogger<MsuLookupService> logger, IMsuTypeService msuTypeService, MsuUserOptions msuUserOptions, IMsuDetailsService msuDetailsService, MsuAppSettings msuAppSettings, IMsuCacheService msuCacheService)
+    public MsuLookupService(ILogger<MsuLookupService> logger, IMsuTypeService msuTypeService, IMsuDetailsService msuDetailsService, MsuAppSettings msuAppSettings, IMsuCacheService msuCacheService, IMsuUserOptionsService msuUserOptionsService)
     {
         _logger = logger;
         _msuTypeService = msuTypeService;
-        _msuUserOptions = msuUserOptions;
         _msuDetailsService = msuDetailsService;
         _msuAppSettings = msuAppSettings;
         _msuCacheService = msuCacheService;
+        _msuUserOptionsService = msuUserOptionsService;
     }
 
     public IReadOnlyCollection<Msu> LookupMsus()
@@ -43,6 +44,7 @@ internal class MsuLookupService : IMsuLookupService
         _logger.LogInformation("MSU lookup started");
         _errors.Clear();
         Status = MsuLoadStatus.Loading;
+        OnMsuLookupStarted?.Invoke(this, EventArgs.Empty);
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
@@ -407,6 +409,8 @@ internal class MsuLookupService : IMsuLookupService
 
         return matchedType;
     }
+    
+    public event EventHandler? OnMsuLookupStarted;
     
     public event EventHandler<MsuListEventArgs>? OnMsuLookupComplete;
     

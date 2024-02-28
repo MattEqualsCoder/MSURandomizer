@@ -1,11 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using AvaloniaControls.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using MSURandomizerLibrary;
-using MSURandomizerLibrary.Models;
-using MSURandomizerLibrary.Services;
-using Serilog;
+using MSURandomizerCrossPlatform.ViewModels;
+using MSURandomizerCrossPlatform.Views;
 
 namespace MSURandomizerCrossPlatform;
 
@@ -18,32 +17,11 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        Log.Logger = new LoggerConfiguration()
-            .Enrich.FromLogContext()
-            .WriteTo.Console()
-            .WriteTo.Debug()
-            .CreateLogger();
-        
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && Program.MainHost != null)
         {
-            var serviceCollection = new ServiceCollection()
-                .AddMsuRandomizerServices()
-                .AddLogging(logging =>
-                {
-                    logging.AddSerilog(dispose: true);
-                })
-                .AddSingleton<MainWindow>();
-            var services = serviceCollection.BuildServiceProvider();
-
-            var msuInitializationRequest = new MsuRandomizerInitializationRequest();
-
-            #if DEBUG
-            msuInitializationRequest.UserOptionsPath = "%LocalAppData%\\MSURandomizer\\msu-user-settings-debug.yml";
-            #endif
-            
-            services.GetRequiredService<IMsuRandomizerInitializationService>().Initialize(msuInitializationRequest);
-            
-            desktop.MainWindow = services.GetRequiredService<MainWindow>();
+            var msuWindow = Program.MainHost.Services.GetRequiredService<MsuWindow>();
+            MessageWindow.GlobalParentWindow = msuWindow;
+            desktop.MainWindow = msuWindow;
         }
 
         base.OnFrameworkInitializationCompleted();
