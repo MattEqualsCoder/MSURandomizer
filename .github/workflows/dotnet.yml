@@ -2,9 +2,9 @@ name: .NET Build + Test + Publish
 
 on:
   push:
-    branches: [ test-build ]
+    branches: [ main ]
   pull_request:
-    branches: [ test-build ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -27,8 +27,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore -p:PostBuildEvent=
-    # - name: Test
-    #   run: dotnet test --no-build --verbosity normal
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
     - name: Build
       if: ${{ github.event_name != 'pull_request' }}
       run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= 
