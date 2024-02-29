@@ -1,47 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-    <AssemblyVersion></AssemblyVersion>
-    <FileVersion></FileVersion>
-    <PackageIcon>MSURandomizerIcon.ico</PackageIcon>
-    <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
-    <Version>2.0.0-beta.1</Version>
-  </PropertyGroup>
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MSURandomizerUI\MSURandomizerUI.csproj" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="MSURandomizerIcon.ico" />
-    <Content Include="MSURandomizerIcon.ico" />
-    <Resource Include="MSURandomizerIcon.ico">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </Resource>
-  </ItemGroup>
+    <ItemGroup>
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.9" />
+        <PackageReference Include="MattEqualsCoder.AvaloniaControls" Version="0.9.0" />
+        <PackageReference Include="MattEqualsCoder.GitHubReleaseChecker" Version="1.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+        <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MattEqualsCoder.GitHubReleaseChecker" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="settings.yaml" />
-  </ItemGroup>
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.Hosting.Abstractions">
+        <HintPath>..\..\..\..\.nuget\packages\microsoft.extensions.hosting.abstractions\8.0.0\lib\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
+      </Reference>
+      <Reference Include="Serilog">
+        <HintPath>..\..\..\..\.nuget\packages\serilog\3.1.1\lib\net7.0\Serilog.dll</HintPath>
+      </Reference>
+      <Reference Include="Serilog.Sinks.File">
+        <HintPath>..\..\..\..\.nuget\packages\serilog.sinks.file\5.0.0\lib\net5.0\Serilog.Sinks.File.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Page Update="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MSURandomizerLibrary\MSURandomizerLibrary.csproj" />
+    </ItemGroup>
 </Project>

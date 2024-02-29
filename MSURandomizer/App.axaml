@@ -1,0 +1,23 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MSURandomizer.App"
+             xmlns:local="using:MSURandomizer"
+             RequestedThemeVariant="Dark">
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+  
+     <Application.Resources>
+         <ResourceDictionary>
+             <ResourceDictionary.MergedDictionaries>
+                 <ResourceInclude Source="avares://AvaloniaControls/Themes/Resources.axaml"></ResourceInclude>
+             </ResourceDictionary.MergedDictionaries>
+         </ResourceDictionary>
+     </Application.Resources>
+             
+     <Application.Styles>
+         <SimpleTheme />
+         <StyleInclude Source="avares://AvaloniaControls/Themes/Themes.axaml"></StyleInclude>
+     </Application.Styles>
+</Application>

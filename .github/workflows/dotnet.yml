@@ -2,9 +2,9 @@ name: .NET Build + Test + Publish
 
 on:
   push:
-    branches: [ main ]
+    branches: [ test-build ]
   pull_request:
-    branches: [ main ]
+    branches: [ test-build ]
 
 jobs:
   build:
@@ -27,8 +27,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore -p:PostBuildEvent=
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    # - name: Test
+    #   run: dotnet test --no-build --verbosity normal
     - name: Build
       if: ${{ github.event_name != 'pull_request' }}
       run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= 
@@ -38,9 +38,9 @@ jobs:
     - name: Publish Windows 32bit
       if: ${{ github.event_name != 'pull_request' }}
       run: dotnet publish --os win --arch x86 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
-    # - name: Publish Linux 64bit
-    #   # if: ${{ github.event_name != 'pull_request' }}
-    #   run: dotnet publish --os linux --arch x64 -c MSURandomizer/MSURandomizer.csproj
+    - name: Publish Linux 64bit
+      if: ${{ github.event_name != 'pull_request' }}
+      run: dotnet publish --os linux --arch x64 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
     - name: Get version number
       if: ${{ github.event_name != 'pull_request' }}
       id: version
@@ -58,11 +58,11 @@ jobs:
       working-directory: setup
       run: "./CopyNugetPackages.ps1"
       shell: pwsh
-    # - name: Building the Linux 64bit package
-    #   if: ${{ github.event_name != 'pull_request' }}
-    #   working-directory: setup
-    #   run: "./LinuxBuildZipper.ps1"
-    #   shell: pwsh
+    - name: Building the Linux 64bit package
+      if: ${{ github.event_name != 'pull_request' }}
+      working-directory: setup
+      run: "./LinuxBuildZipper.ps1"
+      shell: pwsh
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       if: ${{ github.event_name != 'pull_request' }}

@@ -3,6 +3,8 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="MSURandomizer/App.axaml" value="MSURandomizer/MSURandomizer.csproj" />
+        <entry key="MSURandomizer/Views/SettingsWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizerCrossPlatform/App.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
         <entry key="MSURandomizerCrossPlatform/Controls/MsuDetailsWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
         <entry key="MSURandomizerCrossPlatform/Controls/MsuGenerationWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />

@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
+    <PackageIcon>MSURandomizerIcon.ico</PackageIcon>
+    <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
+    <Version>2.0.0-beta.1</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MSURandomizerUI\MSURandomizerUI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="MSURandomizerIcon.ico" />
+    <Content Include="MSURandomizerIcon.ico" />
+    <Resource Include="MSURandomizerIcon.ico">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MattEqualsCoder.GitHubReleaseChecker" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="settings.yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+</Project>

@@ -1,17 +1,17 @@
 $parentFolder = Split-Path -parent $PSScriptRoot
 
 # Get publish folder
-$folder = "$parentFolder\MSURandomizer\bin\Release\net7.0\linux-x64\publish"
-$winFolder = "$parentFolder\MSURandomizer\bin\Release\net7.0-windows\win-x86\publish"
+$folder = "$parentFolder\MSURandomizer\bin\Release\net8.0\linux-x64\publish"
+$winFolder = "$parentFolder\MSURandomizer\bin\Release\net8.0-windows\win-x86\publish"
 if (-not (Test-Path $folder))
 {
-    $folder = "$parentFolder\MSURandomizer\bin\Release\net7.0\publish\linux-x64"
-    $winFolder = "$parentFolder\MSURandomizer\bin\Release\net7.0-windows\publish\win-x86"
+    $folder = "$parentFolder\MSURandomizer\bin\Release\net8.0\publish\linux-x64"
+    $winFolder = "$parentFolder\MSURandomizer\bin\Release\net8.0-windows\publish\win-x86"
 }
 
 # Get version number from Randomizer.App
 $version = "0.0.0"
-if (Test-Path "$winFolder\Randomizer.App.exe") {
+if (Test-Path "$winFolder\MSURandomizer.App.exe") {
     $version = (Get-Item "$winFolder\MSURandomizer.exe").VersionInfo.ProductVersion
 }
 else {
