@@ -8,10 +8,23 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <PackageIcon>MSURandomizerIcon.ico</PackageIcon>
         <Version>2.0.0-alpha.1</Version>
+        <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**"/>
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="MSURandomizerIcon.ico" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaResource Include="MSURandomizerIcon.ico" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="MSURandomizerIcon.ico" />
     </ItemGroup>
 
 
