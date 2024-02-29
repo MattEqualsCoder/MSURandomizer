@@ -14,7 +14,7 @@ public class MsuViewModel : ViewModelBase
 
     public MsuViewModel()
     {
-        
+        Msu = new();
     }
     
     public MsuViewModel(Msu msu)

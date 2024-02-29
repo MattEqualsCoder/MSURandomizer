@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using AvaloniaControls.Controls;
 using AvaloniaControls.ControlServices;
 using AvaloniaControls.Models;
+using AvaloniaControls.Services;
 using MSURandomizerCrossPlatform.Services;
 using MSURandomizerCrossPlatform.ViewModels;
 using MSURandomizerLibrary.Configs;
@@ -24,7 +25,7 @@ public partial class MsuMonitorWindow : RestorableWindow
             return;
         }
         
-        _service = ControlServiceFactory.GetControlService<MsuMonitorWindowService>();
+        _service = IControlServiceFactory.GetControlService<MsuMonitorWindowService>();
         DataContext = _service.InitializeModel();
     }
 

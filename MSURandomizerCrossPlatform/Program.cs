@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
 using AvaloniaControls.ControlServices;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Models;
+using AvaloniaControls.Services;
 using GitHubReleaseChecker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,7 +45,7 @@ sealed class Program
             })
             .ConfigureServices(services =>
             {
-                services.AddAutoMapper(x => x.AddProfile(mapperConfig));
+                services.AddAvaloniaControlServices<Program>();
                 services.AddMsuRandomizerServices();
                 services.AddMsuRandomizerCrossPlatformServices();
                 services.AddSingleton<AppInitializationService>();
@@ -51,8 +53,8 @@ sealed class Program
             })
             .Build();
         
-        MainHost.Services.GetRequiredService<TaskService>();
-        MainHost.Services.GetRequiredService<ControlServiceFactory>();
+        MainHost.Services.GetRequiredService<ITaskService>();
+        MainHost.Services.GetRequiredService<IControlServiceFactory>();
         MainHost.Services.GetRequiredService<AppInitializationService>().Initialize();
 
         ExceptionWindow.GitHubUrl = "https://github.com/MattEqualsCoder/MSURandomizer/issues";

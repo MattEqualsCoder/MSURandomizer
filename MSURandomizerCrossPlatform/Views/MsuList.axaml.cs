@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using MSURandomizerCrossPlatform.Services;
 using MSURandomizerCrossPlatform.ViewModels;
 using MSURandomizerLibrary;
@@ -39,7 +40,7 @@ public partial class MsuList : UserControl
         }
         else
         {
-            _service = ControlServiceFactory.GetControlService<MsuListService>();
+            _service = IControlServiceFactory.GetControlService<MsuListService>();
             DataContext = _service.InitializeModel();
         }
     }

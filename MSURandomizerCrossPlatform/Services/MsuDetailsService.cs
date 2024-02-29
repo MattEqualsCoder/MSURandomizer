@@ -1,6 +1,7 @@
 using System.Linq;
 using AutoMapper;
 using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using MSURandomizerCrossPlatform.ViewModels;
 using MSURandomizerLibrary.Services;
 
@@ -11,8 +12,7 @@ public class MsuDetailsService(
     IMapper mapper,
     IMsuTypeService msuTypeService,
     IMsuCacheService msuCacheService,
-    IMsuLookupService msuLookupService,
-    TaskService taskService) : IControlService
+    IMsuLookupService msuLookupService) : IControlService
 {
     private MsuViewModel _parentModel = new();
     public MsuDetailsWindowViewModel Model { get; set; } = new();
@@ -45,7 +45,7 @@ public class MsuDetailsService(
         if (_originalMsuTypeName != Model.MsuTypeName)
         {
             msuCacheService.Remove(Model.MsuPath, false);
-            taskService.RunTask(() =>
+            ITaskService.Run(() =>
             {
                 msuLookupService.LookupMsus();
             });

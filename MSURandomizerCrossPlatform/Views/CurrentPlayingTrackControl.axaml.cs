@@ -1,15 +1,9 @@
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Rendering.Composition;
-using Avalonia.Styling;
 using Avalonia.Threading;
-using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using MSURandomizerCrossPlatform.Services;
 using MSURandomizerCrossPlatform.ViewModels;
 
@@ -18,10 +12,8 @@ namespace MSURandomizerCrossPlatform.Views;
 public partial class CurrentPlayingTrackControl : UserControl
 {
     private readonly CurrentPlayingTrackService? _service;
-    private Animation? _marquee;
     private readonly Canvas? _canvas;
     private readonly TextBlock? _textBlock;
-    private DispatcherTimer? _dispatcherTimer;
     
     public CurrentPlayingTrackControl()
     {
@@ -36,14 +28,14 @@ public partial class CurrentPlayingTrackControl : UserControl
         _canvas = this.Get<Canvas>(nameof(OuterCanvas));
         _textBlock = this.Get<TextBlock>(nameof(SongTextBlock));
 
-        _service = ControlServiceFactory.GetControlService<CurrentPlayingTrackService>();
+        _service = IControlServiceFactory.GetControlService<CurrentPlayingTrackService>();
         DataContext = _service.InitializeModel();
         _service.TrackChanged += (sender, args) =>
         {
             Task.Run(async () =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(0.1));
-                Dispatcher.UIThread.InvokeAsync(StartMarquee);
+                 _ = Dispatcher.UIThread.InvokeAsync(StartMarquee);
             });
         };
     }

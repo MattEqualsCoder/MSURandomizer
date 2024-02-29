@@ -5,6 +5,7 @@ using System.Linq;
 using AutoMapper;
 using AvaloniaControls.Controls;
 using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using MSURandomizerCrossPlatform.ViewModels;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
@@ -15,7 +16,6 @@ public class SettingsWindowService(
     IMsuUserOptionsService userOptionsService, 
     IMsuTypeService msuTypeService, 
     IMsuLookupService msuLookupService, 
-    TaskService taskService, 
     IMapper mapper) : IControlService
 {
     public SettingsWindowViewModel Model = new();
@@ -52,7 +52,7 @@ public class SettingsWindowService(
 
         if (hasPathUpdated)
         {
-            taskService.RunTask(() =>
+            ITaskService.Run(() =>
             {
                 msuLookupService.LookupMsus();
             });

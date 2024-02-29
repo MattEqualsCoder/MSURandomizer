@@ -5,6 +5,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using AvaloniaControls;
 using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using MSURandomizerCrossPlatform.Services;
 using MSURandomizerCrossPlatform.ViewModels;
 using MSURandomizerLibrary;
@@ -25,7 +26,7 @@ public partial class MsuGenerationWindow : Window
             return;
         }
 
-        _service = ControlServiceFactory.GetControlService<MsuGenerationWindowService>();
+        _service = IControlServiceFactory.GetControlService<MsuGenerationWindowService>();
     }
 
     public bool DialogResult { get; private set; }
@@ -39,12 +40,12 @@ public partial class MsuGenerationWindow : Window
     
     private void SelectRomButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        TaskService.Instance.RunTask(OpenFileDialog);
+        ITaskService.Run(OpenFileDialog);
     }
 
     private void SelectFolderButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        TaskService.Instance.RunTask(OpenFolderDialog);
+        ITaskService.Run(OpenFolderDialog);
     }
 
     private async void OpenFileDialog()

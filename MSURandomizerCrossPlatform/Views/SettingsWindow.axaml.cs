@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using AvaloniaControls.Controls;
 using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using MSURandomizerCrossPlatform.Services;
 using MSURandomizerCrossPlatform.ViewModels;
 
@@ -34,7 +35,7 @@ public partial class SettingsWindow : ScalableWindow
             return;
         }
 
-        _service = ControlServiceFactory.GetControlService<SettingsWindowService>();
+        _service = IControlServiceFactory.GetControlService<SettingsWindowService>();
         DataContext = _service.InitializeModel();
     }
 

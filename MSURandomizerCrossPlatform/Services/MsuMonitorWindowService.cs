@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using AutoMapper;
 using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using Microsoft.Extensions.Logging;
 using MSURandomizerCrossPlatform.ViewModels;
 using MSURandomizerLibrary.Configs;
@@ -20,7 +21,6 @@ public class MsuMonitorWindowService(
     IMsuTypeService msuTypeService,
     IMsuLookupService msuLookupService,
     IMapper mapper,
-    TaskService taskService,
     ILogger<MsuMonitorWindowService> logger) : IControlService
 {
     public MsuMonitorWindowViewModel Model { get; set; } = new();
@@ -53,7 +53,7 @@ public class MsuMonitorWindowService(
             
             ConnectToSnes();
             
-            taskService.RunTask(() =>
+            ITaskService.Run(() =>
             {
                 var msus = msuLookupService.Msus.Where(x =>
                     msuUserOptionsService.MsuUserOptions.SelectedMsus?.Contains(x.Path) == true).ToList();
@@ -82,7 +82,7 @@ public class MsuMonitorWindowService(
             
             ConnectToSnes();
             
-            taskService.RunTask(() =>
+            ITaskService.Run(() =>
             {
                 msuMonitorService.StartMonitor(msu);
             });
