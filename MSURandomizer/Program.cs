@@ -47,7 +47,7 @@ sealed class Program
             {
                 services.AddAvaloniaControlServices<Program>();
                 services.AddMsuRandomizerServices();
-                services.AddMsuRandomizerCrossPlatformServices();
+                services.AddMsuRandomizerAppServices();
                 services.AddSingleton<AppInitializationService>();
                 services.AddGitHubReleaseCheckerServices();
             })

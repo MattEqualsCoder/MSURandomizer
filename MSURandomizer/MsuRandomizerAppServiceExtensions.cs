@@ -5,9 +5,9 @@ using MSURandomizer.Services;
 
 namespace MSURandomizer;
 
-public static class MsuRandomizerCrossPlatformServiceExtensions
+public static class MsuRandomizerAppServiceExtensions
 {
-    public static IServiceCollection AddMsuRandomizerCrossPlatformServices(this IServiceCollection services)
+    public static IServiceCollection AddMsuRandomizerAppServices(this IServiceCollection services)
     {
         services.AddSingleton<MsuWindow>();
         services.AddTransient<MsuList>();
