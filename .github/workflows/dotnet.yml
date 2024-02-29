@@ -38,14 +38,14 @@ jobs:
     - name: Publish Windows 32bit
       if: ${{ github.event_name != 'pull_request' }}
       run: dotnet publish --os win --arch x86 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
-    # - name: Publish Linux 64bit
-    #   # if: ${{ github.event_name != 'pull_request' }}
-    #   run: dotnet publish --os linux --arch x64 -c MSURandomizer/MSURandomizer.csproj
+    - name: Publish Linux 64bit
+      if: ${{ github.event_name != 'pull_request' }}
+      run: dotnet publish --os linux --arch x64 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
     - name: Get version number
       if: ${{ github.event_name != 'pull_request' }}
       id: version
       run: |
-        $version = (Get-Item "MSURandomizer\bin\Release\net8.0-windows\win-x86\publish\MSURandomizer.exe").VersionInfo.ProductVersion
+        $version = (Get-Item "MSURandomizer\bin\Release\net8.0\win-x86\publish\MSURandomizer.exe").VersionInfo.ProductVersion
         $version = $version -replace "\+.*", ""
         Write-Output "number=$version" >> $env:GITHUB_OUTPUT
       shell: pwsh
@@ -58,11 +58,11 @@ jobs:
       working-directory: setup
       run: "./CopyNugetPackages.ps1"
       shell: pwsh
-    # - name: Building the Linux 64bit package
-    #   if: ${{ github.event_name != 'pull_request' }}
-    #   working-directory: setup
-    #   run: "./LinuxBuildZipper.ps1"
-    #   shell: pwsh
+    - name: Building the Linux 64bit package
+      if: ${{ github.event_name != 'pull_request' }}
+      working-directory: setup
+      run: "./LinuxBuildZipper.ps1"
+      shell: pwsh
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       if: ${{ github.event_name != 'pull_request' }}

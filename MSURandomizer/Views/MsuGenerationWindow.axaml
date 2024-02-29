@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
+        xmlns:viewModels="clr-namespace:MSURandomizer.ViewModels"
+        mc:Ignorable="d"
+        d:DesignWidth="750"
+        d:DesignHeight="300"
+        Width="400"
+        x:Class="MSURandomizer.Views.MsuGenerationWindow"
+        Title="MSU Randomizer Generation Settings"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Assets/MSURandomizerIcon.ico"
+        x:DataType="viewModels:MsuGenerationViewModel">
+    <LayoutTransformControl Name="MainLayout">
+        <DockPanel>
+            <controls:HeaderFooter DockPanel.Dock="Bottom">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                    <Button Margin="5" Click="SelectRomButton_OnClick">Select Rom</Button>
+                    <Button Margin="5" Click="SelectFolderButton_OnClick">Select Folder</Button>
+                    <Button Margin="5" Click="CancelButton_OnClick">Cancel</Button>
+                </StackPanel>
+            </controls:HeaderFooter>
+            
+            <StackPanel Orientation="Vertical" Margin="8">
+                <TextBlock Margin="2">MSU Name</TextBlock>
+                <TextBox Margin="2" Text="{Binding Name}" />
+                <TextBlock Margin="2" IsVisible="{Binding IsMsuShuffleStyleVisible}">Shuffle Style</TextBlock>
+                <controls:EnumComboBox Margin="2">
+                    <controls:EnumComboBox
+                        EnumType="{Binding MsuShuffleStyle, Converter={StaticResource TypeConverter}}"
+                        Value="{Binding MsuShuffleStyle, Mode=TwoWay}"
+                        IsVisible="{Binding IsMsuShuffleStyleVisible}"
+                    ></controls:EnumComboBox>
+                </controls:EnumComboBox>
+                <CheckBox Margin="2 5" 
+                          IsChecked="{Binding OpenFolderOnCreate}"
+                          IsVisible="{Binding IsOpenFolderVisible}"
+                >
+                    Open folder after generating
+                </CheckBox>
+                <CheckBox Margin="2 5" 
+                          IsChecked="{Binding AvoidDuplicates}"
+                          IsVisible="{Binding IsAvoidDuplicatesVisible}"
+                >
+                    Avoid duplicate tracks if possible
+                </CheckBox>
+                <CheckBox Margin="2 5" 
+                          IsChecked="{Binding OpenMonitorWindow}"
+                          IsVisible="{Binding IsOpenMonitorVisible}"
+                >
+                    Open current playing track window
+                </CheckBox>
+            </StackPanel>
+        </DockPanel>
+    </LayoutTransformControl>
+</Window>
