@@ -17,6 +17,7 @@ if (Test-Path "$winFolder\MSURandomizer.App.exe") {
 else {
     $version = (Get-Item "$folder\MSURandomizer.dll").VersionInfo.ProductVersion
 }
+$version = $version -replace "\+.*", ""
 
 # Create package
 $fullVersion = "MSURandomizerLinux_$version"
