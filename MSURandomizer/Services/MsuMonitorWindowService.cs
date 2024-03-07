@@ -22,6 +22,7 @@ public class MsuMonitorWindowService(
     IMsuTypeService msuTypeService,
     IMsuLookupService msuLookupService,
     IMapper mapper,
+    IRomLauncherService romLauncherService,
     ILogger<MsuMonitorWindowService> logger) : IControlService
 {
     public MsuMonitorWindowViewModel Model { get; set; } = new();
@@ -66,6 +67,13 @@ public class MsuMonitorWindowService(
                     ShuffleStyle = msuUserOptionsService.MsuUserOptions.MsuShuffleStyle,
                     OpenFolder = false
                 }, msuAppSettingsService.MsuAppSettings.ContinuousReshuffleSeconds ?? 60);
+
+                if (msuAppSettingsService.MsuAppSettings.CanLaunchRoms &&
+                    msuUserOptionsService.MsuUserOptions.LaunchRom &&
+                    !string.IsNullOrEmpty(msuUserOptionsService.MsuUserOptions.OutputRomPath))
+                {
+                    romLauncherService.LaunchRom(msuUserOptionsService.MsuUserOptions.OutputRomPath);
+                }
             });
         }
         else

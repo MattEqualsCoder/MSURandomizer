@@ -9,6 +9,7 @@ namespace MSURandomizer.Services;
 
 public class MsuGenerationWindowService(
     IMsuUserOptionsService userOptionsService, 
+    IMsuAppSettingsService appSettingsService,
     IMapper mapper) : IControlService
 {
     public MsuGenerationViewModel Model { get; set; } = new();
@@ -19,6 +20,7 @@ public class MsuGenerationWindowService(
         Model.RandomizationStyle = style;
         Model.OutputMsuType = outputMsuType;
         Model.SelectedMsus = selectedMsus;
+        Model.IsLaunchRomVisible = appSettingsService.MsuAppSettings.CanLaunchRoms == true;
         return Model;
     }
 
@@ -34,6 +36,12 @@ public class MsuGenerationWindowService(
     {
         Model.OutputFolderPath = null;
         Model.OutputRomPath = path;
+        mapper.Map(Model, userOptionsService.MsuUserOptions);
+        userOptionsService.Save();
+    }
+    
+    public void Save()
+    {
         mapper.Map(Model, userOptionsService.MsuUserOptions);
         userOptionsService.Save();
     }

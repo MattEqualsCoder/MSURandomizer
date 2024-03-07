@@ -29,6 +29,10 @@ public class MsuGenerationViewModel : ViewModelBase
     
     [Reactive] public bool PassedRomArgument { get; set; }
     
+    [Reactive] public bool LaunchRom { get; set; }
+    
+    [Reactive] public bool IsLaunchRomVisible { get; set; }
+    
     [Reactive] 
     [ReactiveLinkedProperties(nameof(IsOpenFolderVisible), nameof(IsAvoidDuplicatesVisible), nameof(IsOpenMonitorVisible), nameof(IsMsuShuffleStyleVisible))]
     public MsuRandomizationStyle RandomizationStyle { get; set; }

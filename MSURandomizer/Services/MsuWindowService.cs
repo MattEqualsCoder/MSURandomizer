@@ -22,7 +22,8 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     IMsuAppSettingsService appSettings,
     IMsuSelectorService msuSelectorService,
     IMsuLookupService msuLookupService,
-    IMsuMonitorService msuMonitorService) : IControlService
+    IMsuMonitorService msuMonitorService,
+    IRomLauncherService romLauncherService) : IControlService
 {
     public MsuWindowViewModel Model { get; set; } = new();
 
@@ -171,6 +172,11 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 {
                     msu = response.Msu;
                     openContinuousWindow = options.OpenMonitorWindow;
+
+                    if (options.LaunchRom && !string.IsNullOrEmpty(options.OutputRomPath))
+                    {
+                        romLauncherService.LaunchRom(options.OutputRomPath);
+                    }
                     return true;
                 }
             }
@@ -194,6 +200,12 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 {
                     msu = response.Msu;
                     openContinuousWindow = options.OpenMonitorWindow;
+                    
+                    if (options.LaunchRom && !string.IsNullOrEmpty(options.OutputRomPath))
+                    {
+                        romLauncherService.LaunchRom(options.OutputRomPath);
+                    }
+                    
                     return true;
                 }
             }
@@ -219,6 +231,12 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
             {
                 msu = response.Msu;
                 openContinuousWindow = options.OpenMonitorWindow;
+                
+                if (options.LaunchRom && !string.IsNullOrEmpty(options.OutputRomPath))
+                {
+                    romLauncherService.LaunchRom(options.OutputRomPath);
+                }
+                
                 return true;
             }
         }

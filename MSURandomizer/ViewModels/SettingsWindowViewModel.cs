@@ -29,6 +29,14 @@ public class SettingsWindowViewModel : ViewModelBase
     [Reactive] public List<MsuTypePath> MsuTypeNamePathsList { get; set; } = new();
     
     [Reactive]
+    [ReactiveLinkedProperties(nameof(LaunchArgumentsEnabled))]
+    public string? LaunchApplication { get; set; }
+
+    public bool LaunchArgumentsEnabled => !string.IsNullOrEmpty(LaunchApplication);
+    
+    [Reactive] public string? LaunchArguments { get; set; }
+    
+    [Reactive]
     [ReactiveLinkedProperties(nameof(TrackDisplayExample))]
     public TrackDisplayFormat TrackDisplayFormat { get; set; }
     

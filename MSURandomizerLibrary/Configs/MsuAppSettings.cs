@@ -89,6 +89,11 @@ public class MsuAppSettings
     public bool? DisableMsuMonitorWindow { get; set; }
 
     /// <summary>
+    /// If the user can select the option to launch a rom after generating one
+    /// </summary>
+    public bool CanLaunchRoms { get; set; } = true;
+
+    /// <summary>
     /// Default directory for writing the currently playing song to
     /// </summary>
     public string? DefaultMsuCurrentSongOutputFilePath { get; set; } = Path.Combine(
