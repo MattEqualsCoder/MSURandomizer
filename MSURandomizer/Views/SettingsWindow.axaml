@@ -87,6 +87,20 @@
                                 </Grid>
                             </controls:LabeledControl>
                             
+                            <controls:LabeledControl Text="Launch Application" Hint="Application to launch a rom in" DisplayHint="True" Margin="3">
+                                <controls:FileControl 
+                                    FileInputType="OpenFile"
+                                    DefaultPath="{Binding DefaultDirectory}"
+                                    FilePath="{Binding LaunchApplication, Mode=TwoWay}"
+                                ></controls:FileControl>
+                            </controls:LabeledControl>
+                            
+                            <controls:LabeledControl Text="Launch Arguments" Hint="Arguments to pass to the rom, with {RomPath} being replaced by the path to the rom file. If this is empty, just the rom path will be used." DisplayHint="True" Margin="3">
+                                <TextBox Text="{Binding LaunchArguments}" 
+                                         IsEnabled="{Binding LaunchArgumentsEnabled}"
+                                ></TextBox>
+                            </controls:LabeledControl>
+                            
                         </StackPanel>
                     </controls:CardControl>
                     

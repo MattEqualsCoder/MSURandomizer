@@ -30,6 +30,7 @@ public static class MsuRandomizerServiceExtensions
         services.AddSingleton<IMsuRandomizerInitializationService, MsuRandomizerInitializationService>();
         services.AddSingleton<IMsuGameService, MsuGameService>();
         services.AddSingleton<IMsuMonitorService, MsuMonitorService>();
+        services.AddSingleton<IRomLauncherService, RomLauncherService>();
 
         services.AddSnesConnectorServices();
         

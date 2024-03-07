@@ -96,6 +96,7 @@ public partial class MsuGenerationWindow : Window
 
     private void CreateMsuButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        _service?.Save();
         DialogResult = true;
         Close();
     }

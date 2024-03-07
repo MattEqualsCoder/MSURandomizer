@@ -119,6 +119,21 @@ public class MsuUserOptions
     public bool PassedRomArgument { get; set; }
     
     /// <summary>
+    /// Application to launch the rom after generating an MSU
+    /// </summary>
+    public string? LaunchApplication { get; set; }
+    
+    /// <summary>
+    /// Arguments for launching the rom
+    /// </summary>
+    public string? LaunchArguments { get; set; }
+    
+    /// <summary>
+    /// If the rom should be launched after generating an MSU
+    /// </summary>
+    public bool LaunchRom { get; set; }
+    
+    /// <summary>
     /// Specific directories to load for specific MSU types
     /// </summary>
     [YamlIgnore] public Dictionary<MsuType, string> MsuTypePaths { get; set; } = new();

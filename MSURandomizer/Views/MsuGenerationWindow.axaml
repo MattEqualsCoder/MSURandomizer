@@ -55,6 +55,12 @@
                 >
                     Open current playing track window
                 </CheckBox>
+                <CheckBox Margin="2 5" 
+                          IsChecked="{Binding LaunchRom}"
+                          IsVisible="{Binding IsLaunchRomVisible}"
+                >
+                    Launch rom after creating the MSU if possible
+                </CheckBox>
             </StackPanel>
         </DockPanel>
     </LayoutTransformControl>
