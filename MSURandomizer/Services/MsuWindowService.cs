@@ -61,6 +61,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         Model.IsShuffledMsuVisible = settings.MsuWindowDisplayShuffleButton == true;
         Model.IsContinuousShuffleVisible = settings.MsuWindowDisplayContinuousButton == true;
         Model.IsCancelVisible = settings.MsuWindowDisplaySelectButton == true;
+        Model.HasMsuFolder = userOptions.MsuUserOptions.HasMsuFolder();
         return Model;
     }
 

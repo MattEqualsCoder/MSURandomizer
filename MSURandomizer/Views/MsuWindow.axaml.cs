@@ -18,6 +18,7 @@ public partial class MsuWindow : RestorableWindow
 {
     private MsuWindowService? _service;
     private MsuList _msuList;
+    private MsuWindowViewModel _model;
 
     public MsuWindow()
     {
@@ -25,12 +26,12 @@ public partial class MsuWindow : RestorableWindow
 
         if (Design.IsDesignMode)
         {
-            DataContext = new MsuWindowViewModel();
+            DataContext = _model = new MsuWindowViewModel();
         }
         else
         {
             _service = IControlServiceFactory.GetControlService<MsuWindowService>();
-            DataContext = _service.InitializeModel();
+            DataContext = _model = _service.InitializeModel();
             _service.MsuMonitorStarted += (sender, args) =>
             {
                 Dispatcher.UIThread.Invoke(Hide);
@@ -57,6 +58,11 @@ public partial class MsuWindow : RestorableWindow
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
         _service?.FinishInitialization();
+        if (!_model.HasMsuFolder)
+        {
+            var settingsWindow = new SettingsWindow();
+            settingsWindow.ShowDialog(this);
+        }
     }
 
     private void MsuTypeComboBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)

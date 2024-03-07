@@ -1,5 +1,6 @@
 using MSURandomizerLibrary.Models;
 using SnesConnectorLibrary;
+using SnesConnectorLibrary.Requests;
 using SNI;
 
 namespace MSURandomizerLibrary.GameConnectors;
@@ -14,6 +15,7 @@ internal class LttPGameConnector : IGameConnector
         {
             new()
             {
+                MemoryRequestType = SnesMemoryRequestType.RetrieveMemory,
                 Address = 0x7E010B,
                 Length = 1,
                 SnesMemoryDomain = SnesMemoryDomain.ConsoleRAM,

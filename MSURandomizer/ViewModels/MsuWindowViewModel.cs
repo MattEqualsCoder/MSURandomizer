@@ -62,4 +62,6 @@ public class MsuWindowViewModel : ViewModelBase
     public bool IsCancelEnabled => true;
 
     public bool HasGitHubUrl => !string.IsNullOrEmpty(GitHubUrl);
+    
+    public bool HasMsuFolder { get; set; }
 }

@@ -4,6 +4,7 @@ using MSURandomizerLibrary.GameConnectors;
 using MSURandomizerLibrary.Models;
 using SnesConnectorLibrary;
 using SnesConnectorLibrary.Lua;
+using SnesConnectorLibrary.Requests;
 
 namespace MSURandomizerLibrary.Services;
 
@@ -66,8 +67,8 @@ internal class MsuGameService(ILogger<MsuGameService> logger, ISnesConnectorServ
 
         foreach (var request in _currentGame.GetMemoryRequests())
         {
-            _currentRequests.Add(snesConnectorService.AddRecurringRequest(request));
-            snesConnectorService.AddRecurringRequest(request);
+            _currentRequests.Add(snesConnectorService.AddRecurringMemoryRequest(request));
+            snesConnectorService.AddRecurringMemoryRequest(request);
         }
         
     }

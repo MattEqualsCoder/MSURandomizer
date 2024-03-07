@@ -1,5 +1,6 @@
 using MSURandomizerLibrary.Models;
 using SnesConnectorLibrary;
+using SnesConnectorLibrary.Requests;
 using SNI;
 
 namespace MSURandomizerLibrary.GameConnectors;
@@ -17,6 +18,7 @@ internal class SMZ3GameConnector : IGameConnector
             // Check which game is being played
             new()
             {
+                MemoryRequestType = SnesMemoryRequestType.RetrieveMemory,
                 Address = 0xA173FE,
                 Length = 2,
                 SnesMemoryDomain = SnesMemoryDomain.CartridgeSave,
@@ -44,6 +46,7 @@ internal class SMZ3GameConnector : IGameConnector
             // Check the Zelda song
             new()
             {
+                MemoryRequestType = SnesMemoryRequestType.RetrieveMemory,
                 Address = 0x7E010B,
                 Length = 1,
                 SnesMemoryDomain = SnesMemoryDomain.ConsoleRAM,
@@ -67,6 +70,7 @@ internal class SMZ3GameConnector : IGameConnector
             // Check the Metroid song
             new()
             {
+                MemoryRequestType = SnesMemoryRequestType.RetrieveMemory,
                 Address = 0x7E0332,
                 Length = 1,
                 SnesMemoryDomain = SnesMemoryDomain.ConsoleRAM,

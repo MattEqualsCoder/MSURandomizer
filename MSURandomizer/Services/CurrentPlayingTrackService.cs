@@ -24,7 +24,7 @@ public class CurrentPlayingTrackService(
     public CurrentPlayingTrackViewModel InitializeModel()
     {
         msuMonitorService.MsuTrackChanged += MsuMonitorServiceOnMsuTrackChanged;
-        snesConnectorService.OnDisconnected += SnesConnectorServiceOnOnDisconnected;
+        snesConnectorService.Disconnected += SnesConnectorServiceOnOnDisconnected;
         
         _dispatcherTimer = new DispatcherTimer()
         {
@@ -50,7 +50,7 @@ public class CurrentPlayingTrackService(
     public void Shutdown()
     {
         msuMonitorService.MsuTrackChanged -= MsuMonitorServiceOnMsuTrackChanged;
-        snesConnectorService.OnDisconnected -= SnesConnectorServiceOnOnDisconnected;
+        snesConnectorService.Disconnected -= SnesConnectorServiceOnOnDisconnected;
     }
 
     public event EventHandler? TrackChanged;
@@ -86,15 +86,20 @@ public class CurrentPlayingTrackService(
 
     private void SnesConnectorServiceOnOnDisconnected(object? sender, EventArgs e)
     {
-        Model.Message = CurrentPlayingTrackViewModel.NotConnectedMessage;
+        ChangeMessage(CurrentPlayingTrackViewModel.NotConnectedMessage);
     }
 
     private void MsuMonitorServiceOnMsuTrackChanged(object sender, MsuTrackChangedEventArgs e)
     {
+        ChangeMessage(e.Track.GetDisplayText(msuUserOptionsService.MsuUserOptions.TrackDisplayFormat));
+    }
+
+    private void ChangeMessage(string message)
+    {
         _cts.Cancel();
         _dispatcherTimer?.Stop();
         Model.AnimationMargin = new Thickness(0);
-        Model.Message = e.Track.GetDisplayText(msuUserOptionsService.MsuUserOptions.TrackDisplayFormat);
+        Model.Message = message;
         TrackChanged?.Invoke(this, EventArgs.Empty);
     }
 

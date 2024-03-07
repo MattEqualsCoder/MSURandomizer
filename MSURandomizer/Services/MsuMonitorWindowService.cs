@@ -27,8 +27,8 @@ public class MsuMonitorWindowService(
 
     public MsuMonitorWindowViewModel InitializeModel()
     {
-        snesConnectorService.OnConnected += SnesConnectorServiceOnOnConnected;
-        snesConnectorService.OnDisconnected += SnesConnectorServiceOnOnDisconnected;
+        snesConnectorService.Connected += SnesConnectorServiceOnOnConnected;
+        snesConnectorService.Disconnected += SnesConnectorServiceOnOnDisconnected;
         msuMonitorService.MsuShuffled += MsuMonitorServiceOnMsuShuffled;
         mapper.Map(msuUserOptionsService.MsuUserOptions.SnesConnectorSettings, Model);
         return Model;
@@ -92,6 +92,13 @@ public class MsuMonitorWindowService(
     public void ConnectToSnes()
     {
         var connectorSettings = mapper.Map<SnesConnectorSettings>(Model);
+
+        if (connectorSettings.ConnectorType == SnesConnectorType.None)
+        {
+            snesConnectorService.Disconnect();
+            return;
+        }
+        
         snesConnectorService.Connect(connectorSettings);
 
         if (msuUserOptionsService.MsuUserOptions.SnesConnectorSettings.ConnectorType != connectorSettings.ConnectorType)
@@ -111,8 +118,8 @@ public class MsuMonitorWindowService(
     public void StopMonitor()
     {
         msuMonitorService.Stop();
-        snesConnectorService.OnConnected -= SnesConnectorServiceOnOnConnected;
-        snesConnectorService.OnDisconnected -= SnesConnectorServiceOnOnDisconnected;
+        snesConnectorService.Connected -= SnesConnectorServiceOnOnConnected;
+        snesConnectorService.Disconnected -= SnesConnectorServiceOnOnDisconnected;
         msuMonitorService.MsuShuffled -= MsuMonitorServiceOnMsuShuffled;
     }
 

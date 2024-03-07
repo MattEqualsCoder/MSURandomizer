@@ -1,5 +1,6 @@
 using MSURandomizerLibrary.Models;
 using SnesConnectorLibrary;
+using SnesConnectorLibrary.Requests;
 
 namespace MSURandomizerLibrary.GameConnectors;
 

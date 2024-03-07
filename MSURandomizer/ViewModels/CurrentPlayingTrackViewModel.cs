@@ -6,7 +6,7 @@ namespace MSURandomizer.ViewModels;
 
 public class CurrentPlayingTrackViewModel : ViewModelBase
 {
-    public const string NotConnectedMessage = "No song detected. Connect to one of the Snes Connectors. No song detected. Connect to one of the Snes Connectors. No song detected. Connect to one of the Snes Connectors. ";
+    public const string NotConnectedMessage = "No song detected. Connect to one of the Snes Connectors.";
 
     [Reactive] public string Message { get; set; } = NotConnectedMessage;
 

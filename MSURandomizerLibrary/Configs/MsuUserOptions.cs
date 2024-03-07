@@ -127,4 +127,14 @@ public class MsuUserOptions
     {
         return MsuSettings.FirstOrDefault(x => x.MsuPath == path) ?? new MsuSettings(path);
     }
+
+    /// <summary>
+    /// Returns if  at least one MSU directory has been set
+    /// </summary>
+    /// <returns></returns>
+    public bool HasMsuFolder()
+    {
+        return (!string.IsNullOrEmpty(DefaultMsuPath) && Directory.Exists(DefaultMsuPath)) ||
+               MsuTypePaths.Values.Any(x => !string.IsNullOrEmpty(x) && Directory.Exists(x));
+    }
 }
