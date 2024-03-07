@@ -45,7 +45,7 @@ public partial class MsuCurrentPlayingTrackControl : UserControl, IDisposable
         }
         
         _marquee.Completed += MarqueeOnCompleted;
-        _snesConnectorService.OnDisconnected += SnesConnectorServiceOnOnDisconnected;
+        _snesConnectorService.Disconnected += SnesConnectorServiceOnOnDisconnected;
         _msuMonitorService.MsuTrackChanged += MsuMonitorServiceOnMsuTrackChanged;
     }
 
@@ -70,7 +70,7 @@ public partial class MsuCurrentPlayingTrackControl : UserControl, IDisposable
     private void MsuCurrentPlayingTrackControl_OnUnloaded(object sender, RoutedEventArgs e)
     {
         if (_snesConnectorService != null)
-            _snesConnectorService.OnDisconnected -= SnesConnectorServiceOnOnDisconnected;
+            _snesConnectorService.Disconnected -= SnesConnectorServiceOnOnDisconnected;
         if (_msuMonitorService != null)
             _msuMonitorService.MsuTrackChanged -= MsuMonitorServiceOnMsuTrackChanged;
     }

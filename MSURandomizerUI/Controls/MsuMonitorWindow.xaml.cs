@@ -49,8 +49,8 @@ public partial class MsuMonitorWindow : Window
             return;
         }
         
-        _snesConnectorService.OnConnected += SnesConnectorServiceOnOnConnected;
-        _snesConnectorService.OnDisconnected += SnesConnectorServiceOnOnDisconnected;
+        _snesConnectorService.Connected += SnesConnectorServiceOnOnConnected;
+        _snesConnectorService.Disconnected += SnesConnectorServiceOnOnDisconnected;
         _msuMonitorService.MsuShuffled += MsuMonitorServiceOnMsuShuffled;
 
         SnesConnectorTypeComboBox.SelectedItem =
@@ -158,8 +158,8 @@ public partial class MsuMonitorWindow : Window
         
         if (_snesConnectorService != null)
         {
-            _snesConnectorService.OnConnected -= SnesConnectorServiceOnOnConnected;
-            _snesConnectorService.OnDisconnected -= SnesConnectorServiceOnOnDisconnected;    
+            _snesConnectorService.Connected -= SnesConnectorServiceOnOnConnected;
+            _snesConnectorService.Disconnected -= SnesConnectorServiceOnOnDisconnected;    
         }
 
         if (_msuMonitorService != null)
