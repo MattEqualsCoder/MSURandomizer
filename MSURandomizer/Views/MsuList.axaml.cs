@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using AvaloniaControls.ControlServices;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
@@ -15,7 +13,7 @@ namespace MSURandomizer.Views;
 
 public partial class MsuList : UserControl
 {
-    private MsuListService? _service;
+    private readonly MsuListService? _service;
     
     public MsuList()
     {

@@ -19,8 +19,9 @@
         <DockPanel>
             <controls:HeaderFooter DockPanel.Dock="Bottom">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
-                    <Button Margin="5" Click="SelectRomButton_OnClick">Select Rom</Button>
-                    <Button Margin="5" Click="SelectFolderButton_OnClick">Select Folder</Button>
+                    <Button Margin="5" Click="CreateMsuButton_OnClick" IsVisible="{Binding PassedRomArgument}">Create Msu</Button>
+                    <Button Margin="5" Click="SelectRomButton_OnClick" IsVisible="{Binding !PassedRomArgument}">Select Rom</Button>
+                    <Button Margin="5" Click="SelectFolderButton_OnClick" IsVisible="{Binding !PassedRomArgument}">Select Folder</Button>
                     <Button Margin="5" Click="CancelButton_OnClick">Cancel</Button>
                 </StackPanel>
             </controls:HeaderFooter>

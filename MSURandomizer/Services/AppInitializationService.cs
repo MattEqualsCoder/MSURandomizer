@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using AvaloniaControls.Controls;
 using GitHubReleaseChecker;
+using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
@@ -18,7 +20,7 @@ public class AppInitializationService(
     IGitHubReleaseCheckerService gitHubReleaseCheckerService,
     IMsuUserOptionsService msuUserOptionsService)
 {
-    public void Initialize()
+    public void Initialize(string[] args)
     {
         msuRandomizerInitializationService.Initialize(new MsuRandomizerInitializationRequest()
         {
@@ -30,6 +32,25 @@ public class AppInitializationService(
         });
 
         ScalableWindow.GlobalScaleFactor = msuUserOptionsService.MsuUserOptions.UiScaling;
+
+        var initPassedRomArgument = msuUserOptionsService.MsuUserOptions.PassedRomArgument;
+        msuUserOptionsService.MsuUserOptions.PassedRomArgument = false;
+        
+        if (args.Length == 1)
+        {
+            var file = new FileInfo(args[0]);
+            if (file.Exists && file.Extension.ToLower() is ".sfc" or ".smc" or ".gb" or ".gbc")
+            {
+                msuUserOptionsService.MsuUserOptions.OutputFolderPath = null;
+                msuUserOptionsService.MsuUserOptions.OutputRomPath = file.FullName;
+                msuUserOptionsService.MsuUserOptions.PassedRomArgument = true;
+            }
+        }
+
+        if (msuUserOptionsService.MsuUserOptions.PassedRomArgument != initPassedRomArgument)
+        {
+            msuUserOptionsService.Save();
+        }
     }
 
     public void FinishInitialization()

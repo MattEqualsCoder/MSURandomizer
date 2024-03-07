@@ -4,11 +4,10 @@ using Avalonia.Markup.Xaml;
 using AvaloniaControls.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using MSURandomizer.Views;
-using MSURandomizer.ViewModels;
 
 namespace MSURandomizer;
 
-public partial class App : Application
+public class App : Application
 {
     public override void Initialize()
     {

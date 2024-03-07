@@ -4,7 +4,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
-using AvaloniaControls.ControlServices;
 using AvaloniaControls.Models;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
@@ -16,9 +15,9 @@ namespace MSURandomizer.Views;
 
 public partial class MsuWindow : RestorableWindow
 {
-    private MsuWindowService? _service;
-    private MsuList _msuList;
-    private MsuWindowViewModel _model;
+    private readonly MsuWindowService? _service;
+    private readonly MsuList _msuList;
+    private readonly MsuWindowViewModel _model;
 
     public MsuWindow()
     {
@@ -32,23 +31,26 @@ public partial class MsuWindow : RestorableWindow
         {
             _service = IControlServiceFactory.GetControlService<MsuWindowService>();
             DataContext = _model = _service.InitializeModel();
-            _service.MsuMonitorStarted += (sender, args) =>
+            _service.MsuMonitorStarted += (_, _) =>
             {
                 Dispatcher.UIThread.Invoke(Hide);
             };
-            _service.MsuMonitorStopped += (sender, args) =>
+            _service.MsuMonitorStopped += (_, _) =>
             {
-                Dispatcher.UIThread.Invoke(Show);
+                if (!_model.WasClosed)
+                {
+                    Dispatcher.UIThread.Invoke(Show);    
+                }
             };
         }
 
         _msuList = this.Find<MsuList>(nameof(MsuList))!;
         _msuList.SelectedMsusChanged += MsuList_OnSelectedMsusChanged;
-    }
 
-    private void MsuListOnSelectedMsusChanged(object? sender, SelectedMsusChangedEventArgs e)
-    {
-        _service?.OnSelectedMsusChanged(e.SelectedMsus);
+        Closed += (_, _) =>
+        {
+            _model.WasClosed = true;
+        };
     }
 
     protected override string RestoreFilePath => Path.Combine(Directories.AppDataFolder, "main-window.json");

@@ -5,9 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
-using AvaloniaControls.ControlServices;
 using AvaloniaControls.Extensions;
-using AvaloniaControls.Models;
 using AvaloniaControls.Services;
 using GitHubReleaseChecker;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,8 +33,6 @@ sealed class Program
             .WriteTo.Console()
             .CreateLogger();
 
-        var mapperConfig = new ViewModelMapperConfig<Program>();
-        
         MainHost = Host.CreateDefaultBuilder(args)
             .UseSerilog()
             .ConfigureLogging(logging =>
@@ -55,7 +51,7 @@ sealed class Program
         
         MainHost.Services.GetRequiredService<ITaskService>();
         MainHost.Services.GetRequiredService<IControlServiceFactory>();
-        MainHost.Services.GetRequiredService<AppInitializationService>().Initialize();
+        MainHost.Services.GetRequiredService<AppInitializationService>().Initialize(args);
 
         ExceptionWindow.GitHubUrl = "https://github.com/MattEqualsCoder/MSURandomizer/issues";
         ExceptionWindow.LogPath = Directories.LogFolder;
@@ -75,7 +71,7 @@ sealed class Program
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
+    private static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .With(new X11PlatformOptions() { UseDBusFilePicker = false })

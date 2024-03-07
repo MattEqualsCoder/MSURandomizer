@@ -114,6 +114,11 @@ public class MsuUserOptions
     public double UiScaling { get; set; } = 1;
     
     /// <summary>
+    /// If the user passed in the application args
+    /// </summary>
+    public bool PassedRomArgument { get; set; }
+    
+    /// <summary>
     /// Specific directories to load for specific MSU types
     /// </summary>
     [YamlIgnore] public Dictionary<MsuType, string> MsuTypePaths { get; set; } = new();

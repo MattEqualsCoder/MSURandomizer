@@ -27,6 +27,8 @@ public class MsuGenerationViewModel : ViewModelBase
     
     [Reactive] public ICollection<string> SelectedMsus { get; set; } = new List<string>();
     
+    [Reactive] public bool PassedRomArgument { get; set; }
+    
     [Reactive] 
     [ReactiveLinkedProperties(nameof(IsOpenFolderVisible), nameof(IsAvoidDuplicatesVisible), nameof(IsOpenMonitorVisible), nameof(IsMsuShuffleStyleVisible))]
     public MsuRandomizationStyle RandomizationStyle { get; set; }

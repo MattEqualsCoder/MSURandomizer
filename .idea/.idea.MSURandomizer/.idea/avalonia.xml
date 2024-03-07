@@ -6,6 +6,7 @@
         <entry key="MSURandomizer/App.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/CurrentPlayingTrackControl.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/MsuGenerationWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
+        <entry key="MSURandomizer/Views/MsuList.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/MsuMonitorWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/MsuWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/SettingsWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />

@@ -4,7 +4,6 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using AvaloniaControls;
-using AvaloniaControls.ControlServices;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
@@ -56,7 +55,7 @@ public partial class MsuGenerationWindow : Window
         }
         
         var previousFolder = _service.Model.OutputRomPath ?? _service.Model.OutputFolderPath;
-        var path = await CrossPlatformTools.OpenFileDialogAsync(this, FileInputControlType.OpenFile, "Rom Files:*.sfc,*.gb,*.gbc", previousFolder);
+        var path = await CrossPlatformTools.OpenFileDialogAsync(this, FileInputControlType.OpenFile, "Rom Files:*.sfc,*.smc,*.gb,*.gbc", previousFolder);
         if (path is not IStorageFile file || file.TryGetLocalPath() == null)
         {
             return;
@@ -92,6 +91,12 @@ public partial class MsuGenerationWindow : Window
 
     private void CancelButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        Close();
+    }
+
+    private void CreateMsuButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        DialogResult = true;
         Close();
     }
 }

@@ -26,6 +26,8 @@ public class MsuWindowViewModel : ViewModelBase
     
     [Reactive] public bool IsContinuousShuffleVisible { get; set; }
     
+    [Reactive] public bool WasClosed { get; set; }
+    
     [Reactive]
     [ReactiveLinkedProperties(nameof(IsSelectMsuEnabled), nameof(IsRandomMsuEnabled), nameof(IsShuffledMsuEnabled), 
         nameof(IsContinuousShuffleEnabled), nameof(MsuCountText), nameof(SelectMsusText), nameof(RandomMsuText))]

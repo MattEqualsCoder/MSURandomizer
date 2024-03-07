@@ -1,10 +1,6 @@
-using System.Collections.Generic;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using AvaloniaControls.Controls;
-using AvaloniaControls.ControlServices;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
@@ -13,7 +9,7 @@ namespace MSURandomizer.Views;
 
 public partial class SettingsWindow : ScalableWindow
 {
-    private SettingsWindowService? _service;
+    private readonly SettingsWindowService? _service;
     
     public SettingsWindow()
     {
@@ -23,14 +19,14 @@ public partial class SettingsWindow : ScalableWindow
         {
             DataContext = new SettingsWindowViewModel()
             {
-                MsuTypeNamePathsList = new List<MsuTypePath>()
-                {
-                    new(),
-                    new(),
-                    new(),
-                    new(),
-                    new(),
-                }
+                MsuTypeNamePathsList =
+                [
+                    new MsuTypePath(),
+                    new MsuTypePath(),
+                    new MsuTypePath(),
+                    new MsuTypePath(),
+                    new MsuTypePath(),
+                ]
             };
             return;
         }

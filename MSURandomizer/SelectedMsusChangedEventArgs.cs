@@ -4,14 +4,9 @@ using MSURandomizer.ViewModels;
 
 namespace MSURandomizer;
 
-public class SelectedMsusChangedEventArgs : EventArgs
+public class SelectedMsusChangedEventArgs(ICollection<MsuViewModel>? selectedMsus) : EventArgs
 {
-    public ICollection<MsuViewModel>? SelectedMsus { get; set; }
+    public ICollection<MsuViewModel>? SelectedMsus { get; set; } = selectedMsus;
 
     public int Count => SelectedMsus?.Count ?? 0;
-
-    public SelectedMsusChangedEventArgs(ICollection<MsuViewModel>? selectedMsus)
-    {
-        SelectedMsus = selectedMsus;
-    }
 }

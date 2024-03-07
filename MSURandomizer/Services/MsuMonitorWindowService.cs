@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using AutoMapper;
+using AvaloniaControls.Controls;
 using AvaloniaControls.ControlServices;
 using AvaloniaControls.Services;
 using Microsoft.Extensions.Logging;

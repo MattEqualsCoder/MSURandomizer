@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvaloniaControls;
 using AvaloniaControls.Controls;
-using AvaloniaControls.ControlServices;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
@@ -67,7 +66,7 @@ public partial class MsuDetailsWindow : ScalableWindow
         }
         else
         {
-            base.ShowDialog(parentWindow);
+            ShowDialog(parentWindow);
         }
 
         Title = $"{_service?.Model.DefaultMsuName} MSU Details";

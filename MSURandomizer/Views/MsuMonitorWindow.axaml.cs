@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using Avalonia.Controls;
 using AvaloniaControls.Controls;
-using AvaloniaControls.ControlServices;
 using AvaloniaControls.Models;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
@@ -15,7 +14,7 @@ public partial class MsuMonitorWindow : RestorableWindow
 {
     private readonly MsuMonitorWindowService? _service;
     
-    public MsuMonitorWindow() : base()
+    public MsuMonitorWindow()
     {
         InitializeComponent();
 
