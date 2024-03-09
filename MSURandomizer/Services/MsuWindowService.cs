@@ -58,11 +58,12 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         appInitializationService.InitializationComplete += AppInitializationServiceOnInitializationComplete;
             
         var settings = appSettings.MsuAppSettings;
-        Model.IsRandomMsuVisible = settings.MsuWindowDisplayRandomButton == true;
-        Model.IsShuffledMsuVisible = settings.MsuWindowDisplayShuffleButton == true;
-        Model.IsContinuousShuffleVisible = settings.MsuWindowDisplayContinuousButton == true;
-        Model.IsCancelVisible = settings.MsuWindowDisplaySelectButton == true;
+        Model.CanDisplayRandomMsuButton = settings.MsuWindowDisplayRandomButton == true;
+        Model.CanDisplayShuffledMsuButton = settings.MsuWindowDisplayShuffleButton == true;
+        Model.CanDisplayContinuousShuffleButton = settings.MsuWindowDisplayContinuousButton == true;
+        Model.CanDisplayCancelButton = settings.MsuWindowDisplaySelectButton == true;
         Model.HasMsuFolder = userOptions.MsuUserOptions.HasMsuFolder();
+        Model.IsHardwareModeButtonVisible = !appSettings.MsuAppSettings.DisableHardwareMode;
         return Model;
     }
 
@@ -125,6 +126,13 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     {
         Model.MsuCount = msus?.Count ?? 0;
         Model.SelectedMsus = msus ?? new List<MsuViewModel>();
+    }
+
+    public void UpdateHardwareMode(MsuList msuList, List<Msu>? msus)
+    {
+        Model.IsHardwareModeEnabled = msus?.Count > 0;
+        msuList.ToggleHardwareMode(Model.IsHardwareModeEnabled);
+        msuList.PopulateMsuViewModels(msus);
     }
 
     public bool GenerateMsu(out string error, out bool openContinuousWindow, out Msu? msu)

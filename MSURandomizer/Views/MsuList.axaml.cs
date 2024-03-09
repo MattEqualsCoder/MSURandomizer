@@ -77,6 +77,19 @@ public partial class MsuList : UserControl
     {
         _service?.SelectNone();
     }
+
+    public void PopulateMsuViewModels(List<Msu>? msus)
+    {
+        _service?.PopulateMsuViewModels(msus);
+        SelectedMsus = _service?.Model.SelectedMsus;
+        SelectedMsuCount = SelectedMsus?.Count;
+        SelectedMsusChanged?.Invoke(this, new SelectedMsusChangedEventArgs(SelectedMsus));
+    }
+
+    public void ToggleHardwareMode(bool isEnabled)
+    {
+        _service?.ToggleHardwareMode(isEnabled);
+    }
     
     private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {

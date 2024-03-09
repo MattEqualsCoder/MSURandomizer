@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+        Width="400"
+        x:Class="MSURandomizer.Views.HardwareMsuWindow"
+        Title="MSU Randomizer Generation Settings"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Assets/MSURandomizerIcon.ico">
+    <LayoutTransformControl Name="MainLayout">
+        <DockPanel>
+            <controls:HeaderFooter DockPanel.Dock="Bottom">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" DockPanel.Dock="Bottom">
+                    <Button Margin="5" Click="CreateMsuButton_OnClick">Create Msu</Button>
+                    <Button Margin="5" Click="CancelButton_OnClick">Cancel</Button>
+                </StackPanel>    
+            </controls:HeaderFooter>
+            <StackPanel Orientation="Vertical" Grid.IsSharedSizeScope="True" Margin="10">
+            </StackPanel>
+        </DockPanel>
+    </LayoutTransformControl>
+</Window>

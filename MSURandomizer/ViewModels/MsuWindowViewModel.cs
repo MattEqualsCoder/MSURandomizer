@@ -16,18 +16,34 @@ public class MsuWindowViewModel : ViewModelBase
 
     [Reactive] public ICollection<MsuViewModel> SelectedMsus { get; set; } = new List<MsuViewModel>();
     
-    [Reactive] public bool IsSelectMsuVisible { get; set; }
+    [Reactive] public bool CanDisplaySelectMsuButton { get; set; }
     
-    [Reactive] public bool IsCancelVisible { get; set; }
+    [Reactive] public bool CanDisplayCancelButton { get; set; }
     
-    [Reactive] public bool IsRandomMsuVisible { get; set; }
+    [Reactive] public bool CanDisplayRandomMsuButton { get; set; }
     
-    [Reactive] public bool IsShuffledMsuVisible { get; set; }
+    [Reactive] public bool CanDisplayShuffledMsuButton { get; set; }
     
-    [Reactive] public bool IsContinuousShuffleVisible { get; set; }
+    [Reactive] public bool CanDisplayContinuousShuffleButton { get; set; }
     
     [Reactive] public bool WasClosed { get; set; }
+
+    [Reactive] public bool IsHardwareModeButtonVisible { get; set; } = true;
     
+    [Reactive] 
+    [ReactiveLinkedProperties(nameof(IsShuffledMsuButtonVisible), nameof(IsContinuousShuffleButtonVisible))]
+    public bool IsHardwareModeEnabled { get; set; } = false;
+
+    public bool IsSelectMsuButtonVisible => CanDisplaySelectMsuButton;
+
+    public bool IsCancelButtonVisible => CanDisplayCancelButton;
+
+    public bool IsRandomMsuButtonVisible => CanDisplayRandomMsuButton;
+
+    public bool IsShuffledMsuButtonVisible => CanDisplayShuffledMsuButton && !IsHardwareModeEnabled;
+
+    public bool IsContinuousShuffleButtonVisible => CanDisplayContinuousShuffleButton && !IsHardwareModeEnabled;
+
     [Reactive]
     [ReactiveLinkedProperties(nameof(IsSelectMsuEnabled), nameof(IsRandomMsuEnabled), nameof(IsShuffledMsuEnabled), 
         nameof(IsContinuousShuffleEnabled), nameof(MsuCountText), nameof(SelectMsusText), nameof(RandomMsuText))]

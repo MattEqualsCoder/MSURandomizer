@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -115,18 +117,35 @@ public partial class MsuWindow : RestorableWindow
         {
             return;
         }
-        
-        var generationWindow = new MsuGenerationWindow();
-        generationWindow.ShowDialog(this, MsuRandomizationStyle.Single, _service.Model.SelectedMsuType, _service.Model.SelectedMsus.Select(x => x.MsuPath).ToList());
-        generationWindow.Closed += (o, args) =>
+
+        if (_model.IsHardwareModeEnabled)
         {
-            if (!generationWindow.DialogResult)
+            var hardwareMsuWindow = new HardwareMsuWindow();
+            hardwareMsuWindow.ShowDialog(this);
+            hardwareMsuWindow.Closed += (o, args) =>
             {
-                return;
-            }
+                if (!hardwareMsuWindow.DialogResult)
+                {
+                    return;
+                }
         
-            GenerateMsu();
-        };
+                
+            };
+        }
+        else
+        {
+            var generationWindow = new MsuGenerationWindow();
+            generationWindow.ShowDialog(this, MsuRandomizationStyle.Single, _service.Model.SelectedMsuType, _service.Model.SelectedMsus.Select(x => x.MsuPath).ToList());
+            generationWindow.Closed += (o, args) =>
+            {
+                if (!generationWindow.DialogResult)
+                {
+                    return;
+                }
+        
+                GenerateMsu();
+            };
+        }
     }
 
     private void ContinuousShuffleButton_OnClick(object? sender, RoutedEventArgs e)
@@ -197,5 +216,23 @@ public partial class MsuWindow : RestorableWindow
     {
         var window = new MsuMonitorWindow();
         window.Show(msu);
+    }
+
+    private void HardwareButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        _ = ShowSnesConnectorSelectionWindow();
+    }
+
+    private async Task ShowSnesConnectorSelectionWindow()
+    {
+        var window = new SnesConnectorSelectionWindow();
+        var selectedMsus = await window.ShowDialog<List<Msu>?>(this);
+        if (selectedMsus == null)
+        {
+            return;
+        }
+
+        _service?.UpdateHardwareMode(_msuList, selectedMsus);
+        
     }
 }

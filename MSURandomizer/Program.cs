@@ -27,6 +27,7 @@ sealed class Program
     public static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
             .Enrich.FromLogContext()
             .WriteTo.File(Directories.LogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30)
             .WriteTo.Debug()
