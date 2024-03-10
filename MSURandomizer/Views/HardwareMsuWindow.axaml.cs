@@ -1,27 +1,49 @@
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using AvaloniaControls.Controls;
+using AvaloniaControls.Services;
+using MSURandomizer.Services;
+using MSURandomizer.ViewModels;
 
 namespace MSURandomizer.Views;
 
-public partial class HardwareMsuWindow : ScalableWindow
+public partial class HardwareMsuWindow : Window
 {
+    private HardwareMsuWindowService? _service;
+    private HardwareMsuViewModel _model;
+    
     public HardwareMsuWindow()
     {
         InitializeComponent();
+
+        if (Design.IsDesignMode)
+        {
+            DataContext = _model = new HardwareMsuViewModel();
+            return;
+        }
+
+        _service = IControlServiceFactory.GetControlService<HardwareMsuWindowService>();
+        DataContext = _model = _service.InitializeModel();
+        
+        Closing += OnClosing;
     }
 
-    public bool DialogResult { get; private set; } = true;
-    
-    private void CreateMsuButton_OnClick(object? sender, RoutedEventArgs e)
+    public void ShowDialog(Window parentWindow, List<MsuViewModel> msus)
     {
-        throw new System.NotImplementedException();
+        _model.Msus = msus;
+        _service?.UploadMsuRom();
+        ShowDialog(parentWindow);
     }
 
-    private void CancelButton_OnClick(object? sender, RoutedEventArgs e)
+    private void OnClosing(object? sender, WindowClosingEventArgs e)
     {
-        throw new System.NotImplementedException();
+        _service?.Disconnect();
+    }
+
+    private void CloseButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        _service?.Disconnect();
     }
 }

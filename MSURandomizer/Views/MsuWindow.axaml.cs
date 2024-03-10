@@ -121,16 +121,7 @@ public partial class MsuWindow : RestorableWindow
         if (_model.IsHardwareModeEnabled)
         {
             var hardwareMsuWindow = new HardwareMsuWindow();
-            hardwareMsuWindow.ShowDialog(this);
-            hardwareMsuWindow.Closed += (o, args) =>
-            {
-                if (!hardwareMsuWindow.DialogResult)
-                {
-                    return;
-                }
-        
-                
-            };
+            hardwareMsuWindow.ShowDialog(this, _model.SelectedMsus.ToList());
         }
         else
         {
@@ -225,7 +216,7 @@ public partial class MsuWindow : RestorableWindow
 
     private async Task ShowSnesConnectorSelectionWindow()
     {
-        var window = new SnesConnectorSelectionWindow();
+        var window = new HardwareModeWindow();
         var selectedMsus = await window.ShowDialog<List<Msu>?>(this);
         if (selectedMsus == null)
         {

@@ -6,11 +6,11 @@
         xmlns:viewModels="clr-namespace:MSURandomizer.ViewModels"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
         Width="400"
-        x:Class="MSURandomizer.Views.SnesConnectorSelectionWindow"
+        x:Class="MSURandomizer.Views.HardwareModeWindow"
         SizeToContent="Height"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
-        x:DataType="viewModels:SnesConnectorSelectionViewModel"
+        x:DataType="viewModels:HardwareModeWindowViewModel"
         Title="Hardware Mode">
     <LayoutTransformControl Name="MainLayout">
         <DockPanel>
@@ -22,14 +22,24 @@
             </controls:HeaderFooter>
             <StackPanel Orientation="Vertical" Grid.IsSharedSizeScope="True" Margin="10">
                 <TextBlock TextWrapping="Wrap" Margin="0 0 0 10">
-                    By enabling hardware mode, the MSU Randomizer will look for MSUs on hardware that connects via USB cable, such as the FXPakPro. It will then allow you to either select an MSU or have it randomly pick an MSU to use.
+                    By enabling hardware mode, the MSU Randomizer will look for MSUs on hardware that connects via USB cable, such as the FXPakPro. It will then allow you to either select an MSU or have it randomly pick an MSU to use. The selected rom will then be uploaded to the appropriate location on the hardware to utilize the MSU. 
                 </TextBlock>
-                <TextBlock HorizontalAlignment="Center" Margin="0 0 0 5">Select SNES Connector</TextBlock>
+                <CheckBox Margin="2 5" 
+                          IsChecked="{Binding LaunchRom}"
+                >
+                    Launch rom after uploading rom to the SNES
+                </CheckBox>
+                <CheckBox Margin="2 5" 
+                          IsChecked="{Binding OpenMonitorWindow}"
+                >
+                    Open current playing track window after uploading rom
+                </CheckBox>
+                <TextBlock HorizontalAlignment="Center" Margin="0 10 0 5">Select SNES Connector</TextBlock>
                 <controls:EnumComboBox
-                    EnumType="{Binding ConnectorType, Converter={StaticResource TypeConverter}}"
-                    Value="{Binding ConnectorType, Mode=TwoWay}"
+                    EnumType="{Binding SnesConnectorSettings.ConnectorType, Converter={StaticResource TypeConverter}}"
+                    Value="{Binding SnesConnectorSettings.ConnectorType, Mode=TwoWay}"
                     MinWidth="150"
-                    Filter="{Binding FilterConnectorTypes}"
+                    Filter="{Binding SnesConnectorSettings.FilterConnectorTypes}"
                     ValueChanged="SnesConnectorTypeComboBox_OnValueChanged"
                 />
                 <TextBlock Text="{Binding ConnectionStatus}" HorizontalAlignment="Center" Margin="0 5 0 0"/>

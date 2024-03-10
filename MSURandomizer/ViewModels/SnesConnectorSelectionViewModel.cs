@@ -11,12 +11,6 @@ namespace MSURandomizer.ViewModels;
 public class SnesConnectorSelectionViewModel : ViewModelBase
 {
     [Reactive] public SnesConnectorType ConnectorType { get; set; }
-    
-    [Reactive] public string ConnectionStatus { get; set; } = "Disconnected";
-    
-    [Reactive] public bool CanAccept { get; set; }
-    
-    [Reactive] public List<Msu>? Msus { get; set; }
 
     public Func<Enum, bool> FilterConnectorTypes => @enum =>
         (SnesConnectorType)@enum is SnesConnectorType.None or SnesConnectorType.Sni or SnesConnectorType.Usb2Snes;

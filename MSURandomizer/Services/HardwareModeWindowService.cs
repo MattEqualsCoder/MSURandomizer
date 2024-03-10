@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using AvaloniaControls;
 using AvaloniaControls.ControlServices;
 using Microsoft.Extensions.Logging;
 using MSURandomizer.ViewModels;
@@ -10,18 +11,18 @@ using SnesConnectorLibrary;
 
 namespace MSURandomizer.Services;
 
-public class SnesConnectorSelectionService(
+public class HardwareModeWindowService(
     ISnesConnectorService snesConnectorService,
     IMapper mapper,
     IMsuUserOptionsService msuUserOptionsService,
     IMsuHardwareService msuHardwareService,
-    ILogger<SnesConnectorSelectionService> logger) : IControlService
+    ILogger<HardwareModeWindowService> logger) : IControlService
 {
-    private SnesConnectorSelectionViewModel _model = new();
+    private HardwareModeWindowViewModel _model = new();
 
-    public SnesConnectorSelectionViewModel InitializeModel()
+    public HardwareModeWindowViewModel InitializeModel()
     {
-        mapper.Map(msuUserOptionsService.MsuUserOptions.SnesConnectorSettings, _model);
+        mapper.Map(msuUserOptionsService.MsuUserOptions, _model);
         snesConnectorService.Connected += SnesConnectorServiceOnConnected;
         snesConnectorService.Disconnected += SnesConnectorServiceOnDisconnected;
         return _model;
@@ -81,7 +82,7 @@ public class SnesConnectorSelectionService(
     
     public void ConnectToSnes()
     {
-        var connectorSettings = mapper.Map<SnesConnectorSettings>(_model);
+        var connectorSettings = mapper.Map<SnesConnectorSettings>(_model.SnesConnectorSettings);
 
         if (connectorSettings.ConnectorType == SnesConnectorType.None)
         {

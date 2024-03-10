@@ -10,23 +10,23 @@ using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizer.Views;
 
-public partial class SnesConnectorSelectionWindow : ScalableWindow
+public partial class HardwareModeWindow : ScalableWindow
 {
-    private readonly SnesConnectorSelectionService? _service;
-    private readonly SnesConnectorSelectionViewModel _model;
+    private readonly HardwareModeWindowService? _service;
+    private readonly HardwareModeWindowViewModel _model;
     
-    public SnesConnectorSelectionWindow()
+    public HardwareModeWindow()
     {
         InitializeComponent();
         Closing += OnClosing;
         
         if (Design.IsDesignMode)
         {
-            DataContext = _model = new SnesConnectorSelectionViewModel();
+            DataContext = _model = new HardwareModeWindowViewModel();
             return;
         }
 
-        _service = IControlServiceFactory.GetControlService<SnesConnectorSelectionService>();
+        _service = IControlServiceFactory.GetControlService<HardwareModeWindowService>();
         DataContext = _model = _service.InitializeModel();
     }
 

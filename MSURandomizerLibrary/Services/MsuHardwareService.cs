@@ -39,6 +39,79 @@ internal class MsuHardwareService(
         return response;
     }
 
+    public async Task<bool> UploadMsuRom(List<Msu> msus, string romFilePath, bool bootRomAfter)
+    {
+        if (msus.Count == 0)
+        {
+            logger.LogError("No MSUs selected");
+            return false;
+        }
+        
+        if (!snesConnectorService.IsConnected || !snesConnectorService.CurrentConnectorFunctionality.CanAccessFiles)
+        {
+            logger.LogError("Not connected to an SNES connector that can upload files");
+        }
+        
+        var random = new Random(System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, int.MaxValue));
+        
+        var msu = msus.First();
+        if (msus.Count > 1)
+        {
+            msu = msus.Random(random)!;
+        }
+
+        if (!msu.IsHardwareMsu)
+        {
+            logger.LogError("MSU {Path} is not a hardware MSU", msu.Path);
+        }
+
+        var cts = new CancellationTokenSource();
+
+        var fileInfo = new FileInfo(romFilePath);
+        var extension = fileInfo.Extension;
+        var targetPath = msu.Path.Replace(".msu", extension, StringComparison.OrdinalIgnoreCase);
+
+        if (!snesConnectorService.UploadFile(new SnesUploadFileRequest()
+            {
+                LocalFilePath = romFilePath,
+                TargetFilePath = targetPath,
+                OnComplete = () => cts.Cancel()
+            }))
+        {
+            return false;
+        }
+            
+        while (!cts.Token.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(0.25), cts.Token)
+                .ContinueWith(tsk => tsk.Exception == default, CancellationToken.None);
+        }
+
+        if (!bootRomAfter)
+        {
+            return true;
+        }
+
+        cts = new CancellationTokenSource();
+
+        if (!snesConnectorService.BootRom(new SnesBootRomRequest()
+            {
+                Path = targetPath,
+                OnComplete = () => cts.Cancel()
+            }))
+        {
+            return false;
+        }
+        
+        while (!cts.Token.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(0.25), cts.Token)
+                .ContinueWith(tsk => tsk.Exception == default, CancellationToken.None);
+        }
+
+        return true;
+    }
+
     private bool IsMsuFile(string fileName)
     {
         return fileName.EndsWith(".msu", StringComparison.OrdinalIgnoreCase) ||
