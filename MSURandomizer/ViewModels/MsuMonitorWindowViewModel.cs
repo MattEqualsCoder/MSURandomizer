@@ -10,6 +10,14 @@ public class MsuMonitorWindowViewModel : ViewModelBase
 {
     [Reactive] public SnesConnectorType ConnectorType { get; set; }
     
+    public string Usb2SnesAddress { get; set; } = "";
+
+    public string SniAddress { get; set; } = "";
+
+    public string LuaAddress { get; set; } = "";
+    
+    public string ClientName { get; set; } = "MSURandomizer";
+    
     [Reactive] public string ConnectionStatus { get; set; } = "Disconnected";
 
     [Reactive]

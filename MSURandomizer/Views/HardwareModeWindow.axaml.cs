@@ -43,6 +43,7 @@ public partial class HardwareModeWindow : ScalableWindow
 
     private void StartHardwareModeButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        _service?.Save();
         Close(_model.Msus);
     }
 

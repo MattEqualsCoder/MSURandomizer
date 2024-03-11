@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using AutoMapper;
 using AvaloniaControls.ControlServices;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,12 @@ public class HardwareModeWindowService(
         snesConnectorService.Connected += SnesConnectorServiceOnConnected;
         snesConnectorService.Disconnected += SnesConnectorServiceOnDisconnected;
         return _model;
+    }
+
+    public void Save()
+    {
+        mapper.Map(_model, msuUserOptionsService.MsuUserOptions);
+        msuUserOptionsService.Save();
     }
 
     private void SnesConnectorServiceOnDisconnected(object? sender, EventArgs e)

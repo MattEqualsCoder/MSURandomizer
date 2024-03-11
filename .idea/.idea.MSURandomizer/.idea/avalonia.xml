@@ -8,6 +8,7 @@
         <entry key="MSURandomizer/Views/HardwareConnectorSelectionWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/HardwareModeWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/HardwareMsuWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
+        <entry key="MSURandomizer/Views/MsuDetailsWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/MsuGenerationWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/MsuList.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/MsuMonitorWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />

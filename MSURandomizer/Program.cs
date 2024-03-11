@@ -27,11 +27,17 @@ sealed class Program
     public static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
+#if DEBUG
+            .MinimumLevel.Debug()
+#else
+            .MinimumLevel.Information()         
+#endif
             .Enrich.FromLogContext()
             .WriteTo.File(Directories.LogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30)
+#if DEBUG
             .WriteTo.Debug()
             .WriteTo.Console()
+#endif
             .CreateLogger();
 
         MainHost = Host.CreateDefaultBuilder(args)

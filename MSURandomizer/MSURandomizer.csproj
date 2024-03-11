@@ -31,7 +31,7 @@
     <ItemGroup>
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.9" />
-        <PackageReference Include="MattEqualsCoder.AvaloniaControls" Version="0.9.3" />
+        <PackageReference Include="MattEqualsCoder.AvaloniaControls" Version="0.9.4" />
         <PackageReference Include="MattEqualsCoder.GitHubReleaseChecker" Version="1.1.2" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />

@@ -11,6 +11,7 @@
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         x:DataType="viewModels:HardwareMsuViewModel"
+        Icon="/Assets/MSURandomizerIcon.ico"
         Title="Hardware MSU">
     <LayoutTransformControl Name="MainLayout">
         <DockPanel>

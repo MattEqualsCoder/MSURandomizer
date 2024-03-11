@@ -11,6 +11,7 @@
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         x:DataType="viewModels:HardwareModeWindowViewModel"
+        Icon="/Assets/MSURandomizerIcon.ico"
         Title="Hardware Mode">
     <LayoutTransformControl Name="MainLayout">
         <DockPanel>

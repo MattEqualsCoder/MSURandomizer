@@ -21,11 +21,6 @@ public class HardwareMsuWindowService(ITaskService taskService,
 
     public HardwareMsuViewModel InitializeModel()
     {
-        if (string.IsNullOrEmpty(msuUserOptionsService.MsuUserOptions.OutputRomPath))
-        {
-            _model.Message = "No rom selected";
-            return _model;
-        }
         snesConnectorService.Connected += SnesConnectorServiceOnConnected;
         snesConnectorService.Disconnected += SnesConnectorServiceOnDisconnected;
         return _model;
@@ -35,7 +30,10 @@ public class HardwareMsuWindowService(ITaskService taskService,
 
     private void SnesConnectorServiceOnConnected(object? sender, EventArgs e)
     {
-        _ = UploadMsuRom();
+        taskService.RunTask(async () =>
+        {
+            await UploadMsuRom();
+        });
     }
 
     public async Task UploadMsuRom()
