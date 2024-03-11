@@ -18,7 +18,8 @@ public class AppInitializationService(
     IMsuRandomizerInitializationService msuRandomizerInitializationService,
     IGitHubReleaseService gitHubReleaseService,
     IGitHubReleaseCheckerService gitHubReleaseCheckerService,
-    IMsuUserOptionsService msuUserOptionsService)
+    IMsuUserOptionsService msuUserOptionsService,
+    IMsuGameService msuGameService)
 {
     public void Initialize(string[] args)
     {
@@ -66,6 +67,7 @@ public class AppInitializationService(
                 InitializeUserOptions = true,
                 LookupMsus = true
             });
+            msuGameService.InstallLuaScripts();
         });
     }
 
