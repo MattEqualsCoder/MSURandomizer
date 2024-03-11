@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvaloniaControls;
 using AvaloniaControls.Controls;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
@@ -53,7 +54,7 @@ public partial class MsuDetailsWindow : ScalableWindow
             return;
         }
 
-        _service = IControlServiceFactory.GetControlService<MsuDetailsService>();
+        _service = this.GetControlService<MsuDetailsService>();
     }
 
     public void Show(MsuViewModel model, Window? parentWindow)

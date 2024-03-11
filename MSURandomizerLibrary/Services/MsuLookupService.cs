@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
+using SnesConnectorLibrary.Responses;
 
 namespace MSURandomizerLibrary.Services;
 
@@ -169,6 +170,52 @@ internal class MsuLookupService : IMsuLookupService
         return msu;
     }
 
+    public Msu LoadHardwareMsu(SnesFile snesMsu, IEnumerable<SnesFile> hardwarePcmFiles)
+    {
+        var pcmFilePaths = hardwarePcmFiles.Select(x => x.FullPath).ToList();
+        var baseName = Path.GetFileName(snesMsu.FullPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
+        var msuType = GetMsuType(baseName, pcmFilePaths);
+        
+        var fullMsu = Msus.FirstOrDefault(x =>
+            x.MsuTypeName == msuType?.DisplayName &&
+            x.FolderName == snesMsu.ParentName && 
+            x.FileName == snesMsu.Name.Replace(".msu", "", StringComparison.OrdinalIgnoreCase));
+
+        if (fullMsu != null)
+        {
+            _logger.LogInformation("MSU {Name} found for {Path}", fullMsu.DisplayName, snesMsu.FullPath);
+             return new Msu(
+                type: fullMsu.MsuType, 
+                name: fullMsu.DisplayName, 
+                folderName: fullMsu.FolderName, 
+                fileName: fullMsu.FileName, 
+                path: snesMsu.FullPath, 
+                tracks: fullMsu.Tracks.Select(x => new Track(x)).ToList(),
+                msuDetails: null,
+                prevMsu: fullMsu,
+                isHardwareMsu: true);
+        }
+        else
+        {
+            _logger.LogInformation("No MSU found for {Path}", snesMsu.FullPath);
+
+            if (msuType == null)
+            {
+                _logger.LogInformation("Unknown MSU {Path} found", snesMsu.FullPath);
+                var msu = LoadUnknownMsu(snesMsu.FullPath, snesMsu.FullPath.Replace(snesMsu.Name, ""), baseName, pcmFilePaths);
+                msu.IsHardwareMsu = true;
+                return msu;
+            }
+            else
+            {
+                _logger.LogInformation("{MsuType} MSU {Path} found", msuType.DisplayName, snesMsu.FullPath);
+                var msu = LoadBasicMsu(snesMsu.FullPath, snesMsu.FullPath.Replace(snesMsu.Name, ""), baseName, msuType, pcmFilePaths, null);
+                msu.IsHardwareMsu = true;
+                return msu;
+            }
+        }
+    }
+
     public IReadOnlyCollection<Msu> Msus => _msus.ToList();
 
     private Msu LoadDetailedMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, MsuDetails basicDetails)
@@ -222,6 +269,11 @@ internal class MsuLookupService : IMsuLookupService
     
     private Msu LoadUnknownMsu(string msuPath, string directory, string baseName, IEnumerable<string> pcmFiles)
     {
+        if (directory.EndsWith('/') || directory.EndsWith('\\'))
+        {
+            directory = directory.Substring(0, directory.Length - 1);
+        }
+        
         var tracks = pcmFiles
             .Select(x =>
                 Path.GetFileName(x).Replace($"{baseName}-", "", StringComparison.OrdinalIgnoreCase).Replace(".pcm", "", StringComparison.OrdinalIgnoreCase))
@@ -249,6 +301,11 @@ internal class MsuLookupService : IMsuLookupService
 
     private Msu LoadBasicMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, MsuDetails? msuDetails)
     {
+        if (directory.EndsWith('/') || directory.EndsWith('\\'))
+        {
+            directory = directory.Substring(0, directory.Length - 1);
+        }
+
         var allPcmFiles = pcmFiles.ToList();
         
         var trackNumbers = allPcmFiles

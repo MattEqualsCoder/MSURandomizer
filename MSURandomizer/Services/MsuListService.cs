@@ -8,7 +8,6 @@ using MSURandomizer.ViewModels;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
-using Splat.ModeDetection;
 
 namespace MSURandomizer.Services;
 
@@ -17,7 +16,7 @@ public class MsuListService(AppInitializationService appInitializationService,
     IMsuUserOptionsService userOptions,
     IMsuTypeService msuTypeService,
     IMsuAppSettingsService appSettingsService,
-    IMsuMonitorService msuMonitorService) : IControlService
+    IMsuMonitorService msuMonitorService) : ControlService
 {
     public MsuListViewModel Model { get; set; } = new()
     {
@@ -63,8 +62,10 @@ public class MsuListService(AppInitializationService appInitializationService,
     public void FilterMSUs(MsuType msuType, MsuFilter msuFilter)
     {
         Model.MsuTypeName = msuType.DisplayName;
-        var msuTypePath = userOptions.MsuUserOptions.MsuTypePaths.TryGetValue(msuType, out var path) ? path : userOptions.MsuUserOptions.DefaultMsuPath;
-        var rootPath = GetMsuTypeBasePath(msuType);
+        var msuTypePath = Model.HardwareMode ? "" :
+            userOptions.MsuUserOptions.MsuTypePaths.TryGetValue(msuType, out var path) ? path :
+            userOptions.MsuUserOptions.DefaultMsuPath;
+        var rootPath = Model.HardwareMode ? "" : GetMsuTypeBasePath(msuType);
         var useAbsolutePath = string.IsNullOrWhiteSpace(rootPath);
         var filteredMsus = Model.MsuViewModels
             .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, msuTypePath) &&
@@ -110,11 +111,6 @@ public class MsuListService(AppInitializationService appInitializationService,
         CrossPlatformTools.OpenDirectory(model.MsuPath, true);
     }
 
-    public void OpenMonitorWindow(MsuViewModel model)
-    {
-        throw new NotImplementedException();
-    }
-
     private void MsuLookupServiceOnOnMsuLookupComplete(object? sender, MsuListEventArgs e)
     {
         CheckIfLoading();
@@ -133,14 +129,21 @@ public class MsuListService(AppInitializationService appInitializationService,
         
         if (!Model.IsLoading && prevValue)
         {
-            PopulateMsuViewModels(msuLookupService.Msus);
+            PopulateMsuViewModels(msuLookupService.Msus.ToList());
         }
         return Model.IsLoading;
     }
 
-    private void PopulateMsuViewModels(IReadOnlyCollection<Msu> msus)
+    public void ToggleHardwareMode(bool isEnabled)
     {
-        Model.Msus = msus;
+        Model.HardwareMode = isEnabled;
+    }
+    
+    public void PopulateMsuViewModels(List<Msu>? msus)
+    {
+        msus = msus?.Count > 0 ? msus : msuLookupService.Msus.ToList();
+        
+        Model.Msus = msus.ToList();
         
         Model.MsuViewModels = msus.Select(x => new MsuViewModel(x)).ToList();
 

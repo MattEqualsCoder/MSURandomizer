@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using AvaloniaControls;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
@@ -25,7 +26,7 @@ public partial class MsuGenerationWindow : Window
             return;
         }
 
-        _service = IControlServiceFactory.GetControlService<MsuGenerationWindowService>();
+        _service = this.GetControlService<MsuGenerationWindowService>();
     }
 
     public bool DialogResult { get; private set; }

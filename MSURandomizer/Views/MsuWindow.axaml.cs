@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Models;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
@@ -29,8 +32,8 @@ public partial class MsuWindow : RestorableWindow
         }
         else
         {
-            _service = IControlServiceFactory.GetControlService<MsuWindowService>();
-            DataContext = _model = _service.InitializeModel();
+            _service = this.GetControlService<MsuWindowService>();
+            DataContext = _model = _service!.InitializeModel();
             _service.MsuMonitorStarted += (_, _) =>
             {
                 Dispatcher.UIThread.Invoke(Hide);
@@ -115,18 +118,26 @@ public partial class MsuWindow : RestorableWindow
         {
             return;
         }
-        
-        var generationWindow = new MsuGenerationWindow();
-        generationWindow.ShowDialog(this, MsuRandomizationStyle.Single, _service.Model.SelectedMsuType, _service.Model.SelectedMsus.Select(x => x.MsuPath).ToList());
-        generationWindow.Closed += (o, args) =>
+
+        if (_model.IsHardwareModeEnabled)
         {
-            if (!generationWindow.DialogResult)
+            var hardwareMsuWindow = new HardwareMsuWindow();
+            hardwareMsuWindow.ShowDialog(this, _model.SelectedMsus.ToList());
+        }
+        else
+        {
+            var generationWindow = new MsuGenerationWindow();
+            generationWindow.ShowDialog(this, MsuRandomizationStyle.Single, _service.Model.SelectedMsuType, _service.Model.SelectedMsus.Select(x => x.MsuPath).ToList());
+            generationWindow.Closed += (o, args) =>
             {
-                return;
-            }
+                if (!generationWindow.DialogResult)
+                {
+                    return;
+                }
         
-            GenerateMsu();
-        };
+                GenerateMsu();
+            };
+        }
     }
 
     private void ContinuousShuffleButton_OnClick(object? sender, RoutedEventArgs e)
@@ -197,5 +208,23 @@ public partial class MsuWindow : RestorableWindow
     {
         var window = new MsuMonitorWindow();
         window.Show(msu);
+    }
+
+    private void HardwareButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        _ = ShowSnesConnectorSelectionWindow();
+    }
+
+    private async Task ShowSnesConnectorSelectionWindow()
+    {
+        var window = new HardwareModeWindow();
+        var selectedMsus = await window.ShowDialog<List<Msu>?>(this);
+        if (selectedMsus == null)
+        {
+            return;
+        }
+
+        _service?.UpdateHardwareMode(_msuList, selectedMsus);
+        
     }
 }

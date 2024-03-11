@@ -27,6 +27,7 @@ public class MsuViewModel : ViewModelBase
         MsuTrackCount = $"{msu.ValidTracks.Count} Tracks";
         IsFavorite = msu.Settings.IsFavorite;
         ShuffleFrequency = msu.Settings.ShuffleFrequency;
+        IsHardwareMsu = msu.IsHardwareMsu;
     }
     
     [Reactive] public Msu Msu { get; init; }
@@ -44,6 +45,8 @@ public class MsuViewModel : ViewModelBase
     [Reactive] public string MsuTypeName { get; init; } = "";
 
     [Reactive] public string MsuTrackCount { get; init; } = "";
+    
+    [Reactive] public bool IsHardwareMsu { get; init; }
 
     [Reactive] public List<MsuTrackViewModel>? Tracks { get; init; } = new();
     

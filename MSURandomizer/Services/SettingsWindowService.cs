@@ -16,35 +16,35 @@ public class SettingsWindowService(
     IMsuUserOptionsService userOptionsService, 
     IMsuTypeService msuTypeService, 
     IMsuLookupService msuLookupService, 
-    IMapper mapper) : IControlService
+    IMapper mapper) : ControlService
 {
-    public SettingsWindowViewModel Model = new();
+    private readonly SettingsWindowViewModel _model = new();
     
     public SettingsWindowViewModel InitializeModel()
     {
-        mapper.Map(userOptionsService.MsuUserOptions, Model);
-        Model.DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        mapper.Map(userOptionsService.MsuUserOptions, _model);
+        _model.DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         foreach (var msuType in msuTypeService.MsuTypes.OrderBy(x => x.DisplayName))
         {
-            Model.MsuTypeNamePathsList.Add(new MsuTypePath()
+            _model.MsuTypeNamePathsList.Add(new MsuTypePath()
             {
                 MsuType = msuType,
-                Path = Model.MsuTypeNamePaths.GetValueOrDefault(msuType.DisplayName, ""),
-                DefaultDirectory = Model.DefaultDirectory
+                Path = _model.MsuTypeNamePaths.GetValueOrDefault(msuType.DisplayName, ""),
+                DefaultDirectory = _model.DefaultDirectory
             });
         }
-        return Model;
+        return _model;
     }
 
     public void SaveModel()
     {
         var options = userOptionsService.MsuUserOptions;
         var hasPathUpdated = HasPathUpdated(options);
-        mapper.Map(Model, options);
-        options.MsuTypePaths = Model.MsuTypeNamePathsList
+        mapper.Map(_model, options);
+        options.MsuTypePaths = _model.MsuTypeNamePathsList
             .Where(x => !string.IsNullOrWhiteSpace(x.Path) && Directory.Exists(x.Path) && x.MsuType != null)
             .ToDictionary(x => x.MsuType!, x => x.Path);
-        options.MsuTypeNamePaths = Model.MsuTypeNamePathsList
+        options.MsuTypeNamePaths = _model.MsuTypeNamePathsList
             .Where(x => !string.IsNullOrWhiteSpace(x.Path) && Directory.Exists(x.Path) && x.MsuType != null)
             .ToDictionary(x => x.MsuType!.DisplayName, x => x.Path);
         userOptionsService.Save();
@@ -61,12 +61,12 @@ public class SettingsWindowService(
 
     private bool HasPathUpdated(MsuUserOptions options)
     {
-        if (Model.DefaultMsuPath != options.DefaultMsuPath)
+        if (_model.DefaultMsuPath != options.DefaultMsuPath)
         {
             return true;
         }
         
-        foreach (var msuPath in Model.MsuTypeNamePathsList.Where(x => x.MsuType != null))
+        foreach (var msuPath in _model.MsuTypeNamePathsList.Where(x => x.MsuType != null))
         {
             var newPath = msuPath.Path.Trim();
             var oldPath = options.MsuTypePaths.GetValueOrDefault(msuPath.MsuType!, "").Trim();

@@ -17,7 +17,7 @@
     </Design.DataContext>
     <LayoutTransformControl Name="MainLayout">
         <DockPanel Name="BodyPanel">
-           <Grid ColumnDefinitions="*, Auto, Auto, Auto, Auto" DockPanel.Dock="Top" Margin="5">
+           <Grid ColumnDefinitions="*, Auto, Auto, Auto, Auto, Auto" DockPanel.Dock="Top" Margin="5">
                 <StackPanel Orientation="Vertical" Grid.Column="0" Margin="5">
                     <TextBlock>Output MSU Type</TextBlock>
                     <ComboBox
@@ -56,7 +56,17 @@
                         Select None
                     </Button>
                 </StackPanel>
-                <StackPanel Orientation="Vertical" Grid.Column="4" Margin="5">
+               <StackPanel Orientation="Vertical" Grid.Column="4" Margin="5" IsVisible="{Binding IsHardwareModeButtonVisible}">
+                   <TextBlock></TextBlock>
+                   <Button Name="HardwareButton" 
+                           Click="HardwareButton_OnClick" 
+                           Height="24.5"
+                           IsEnabled="{Binding !AreMsusLoading}"
+                   >
+                       <avalonia:MaterialIcon Kind="Usb"/>
+                   </Button>
+               </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Column="5" Margin="5">
                     <TextBlock></TextBlock>
                     <Button Name="SettingsButton" Click="SettingsButton_OnClick" Height="24.5">
                         <avalonia:MaterialIcon Kind="Settings"/>
@@ -70,35 +80,35 @@
                             Margin="5" 
                             Content="{Binding SelectMsusText}" 
                             IsEnabled="{Binding IsSelectMsuEnabled}"
-                            IsVisible="{Binding IsSelectMsuVisible}" 
+                            IsVisible="{Binding IsSelectMsuButtonVisible}" 
                             Click="SelectMsuButton_OnClick"
                     />
                     <Button Name="CancelButton" 
                             Margin="5" 
                             Content="_Cancel" 
                             IsEnabled="{Binding IsCancelEnabled}"
-                            IsVisible="{Binding IsCancelVisible}"
+                            IsVisible="{Binding IsCancelButtonVisible}"
                             Click="CancelButton_OnClick"
                     />
                     <Button Name="RandomMsuButton" 
                             Margin="5" 
                             Content="{Binding RandomMsuText}"
                             IsEnabled="{Binding IsRandomMsuEnabled}"
-                            IsVisible="{Binding IsRandomMsuVisible}"
+                            IsVisible="{Binding IsRandomMsuButtonVisible}"
                             Click="RandomMsuButton_OnClick"
                     />
                     <Button Name="ShuffledMsuButton" 
                             Margin="5" 
                             Content="Create _Shuffled MSU" 
                             IsEnabled="{Binding IsShuffledMsuEnabled}"
-                            IsVisible="{Binding IsShuffledMsuVisible}"
+                            IsVisible="{Binding IsShuffledMsuButtonVisible}"
                             Click="ShuffledMsuButton_OnClick"
                     />
                     <Button Name="ContinuousShuffleButton" 
                             Margin="5" 
                             Content="_Continuously Shuffled MSU" 
                             IsEnabled="{Binding IsContinuousShuffleEnabled}"
-                            IsVisible="{Binding IsContinuousShuffleVisible}"
+                            IsVisible="{Binding IsContinuousShuffleButtonVisible}"
                             Click="ContinuousShuffleButton_OnClick"
                     />
                 </StackPanel>

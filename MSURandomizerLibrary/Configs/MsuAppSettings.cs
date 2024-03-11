@@ -92,6 +92,11 @@ public class MsuAppSettings
     /// If the user can select the option to launch a rom after generating one
     /// </summary>
     public bool CanLaunchRoms { get; set; } = true;
+    
+    /// <summary>
+    /// If the hardware connection mode is disabled or not
+    /// </summary>
+    public bool DisableHardwareMode { get; set; }
 
     /// <summary>
     /// Default directory for writing the currently playing song to

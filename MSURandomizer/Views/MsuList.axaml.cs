@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
@@ -38,8 +39,8 @@ public partial class MsuList : UserControl
         }
         else
         {
-            _service = IControlServiceFactory.GetControlService<MsuListService>();
-            DataContext = _service.InitializeModel();
+            _service = this.GetControlService<MsuListService>();
+            DataContext = _service!.InitializeModel();
         }
     }
 
@@ -76,6 +77,19 @@ public partial class MsuList : UserControl
     public void SelectNone()
     {
         _service?.SelectNone();
+    }
+
+    public void PopulateMsuViewModels(List<Msu>? msus)
+    {
+        _service?.PopulateMsuViewModels(msus);
+        SelectedMsus = _service?.Model.SelectedMsus;
+        SelectedMsuCount = SelectedMsus?.Count;
+        SelectedMsusChanged?.Invoke(this, new SelectedMsusChangedEventArgs(SelectedMsus));
+    }
+
+    public void ToggleHardwareMode(bool isEnabled)
+    {
+        _service?.ToggleHardwareMode(isEnabled);
     }
     
     private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)

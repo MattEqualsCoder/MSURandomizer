@@ -21,4 +21,6 @@ public class MsuListViewModel : ViewModelBase
     [Reactive] public bool IsMsuMonitorActive { get; set; }
     
     [Reactive] public bool IsMsuMonitorDisabled { get; set; }
+    
+    [Reactive] public bool HardwareMode { get; set; }
 }

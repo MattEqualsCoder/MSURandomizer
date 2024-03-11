@@ -13,7 +13,7 @@ public class Msu
     public Msu()
     {
     }
-    
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -25,7 +25,8 @@ public class Msu
     /// <param name="tracks">List of tracks that are in the MSU</param>
     /// <param name="msuDetails">Any MSU details to pull information about the MSU from</param>
     /// <param name="prevMsu">The previous MSU this is copied from</param>
-    public Msu(MsuType? type, string name, string folderName, string fileName, string path, ICollection<Track> tracks, MsuDetails? msuDetails, Msu? prevMsu)
+    /// <param name="isHardwareMsu">If this is an MSU that is on hardware like the FxPakPro</param>
+    public Msu(MsuType? type, string name, string folderName, string fileName, string path, ICollection<Track> tracks, MsuDetails? msuDetails, Msu? prevMsu, bool isHardwareMsu = false)
     {
         MsuType = type;
         Name = name;
@@ -33,6 +34,7 @@ public class Msu
         FileName = fileName;
         Path = path;
         Tracks = tracks;
+        IsHardwareMsu = isHardwareMsu;
 
         Version = msuDetails?.PackVersion ?? prevMsu?.Version;
         Creator = msuDetails?.PackAuthor ?? prevMsu?.Creator;
@@ -102,6 +104,11 @@ public class Msu
     /// The full path to the MSU
     /// </summary>
     public string Path { get; set; } = "";
+    
+    /// <summary>
+    /// If this is an MSU housed on hardware like the FxPakPro
+    /// </summary>
+    public bool IsHardwareMsu { get; set; }
 
     /// <summary>
     /// The list of tracks in this MSU
