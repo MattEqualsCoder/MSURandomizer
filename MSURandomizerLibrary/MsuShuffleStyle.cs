@@ -16,7 +16,7 @@ public enum MsuShuffleStyle
     /// <summary>
     /// Same as the regular standard shuffle, only for related tracks it will try to use the same MSU
     /// </summary>
-    [Description("Standard shuffle - shuffle songs meant for that location, pairing related tracks such as a dungeon and its boss theme")]
+    [Description("Standard shuffle (pair tracks) - shuffle songs meant for that location, pairing related tracks such as a dungeon and its boss theme")]
     ShuffleWithPairedTracks,
     
     /// <summary>
@@ -29,6 +29,6 @@ public enum MsuShuffleStyle
     /// <summary>
     /// Shuffle mode where literally any song can be picked. Even for special tracks such as 
     /// </summary>
-    [Description("Chaos shuffle - shuffle in songs not meant for a given location, including special tracks like the crystal get")]
+    [Description("Chaos shuffle (full chaos)- shuffle in songs not meant for a given location, including special tracks like the crystal get")]
     ChaosAllTracks
 }

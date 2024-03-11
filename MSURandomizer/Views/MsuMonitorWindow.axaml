@@ -5,6 +5,7 @@
         xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
         xmlns:viewModels="clr-namespace:MSURandomizer.ViewModels"
         xmlns:views="clr-namespace:MSURandomizer.Views"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d"
         d:DesignWidth="800" d:DesignHeight="450"
         x:Class="MSURandomizer.Views.MsuMonitorWindow"
@@ -20,9 +21,13 @@
                         <controls:EnumComboBox
                             EnumType="{Binding ConnectorType, Converter={StaticResource TypeConverter}}"
                             Value="{Binding ConnectorType, Mode=TwoWay}"
+                            Filter="{Binding FilterConnectorTypes}"
                             MinWidth="150"
                             ValueChanged="SnesConnectoTypeEnumComboBox_OnValueChanged"
                         />
+                        <Button Name="FolderButton" Height="24.5" Margin="5 0 0 0" Click="FolderButton_OnClick" ToolTip.Tip="Open Lua Script Folder" IsVisible="{Binding IsLuaFolderButtonVisible}">
+                            <avalonia:MaterialIcon Kind="Folder"/>
+                        </Button>
                         <TextBlock Text="{Binding ConnectionStatus}" VerticalAlignment="Center" Margin="5 0 0 0"/>
                     </StackPanel>
                     <TextBlock Grid.Column="1" Text="{Binding LastUpdateTimeText}" VerticalAlignment="Center" TextAlignment="Right"/>

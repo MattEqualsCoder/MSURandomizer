@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using AutoMapper;
+using AvaloniaControls;
 using AvaloniaControls.ControlServices;
 using AvaloniaControls.Services;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ public class MsuMonitorWindowService(
     IRomLauncherService romLauncherService,
     ILogger<MsuMonitorWindowService> logger) : ControlService
 {
-    private MsuMonitorWindowViewModel _model { get; set; } = new();
+    private readonly MsuMonitorWindowViewModel _model = new();
 
     public MsuMonitorWindowViewModel InitializeModel()
     {
@@ -136,6 +137,11 @@ public class MsuMonitorWindowService(
         snesConnectorService.Connected -= SnesConnectorServiceOnOnConnected;
         snesConnectorService.Disconnected -= SnesConnectorServiceOnOnDisconnected;
         msuMonitorService.MsuShuffled -= MsuMonitorServiceOnMsuShuffled;
+    }
+
+    public void OpenLuaFolder()
+    {
+        CrossPlatformTools.OpenDirectory(msuAppSettingsService.MsuAppSettings.DefaultLuaDirectory);
     }
 
     private bool VerifyMsuTypeCompatibility(MsuType msuType) => msuGameService.IsMsuTypeCompatible(msuType);

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using AvaloniaControls.Controls;
 using AvaloniaControls.Extensions;
 using AvaloniaControls.Models;
@@ -54,5 +55,10 @@ public partial class MsuMonitorWindow : RestorableWindow
     private void TopLevel_OnClosed(object? sender, EventArgs e)
     {
         _service?.StopMonitor();
+    }
+
+    private void FolderButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        _service?.OpenLuaFolder();
     }
 }
