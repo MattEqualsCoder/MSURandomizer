@@ -32,9 +32,14 @@ public class MsuViewModel : ViewModelBase
     
     [Reactive] public Msu Msu { get; init; }
 
-    [Reactive] public string? MsuName { get; set; }
+    [Reactive] 
+    [ReactiveLinkedProperties(nameof(ListText))]
+    public string? MsuName { get; set; }
     
-    [Reactive] public string? MsuCreator { get; set; }
+    [Reactive] 
+    [ReactiveLinkedProperties(nameof(ListText))]
+    public string? MsuCreator { get; set; }
+    
     
     [Reactive] public AltOptions AltOptions { get; set; }
 
@@ -59,6 +64,8 @@ public class MsuViewModel : ViewModelBase
     [Reactive]
     [ReactiveLinkedProperties(nameof(ShuffleFrequencyIcon), nameof(ShuffleFrequencyColor))]
     public ShuffleFrequency ShuffleFrequency { get; set; }
+    
+    public string ListText => string.IsNullOrEmpty(MsuCreator) ? MsuName ?? "" : $"{MsuName} by {MsuCreator}";
     
     public IImmutableSolidColorBrush FavoriteIconColor => IsFavorite ? Brushes.Goldenrod : Brushes.Gray;
 
