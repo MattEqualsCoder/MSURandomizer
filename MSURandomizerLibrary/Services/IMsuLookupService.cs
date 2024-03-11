@@ -36,6 +36,12 @@ public interface IMsuLookupService
     /// <returns>The MSU object with details of the MSU and its found tracks</returns>
     public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null, bool saveToCache = true, bool ignoreCache = false, bool forceLoad = false);
 
+    /// <summary>
+    /// Creates an MSU from files on hardware such as an FxPakPro
+    /// </summary>
+    /// <param name="snesMsu">The hardware file for the MSU itself</param>
+    /// <param name="hardwarePcmFiles">The PCM files on the hardware</param>
+    /// <returns>The generated MSU</returns>
     public Msu LoadHardwareMsu(SnesFile snesMsu, IEnumerable<SnesFile> hardwarePcmFiles);
 
     /// <summary>
