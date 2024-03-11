@@ -23,6 +23,7 @@
                  ItemsSource="{Binding FilteredMsus}"
                  SelectionMode="Multiple,Toggle"
                  SelectedItems="{Binding SelectedMsus}"
+                 BorderThickness="0"
                  SelectionChanged="SelectingItemsControl_OnSelectionChanged"
         >
             <ListBox.ItemTemplate>
