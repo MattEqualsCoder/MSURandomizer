@@ -29,6 +29,6 @@ public enum MsuShuffleStyle
     /// <summary>
     /// Shuffle mode where literally any song can be picked. Even for special tracks such as 
     /// </summary>
-    [Description("Chaos shuffle (full chaos) - shuffle in songs not meant for a given location, including special tracks like the crystal get")]
+    [Description("Chaos shuffle (full chaos) - shuffle in songs not meant for a given location, including special tracks like the crystal get theme")]
     ChaosAllTracks
 }
