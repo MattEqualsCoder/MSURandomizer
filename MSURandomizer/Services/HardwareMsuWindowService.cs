@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using AvaloniaControls;
 using AvaloniaControls.ControlServices;
@@ -15,9 +15,9 @@ namespace MSURandomizer.Services;
 public class HardwareMsuWindowService(ITaskService taskService,
     IMsuUserOptionsService msuUserOptionsService,
     IMsuHardwareService msuHardwareService,
-    ISnesConnectorService snesConnectorService) : IControlService
+    ISnesConnectorService snesConnectorService) : ControlService
 {
-    private HardwareMsuViewModel _model = new();
+    private readonly HardwareMsuViewModel _model = new();
 
     public HardwareMsuViewModel InitializeModel()
     {
@@ -31,48 +31,91 @@ public class HardwareMsuWindowService(ITaskService taskService,
         return _model;
     }
 
+    public event EventHandler? OpenMsuMonitorWindow;
+
     private void SnesConnectorServiceOnConnected(object? sender, EventArgs e)
     {
-        
         _ = UploadMsuRom();
     }
 
     public async Task UploadMsuRom()
     {
-        _model.Message = "Uploading rom";
-        
-        /*var path = await CrossPlatformTools.OpenFileDialogAsync(window, FileInputControlType.OpenFile, "Rom Files:*.sfc,*.smc,*.gb,*.gbc", userOptions.MsuUserOptions.OutputRomPath ?? userOptions.MsuUserOptions.OutputFolderPath);
-        if (path is not IStorageFile file || file.TryGetLocalPath() == null)
+        if (!msuUserOptionsService.MsuUserOptions.PassedRomArgument)
         {
-            return;
-        }*/
+            var path = await CrossPlatformTools.OpenFileDialogAsync((Window)ParentControl!, FileInputControlType.OpenFile,
+                "Rom Files:*.sfc,*.smc,*.gb,*.gbc",
+                msuUserOptionsService.MsuUserOptions.OutputRomPath ??
+                msuUserOptionsService.MsuUserOptions.OutputFolderPath);
+        
+            if (path is not IStorageFile file || file.TryGetLocalPath() == null)
+            {
+                _model.Message = "You must select a rom file";
+                return;
+            }
+
+            msuUserOptionsService.MsuUserOptions.OutputRomPath = path.TryGetLocalPath();
+        }
+        
+        _model.Message = "Uploading rom";
         
         await taskService.RunTask(async() =>
         {
             var msus = _model.Msus.Select(x => x.Msu).ToList();
-            await msuHardwareService.UploadMsuRom(msus, msuUserOptionsService.MsuUserOptions.OutputRomPath!,
+            var msu = await msuHardwareService.UploadMsuRom(msus, msuUserOptionsService.MsuUserOptions.OutputRomPath!,
                 msuUserOptionsService.MsuUserOptions.LaunchRom);
-            _model.Message = "Complete";
+            if (msu == null)
+            {
+                _model.Message = "Unable to upload rom to hardware";
+                return;
+            }
+            _model.SelectedMsu = msu;
+            if (msuUserOptionsService.MsuUserOptions.LaunchRom)
+            {
+                _model.Message = "Booting rom";
+
+                if (msuUserOptionsService.MsuUserOptions.OpenMonitorWindow)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+                    _model.Complete = true;
+                    OpenMsuMonitorWindow?.Invoke(this, EventArgs.Empty);    
+                }
+                else
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+                    _model.Complete = true;
+                    Disconnect(true);
+                }
+            }
+            else
+            {
+                await Task.Delay(TimeSpan.FromSeconds(5));
+                _model.Complete = true;
+                Disconnect(true);
+                _model.Message = "Complete";
+            }
+            
         });
-        
     }
     
     private void SnesConnectorServiceOnDisconnected(object? sender, EventArgs e)
     {
-        throw new NotImplementedException();
+        _model.Message = "Disconnected";
     }
     
-    public void SelectAndUploadMsu(List<MsuViewModel> msus)
+    public void Connect()
     {
         _model.Message = "Connecting";
         snesConnectorService.Connect(msuUserOptionsService.MsuUserOptions.SnesConnectorSettings);
     }
 
-    public void Disconnect()
+    public void Disconnect(bool fromConnector)
     {
         snesConnectorService.Connected -= SnesConnectorServiceOnConnected;
         snesConnectorService.Disconnected -= SnesConnectorServiceOnDisconnected;
-        snesConnectorService.Disconnect();
+        
+        if (fromConnector)
+        {
+            snesConnectorService.Disconnect();    
+        }
     }
-    
 }

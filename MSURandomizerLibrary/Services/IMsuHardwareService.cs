@@ -19,6 +19,6 @@ public interface IMsuHardwareService
     /// <param name="msus">The MSU list to pick from. If more than is provided, a random one will be picked</param>
     /// <param name="romFilePath">The path to the rom to upload to the SNEs</param>
     /// <param name="bootRomAfter"></param>
-    /// <returns>True if the MSU was successfully uploaded</returns>
-    public Task<bool> UploadMsuRom(List<Msu> msus, string romFilePath, bool bootRomAfter);
+    /// <returns>Returns the MSU if one was successfully picked and uploaded to</returns>
+    public Task<Msu?> UploadMsuRom(List<Msu> msus, string romFilePath, bool bootRomAfter);
 }

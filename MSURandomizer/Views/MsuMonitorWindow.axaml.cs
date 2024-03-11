@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Avalonia.Controls;
 using AvaloniaControls.Controls;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Models;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
@@ -24,8 +25,8 @@ public partial class MsuMonitorWindow : RestorableWindow
             return;
         }
         
-        _service = IControlServiceFactory.GetControlService<MsuMonitorWindowService>();
-        DataContext = _service.InitializeModel();
+        _service = this.GetControlService<MsuMonitorWindowService>();
+        DataContext = _service!.InitializeModel();
     }
 
     protected override string RestoreFilePath => Path.Combine(Directories.AppDataFolder, "msu-monitor.json");

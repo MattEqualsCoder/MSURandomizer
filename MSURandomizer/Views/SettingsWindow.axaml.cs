@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvaloniaControls.Controls;
-using AvaloniaControls.Services;
+using AvaloniaControls.Extensions;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
 
@@ -31,8 +31,8 @@ public partial class SettingsWindow : ScalableWindow
             return;
         }
 
-        _service = IControlServiceFactory.GetControlService<SettingsWindowService>();
-        DataContext = _service.InitializeModel();
+        _service = this.GetControlService<SettingsWindowService>();
+        DataContext = _service!.InitializeModel();
     }
 
     private void SaveButton_OnClick(object? sender, RoutedEventArgs e)

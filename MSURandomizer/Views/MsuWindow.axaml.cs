@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Models;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
@@ -31,8 +32,8 @@ public partial class MsuWindow : RestorableWindow
         }
         else
         {
-            _service = IControlServiceFactory.GetControlService<MsuWindowService>();
-            DataContext = _model = _service.InitializeModel();
+            _service = this.GetControlService<MsuWindowService>();
+            DataContext = _model = _service!.InitializeModel();
             _service.MsuMonitorStarted += (_, _) =>
             {
                 Dispatcher.UIThread.Invoke(Hide);

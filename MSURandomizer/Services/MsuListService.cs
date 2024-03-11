@@ -8,7 +8,6 @@ using MSURandomizer.ViewModels;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Services;
-using Splat.ModeDetection;
 
 namespace MSURandomizer.Services;
 
@@ -17,7 +16,7 @@ public class MsuListService(AppInitializationService appInitializationService,
     IMsuUserOptionsService userOptions,
     IMsuTypeService msuTypeService,
     IMsuAppSettingsService appSettingsService,
-    IMsuMonitorService msuMonitorService) : IControlService
+    IMsuMonitorService msuMonitorService) : ControlService
 {
     public MsuListViewModel Model { get; set; } = new()
     {
@@ -110,11 +109,6 @@ public class MsuListService(AppInitializationService appInitializationService,
     public void OpenMsuFolder(MsuViewModel model)
     {
         CrossPlatformTools.OpenDirectory(model.MsuPath, true);
-    }
-
-    public void OpenMonitorWindow(MsuViewModel model)
-    {
-        throw new NotImplementedException();
     }
 
     private void MsuLookupServiceOnOnMsuLookupComplete(object? sender, MsuListEventArgs e)

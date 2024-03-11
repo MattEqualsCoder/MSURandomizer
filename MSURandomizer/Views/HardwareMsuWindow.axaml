@@ -4,14 +4,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:MSURandomizer.ViewModels"
         xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
-        Width="400"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="450"
+        Width="300"
         x:Class="MSURandomizer.Views.HardwareMsuWindow"
         SizeToContent="Height"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         x:DataType="viewModels:HardwareMsuViewModel"
-        Title="HardwareMsuWindow">
+        Title="Hardware MSU">
     <LayoutTransformControl Name="MainLayout">
         <DockPanel>
             <controls:HeaderFooter DockPanel.Dock="Bottom">

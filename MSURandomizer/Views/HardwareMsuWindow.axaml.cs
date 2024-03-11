@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using AvaloniaControls.Services;
+using Avalonia.Threading;
+using AvaloniaControls.Extensions;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
 
@@ -11,8 +11,8 @@ namespace MSURandomizer.Views;
 
 public partial class HardwareMsuWindow : Window
 {
-    private HardwareMsuWindowService? _service;
-    private HardwareMsuViewModel _model;
+    private readonly HardwareMsuWindowService? _service;
+    private readonly HardwareMsuViewModel _model;
     
     public HardwareMsuWindow()
     {
@@ -24,26 +24,45 @@ public partial class HardwareMsuWindow : Window
             return;
         }
 
-        _service = IControlServiceFactory.GetControlService<HardwareMsuWindowService>();
-        DataContext = _model = _service.InitializeModel();
+        _service = this.GetControlService<HardwareMsuWindowService>();
+        DataContext = _model = _service!.InitializeModel();
         
         Closing += OnClosing;
+
+        if (_service == null)
+        {
+            return;
+        }
+        
+        _service.OpenMsuMonitorWindow += ServiceOnOpenMsuMonitorWindow;
+    }
+
+    private void ServiceOnOpenMsuMonitorWindow(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            var window = new MsuMonitorWindow();
+            window.Show(_model.SelectedMsu);
+            Close();
+        });
     }
 
     public void ShowDialog(Window parentWindow, List<MsuViewModel> msus)
     {
         _model.Msus = msus;
-        _service?.UploadMsuRom();
+        _service?.Connect();
         ShowDialog(parentWindow);
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {
-        _service?.Disconnect();
+        if (_service == null) return;
+        _service.OpenMsuMonitorWindow -= ServiceOnOpenMsuMonitorWindow;
+        _service.Disconnect(!_model.Complete);
     }
 
     private void CloseButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        _service?.Disconnect();
+        Close();
     }
 }

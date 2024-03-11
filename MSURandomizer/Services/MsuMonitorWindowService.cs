@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using AutoMapper;
-using AvaloniaControls.Controls;
 using AvaloniaControls.ControlServices;
 using AvaloniaControls.Services;
 using Microsoft.Extensions.Logging;
@@ -23,17 +22,17 @@ public class MsuMonitorWindowService(
     IMsuLookupService msuLookupService,
     IMapper mapper,
     IRomLauncherService romLauncherService,
-    ILogger<MsuMonitorWindowService> logger) : IControlService
+    ILogger<MsuMonitorWindowService> logger) : ControlService
 {
-    public MsuMonitorWindowViewModel Model { get; set; } = new();
+    private MsuMonitorWindowViewModel _model { get; set; } = new();
 
     public MsuMonitorWindowViewModel InitializeModel()
     {
         snesConnectorService.Connected += SnesConnectorServiceOnOnConnected;
         snesConnectorService.Disconnected += SnesConnectorServiceOnOnDisconnected;
         msuMonitorService.MsuShuffled += MsuMonitorServiceOnMsuShuffled;
-        mapper.Map(msuUserOptionsService.MsuUserOptions.SnesConnectorSettings, Model);
-        return Model;
+        mapper.Map(msuUserOptionsService.MsuUserOptions.SnesConnectorSettings, _model);
+        return _model;
     }
 
     public void StartMonitor(Msu? msu = null)
@@ -44,12 +43,12 @@ public class MsuMonitorWindowService(
 
             if (outputMsuType == null)
             {
-                Model.ErrorMessage = "Invalid MSU Type Selected";
+                _model.ErrorMessage = "Invalid MSU Type Selected";
                 return;
             }
             else if (!VerifyMsuTypeCompatibility(outputMsuType))
             {
-                Model.ErrorMessage = "Sorry, that game is not compatible yet with reading the current playing track";
+                _model.ErrorMessage = "Sorry, that game is not compatible yet with reading the current playing track";
                 return;
             }
             
@@ -80,12 +79,12 @@ public class MsuMonitorWindowService(
         {
             if (msu.MsuType == null)
             {
-                Model.ErrorMessage = "Invalid MSU Type Selected";
+                _model.ErrorMessage = "Invalid MSU Type Selected";
                 return;
             }
             else if (!VerifyMsuTypeCompatibility(msu.MsuType))
             {
-                Model.ErrorMessage = "Sorry, that game is not compatible yet with reading the current playing track";
+                _model.ErrorMessage = "Sorry, that game is not compatible yet with reading the current playing track";
                 return;
             }
             
@@ -100,7 +99,14 @@ public class MsuMonitorWindowService(
 
     public void ConnectToSnes()
     {
-        var connectorSettings = mapper.Map<SnesConnectorSettings>(Model);
+        if (_model.ConnectorType == _model.CurrentConnectorType)
+        {
+            return;
+        }
+
+        _model.CurrentConnectorType = _model.ConnectorType;
+        
+        var connectorSettings = mapper.Map<SnesConnectorSettings>(_model);
 
         if (connectorSettings.ConnectorType == SnesConnectorType.None)
         {
@@ -136,16 +142,16 @@ public class MsuMonitorWindowService(
 
     private void MsuMonitorServiceOnMsuShuffled(object? sender, EventArgs e)
     {
-        Model.LastUpdateTime = DateTime.Now;
+        _model.LastUpdateTime = DateTime.Now;
     }
 
     private void SnesConnectorServiceOnOnDisconnected(object? sender, EventArgs e)
     {
-        Model.ConnectionStatus = "Disconnected";
+        _model.ConnectionStatus = "Disconnected";
     }
 
     private void SnesConnectorServiceOnOnConnected(object? sender, EventArgs e)
     {
-        Model.ConnectionStatus = "Connected";
+        _model.ConnectionStatus = "Connected";
     }
 }

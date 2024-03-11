@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
@@ -38,8 +39,8 @@ public partial class MsuList : UserControl
         }
         else
         {
-            _service = IControlServiceFactory.GetControlService<MsuListService>();
-            DataContext = _service.InitializeModel();
+            _service = this.GetControlService<MsuListService>();
+            DataContext = _service!.InitializeModel();
         }
     }
 

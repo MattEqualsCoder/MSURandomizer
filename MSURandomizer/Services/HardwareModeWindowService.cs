@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using AvaloniaControls;
 using AvaloniaControls.ControlServices;
 using Microsoft.Extensions.Logging;
 using MSURandomizer.ViewModels;
@@ -16,9 +14,9 @@ public class HardwareModeWindowService(
     IMapper mapper,
     IMsuUserOptionsService msuUserOptionsService,
     IMsuHardwareService msuHardwareService,
-    ILogger<HardwareModeWindowService> logger) : IControlService
+    ILogger<HardwareModeWindowService> logger) : ControlService
 {
-    private HardwareModeWindowViewModel _model = new();
+    private readonly HardwareModeWindowViewModel _model = new();
 
     public HardwareModeWindowViewModel InitializeModel()
     {

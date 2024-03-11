@@ -23,4 +23,6 @@ public class MsuMonitorWindowViewModel : ViewModelBase
     public bool HasErrorMessage => !string.IsNullOrEmpty(ErrorMessage);
 
     public string LastUpdateTimeText => $"Last updated {DateTime.Now.ToShortTimeString()}";
+    
+    public SnesConnectorType CurrentConnectorType { get; set; }
 }

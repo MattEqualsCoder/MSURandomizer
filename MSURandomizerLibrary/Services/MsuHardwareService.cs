@@ -9,6 +9,7 @@ namespace MSURandomizerLibrary.Services;
 internal class MsuHardwareService(
     ISnesConnectorService snesConnectorService,
     IMsuLookupService msuLookupService,
+    IMsuUserOptionsService msuUserOptionsService,
     ILogger<MsuHardwareService> logger) : IMsuHardwareService
 {
     public async Task<List<Msu>?> GetMsusFromDevice()
@@ -39,18 +40,23 @@ internal class MsuHardwareService(
         return response;
     }
 
-    public async Task<bool> UploadMsuRom(List<Msu> msus, string romFilePath, bool bootRomAfter)
+    public async Task<Msu?> UploadMsuRom(List<Msu> msus, string romFilePath, bool bootRomAfter)
     {
         if (msus.Count == 0)
         {
             logger.LogError("No MSUs selected");
-            return false;
+            return null;
         }
         
         if (!snesConnectorService.IsConnected || !snesConnectorService.CurrentConnectorFunctionality.CanAccessFiles)
         {
             logger.LogError("Not connected to an SNES connector that can upload files");
+            return null;
         }
+
+        msuUserOptionsService.MsuUserOptions.SelectedMsus = msus.Select(x => x.Path).ToList();
+        msuUserOptionsService.MsuUserOptions.OutputRomPath = romFilePath;
+        msuUserOptionsService.Save();
         
         var random = new Random(System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, int.MaxValue));
         
@@ -63,6 +69,7 @@ internal class MsuHardwareService(
         if (!msu.IsHardwareMsu)
         {
             logger.LogError("MSU {Path} is not a hardware MSU", msu.Path);
+            return null;
         }
 
         var cts = new CancellationTokenSource();
@@ -78,7 +85,7 @@ internal class MsuHardwareService(
                 OnComplete = () => cts.Cancel()
             }))
         {
-            return false;
+            return null;
         }
             
         while (!cts.Token.IsCancellationRequested)
@@ -89,7 +96,7 @@ internal class MsuHardwareService(
 
         if (!bootRomAfter)
         {
-            return true;
+            return msu;
         }
 
         cts = new CancellationTokenSource();
@@ -100,7 +107,7 @@ internal class MsuHardwareService(
                 OnComplete = () => cts.Cancel()
             }))
         {
-            return false;
+            return null;
         }
         
         while (!cts.Token.IsCancellationRequested)
@@ -109,7 +116,7 @@ internal class MsuHardwareService(
                 .ContinueWith(tsk => tsk.Exception == default, CancellationToken.None);
         }
 
-        return true;
+        return msu;
     }
 
     private bool IsMsuFile(string fileName)

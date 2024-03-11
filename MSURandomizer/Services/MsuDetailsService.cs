@@ -12,7 +12,7 @@ public class MsuDetailsService(
     IMapper mapper,
     IMsuTypeService msuTypeService,
     IMsuCacheService msuCacheService,
-    IMsuLookupService msuLookupService) : IControlService
+    IMsuLookupService msuLookupService) : ControlService
 {
     private MsuViewModel _parentModel = new();
     public MsuDetailsWindowViewModel Model { get; set; } = new();

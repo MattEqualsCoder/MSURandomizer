@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
@@ -28,8 +29,8 @@ public partial class CurrentPlayingTrackControl : UserControl
         _canvas = this.Get<Canvas>(nameof(OuterCanvas));
         _textBlock = this.Get<TextBlock>(nameof(SongTextBlock));
 
-        _service = IControlServiceFactory.GetControlService<CurrentPlayingTrackService>();
-        DataContext = _service.InitializeModel();
+        _service = this.GetControlService<CurrentPlayingTrackService>();
+        DataContext = _service!.InitializeModel();
         _service.TrackChanged += (sender, args) =>
         {
             Task.Run(async () =>

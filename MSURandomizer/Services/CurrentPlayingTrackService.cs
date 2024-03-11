@@ -5,7 +5,6 @@ using Avalonia;
 using Avalonia.Threading;
 using AvaloniaControls.ControlServices;
 using MSURandomizer.ViewModels;
-using MSURandomizerLibrary;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
 using SnesConnectorLibrary;
@@ -15,7 +14,7 @@ namespace MSURandomizer.Services;
 public class CurrentPlayingTrackService(
     IMsuMonitorService msuMonitorService, 
     ISnesConnectorService snesConnectorService,
-    IMsuUserOptionsService msuUserOptionsService) : IControlService, IDisposable
+    IMsuUserOptionsService msuUserOptionsService) : ControlService, IDisposable
 {
     public CurrentPlayingTrackViewModel Model = new();
     private DispatcherTimer? _dispatcherTimer;

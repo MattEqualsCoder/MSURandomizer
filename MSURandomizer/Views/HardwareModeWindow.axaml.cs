@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvaloniaControls.Controls;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Models;
 using AvaloniaControls.Services;
 using MSURandomizer.Services;
@@ -26,8 +27,8 @@ public partial class HardwareModeWindow : ScalableWindow
             return;
         }
 
-        _service = IControlServiceFactory.GetControlService<HardwareModeWindowService>();
-        DataContext = _model = _service.InitializeModel();
+        _service = this.GetControlService<HardwareModeWindowService>();
+        DataContext = _model = _service!.InitializeModel();
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)

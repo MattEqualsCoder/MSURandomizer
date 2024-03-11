@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using AvaloniaControls;
 using AvaloniaControls.Controls;
 using AvaloniaControls.ControlServices;
 using AvaloniaControls.Models;
@@ -26,7 +23,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     IMsuSelectorService msuSelectorService,
     IMsuLookupService msuLookupService,
     IMsuMonitorService msuMonitorService,
-    IRomLauncherService romLauncherService) : IControlService
+    IRomLauncherService romLauncherService) : ControlService
 {
     public MsuWindowViewModel Model { get; set; } = new();
 
@@ -257,6 +254,8 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         logger.LogError(error);
         return false;
     }
+
+    public bool ShouldOpenMonitorWindow => userOptions.MsuUserOptions.OpenMonitorWindow;
 
     private void MsuTypeServiceOnOnMsuTypeLoadComplete(object? sender, EventArgs e)
     {
