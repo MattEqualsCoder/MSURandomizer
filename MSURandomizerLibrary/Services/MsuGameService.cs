@@ -17,6 +17,7 @@ internal class MsuGameService(ILogger<MsuGameService> logger, ISnesConnectorServ
     private readonly Dictionary<string, Type> _connectors = new()
     {
         { "A Link to the Past", typeof(LttPGameConnector) },
+        { "The Legend of Zelda: A Link to the Past", typeof(LttPGameConnector) },
         { "Super Metroid / A Link to the Past Combination Randomizer", typeof(SMZ3GameConnector) }
     };
 
