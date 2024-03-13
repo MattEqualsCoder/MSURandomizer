@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -26,12 +27,23 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        Log.Logger = new LoggerConfiguration()
+        
+        var loggerConfiguration = new LoggerConfiguration();
+        
 #if DEBUG
-            .MinimumLevel.Debug()
+        loggerConfiguration = loggerConfiguration.MinimumLevel.Debug();
 #else
-            .MinimumLevel.Information()         
+        if (args.Contains("-d"))
+        {
+            loggerConfiguration = loggerConfiguration.MinimumLevel.Debug();
+        }
+        else
+        {
+            loggerConfiguration = loggerConfiguration.MinimumLevel.Information();
+        }
 #endif
+        
+        Log.Logger = loggerConfiguration
             .Enrich.FromLogContext()
             .WriteTo.File(Directories.LogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30)
 #if DEBUG
