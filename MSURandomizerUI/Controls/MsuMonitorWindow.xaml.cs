@@ -111,7 +111,7 @@ public partial class MsuMonitorWindow : Window
         
         _ = Task.Run(() =>
         {
-            _msuMonitorService?.StartMonitor(msu);
+            _msuMonitorService?.StartMonitor(msu, _msuType!);
         });
         
         Show();
