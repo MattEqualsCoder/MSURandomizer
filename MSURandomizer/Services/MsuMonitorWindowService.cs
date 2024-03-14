@@ -33,6 +33,7 @@ public class MsuMonitorWindowService(
         snesConnectorService.Disconnected += SnesConnectorServiceOnOnDisconnected;
         msuMonitorService.MsuShuffled += MsuMonitorServiceOnMsuShuffled;
         mapper.Map(msuUserOptionsService.MsuUserOptions.SnesConnectorSettings, _model);
+        _model.ConnectionStatus = snesConnectorService.IsConnected ? "Connected" : "Disconnected";
         return _model;
     }
 
