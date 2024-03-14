@@ -35,6 +35,7 @@ public class AppInitializationService(
         ScalableWindow.GlobalScaleFactor = msuUserOptionsService.MsuUserOptions.UiScaling;
 
         var initPassedRomArgument = msuUserOptionsService.MsuUserOptions.PassedRomArgument;
+        var initOutputRomPath = msuUserOptionsService.MsuUserOptions.OutputRomPath;
         msuUserOptionsService.MsuUserOptions.PassedRomArgument = false;
         
         if (args.Length > 0 && !string.IsNullOrEmpty(args.Last()))
@@ -48,7 +49,7 @@ public class AppInitializationService(
             }
         }
 
-        if (msuUserOptionsService.MsuUserOptions.PassedRomArgument != initPassedRomArgument)
+        if (msuUserOptionsService.MsuUserOptions.PassedRomArgument != initPassedRomArgument || msuUserOptionsService.MsuUserOptions.OutputRomPath != initOutputRomPath)
         {
             msuUserOptionsService.Save();
         }
