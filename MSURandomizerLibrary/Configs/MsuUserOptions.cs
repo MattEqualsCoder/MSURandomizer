@@ -134,6 +134,11 @@ public class MsuUserOptions
     public bool LaunchRom { get; set; }
     
     /// <summary>
+    /// Directory roms should be copied to before randomizing
+    /// </summary>
+    public string? CopyRomDirectory { get; set; }
+    
+    /// <summary>
     /// Specific directories to load for specific MSU types
     /// </summary>
     [YamlIgnore] public Dictionary<MsuType, string> MsuTypePaths { get; set; } = new();
