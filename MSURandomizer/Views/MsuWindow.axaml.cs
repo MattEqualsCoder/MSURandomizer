@@ -121,8 +121,9 @@ public partial class MsuWindow : RestorableWindow
 
         if (_model.IsHardwareModeEnabled)
         {
+            var msuType = _service?.GetMsuType(_model.SelectedMsuType) ?? _model.SelectedMsus.First().Msu.MsuType;
             var hardwareMsuWindow = new HardwareMsuWindow();
-            hardwareMsuWindow.ShowDialog(this, _model.SelectedMsus.ToList());
+            hardwareMsuWindow.ShowDialog(this, _model.SelectedMsus.ToList(), msuType!);
         }
         else
         {
@@ -206,8 +207,9 @@ public partial class MsuWindow : RestorableWindow
 
     private void OpenMsuMonitorWindow(Msu? msu)
     {
+        var msuType = _service?.GetMsuType(_model.SelectedMsuType) ?? msu?.MsuType;
         var window = new MsuMonitorWindow();
-        window.Show(msu);
+        window.Show(msu, msuType!);
     }
 
     private void HardwareButton_OnClick(object? sender, RoutedEventArgs e)

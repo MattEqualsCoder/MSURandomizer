@@ -15,6 +15,7 @@ namespace MSURandomizer.Views;
 public partial class MsuList : UserControl
 {
     private readonly MsuListService? _service;
+    private readonly MsuListViewModel _model;
     
     public MsuList()
     {
@@ -22,7 +23,7 @@ public partial class MsuList : UserControl
 
         if (Design.IsDesignMode)
         {
-            DataContext = new MsuListViewModel()
+            DataContext = _model = new MsuListViewModel()
             {
                 FilteredMsus = new List<MsuViewModel>()
                 {
@@ -40,7 +41,7 @@ public partial class MsuList : UserControl
         else
         {
             _service = this.GetControlService<MsuListService>();
-            DataContext = _service!.InitializeModel();
+            DataContext = _model = _service!.InitializeModel();
         }
     }
 
@@ -182,6 +183,6 @@ public partial class MsuList : UserControl
         }
         
         var window = new MsuMonitorWindow();
-        window.Show(model.Msu);
+        window.Show(model.Msu, _model.MsuType);
     }
 }

@@ -62,6 +62,7 @@ public class MsuListService(AppInitializationService appInitializationService,
     public void FilterMSUs(MsuType msuType, MsuFilter msuFilter)
     {
         Model.MsuTypeName = msuType.DisplayName;
+        Model.MsuType = msuType;
         var msuTypePath = Model.HardwareMode ? "" :
             userOptions.MsuUserOptions.MsuTypePaths.TryGetValue(msuType, out var path) ? path :
             userOptions.MsuUserOptions.DefaultMsuPath;

@@ -6,6 +6,7 @@ using Avalonia.Threading;
 using AvaloniaControls.Extensions;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
+using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizer.Views;
 
@@ -42,13 +43,14 @@ public partial class HardwareMsuWindow : Window
         Dispatcher.UIThread.Invoke(() =>
         {
             var window = new MsuMonitorWindow();
-            window.Show(_model.SelectedMsu);
+            window.Show(_model.SelectedMsu, _model.SelectedMsuType);
             Close();
         });
     }
 
-    public void ShowDialog(Window parentWindow, List<MsuViewModel> msus)
+    public void ShowDialog(Window parentWindow, List<MsuViewModel> msus, MsuType outputMsuType)
     {
+        _model.SelectedMsuType = outputMsuType;
         _model.Msus = msus;
         _service?.Connect();
         ShowDialog(parentWindow);

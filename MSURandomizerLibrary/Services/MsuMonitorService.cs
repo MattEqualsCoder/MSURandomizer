@@ -46,11 +46,11 @@ internal class MsuMonitorService(
         } while (!_cts.Token.IsCancellationRequested);
     }
     
-    public void StartMonitor(Msu msu)
+    public void StartMonitor(Msu msu, MsuType msuType)
     {
         logger.LogInformation("Start monitor");
         UpdateOutputPath();
-        gameService.SetMsuType(msu.MsuType!);
+        gameService.SetMsuType(msuType);
         gameService.OnTrackChanged += GameServiceOnOnTrackChanged;
         _currentMsu = msu;
         _currentTrack = null;

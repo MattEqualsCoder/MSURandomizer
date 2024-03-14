@@ -18,6 +18,8 @@ public class MsuListViewModel : ViewModelBase
     
     [Reactive] public string? MsuTypeName { get; set; }
     
+    [Reactive] public MsuType? MsuType { get; set; }
+    
     [Reactive] public bool IsMsuMonitorActive { get; set; }
     
     [Reactive] public bool IsMsuMonitorDisabled { get; set; }

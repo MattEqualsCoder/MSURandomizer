@@ -39,7 +39,8 @@ public interface IMsuMonitorService : IDisposable
     /// Starts the monitor for a specific MSU to detect when the current song has changed
     /// </summary>
     /// <param name="msu">The MSU to play</param>
-    public void StartMonitor(Msu msu);
+    /// <param name="msuType">The MSU type to use for monitoring</param>
+    public void StartMonitor(Msu msu, MsuType msuType);
 
     /// <summary>
     /// Stops the monitor

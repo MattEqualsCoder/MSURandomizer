@@ -13,4 +13,6 @@ public class HardwareMsuViewModel : ViewModelBase
     public bool Complete { get; set; }
     
     public Msu? SelectedMsu { get; set; }
+    
+    public MsuType? SelectedMsuType { get; set; }
 }

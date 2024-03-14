@@ -34,9 +34,9 @@ public partial class MsuMonitorWindow : RestorableWindow
     protected override int DefaultWidth => 600;
     protected override int DefualtHeight => 400;
 
-    public void Show(Msu? msu, Window? parent = null)
+    public void Show(Msu? msu, MsuType? outputMsuType, Window? parent = null)
     {
-        _service?.StartMonitor(msu);
+        _service?.StartMonitor(msu, outputMsuType);
         if (parent == null)
         {
             Show();

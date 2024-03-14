@@ -273,6 +273,11 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
     public bool ShouldOpenMonitorWindow => userOptions.MsuUserOptions.OpenMonitorWindow;
 
+    public MsuType? GetMsuType(string msuTypeName)
+    {
+        return msuTypeService.GetMsuType(msuTypeName);
+    }
+
     private void MsuTypeServiceOnOnMsuTypeLoadComplete(object? sender, EventArgs e)
     {
         Model.MsusTypes = msuTypeService.MsuTypes.Select(x => x.DisplayName).Order().ToList();

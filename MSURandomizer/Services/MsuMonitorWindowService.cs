@@ -36,11 +36,11 @@ public class MsuMonitorWindowService(
         return _model;
     }
 
-    public void StartMonitor(Msu? msu = null)
+    public void StartMonitor(Msu? msu = null, MsuType? outputMsuType = null)
     {
         if (msu == null)
         {
-            var outputMsuType = msuTypeService.GetMsuType(msuUserOptionsService.MsuUserOptions.OutputMsuType);
+            outputMsuType ??= msuTypeService.GetMsuType(msuUserOptionsService.MsuUserOptions.OutputMsuType);
 
             if (outputMsuType == null)
             {
@@ -88,12 +88,14 @@ public class MsuMonitorWindowService(
                 _model.ErrorMessage = "Sorry, that game is not compatible yet with reading the current playing track";
                 return;
             }
+
+            outputMsuType ??= msu.MsuType;
             
             ConnectToSnes();
             
             ITaskService.Run(() =>
             {
-                msuMonitorService.StartMonitor(msu);
+                msuMonitorService.StartMonitor(msu, outputMsuType!);
             });
         }
     }
