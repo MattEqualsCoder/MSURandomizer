@@ -37,7 +37,7 @@ public class AppInitializationService(
         var initPassedRomArgument = msuUserOptionsService.MsuUserOptions.PassedRomArgument;
         msuUserOptionsService.MsuUserOptions.PassedRomArgument = false;
         
-        if (args.Length > 0)
+        if (args.Length > 0 && !string.IsNullOrEmpty(args.Last()))
         {
             var file = new FileInfo(args.Last());
             if (file.Exists && file.Extension.ToLower() is ".sfc" or ".smc" or ".gb" or ".gbc")
