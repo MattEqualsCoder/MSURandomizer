@@ -28,6 +28,8 @@ public class SettingsWindowViewModel : ViewModelBase
 
     [Reactive] public List<MsuTypePath> MsuTypeNamePathsList { get; set; } = new();
     
+    [Reactive] public string? CopyRomDirectory { get; set; }
+    
     [Reactive]
     [ReactiveLinkedProperties(nameof(LaunchArgumentsEnabled))]
     public string? LaunchApplication { get; set; }
