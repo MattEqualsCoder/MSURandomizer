@@ -23,7 +23,8 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     IMsuSelectorService msuSelectorService,
     IMsuLookupService msuLookupService,
     IMsuMonitorService msuMonitorService,
-    IRomLauncherService romLauncherService) : ControlService
+    IRomLauncherService romLauncherService,
+    IRomCopyService romCopyService) : ControlService
 {
     public MsuWindowViewModel Model { get; set; } = new();
 
@@ -155,6 +156,21 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
             error = "No MSUs selected";
             openContinuousWindow = false;
             return false;
+        }
+
+        if (!string.IsNullOrEmpty(userOptions.MsuUserOptions.OutputRomPath) &&
+            !string.IsNullOrEmpty(userOptions.MsuUserOptions.CopyRomDirectory))
+        {
+            if (romCopyService.CopyRom(userOptions.MsuUserOptions.OutputRomPath, out var outPath, out var copyError))
+            {
+                userOptions.MsuUserOptions.OutputRomPath = outPath;
+            }
+            else
+            {
+                error = copyError ?? "Error copying rom to copy rom directory";
+                openContinuousWindow = false;
+                return false;
+            }
         }
         
         var options = userOptions.MsuUserOptions;
