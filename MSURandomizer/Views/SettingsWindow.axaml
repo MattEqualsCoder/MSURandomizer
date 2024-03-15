@@ -87,7 +87,7 @@
                                 </Grid>
                             </controls:LabeledControl>
                             
-                            <controls:LabeledControl Text="Copy Rom Directory" Hint="Folder for roms to be copied to for MSUs if desired. If not set, the rom locations will be left alone." DisplayHint="True" Margin="3">
+                            <controls:LabeledControl Text="Output Directory" Hint="Folder for roms to be moved to for MSUs if desired. If not set, the rom locations will be left alone." DisplayHint="True" Margin="3">
                                 <controls:FileControl 
                                     FileInputType="Folder"
                                     DefaultPath="{Binding DefaultDirectory}"
