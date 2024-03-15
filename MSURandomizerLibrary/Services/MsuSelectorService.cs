@@ -148,6 +148,17 @@ internal class MsuSelectorService : IMsuSelectorService
                     possibleTracks = possibleTracks.Where(t => !specialTrackNumbers.Contains(t.Number)).ToList();
                 }
             }
+            else if (request.ShuffleStyle == MsuShuffleStyle.ChaosJingleTracks)
+            {
+                if (msuTypeTrack.IsSpecial)
+                {
+                    possibleTracks = possibleTracks.Where(t => specialTrackNumbers.Contains(t.Number)).ToList();
+                }
+                else
+                {
+                    possibleTracks = possibleTracks.Where(t => !specialTrackNumbers.Contains(t.Number)).ToList();
+                }
+            }
             else if (request.ShuffleStyle == MsuShuffleStyle.ChaosAllTracks)
             {
                 if (_random.Next(0, 100) < request.ChaosShuffleChance)
