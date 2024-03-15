@@ -33,6 +33,7 @@ public class Track
         TrackName = trackName;
         Number = number;
         OriginalTrackNumber = number;
+        OriginalTrackName = trackName;
         SongName = songName;
         Path = path;
         Artist = artist;
@@ -55,6 +56,7 @@ public class Track
         TrackName = trackName ?? other.TrackName;
         Number = number ?? other.Number;
         OriginalTrackNumber = other.OriginalTrackNumber;
+        OriginalTrackName = other.TrackName;
         SongName = other.SongName;
         Path = path ?? other.Path;
         Artist = other.Artist;
@@ -142,6 +144,11 @@ public class Track
     /// The number the track was shuffled as
     /// </summary>
     public int OriginalTrackNumber { get; set; }
+
+    /// <summary>
+    /// The name the track was shuffled as
+    /// </summary>
+    public string OriginalTrackName { get; set; } = "";
     
     /// <summary>
     /// The MSU this track is currently part of
@@ -220,6 +227,15 @@ public class Track
                     .AddAlbum("Album: {0}")
                     .AddSongName("Song: {0}")
                     .AddArtist("Artist: {0}")
+                    .ToString("\r\n");
+            }
+            case TrackDisplayFormat.VerticalWithOriginalTrackName:
+            {
+                return builder.AddMsuNameAndCreator("MSU: {0}")
+                    .AddAlbum("Album: {0}")
+                    .AddSongName("Song: {0}")
+                    .AddArtist("Artist: {0}")
+                    .AddOriginalTrackName("Originally plays for: {0}")
                     .ToString("\r\n");
             }
             case TrackDisplayFormat.HorizonalWithMsu:

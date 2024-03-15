@@ -67,6 +67,16 @@ internal class TrackDisplayTextBuilder(Track track)
 
         return this;
     }
+    
+    public TrackDisplayTextBuilder AddOriginalTrackName(string format, string? fallback = "")
+    {
+        if (!string.IsNullOrEmpty(track.OriginalTrackName) && track.OriginalTrackName != track.TrackName)
+        {
+            _parts.Add(string.Format(format, track.OriginalTrackName));
+        }
+
+        return this;
+    }
 
     public string ToString(string divider) => string.Join(divider, _parts);
 

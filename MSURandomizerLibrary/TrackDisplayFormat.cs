@@ -19,6 +19,12 @@ public enum TrackDisplayFormat
     /// </summary>
     [Description("Multiple lines: MSU/album/song/artist")]
     Vertical,
+    
+    /// <summary>
+    /// Vertical style: separate lines for separate tracks, with MSU pack info.
+    /// </summary>
+    [Description("Multiple lines (including original track): MSU/album/song/artist/original track name")]
+    VerticalWithOriginalTrackName,
 
     /// <summary>
     /// Horizontal style: displays the current track with MSU pack info.
