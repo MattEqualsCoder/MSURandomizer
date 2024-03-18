@@ -8,7 +8,7 @@ internal class MsuMonitorService(
     ILogger<MsuMonitorService> logger,
     IMsuGameService gameService,
     IMsuSelectorService msuSelectorService,
-    MsuUserOptions msuUserOptions,
+    IMsuUserOptionsService msuUserOptions,
     MsuAppSettings msuAppSettings)
     : IMsuMonitorService
 {
@@ -71,7 +71,7 @@ internal class MsuMonitorService(
 
     private void UpdateOutputPath()
     {
-        _outputPath = msuUserOptions.MsuCurrentSongOutputFilePath;
+        _outputPath = msuUserOptions.MsuUserOptions.MsuCurrentSongOutputFilePath;
         if (string.IsNullOrWhiteSpace(_outputPath))
         {
             _outputPath = msuAppSettings.DefaultMsuCurrentSongOutputFilePath;
@@ -93,7 +93,7 @@ internal class MsuMonitorService(
             }
             try
             {
-                _ = File.WriteAllTextAsync(_outputPath, _currentTrack.GetDisplayText(msuUserOptions.TrackDisplayFormat));
+                _ = File.WriteAllTextAsync(_outputPath, _currentTrack.GetDisplayText(msuUserOptions.MsuUserOptions.TrackDisplayFormat));
             }
             catch (Exception ex)
             {
