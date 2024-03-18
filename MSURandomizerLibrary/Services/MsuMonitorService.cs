@@ -39,6 +39,7 @@ internal class MsuMonitorService(
         do
         {
             request.CurrentTrack = _currentTrack;
+            request.PrevMsu = _currentMsu;
             var response = msuSelectorService.CreateShuffledMsu(request);
             _currentMsu = response.Msu;
             MsuShuffled?.Invoke(this, EventArgs.Empty);

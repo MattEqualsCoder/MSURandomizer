@@ -62,7 +62,7 @@ public class MsuMonitorWindowService(
                     msuUserOptionsService.MsuUserOptions.SelectedMsus?.Contains(x.Path) == true).ToList();
                 msuMonitorService.StartShuffle(new MsuSelectorRequest()
                 {
-                    EmptyFolder = true,
+                    EmptyFolder = false,
                     Msus = msus,
                     OutputMsuType = outputMsuType,
                     ShuffleStyle = msuUserOptionsService.MsuUserOptions.MsuShuffleStyle,
