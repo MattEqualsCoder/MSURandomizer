@@ -356,7 +356,8 @@ internal class MsuSelectorService : IMsuSelectorService
                 if (source == destination)
                 {
                     _logger.LogInformation("#{Number} ({Name}) Skipped: {Source}", trackNumber, msuTypeTrack?.Name, source);
-                    tracks.Add(new Track(track) { OriginalMsu = track.OriginalMsu });
+                    var originalTrackName = track.OriginalTrackName;
+                    tracks.Add(new Track(track) { OriginalMsu = track.OriginalMsu, OriginalTrackName = originalTrackName });
                 }
                 else if (CreatePcmFile(source, destination))
                 {
@@ -369,7 +370,8 @@ internal class MsuSelectorService : IMsuSelectorService
                     track = prevMsu?.Tracks.FirstOrDefault(x => x.Path == destination);
                     if (track != null)
                     {
-                        tracks.Add(new Track(track) { OriginalMsu = track.OriginalMsu });
+                        var originalTrackName = track.OriginalTrackName;
+                        tracks.Add(new Track(track) { OriginalMsu = track.OriginalMsu, OriginalTrackName = originalTrackName });
                         _logger.LogInformation("Used previous PCM track {Destination}", destination);
                     }
                     else
