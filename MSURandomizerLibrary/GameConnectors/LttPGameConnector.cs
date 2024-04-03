@@ -23,10 +23,10 @@ internal class LttPGameConnector : IGameConnector
                 AddressFormat = AddressFormat.Snes9x,
                 RespondOnChangeOnly = true,
                 FrequencySeconds = 1,
-                OnResponse = (data =>
+                OnResponse = (data, prevData) =>
                 {
                     OnTrackChanged?.Invoke(this, new TrackNumberChangedEventArgs(data.ReadUInt8(0) ?? 0));
-                })
+                }
             }
         };
     }

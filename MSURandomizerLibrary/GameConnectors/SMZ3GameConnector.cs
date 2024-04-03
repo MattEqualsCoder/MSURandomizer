@@ -25,7 +25,7 @@ internal class SMZ3GameConnector : IGameConnector
                 SniMemoryMapping = MemoryMapping.ExHiRom,
                 AddressFormat = AddressFormat.Snes9x,
                 RespondOnChangeOnly = true,
-                OnResponse = data =>
+                OnResponse = (data, prevData) =>
                 {
                     var value = data.ReadUInt8(0);
                     if (value == 0x00)
@@ -55,7 +55,7 @@ internal class SMZ3GameConnector : IGameConnector
                 RespondOnChangeOnly = true,
                 Filter = () => CurrentGame == SMZ3Game.Zelda,
                 FrequencySeconds = 1,
-                OnResponse = data =>
+                OnResponse = (data, prevData) =>
                 {
                     var value = data.ReadUInt8(0);
 
@@ -79,7 +79,7 @@ internal class SMZ3GameConnector : IGameConnector
                 RespondOnChangeOnly = true,
                 Filter = () => CurrentGame is SMZ3Game.Metroid or SMZ3Game.Neither,
                 FrequencySeconds = 1,
-                OnResponse = data =>
+                OnResponse = (data, prevData) =>
                 {
                     var value = data.ReadUInt8(0);
 
