@@ -48,6 +48,11 @@ public partial class MsuCurrentPlayingTrackControl : UserControl, IDisposable
         _snesConnectorService.Disconnected += SnesConnectorServiceOnOnDisconnected;
         _msuMonitorService.MsuTrackChanged += MsuMonitorServiceOnMsuTrackChanged;
     }
+    
+    /// <summary>
+    /// If this is embedded into another window
+    /// </summary>
+    public bool IsEmbedded { get; set; }
 
     private void MsuMonitorServiceOnMsuTrackChanged(object sender, MsuTrackChangedEventArgs e)
     {
@@ -120,8 +125,13 @@ public partial class MsuCurrentPlayingTrackControl : UserControl, IDisposable
     public void Dispose()
     {
         _cts.Dispose();
-        _msuMonitorService?.Dispose();
-        _snesConnectorService?.Dispose();
+
+        if (!IsEmbedded)
+        {
+            _msuMonitorService?.Dispose();
+            _snesConnectorService?.Dispose();    
+        }
+        
         GC.SuppressFinalize(this);
     }
 }
