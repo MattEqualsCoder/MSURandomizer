@@ -60,10 +60,7 @@ sealed class Program
             })
             .ConfigureServices(services =>
             {
-                services.AddAvaloniaControlServices<Program>();
-                services.AddMsuRandomizerServices();
                 services.AddMsuRandomizerAppServices();
-                services.AddSingleton<AppInitializationService>();
                 services.AddGitHubReleaseCheckerServices();
             })
             .Build();

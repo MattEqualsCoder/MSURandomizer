@@ -19,7 +19,7 @@
         <DockPanel Name="BodyPanel">
             <controls:HeaderFooter DockPanel.Dock="Top" BorderSize="0 0 0 2">
                 <Grid ColumnDefinitions="*, Auto, Auto, Auto, Auto, Auto" Margin="5">
-                    <StackPanel Orientation="Vertical" Grid.Column="0" Margin="5">
+                    <StackPanel Orientation="Vertical" Grid.Column="0" Margin="5" IsVisible="{Binding DisplayMsuTypeComboBox}">
                         <TextBlock>Output MSU Type</TextBlock>
                         <ComboBox
                             ItemsSource="{Binding MsusTypes}"
@@ -29,7 +29,7 @@
                         >
                         </ComboBox>
                     </StackPanel>
-                    <StackPanel Orientation="Vertical" Grid.Column="1" Margin="5" MinWidth="150">
+                    <StackPanel Orientation="Vertical" Grid.Column="{Binding FilterColumnIndex}" Margin="5" MinWidth="150">
                         <TextBlock>Filter</TextBlock>
                         <controls:EnumComboBox 
                             EnumType="{Binding Filter, Converter={StaticResource TypeConverter}}"
@@ -67,7 +67,7 @@
                            <avalonia:MaterialIcon Kind="Usb"/>
                        </Button>
                    </StackPanel>
-                    <StackPanel Orientation="Vertical" Grid.Column="5" Margin="5">
+                    <StackPanel Orientation="Vertical" Grid.Column="5" Margin="5" IsVisible="{Binding MsuWindowDisplayOptionsButton}">
                         <TextBlock></TextBlock>
                         <Button Name="SettingsButton" Click="SettingsButton_OnClick" Height="24.5">
                             <avalonia:MaterialIcon Kind="Settings"/>

@@ -23,6 +23,11 @@ public class AppInitializationService(
 {
     public void Initialize(string[] args)
     {
+        if (!IsEnabled)
+        {
+            return;
+        }
+        
         msuRandomizerInitializationService.Initialize(new MsuRandomizerInitializationRequest()
         {
             InitializeAppSettings = true,
@@ -55,8 +60,16 @@ public class AppInitializationService(
         }
     }
 
+    public bool IsEnabled { get; set; } = true;
+
     public void FinishInitialization()
     {
+        if (!IsEnabled)
+        {
+            IsLoading = false;
+            return;
+        }
+        
         Task.Run(() =>
         {
             _ = VerifyVersionNumber();
