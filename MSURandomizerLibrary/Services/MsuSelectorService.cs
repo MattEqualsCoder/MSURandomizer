@@ -122,7 +122,7 @@ internal class MsuSelectorService : IMsuSelectorService
             }
         }
 
-        var specialTrackNumbers = msuType.Tracks.Where(x => x.IsSpecial).Select(x => x.Number).ToHashSet();
+        var shortTrackNumbers = msuType.Tracks.Where(x => x.IsSpecial).Select(x => x.Number).ToHashSet();
         
         foreach (var msuTypeTrack in msuType.Tracks.OrderBy(x => x.Number))
         {
@@ -145,18 +145,18 @@ internal class MsuSelectorService : IMsuSelectorService
                 }
                 else
                 {
-                    possibleTracks = possibleTracks.Where(t => !specialTrackNumbers.Contains(t.Number)).ToList();
+                    possibleTracks = possibleTracks.Where(t => !t.IsShortTrack).ToList();
                 }
             }
             else if (request.ShuffleStyle == MsuShuffleStyle.ChaosJingleTracks)
             {
                 if (msuTypeTrack.IsSpecial)
                 {
-                    possibleTracks = possibleTracks.Where(t => specialTrackNumbers.Contains(t.Number)).ToList();
+                    possibleTracks = possibleTracks.Where(t => t.IsShortTrack).ToList();
                 }
                 else
                 {
-                    possibleTracks = possibleTracks.Where(t => !specialTrackNumbers.Contains(t.Number)).ToList();
+                    possibleTracks = possibleTracks.Where(t => !t.IsShortTrack).ToList();
                 }
             }
             else if (request.ShuffleStyle == MsuShuffleStyle.ChaosAllTracks)
@@ -165,22 +165,22 @@ internal class MsuSelectorService : IMsuSelectorService
                 {
                     if (msuTypeTrack.IsSpecial)
                     {
-                        possibleTracks = possibleTracks.Where(t => !specialTrackNumbers.Contains(t.Number)).ToList();
+                        possibleTracks = possibleTracks.Where(t => !t.IsShortTrack).ToList();
                     }
                     else
                     {
-                        possibleTracks = possibleTracks.Where(t => specialTrackNumbers.Contains(t.Number)).ToList();
+                        possibleTracks = possibleTracks.Where(t => t.IsShortTrack).ToList();
                     }
                 }
                 else
                 {
                     if (msuTypeTrack.IsSpecial)
                     {
-                        possibleTracks = possibleTracks.Where(t => specialTrackNumbers.Contains(t.Number)).ToList();
+                        possibleTracks = possibleTracks.Where(t => t.IsShortTrack).ToList();
                     }
                     else
                     {
-                        possibleTracks = possibleTracks.Where(t => !specialTrackNumbers.Contains(t.Number)).ToList();
+                        possibleTracks = possibleTracks.Where(t => !t.IsShortTrack).ToList();
                     }
                 }
             }

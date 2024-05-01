@@ -30,7 +30,7 @@ public partial class MsuMonitorWindow : RestorableWindow
         DataContext = _service!.InitializeModel();
     }
 
-    protected override string RestoreFilePath => Path.Combine(Directories.AppDataFolder, "msu-monitor.json");
+    protected override string RestoreFilePath => _service?.RestoreFilePath ?? "msu-monitor.json";
     protected override int DefaultWidth => 600;
     protected override int DefualtHeight => 400;
 

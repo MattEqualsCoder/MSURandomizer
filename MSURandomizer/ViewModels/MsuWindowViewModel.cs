@@ -29,6 +29,10 @@ public class MsuWindowViewModel : ViewModelBase
     [Reactive] public bool WasClosed { get; set; }
 
     [Reactive] public bool IsHardwareModeButtonVisible { get; set; } = true;
+
+    [Reactive] public bool MsuWindowDisplayOptionsButton { get; set; } = true;
+    
+    [Reactive] public bool DisplayMsuTypeComboBox { get; set; } = true;
     
     [Reactive] 
     [ReactiveLinkedProperties(nameof(IsShuffledMsuButtonVisible), nameof(IsContinuousShuffleButtonVisible))]
@@ -62,6 +66,9 @@ public class MsuWindowViewModel : ViewModelBase
     [Reactive]
     [ReactiveLinkedProperties(nameof(HasGitHubUrl))]
     public string? GitHubUrl { get; set; }
+    
+    [Reactive]
+    public bool IsSingleSelectionMode { get; set; }
 
     public bool IsSelectMsuEnabled  => MsuCount > 0 && !AreMsusLoading && !IsMsuMonitorActive;
 
@@ -82,4 +89,6 @@ public class MsuWindowViewModel : ViewModelBase
     public bool HasGitHubUrl => !string.IsNullOrEmpty(GitHubUrl);
     
     public bool HasMsuFolder { get; set; }
+
+    public int FilterColumnIndex { get; set; } = 1;
 }

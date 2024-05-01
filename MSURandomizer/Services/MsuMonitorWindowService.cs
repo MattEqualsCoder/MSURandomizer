@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using AutoMapper;
 using AvaloniaControls;
@@ -6,6 +7,7 @@ using AvaloniaControls.ControlServices;
 using AvaloniaControls.Services;
 using Microsoft.Extensions.Logging;
 using MSURandomizer.ViewModels;
+using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
@@ -36,6 +38,9 @@ public class MsuMonitorWindowService(
         _model.ConnectionStatus = snesConnectorService.IsConnected ? "Connected" : "Disconnected";
         return _model;
     }
+
+    public string RestoreFilePath =>
+        Path.Combine(msuAppSettingsService.MsuAppSettings.SaveDataDirectory.ExpandSpecialFolders(), "msu-monitor.json");
 
     public void StartMonitor(Msu? msu = null, MsuType? outputMsuType = null)
     {

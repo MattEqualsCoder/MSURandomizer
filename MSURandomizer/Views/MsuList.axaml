@@ -21,7 +21,7 @@
         </StackPanel>
         <ListBox IsVisible="{Binding !IsLoading}"
                  ItemsSource="{Binding FilteredMsus}"
-                 SelectionMode="Multiple,Toggle"
+                 SelectionMode="{Binding SelectionMode}"
                  SelectedItems="{Binding SelectedMsus}"
                  BorderThickness="0"
                  SelectionChanged="SelectingItemsControl_OnSelectionChanged"

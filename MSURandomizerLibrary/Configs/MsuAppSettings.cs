@@ -99,6 +99,12 @@ public class MsuAppSettings
     public bool DisableHardwareMode { get; set; }
 
     /// <summary>
+    /// Default directory for misc save data
+    /// </summary>
+    public string SaveDataDirectory { get; set; } =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MSURandomizer");
+
+    /// <summary>
     /// Default directory for writing the currently playing song to
     /// </summary>
     public string? DefaultMsuCurrentSongOutputFilePath { get; set; } = Path.Combine(

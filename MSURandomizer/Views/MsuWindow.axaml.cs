@@ -56,14 +56,26 @@ public partial class MsuWindow : RestorableWindow
         };
     }
 
-    protected override string RestoreFilePath => Path.Combine(Directories.AppDataFolder, "main-window.json");
+    protected override string RestoreFilePath => _service?.RestoreFilePath ?? "main-window.json";
     protected override int DefaultWidth => 800;
     protected override int DefualtHeight => 600;
 
+    public ICollection<string> GetSelectedMsus() => MsuList.SelectedMsus?.Select(x => x.MsuPath).ToList() ?? [];
+
+    public bool DialogResult;
+
+    public void ShowDialog(Window window, bool isSingleSelect, string? msuBasePath = null)
+    {
+        _model.IsSingleSelectionMode = isSingleSelect;
+        _service?.SetMsuBasePath(msuBasePath);
+        MsuList.SetIsSingleSelectionMode(isSingleSelect);
+        ShowDialog(window);
+    }
+    
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
         _service?.FinishInitialization();
-        if (!_model.HasMsuFolder)
+        if (_model is { HasMsuFolder: false, MsuWindowDisplayOptionsButton: true })
         {
             var settingsWindow = new SettingsWindow();
             settingsWindow.ShowDialog(this);
@@ -103,8 +115,8 @@ public partial class MsuWindow : RestorableWindow
 
     private void SelectMsuButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        var generationWindow = new MsuGenerationWindow();
-        generationWindow.ShowDialog(this);
+        DialogResult = true;
+        Close();
     }
 
     private void CancelButton_OnClick(object? sender, RoutedEventArgs e)

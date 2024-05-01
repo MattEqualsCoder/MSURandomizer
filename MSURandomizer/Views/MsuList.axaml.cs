@@ -65,6 +65,11 @@ public partial class MsuList : UserControl
         set => SetValue(SelectedMsuCountProperty, value);
     }
 
+    public void SetIsSingleSelectionMode(bool value)
+    {
+        _model.IsSingleSelectionMode = value;
+    }
+
     public void FilterMSUs(MsuType msuType, MsuFilter msuFilter)
     {
         _service?.FilterMSUs(msuType, msuFilter);

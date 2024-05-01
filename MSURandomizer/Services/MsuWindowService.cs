@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
@@ -27,7 +28,10 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     IRomCopyService romCopyService) : ControlService
 {
     public MsuWindowViewModel Model { get; set; } = new();
-
+    
+    public string RestoreFilePath =>
+        Path.Combine(appSettings.MsuAppSettings.SaveDataDirectory.ExpandSpecialFolders(), "main-window.json");
+    
     public event EventHandler? MsuMonitorStarted;
 
     public event EventHandler? MsuMonitorStopped;
@@ -62,9 +66,20 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         Model.CanDisplayRandomMsuButton = settings.MsuWindowDisplayRandomButton == true;
         Model.CanDisplayShuffledMsuButton = settings.MsuWindowDisplayShuffleButton == true;
         Model.CanDisplayContinuousShuffleButton = settings.MsuWindowDisplayContinuousButton == true;
+        Model.CanDisplaySelectMsuButton = settings.MsuWindowDisplaySelectButton == true;
         Model.CanDisplayCancelButton = settings.MsuWindowDisplaySelectButton == true;
-        Model.HasMsuFolder = userOptions.MsuUserOptions.HasMsuFolder();
         Model.IsHardwareModeButtonVisible = !appSettings.MsuAppSettings.DisableHardwareMode;
+        Model.MsuWindowDisplayOptionsButton = appSettings.MsuAppSettings.MsuWindowDisplayOptionsButton != false;
+        Model.HasMsuFolder = Model.MsuWindowDisplayOptionsButton && userOptions.MsuUserOptions.HasMsuFolder();
+        Model.AreMsusLoading = msuLookupService.Status is MsuLoadStatus.Default or MsuLoadStatus.Loading;
+        
+        if (!string.IsNullOrEmpty(settings.ForcedMsuType))
+        {
+            Model.SelectedMsuType = settings.ForcedMsuType;
+            Model.DisplayMsuTypeComboBox = false;
+            Model.FilterColumnIndex = 0;
+        }
+        
         return Model;
     }
 
@@ -272,6 +287,16 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     }
 
     public bool ShouldOpenMonitorWindow => userOptions.MsuUserOptions.OpenMonitorWindow;
+
+    public void SetMsuBasePath(string? msuBasePath)
+    {
+        if (string.IsNullOrEmpty(msuBasePath) || !Directory.Exists(msuBasePath))
+        {
+            return;
+        }
+
+        userOptions.MsuUserOptions.DefaultMsuPath = msuBasePath;
+    }
 
     public MsuType? GetMsuType(string msuTypeName)
     {

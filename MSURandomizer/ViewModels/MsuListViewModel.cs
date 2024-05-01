@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Avalonia.Controls;
+using AvaloniaControls.Models;
 using MSURandomizerLibrary.Configs;
 using ReactiveUI.Fody.Helpers;
 
@@ -25,4 +27,11 @@ public class MsuListViewModel : ViewModelBase
     [Reactive] public bool IsMsuMonitorDisabled { get; set; }
     
     [Reactive] public bool HardwareMode { get; set; }
+    
+    [Reactive]
+    [ReactiveLinkedProperties(nameof(SelectionMode))]
+    public bool IsSingleSelectionMode { get; set; }
+
+    public SelectionMode SelectionMode =>
+        IsSingleSelectionMode ? SelectionMode.Single : SelectionMode.Multiple | SelectionMode.Toggle;
 }
