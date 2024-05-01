@@ -288,6 +288,16 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
     public bool ShouldOpenMonitorWindow => userOptions.MsuUserOptions.OpenMonitorWindow;
 
+    public void SetMsuBasePath(string? msuBasePath)
+    {
+        if (string.IsNullOrEmpty(msuBasePath) || !Directory.Exists(msuBasePath))
+        {
+            return;
+        }
+
+        userOptions.MsuUserOptions.DefaultMsuPath = msuBasePath;
+    }
+
     public MsuType? GetMsuType(string msuTypeName)
     {
         return msuTypeService.GetMsuType(msuTypeName);

@@ -64,8 +64,10 @@ public partial class MsuWindow : RestorableWindow
 
     public bool DialogResult;
 
-    public void ShowDialog(Window window, bool isSingleSelect)
+    public void ShowDialog(Window window, bool isSingleSelect, string? msuBasePath = null)
     {
+        _model.IsSingleSelectionMode = isSingleSelect;
+        _service?.SetMsuBasePath(msuBasePath);
         MsuList.SetIsSingleSelectionMode(isSingleSelect);
         ShowDialog(window);
     }

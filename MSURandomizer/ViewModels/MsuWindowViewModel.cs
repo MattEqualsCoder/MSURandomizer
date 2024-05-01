@@ -66,6 +66,9 @@ public class MsuWindowViewModel : ViewModelBase
     [Reactive]
     [ReactiveLinkedProperties(nameof(HasGitHubUrl))]
     public string? GitHubUrl { get; set; }
+    
+    [Reactive]
+    public bool IsSingleSelectionMode { get; set; }
 
     public bool IsSelectMsuEnabled  => MsuCount > 0 && !AreMsusLoading && !IsMsuMonitorActive;
 
