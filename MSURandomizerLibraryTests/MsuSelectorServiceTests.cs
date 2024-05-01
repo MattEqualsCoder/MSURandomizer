@@ -373,21 +373,23 @@ public class MsuSelectorServiceTests
             {
                 new() { (1, 4) }
             },
-            new List<List<(int, int)>>()
-            {
-                new() { (1, 4) },
-                new() { (1, 4) },
-                new() { (1, 4) },
-                new() { (1, 4) },
-                new() { (1, 4) },
-                new() { (1, 4) },
-                new() { (1, 4) },
-                new() { (1, 4) },
-                new() { (1, 4) },
-                new() { (1, 4) },
-                new() { (1, 4) },
-            },
-            out var msuTypes, out var msus, new Dictionary<int, List<int>>() { { 1, new List<int>() { 2 } }}, [1, 2]);
+            [
+                [(1, 4)],
+                [(1, 4)],
+                [(1, 4)],
+                [(1, 4)],
+                [(1, 4)],
+                [(1, 4)],
+                [(1, 4)],
+                [(1, 4)],
+                [(1, 4)],
+                [(1, 4)],
+                [(1, 4)]
+            ],
+            out var msuTypes, 
+            out var msus, 
+            new Dictionary<int, List<int>> { { 1, [2] }}, 
+            [1, 2]);
 
         var anyNotMatchedTrack1 = false;
         var anyNotMatchedTrack2 = false;
@@ -740,7 +742,7 @@ public class MsuSelectorServiceTests
         var folder = "";
         foreach (var tracks in msuTracks)
         {
-            var path = TestHelpers.CreateMsu(tracks, $"test-msu-{index}", index == 1);
+            var path = TestHelpers.CreateMsu(tracks, $"test-msu-{index}", index == 1, specialTracks: specialTracks);
             if (string.IsNullOrEmpty(folder))
             {
                 folder = new FileInfo(path).Directory?.Parent?.FullName;;

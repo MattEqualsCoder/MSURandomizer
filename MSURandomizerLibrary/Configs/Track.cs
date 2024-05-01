@@ -42,6 +42,7 @@ public class Track
         IsAlt = isAlt;
         OriginalPath = path;
         IsBaseFile = isBaseFile;
+        Duration = File.Exists(path) ? (new FileInfo(path).Length - 8.0) / 44100 / 4 : 30;
     }
     
     /// <summary>
@@ -68,6 +69,7 @@ public class Track
         MsuCreator = other.MsuCreator;
         OriginalPath = other.OriginalPath;
         OriginalMsu = other.OriginalMsu ?? other.Msu;
+        Duration = other.Duration;
     }
 
     /// <summary>
@@ -151,6 +153,11 @@ public class Track
     public string OriginalTrackName { get; set; } = "";
     
     /// <summary>
+    /// The length of the song
+    /// </summary>
+    public double Duration { get; set; }
+    
+    /// <summary>
     /// The MSU this track is currently part of
     /// </summary>
     [JsonIgnore]
@@ -179,6 +186,12 @@ public class Track
     /// </summary>
     [JsonIgnore]
     public string? DisplayUrl => Url ?? Msu?.Url;
+
+    /// <summary>
+    /// If the track is a short track that is at most 20 seconds
+    /// </summary>
+    [JsonIgnore] 
+    public bool IsShortTrack => Duration <= 20;
     
     /// <summary>
     /// Gets text to represent the song

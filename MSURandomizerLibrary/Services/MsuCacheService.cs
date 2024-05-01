@@ -6,14 +6,14 @@ namespace MSURandomizerLibrary.Services;
 
 internal class MsuCacheService : IMsuCacheService
 {
-    private static readonly int _currentCacheVersion = 1;
+    private const int CurrentCacheVersion = 2;
     private readonly IMsuTypeService _msuTypeService;
     private readonly MsuUserOptions _msuUserOptions;
     private readonly ILogger<MsuCacheService> _logger;
 
     private MsuLookupCache _cache = new()
     {
-        CacheVersion = _currentCacheVersion
+        CacheVersion = CurrentCacheVersion
     };
     
     private string _cachePath = "";
@@ -45,7 +45,7 @@ internal class MsuCacheService : IMsuCacheService
             _logger.LogInformation("Loading MSU Cache from {Path}", _cachePath);
             var text = File.ReadAllText(_cachePath);
             var tempCache = JsonSerializer.Deserialize<MsuLookupCache>(text) ?? new MsuLookupCache();
-            if (tempCache.CacheVersion == _currentCacheVersion)
+            if (tempCache.CacheVersion == CurrentCacheVersion)
             {
                 _cache = tempCache;
             }

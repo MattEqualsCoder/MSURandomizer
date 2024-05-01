@@ -139,7 +139,7 @@ public abstract class TestHelpers
         return service.Object;
     }
 
-    public static string CreateMsu(List<int> tracks, string msuName = "test-msu", bool deleteOld = true, bool createAlts = false)
+    public static string CreateMsu(List<int> tracks, string msuName = "test-msu", bool deleteOld = true, bool createAlts = false, List<int>? specialTracks = null)
     {
         if (deleteOld && Directory.Exists(MsuTestFolder))
         {
@@ -160,9 +160,17 @@ public abstract class TestHelpers
         
         foreach (var trackNumber in tracks)
         {
-            var pcmPath = Path.Combine(folder, $"{msuName}-{trackNumber}.pcm");
-            using (File.Create(pcmPath)) {}
+            var pcmPath = Path.Combine(folder, $"{msuName}-{trackNumber}.pcm");System.IO.File.WriteAllBytes("file.txt", new byte[100]);
 
+            if (specialTracks == null || specialTracks.Contains(trackNumber))
+            {
+                using (File.Create(pcmPath)) {}
+            }
+            else
+            {
+                File.WriteAllBytes(pcmPath, new byte[5292000]);
+            }
+            
             if (createAlts)
             {
                 pcmPath = Path.Combine(folder, $"{msuName}-{trackNumber}_alt.pcm");
@@ -173,9 +181,9 @@ public abstract class TestHelpers
         return msuPath;
     }
     
-    public static string CreateMsu(List<(int, int)> tracks, string msuName = "test-msu", bool deleteOld = true, bool createAlts = false)
+    public static string CreateMsu(List<(int, int)> tracks, string msuName = "test-msu", bool deleteOld = true, bool createAlts = false, List<int>? specialTracks = null)
     {
-        return CreateMsu(GetTracksFromRanges(tracks), msuName, deleteOld, createAlts);
+        return CreateMsu(GetTracksFromRanges(tracks), msuName, deleteOld, createAlts, specialTracks);
     }
 
     public static IMsuDetailsService CreateMockMsuDetailsService(MsuDetails? returnMsuDetails, Msu? returnMsu)
