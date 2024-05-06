@@ -673,8 +673,12 @@ internal class MsuSelectorService : IMsuSelectorService
 
         if (validateMultipleMsus)
         {
-            request.Msus ??= _msuLookupService.GetMsusByPath(request.MsuPaths ?? userOptions.SelectedMsus);
-            if (request.Msus?.Any() != true)
+            if ((request.Msus?.Count ?? 0) == 0)
+            {
+                request.Msus = _msuLookupService.GetMsusByPath(request.MsuPaths ?? userOptions.SelectedMsus);    
+            }
+            
+            if ((request.Msus?.Count ?? 0) == 0)
             {
                 return new MsuSelectorResponse()
                 {

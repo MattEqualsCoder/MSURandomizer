@@ -14,7 +14,7 @@
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <IncludeSymbols>False</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>2.1.0-rc.1</Version>
+    <Version>2.1.0-rc.2</Version>
     <PackageId>MattEqualsCoder.MSURandomizer.Library</PackageId>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <TargetFramework>net8.0</TargetFramework>
