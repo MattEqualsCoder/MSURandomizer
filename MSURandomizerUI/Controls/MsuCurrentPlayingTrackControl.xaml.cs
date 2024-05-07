@@ -37,6 +37,7 @@ public partial class MsuCurrentPlayingTrackControl : UserControl, IDisposable
         _snesConnectorService = snesConnectorService;
         _msuUserOptionsService = msuUserOptionsService;
         _logger = logger;
+        TrackDisplayFormat = _msuUserOptionsService?.MsuUserOptions.TrackDisplayFormat ?? TrackDisplayFormat.Vertical;
         InitializeComponent();
         
         if (_snesConnectorService == null || _msuMonitorService == null)
@@ -53,12 +54,17 @@ public partial class MsuCurrentPlayingTrackControl : UserControl, IDisposable
     /// If this is embedded into another window
     /// </summary>
     public bool IsEmbedded { get; set; }
+    
+    /// <summary>
+    /// Set the format for displaying the track
+    /// </summary>
+    public TrackDisplayFormat TrackDisplayFormat { get; set; }
 
     private void MsuMonitorServiceOnMsuTrackChanged(object sender, MsuTrackChangedEventArgs e)
     {
         Dispatcher.Invoke(() =>
         {
-            SongTextBlock.Text = e.Track.GetDisplayText(_msuUserOptionsService?.MsuUserOptions.TrackDisplayFormat ?? TrackDisplayFormat.Vertical);
+            SongTextBlock.Text = e.Track.GetDisplayText(TrackDisplayFormat);
             _cts.Cancel();
             _ = StartMarquee();
         });

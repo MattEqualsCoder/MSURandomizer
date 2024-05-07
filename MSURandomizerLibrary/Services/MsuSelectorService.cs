@@ -361,7 +361,7 @@ internal class MsuSelectorService : IMsuSelectorService
                 }
                 else if (CreatePcmFile(source, destination))
                 {
-                    _logger.LogInformation("#{Number} ({Name}): {Source} => {Destination}", trackNumber, msuTypeTrack?.Name, source, destination);
+                    _logger.LogInformation("#{Number} ({Name}): {Source} => {Destination} ({Duration}s)", trackNumber, msuTypeTrack?.Name, source, destination, track.Duration);
                     tracks.Add(new Track(track, number: trackNumber, path: destination, trackName: trackName) { OriginalMsu = track.OriginalMsu });
                     selectedPaths[trackNumber] = source;
                 }
