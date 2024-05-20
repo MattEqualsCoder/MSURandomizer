@@ -41,6 +41,9 @@ jobs:
     - name: Publish Linux 64bit
       if: ${{ github.event_name != 'pull_request' }}
       run: dotnet publish --os linux --arch x64 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
+    - name: Publish Windows 64bit
+      if: ${{ github.event_name != 'pull_request' }}
+      run: dotnet publish
     - name: Get version number
       if: ${{ github.event_name != 'pull_request' }}
       id: version
