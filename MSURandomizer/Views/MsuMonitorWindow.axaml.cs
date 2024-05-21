@@ -32,7 +32,7 @@ public partial class MsuMonitorWindow : RestorableWindow
 
     protected override string RestoreFilePath => _service?.RestoreFilePath ?? "msu-monitor.json";
     protected override int DefaultWidth => 600;
-    protected override int DefualtHeight => 400;
+    protected override int DefaultHeight => 400;
 
     public void Show(Msu? msu, MsuType? outputMsuType, Window? parent = null)
     {

@@ -58,7 +58,7 @@ public partial class MsuWindow : RestorableWindow
 
     protected override string RestoreFilePath => _service?.RestoreFilePath ?? "main-window.json";
     protected override int DefaultWidth => 800;
-    protected override int DefualtHeight => 600;
+    protected override int DefaultHeight => 600;
 
     public ICollection<string> GetSelectedMsus() => MsuList.SelectedMsus?.Select(x => x.MsuPath).ToList() ?? [];
 
