@@ -89,7 +89,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore MSURandomizer/MSURandomizer.csproj
     - name: Build
       if: ${{ github.event_name != 'pull_request' }}
       run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= 
