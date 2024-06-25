@@ -95,22 +95,26 @@ jobs:
       run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= MSURandomizer/MSURandomizer.csproj
     - name: Publish Mac OS
       if: ${{ github.event_name != 'pull_request' }}
-      run: dotnet publish -r osx-arm64 -c Release -p:PublishSingleFile=true --self-contained false MSURandomizer/MSURandomizer.csproj
-    - name: Get version number
-      if: ${{ github.event_name != 'pull_request' }}
-      id: version
+      run: dotnet publish -r osx-arm64 -c Release -p:PublishSingleFile=true -p:UseAppHost=true --self-contained false MSURandomizer/MSURandomizer.csproj
+    # - name: Get version number
+    #   if: ${{ github.event_name != 'pull_request' }}
+    #   id: version
+    #   run: |
+    #     Remove-Item -Path "MSURandomizer\bin\Release\net8.0\osx-arm64\MSURandomizer"
+    #     Rename-Item -Path "MSURandomizer\bin\Release\net8.0\osx-arm64\publish\" "MSURandomizer"
+    #     $version = (Get-Item "MSURandomizer\bin\Release\net8.0\osx-arm64\MSURandomizer\MSURandomizer").VersionInfo.ProductVersion
+    #     $version = $version -replace "\+.*", ""
+    #     New-Item -Path 'setup/Output' -ItemType Directory
+    #     Compress-Archive -Path "MSURandomizer\bin\Release\net8.0\osx-arm64\MSURandomizer\" -DestinationPath "setup/Output/MSURandomizer_$version.zip"
+    #     Write-Output "number=$version" >> $env:GITHUB_OUTPUT
+    #   shell: pwsh
+    - name: Prepare packaging script
       run: |
-        Remove-Item -Path "MSURandomizer\bin\Release\net8.0\osx-arm64\MSURandomizer"
-        Rename-Item -Path "MSURandomizer\bin\Release\net8.0\osx-arm64\publish\" "MSURandomizer"
-        $version = (Get-Item "MSURandomizer\bin\Release\net8.0\osx-arm64\MSURandomizer\MSURandomizer").VersionInfo.ProductVersion
-        $version = $version -replace "\+.*", ""
-        New-Item -Path 'setup/Output' -ItemType Directory
-        Compress-Archive -Path "MSURandomizer\bin\Release\net8.0\osx-arm64\MSURandomizer\" -DestinationPath "setup/Output/MSURandomizer_$version.zip"
-        Write-Output "number=$version" >> $env:GITHUB_OUTPUT
-      shell: pwsh
+        chmod +x ./Setup/package-macos-app.sh
+        ./Setup/package-macos-app.sh
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       if: ${{ github.event_name != 'pull_request' }}
       with:
         path: "setup/Output/*"
-        name: MSURandomizer_${{ steps.version.outputs.number }}
+        name: MSURandomizer
