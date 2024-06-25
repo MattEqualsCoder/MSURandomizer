@@ -95,7 +95,7 @@ jobs:
       run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= MSURandomizer/MSURandomizer.csproj
     - name: Publish Mac OS
       if: ${{ github.event_name != 'pull_request' }}
-      run: dotnet publish -r osx-arm64 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
+      run: dotnet publish -r osx-arm64 -c Release --self-contained true MSURandomizer/MSURandomizer.csproj
     - name: Get version number
       if: ${{ github.event_name != 'pull_request' }}
       id: version
