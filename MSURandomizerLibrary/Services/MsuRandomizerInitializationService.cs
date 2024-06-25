@@ -24,8 +24,7 @@ internal class MsuRandomizerInitializationService : IMsuRandomizerInitialization
     {
         if (request.InitializeAppSettings)
         {
-            var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-            _logger.LogInformation("Initializing MSU Randomizer Library {Version}", version.ProductVersion ?? "");
+            _logger.LogInformation("Initializing MSU Randomizer Library {Version}", "10.0.0");
             
             var settings = request.MsuAppSettingsStream == null
                 ? _msuAppSettingsService.Initialize(request.MsuAppSettingsPath)

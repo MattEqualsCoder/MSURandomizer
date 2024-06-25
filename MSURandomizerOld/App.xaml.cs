@@ -53,8 +53,7 @@ namespace MSURandomizerOld
                 .Start();
             
             _logger = _host.Services.GetRequiredService<ILogger<App>>();
-            var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-            _logger.LogInformation("Starting MSU Randomizer {Version}", version.ProductVersion ?? "");
+            _logger.LogInformation("Starting MSU Randomizer {Version}", "10.0.0");
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 

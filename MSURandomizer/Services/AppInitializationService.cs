@@ -98,7 +98,7 @@ public class AppInitializationService(
             return;
         }
         
-        var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion ?? "";
+        var version = "10.0.0";//FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion ?? "";
         logger.LogInformation("Starting MSU Randomizer {Version}", version);
         
         var gitHubReleases = await gitHubReleaseService.GetReleasesAsync("MattEqualsCoder", "MSURandomizer");
