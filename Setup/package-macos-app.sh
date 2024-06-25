@@ -5,7 +5,7 @@ APP_NAME="MSURandomizer.app"
 ZIP_FILE="MSURandomizer.zip"
 PUBLISH_OUTPUT_DIRECTORY="MSURandomizer/bin/Release/net8.0/osx-arm64/publish"
 INFO_PLIST="Info.plist"
-ICON_FILE="logo.icns"
+ICON_FILE="AppIcon.icns"
 
 # Remove old .app bundle if it exists
 if [ -d "$APP_NAME" ]; then
@@ -18,7 +18,7 @@ mkdir -p "$APP_NAME/Contents/Resources"
 
 # Copy the Info.plist file and the icon
 # cp "$INFO_PLIST" "$APP_NAME/Contents/Info.plist"
-cp "$ICON_FILE" "$APP_NAME/Contents/Resources/logo.icns"
+cp "$ICON_FILE" "$APP_NAME/Contents/Resources/AppIcon.icns"
 
 # Copy the published output to the MacOS directory
 cp -a "$PUBLISH_OUTPUT_DIRECTORY/." "$APP_NAME/Contents/MacOS"
