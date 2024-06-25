@@ -104,6 +104,7 @@ jobs:
         Rename-Item -Path "MSURandomizer\bin\Release\net8.0\osx-arm64\publish\" "MSURandomizer"
         $version = (Get-Item "MSURandomizer\bin\Release\net8.0\osx-arm64\MSURandomizer\MSURandomizer.dll").VersionInfo.ProductVersion
         $version = $version -replace "\+.*", ""
+        New-Item -Path 'setup/Output' -ItemType Directory
         Compress-Archive -Path "MSURandomizer\bin\Release\net8.0\osx-arm64\MSURandomizer\" -DestinationPath "setup/Output/MSURandomizer_$version.zip"
         Write-Output "number=$version" >> $env:GITHUB_OUTPUT
       shell: pwsh
