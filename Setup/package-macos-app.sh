@@ -17,7 +17,7 @@ mkdir -p "$APP_NAME/Contents/MacOS"
 mkdir -p "$APP_NAME/Contents/Resources"
 
 # Copy the Info.plist file and the icon
-# cp "$INFO_PLIST" "$APP_NAME/Contents/Info.plist"
+cp "$INFO_PLIST" "$APP_NAME/Contents/Info.plist"
 cp "$ICON_FILE" "$APP_NAME/Contents/Resources/AppIcon.icns"
 
 # Copy the published output to the MacOS directory
