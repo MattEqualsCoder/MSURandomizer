@@ -25,5 +25,7 @@ cp -a "$PUBLISH_OUTPUT_DIRECTORY/." "$APP_NAME/Contents/MacOS"
 
 echo "Packaged $APP_NAME successfully."
 
+mkdir -p "Setup/output"
+
 # Zip the .app bundle
 zip -r "Setup/output/$ZIP_FILE" "$APP_NAME"
