@@ -19,6 +19,8 @@ internal class MsuMonitorService(
 
     public event MsuTrackChangedEventHandler? MsuTrackChanged;
 
+    public event EventHandler? PreMsuShuffle;
+    
     public event EventHandler? MsuShuffled;
     
     public event EventHandler? MsuMonitorStarted;
@@ -35,15 +37,20 @@ internal class MsuMonitorService(
         _currentTrack = null;
         MsuMonitorStarted?.Invoke(this, EventArgs.Empty);
         _cts = new CancellationTokenSource();
+
+        var preDelay = TimeSpan.FromMilliseconds(100);
+        var postDelay = TimeSpan.FromSeconds(seconds).Subtract(preDelay);
         
         do
         {
+            PreMsuShuffle?.Invoke(this, EventArgs.Empty);
+            await Task.Delay(preDelay, _cts.Token);
             request.CurrentTrack = _currentTrack;
             request.PrevMsu = _currentMsu;
             var response = msuSelectorService.CreateShuffledMsu(request);
             _currentMsu = response.Msu;
             MsuShuffled?.Invoke(this, EventArgs.Empty);
-            await Task.Delay(TimeSpan.FromSeconds(seconds), _cts.Token);
+            await Task.Delay(postDelay, _cts.Token);
         } while (!_cts.Token.IsCancellationRequested);
     }
     

@@ -14,6 +14,11 @@ public interface IMsuMonitorService : IDisposable
     public event MsuTrackChangedEventHandler? MsuTrackChanged;
     
     /// <summary>
+    /// Event for before the MSU has been reshuffled
+    /// </summary>
+    public event EventHandler? PreMsuShuffle;
+    
+    /// <summary>
     /// Event for when the MSU has been reshuffled
     /// </summary>
     public event EventHandler? MsuShuffled;
