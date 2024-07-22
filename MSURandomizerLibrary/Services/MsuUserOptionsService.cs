@@ -21,6 +21,7 @@ internal class MsuUserOptionsService : IMsuUserOptionsService
         _msuTypeService = msuTypeService;
         _logger = logger;
         _serializer = new SerializerBuilder()
+            .WithQuotingNecessaryStrings()
             .WithNamingConvention(PascalCaseNamingConvention.Instance)
             .Build();
     }

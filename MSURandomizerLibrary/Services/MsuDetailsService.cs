@@ -18,6 +18,7 @@ internal class MsuDetailsService : IMsuDetailsService
     {
         _logger = logger;
         _serializer = new SerializerBuilder()
+            .WithQuotingNecessaryStrings()
             .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitDefaults)
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
             .Build();
