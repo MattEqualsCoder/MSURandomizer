@@ -70,14 +70,16 @@ tracks:
         var success = service.SaveMsuDetails(msu, _yamlPath, out var error);
 
         var expectedResult =
-            @"pack_name: Test MSU Pack
-pack_author: Test Creator
-pack_version: 1
-tracks:
-  Test Track:
-    track_number: 1
-    name: Test Song
-";
+            """
+            pack_name: Test MSU Pack
+            pack_author: Test Creator
+            pack_version: "1"
+            tracks:
+              Test Track:
+                track_number: 1
+                name: Test Song
+
+            """;
 
         var output = success ? File.ReadAllText(_yamlPath) : "";
         DeleteYamlFile();
