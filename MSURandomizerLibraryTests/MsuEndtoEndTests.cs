@@ -430,7 +430,8 @@ public class MsuEndtoEndTests : IDisposable
     private MsuDetailsService CreateMsuDetailsService()
     {
         var logger = TestHelpers.CreateMockLogger<MsuDetailsService>();
-        return new MsuDetailsService(logger);
+        var msuOptions = TestHelpers.CreateMockMsuUserOptionsService(null);
+        return new MsuDetailsService(logger, msuOptions);
     }
     
     private string RandomString(int length)

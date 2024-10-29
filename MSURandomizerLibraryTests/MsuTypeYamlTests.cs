@@ -181,7 +181,8 @@ public class MsuTypeYamlTests
     private MsuLookupService CreateMsuLookupService(MsuAppSettings? appSettings)
     {
         var logger = TestHelpers.CreateMockLogger<MsuLookupService>();
-        var detailsService = new MsuDetailsService(TestHelpers.CreateMockLogger<MsuDetailsService>());
+        var msuOptions = TestHelpers.CreateMockMsuUserOptionsService(null);
+        var detailsService = new MsuDetailsService(TestHelpers.CreateMockLogger<MsuDetailsService>(), msuOptions);
         var msuCacheService = TestHelpers.CreateMockMsuCacheService();
         var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
         return new MsuLookupService(logger, _msuTypeService, detailsService, appSettings ?? new MsuAppSettings(), msuCacheService, msuUserOptionsService);

@@ -13,10 +13,12 @@ internal class MsuDetailsService : IMsuDetailsService
     private readonly ILogger<MsuDetailsService> _logger;
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
-
-    public MsuDetailsService(ILogger<MsuDetailsService> logger)
+    private readonly MsuUserOptions _msuUserOptions;
+    
+    public MsuDetailsService(ILogger<MsuDetailsService> logger, IMsuUserOptionsService msuUserOptionsService)
     {
         _logger = logger;
+        _msuUserOptions = msuUserOptionsService.MsuUserOptions;
         _serializer = new SerializerBuilder()
             .WithQuotingNecessaryStrings()
             .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitDefaults)
@@ -70,6 +72,16 @@ internal class MsuDetailsService : IMsuDetailsService
             _logger.LogError(e, "Unable to write MSU YAML details to {Path}", outputPath);
             return false;
         }
+    }
+
+    public MsuDetails? GetMsuDetailsForPath(string msuPath, MsuType? msuType)
+    {
+        var yamlPath = GetMatchingYamlFile(msuPath, msuType);
+        if (yamlPath == null)
+        {
+            return null;
+        }
+        return InternalGetMsuDetails(yamlPath, out var yamlHash, out var error);
     }
 
     public MsuDetails? GetMsuDetails(string msuPath, out string yamlHash, out string? error)
@@ -266,7 +278,7 @@ internal class MsuDetailsService : IMsuDetailsService
         }
     }
 
-    private List<Track> GetTrackDetails(MsuType msuType, MsuDetails msuDetails, string directory, string baseName, out string? error)
+    private List<Track> GetTrackDetails(MsuType msuType, MsuDetails msuDetails, string directory, string baseName, out string? error, bool ignoreAlts = false, List<string>? pcmPaths = null)
     {
         error = null;
         
@@ -292,12 +304,12 @@ internal class MsuDetailsService : IMsuDetailsService
             var trackNumber = msuTypeTrack.Number;
             
             // If there's no alt data for the track, simply load the base PCM file as the track
-            if (!track.HasAltTrackData)
+            if (!track.HasAltTrackData || ignoreAlts)
             {
                 var pcmFilePath = $"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm";
                 track.Path = pcmFilePath;
 
-                if (!File.Exists(pcmFilePath))
+                if (!File.Exists(pcmFilePath) && pcmPaths?.Any(x => x.EndsWith($"{baseName}-{trackNumber}.pcm")) != true)
                 {
                     continue;
                 }
@@ -367,11 +379,11 @@ internal class MsuDetailsService : IMsuDetailsService
         return toReturn;
     }
     
-    public Msu? ConvertToMsu(MsuDetails msuDetails, MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, out string? error)
+    public Msu? ConvertToMsu(MsuDetails msuDetails, MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, out string? error, bool ignoreAlts = false, List<string>? pcmPaths = null)
     {
         try
         {
-            var tracks = GetTrackDetails(msuType, msuDetails, msuDirectory, msuBaseName, out error);
+            var tracks = GetTrackDetails(msuType, msuDetails, msuDirectory, msuBaseName, out error, ignoreAlts, pcmPaths);
             return new Msu(
                 type: msuType, 
                 name: string.IsNullOrWhiteSpace(msuDetails.PackName) ? msuBaseName : msuDetails.PackName, 
@@ -390,5 +402,40 @@ internal class MsuDetailsService : IMsuDetailsService
             error = $"Could not load YAML file for converting: {e.Message}";
             return null;
         }
+    }
+
+    private string? GetMatchingYamlFile(string path, MsuType? msuType = null)
+    {
+        var msuFolder = new FileInfo(path).Directory?.Name;
+        var msuFileName = Path.GetFileNameWithoutExtension(path);
+        
+        if (Directory.Exists(_msuUserOptions.DefaultMsuPath))
+        {
+            foreach (var ymlFilePath in Directory.EnumerateFiles(_msuUserOptions.DefaultMsuPath, $"{msuFileName}.yml", SearchOption.AllDirectories))
+            {
+                if (new FileInfo(ymlFilePath).Directory?.Name == msuFolder)
+                {
+                    return ymlFilePath;
+                }
+            }
+        }
+        
+        if (msuType != null && _msuUserOptions.MsuTypePaths.TryGetValue(msuType, out var msuTypeDirectory))
+        {
+            if (!Directory.Exists(msuTypeDirectory))
+            {
+                return null;
+            }
+            
+            foreach (var ymlFilePath in Directory.EnumerateFiles(msuTypeDirectory, $"{msuFileName}.yml", SearchOption.AllDirectories))
+            {
+                if (new FileInfo(ymlFilePath).Directory?.Name == msuFolder)
+                {
+                    return ymlFilePath;
+                }
+            }  
+        }
+
+        return null;
     }
 }
