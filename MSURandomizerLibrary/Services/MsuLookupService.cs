@@ -221,6 +221,7 @@ internal class MsuLookupService : IMsuLookupService
 
                     if (msu != null)
                     {
+                        msu.IsHardwareMsu = true;
                         return msu;
                     }
                 }
