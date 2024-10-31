@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Messenger;
 using MSURandomizerLibrary.Models;
 
 namespace MSURandomizerLibrary.Services;
@@ -9,7 +10,8 @@ internal class MsuMonitorService(
     IMsuGameService gameService,
     IMsuSelectorService msuSelectorService,
     IMsuUserOptionsService msuUserOptions,
-    MsuAppSettings msuAppSettings)
+    MsuAppSettings msuAppSettings,
+    IMsuMessageSender msuMessageSender)
     : IMsuMonitorService
 {
     private Msu? _currentMsu;
@@ -94,6 +96,8 @@ internal class MsuMonitorService(
         if (_currentTrack != null)
         {
             MsuTrackChanged?.Invoke(this, new MsuTrackChangedEventArgs(_currentTrack));
+            _ = msuMessageSender.SendTrackChangedAsync(_currentTrack);
+            
             if (string.IsNullOrEmpty(_outputPath))
             {
                 return;

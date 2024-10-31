@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Messenger;
 using MSURandomizerLibrary.Models;
 
 namespace MSURandomizerLibrary.Services;
@@ -13,14 +14,16 @@ internal class MsuSelectorService : IMsuSelectorService
     private readonly IMsuTypeService _msuTypeService;
     private readonly IMsuLookupService _msuLookupService;
     private readonly IMsuUserOptionsService _msuUserOptionsService;
+    private readonly IMsuMessageSender _msuMessageSender;
 
-    public MsuSelectorService(ILogger<MsuSelectorService> logger, IMsuDetailsService msuDetailsService, IMsuTypeService msuTypeService, IMsuLookupService msuLookupService, IMsuUserOptionsService msuUserOptionsService)
+    public MsuSelectorService(ILogger<MsuSelectorService> logger, IMsuDetailsService msuDetailsService, IMsuTypeService msuTypeService, IMsuLookupService msuLookupService, IMsuUserOptionsService msuUserOptionsService, IMsuMessageSender msuMessageSender)
     {
         _logger = logger;
         _msuDetailsService = msuDetailsService;
         _msuTypeService = msuTypeService;
         _msuLookupService = msuLookupService;
         _msuUserOptionsService = msuUserOptionsService;
+        _msuMessageSender = msuMessageSender;
         _random = new Random(System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, int.MaxValue));
         for (var i = 0; i < 100; i++)
         {
@@ -426,6 +429,11 @@ internal class MsuSelectorService : IMsuSelectorService
             response.Message = warningMessage;
         }
 
+        if (response.Successful)
+        {
+            _ = _msuMessageSender.SendMsuGenerated(outputMsu);
+        }
+        
         return response;
     }
 

@@ -21,3 +21,4 @@ MsuWindowDisplayContinuousButton: true
 MsuWindowDisplayOptionsButton: true
 MsuWindowDisplaySelectButton: false
 ForcedMsuType:
+DisableMessageSender: false

@@ -5,7 +5,7 @@ namespace MSURandomizerLibrary.Models;
 /// <summary>
 /// Class for the details of when a track has changed
 /// </summary>
-public class MsuTrackChangedEventArgs
+public class MsuTrackChangedEventArgs : EventArgs
 {
     /// <summary>
     /// Constructor

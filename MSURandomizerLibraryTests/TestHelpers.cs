@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Messenger;
 using MSURandomizerLibrary.Services;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -121,6 +121,11 @@ public abstract class TestHelpers
         service.Setup(x => x.SaveMsuSettings(It.IsAny<Msu>()));
 
         return service.Object;
+    }
+
+    public static IMsuMessageSender CreateMockMsuMessageSender()
+    {
+        return new Mock<IMsuMessageSender>().Object;
     }
     
     public static IMsuCacheService CreateMockMsuCacheService()

@@ -1,18 +1,15 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
-using AvaloniaControls.Extensions;
 using AvaloniaControls.Services;
 using GitHubReleaseChecker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MSURandomizer.Services;
-using MSURandomizerLibrary;
 using Serilog;
 
 namespace MSURandomizer;
@@ -68,7 +65,7 @@ sealed class Program
         MainHost.Services.GetRequiredService<ITaskService>();
         MainHost.Services.GetRequiredService<IControlServiceFactory>();
         MainHost.Services.GetRequiredService<AppInitializationService>().Initialize(args);
-
+        
         ExceptionWindow.GitHubUrl = "https://github.com/MattEqualsCoder/MSURandomizer/issues";
         ExceptionWindow.LogPath = Directories.LogFolder;
         
@@ -81,7 +78,7 @@ sealed class Program
         }
         catch (Exception e)
         {
-            ShowExceptionPopup(e).ContinueWith(t => source.Cancel(), TaskScheduler.FromCurrentSynchronizationContext());
+            ShowExceptionPopup(e).ContinueWith(_ => source.Cancel(), TaskScheduler.FromCurrentSynchronizationContext());
             Dispatcher.UIThread.MainLoop(source.Token);
         }
     }
