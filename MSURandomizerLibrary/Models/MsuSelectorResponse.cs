@@ -27,4 +27,9 @@ public class MsuSelectorResponse
     /// Error message from the request
     /// </summary>
     public string? Message { get; set; }
+    
+    /// <summary>
+    /// If the generated MSU has at least the minimum required tracks
+    /// </summary>
+    public bool HasAllRequiredTracks { get; set; }
 }

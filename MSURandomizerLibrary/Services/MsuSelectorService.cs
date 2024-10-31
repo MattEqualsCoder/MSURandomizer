@@ -612,7 +612,7 @@ internal class MsuSelectorService : IMsuSelectorService
         
         var matchingRequiredTracks = msu.Tracks.Select(x => x.Number).Intersect(msu.MsuType.RequiredTrackNumbers).Count();
         var percentRequiredTracks = 1.0f * matchingRequiredTracks / msu.MsuType.RequiredTrackNumbers.Count;
-        if (percentRequiredTracks < .9)
+        if (percentRequiredTracks < .95)
         {
             message = "MSU generated successfully but multiple required tracks are missing.";
         }
@@ -621,7 +621,7 @@ internal class MsuSelectorService : IMsuSelectorService
         {
             Successful = true,
             Message = message,
-            Msu = msu
+            Msu = msu,
         };
     }
 
