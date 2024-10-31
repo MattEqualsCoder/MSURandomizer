@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using MSURandomizerLibrary.Messenger;
 using MSURandomizerLibrary.Services;
 using SnesConnectorLibrary;
 
@@ -22,6 +24,21 @@ public static class MsuRandomizerServiceExtensions
         services.AddSingleton<IMsuAppSettingsService, MsuMsuAppSettingsService>();
         services.AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IMsuAppSettingsService>().MsuAppSettings);
         
+        services.AddScoped<IMsuMessageReceiver, MsuMessageReceiver>();
+        services.AddSingleton<IMsuMessageSender>(serviceProvider =>
+        {
+            var appSettings = serviceProvider.GetRequiredService<IMsuAppSettingsService>().MsuAppSettings;
+            if (appSettings.DisableMessageSender)
+            {
+                return new MsuMessageSenderNoOp();
+            }
+            else
+            {
+                var logger = serviceProvider.GetRequiredService<ILogger<MsuMessageSender>>();
+                return new MsuMessageSender(logger);
+            }
+        });
+        
         services.AddSingleton<IMsuTypeService, MsuTypeService>();
         services.AddSingleton<IMsuDetailsService, MsuDetailsService>();
         services.AddSingleton<IMsuCacheService, MsuCacheService>();
@@ -33,7 +50,7 @@ public static class MsuRandomizerServiceExtensions
         services.AddSingleton<IRomLauncherService, RomLauncherService>();
         services.AddSingleton<IMsuHardwareService, MsuHardwareService>();
         services.AddSingleton<IRomCopyService, RomCopyService>();
-
+        
         services.AddSnesConnectorServices();
         
         return services;

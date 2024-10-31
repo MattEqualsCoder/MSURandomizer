@@ -424,7 +424,9 @@ public class MsuEndtoEndTests : IDisposable
     {
         var logger = TestHelpers.CreateMockLogger<MsuSelectorService>();
         var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
-        return new MsuSelectorService(logger, _msuDetailsService, _msuTypeService, _msuLookupService, msuUserOptionsService);
+        var messageSender = TestHelpers.CreateMockMsuMessageSender();
+        
+        return new MsuSelectorService(logger, _msuDetailsService, _msuTypeService, _msuLookupService, msuUserOptionsService, messageSender);
     }
 
     private MsuDetailsService CreateMsuDetailsService()
