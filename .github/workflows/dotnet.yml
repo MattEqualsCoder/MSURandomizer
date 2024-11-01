@@ -29,6 +29,8 @@ jobs:
       run: dotnet build --no-restore -p:PostBuildEvent=
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Clean
+      run: dotnet clean
     - name: Build
       if: ${{ github.event_name != 'pull_request' }}
       run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent= 
