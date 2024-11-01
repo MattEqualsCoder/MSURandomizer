@@ -41,12 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Messenger/MsuRandomizer.proto">
-      <GrpcServices>Client,Server</GrpcServices>
-    </Protobuf>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.28.3" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.66.0" />
