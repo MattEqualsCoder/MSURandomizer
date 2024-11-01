@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -28,7 +29,14 @@ sealed class Program
         var loggerConfiguration = new LoggerConfiguration();
         
 #if DEBUG
-        loggerConfiguration = loggerConfiguration.MinimumLevel.Debug();
+        if (args.Contains("-d"))
+        {
+            loggerConfiguration = loggerConfiguration.MinimumLevel.Verbose();
+        }
+        else
+        {
+            loggerConfiguration = loggerConfiguration.MinimumLevel.Debug();
+        }
 #else
         if (args.Contains("-d"))
         {
