@@ -76,6 +76,12 @@ internal class MsuUserOptionsService : IMsuUserOptionsService
 
     public void SaveMsuSettings(Msu msu)
     {
+        UpdateMsuSettings(msu);
+        Save();
+    }
+    
+    public void UpdateMsuSettings(Msu msu)
+    {
         var previousSettings = MsuUserOptions.MsuSettings.FirstOrDefault(x => x.MsuPath == msu.Path);
         
         if (previousSettings == null && msu.Settings.HasSettings)
@@ -91,7 +97,5 @@ internal class MsuUserOptionsService : IMsuUserOptionsService
             MsuUserOptions.MsuSettings.Remove(previousSettings);
             MsuUserOptions.MsuSettings.Add(msu.Settings);
         }
-
-        Save();
     }
 }

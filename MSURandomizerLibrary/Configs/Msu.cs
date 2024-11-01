@@ -114,6 +114,12 @@ public class Msu
     /// The list of tracks in this MSU
     /// </summary>
     public ICollection<Track> Tracks { get; set; } = new List<Track>();
+
+    /// <summary>
+    /// If this unknown MSU should be ignored
+    /// </summary>
+    [JsonIgnore]
+    public bool IgnoreUnknown => Settings.IsUserUnknownMsu;
     
     /// <summary>
     /// User settings applied to the MSU

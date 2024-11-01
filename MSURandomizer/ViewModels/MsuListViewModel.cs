@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using AvaloniaControls.Models;
@@ -32,6 +33,8 @@ public class MsuListViewModel : ViewModelBase
     [ReactiveLinkedProperties(nameof(SelectionMode))]
     public bool IsSingleSelectionMode { get; set; }
 
+    public bool DisplayUnknownMsuWindow { get; set; }
+    
     public SelectionMode SelectionMode =>
         IsSingleSelectionMode ? SelectionMode.Single : SelectionMode.Multiple | SelectionMode.Toggle;
 }

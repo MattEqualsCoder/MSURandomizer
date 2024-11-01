@@ -22,15 +22,17 @@ public class MsuListService(AppInitializationService appInitializationService,
     {
         IsLoading = true
     };
+
+    public event EventHandler? OnDisplayUnknownMsuWindowRequest;
     
     public MsuListViewModel InitializeModel()
     {
-        msuMonitorService.MsuMonitorStarted += (sender, args) =>
+        msuMonitorService.MsuMonitorStarted += (_, _) =>
         {
             Model.IsMsuMonitorActive = true;
         };
         
-        msuMonitorService.MsuMonitorStopped += (sender, args) =>
+        msuMonitorService.MsuMonitorStopped += (_, _) =>
         {
             Model.IsMsuMonitorActive = false;
         };
@@ -70,7 +72,7 @@ public class MsuListService(AppInitializationService appInitializationService,
         var useAbsolutePath = string.IsNullOrWhiteSpace(rootPath);
         var filteredMsus = Model.MsuViewModels
             .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, msuTypePath) &&
-                        x.Msu.NumUniqueTracks > x.Msu.MsuType?.RequiredTrackNumbers.Count / 5)
+                        (x.Msu.NumUniqueTracks > x.Msu.MsuType?.RequiredTrackNumbers.Count / 5 || x.Msu.NumUniqueTracks > 10))
             .OrderBy(x => x.MsuName)
             .ToList();
         foreach (var filteredMsu in filteredMsus)
@@ -155,6 +157,14 @@ public class MsuListService(AppInitializationService appInitializationService,
         FilterMSUs(filterMsuType, userOptions.MsuUserOptions.Filter);
         Model.SelectedMsus = Model.FilteredMsus
             .Where(x => userOptions.MsuUserOptions.SelectedMsus?.Contains(x.MsuPath) == true).ToList();
+
+        Model.DisplayUnknownMsuWindow =
+            Model.Msus.Any(x => x.MsuType == null && x is { NumUniqueTracks: > 15, IgnoreUnknown: false, IsHardwareMsu: false } && string.IsNullOrEmpty(x.Settings.MsuTypeName) );
+
+        if (Model.DisplayUnknownMsuWindow)
+        {
+            OnDisplayUnknownMsuWindowRequest?.Invoke(this, EventArgs.Empty);    
+        }
     }
 
     private string? GetMsuTypeBasePath(MsuType? msuType)
