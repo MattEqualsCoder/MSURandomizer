@@ -41,6 +41,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="Messenger/MsuRandomizer.proto">
+      <GrpcServices>Client,Server</GrpcServices>
+    </Protobuf>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.28.3" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.66.0" />
@@ -52,17 +58,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageReference Include="YamlDotNet" Version="16.1.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="Messenger\MsuRandomizer.proto">
-      <GrpcServices>Client,Server</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\Debug/net8.0/</OutputDir>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
   </ItemGroup>
 
 </Project>
