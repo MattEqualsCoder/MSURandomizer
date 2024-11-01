@@ -10,6 +10,8 @@ namespace MSURandomizer.ViewModels;
 public class MsuDetailsWindowViewModel : ViewModelBase
 {
     [Reactive] public string MsuPath { get; set; } = "";
+    
+    [Reactive] public string AbbreviatedPath { get; set; } = "";
 
     [Reactive] public string? MsuTypeName { get; set; }
 

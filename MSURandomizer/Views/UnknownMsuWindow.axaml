@@ -7,7 +7,10 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         Width="800"
         Height="450"
+        MinWidth="800"
+        MinHeight="450"
         x:Class="MSURandomizer.Views.UnknownMsuWindow"
+        CanResize="False"
         Title="Unknown MSUs"
         Closed="TopLevel_OnClosed"
         x:DataType="viewModels:UnknownMsuWindowViewModel">
@@ -28,7 +31,7 @@
                         <DataTemplate>
                             <StackPanel Orientation="Vertical" Margin="5">
                                 <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto">
-                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding MsuPath}"></TextBlock>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding AbbreviatedPath}" ToolTip.Tip="{Binding MsuPath}"></TextBlock>
                                     <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding TrackCountString}"></TextBlock>
                                     <ComboBox Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" ItemsSource="{Binding MsuTypeNames}"
                                               SelectedItem="{Binding MsuTypeName}"

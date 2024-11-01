@@ -35,7 +35,11 @@ public class UnknownMsuWindowService(
 
             if (msuModel.MsuPath.Length > MaxPathLength)
             {
-                msuModel.MsuPath = $"...{msuModel.MsuPath.Substring(msuModel.MsuPath.Length - MaxPathLength)}";
+                msuModel.AbbreviatedPath = $"...{msuModel.MsuPath.Substring(msuModel.MsuPath.Length - MaxPathLength)}";
+            }
+            else
+            {
+                msuModel.AbbreviatedPath = msuModel.MsuPath;
             }
             
             msuModel.PropertyChanged += (sender, args) =>
@@ -58,7 +62,6 @@ public class UnknownMsuWindowService(
         foreach (var msuModel in _model.UnknownMsus.Where(x => x.Msu != null))
         {
             mapper.Map(msuModel, msuModel.Msu!.Settings);
-            msuModel.Msu.Settings.MsuPath = msuModel.Msu.Path;
             msuModel.Msu.Settings.IsUserUnknownMsu = string.IsNullOrEmpty(msuModel.MsuTypeName);
             userOptionsService.UpdateMsuSettings(msuModel.Msu);
             msuCacheService.Remove(msuModel.Msu.Path, false);
