@@ -338,6 +338,8 @@ internal class MsuSelectorService : IMsuSelectorService
         var tracks = new List<Track>();
         var altOption = msu.Settings.AltOption;
         string? warningMessage = null;
+
+        _logger.LogInformation("Generating msu {Name} at {Path}", msu.DisplayName, msuPath);
         
         foreach (var trackNumber in msu.Tracks.Select(x => x.Number).Order())
         {
@@ -358,13 +360,13 @@ internal class MsuSelectorService : IMsuSelectorService
             {
                 if (source == destination)
                 {
-                    _logger.LogInformation("#{Number} ({Name}) Skipped: {Source}", trackNumber, msuTypeTrack?.Name, source);
+                    _logger.LogDebug("#{Number} ({Name}) Skipped: {Source}", trackNumber, msuTypeTrack?.Name, source);
                     var originalTrackName = track.OriginalTrackName;
                     tracks.Add(new Track(track) { OriginalMsu = track.OriginalMsu, OriginalTrackName = originalTrackName });
                 }
                 else if (CreatePcmFile(source, destination))
                 {
-                    _logger.LogInformation("#{Number} ({Name}): {Source} => {Destination} ({Duration}s)", trackNumber, msuTypeTrack?.Name, source, destination, track.Duration);
+                    _logger.LogDebug("#{Number} ({Name}): {Source} => {Destination} ({Duration}s)", trackNumber, msuTypeTrack?.Name, source, destination, track.Duration);
                     tracks.Add(new Track(track, number: trackNumber, path: destination, trackName: trackName) { OriginalMsu = track.OriginalMsu });
                     selectedPaths[trackNumber] = source;
                 }
@@ -375,7 +377,7 @@ internal class MsuSelectorService : IMsuSelectorService
                     {
                         var originalTrackName = track.OriginalTrackName;
                         tracks.Add(new Track(track) { OriginalMsu = track.OriginalMsu, OriginalTrackName = originalTrackName });
-                        _logger.LogInformation("Used previous PCM track {Destination}", destination);
+                        _logger.LogDebug("Used previous PCM track {Destination}", destination);
                     }
                     else
                     {
