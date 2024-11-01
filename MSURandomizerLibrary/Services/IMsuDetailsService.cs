@@ -15,7 +15,7 @@ public interface IMsuDetailsService
     /// <param name="error">Any errors with loading the basic MSU details</param>
     /// <returns>The MSU details if they were able to be loaded</returns>
     public MsuDetails? GetMsuDetails(string msuPath, out string yamlHash, out string? error);
-    
+
     /// <summary>
     /// Converts the MSU details object into an MSU object
     /// </summary>
@@ -25,8 +25,10 @@ public interface IMsuDetailsService
     /// <param name="msuDirectory">The directory of the MSU file</param>
     /// <param name="msuBaseName">The base name of the MSU file with no file extension</param>
     /// <param name="error">Any errors with loading the MSU details</param>
+    /// <param name="ignoreAlts">If it should skip trying to detect alt tracks</param>
+    /// <param name="pcmPaths">A list of found PCM files to check for instead of checking if the PCM file exists</param>
     /// <returns>The MSU with all of the updated details from the YAML file</returns>
-    public Msu? ConvertToMsu(MsuDetails msuDetails, MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, out string? error);
+    public Msu? ConvertToMsu(MsuDetails msuDetails, MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, out string? error, bool ignoreAlts = false, List<string>? pcmPaths = null);
 
     /// <summary>
     /// Saves the MSU details to a YAML file
@@ -36,4 +38,12 @@ public interface IMsuDetailsService
     /// <param name="error">Any errors with saving the MSU details</param>
     /// <returns>If the write was successful or not</returns>
     public bool SaveMsuDetails(Msu msu, string outputPath, out string? error);
+    
+    /// <summary>
+    /// Retrieves the MSU Details given an MSU path, matching the folder and filename
+    /// </summary>
+    /// <param name="msuPath">The path to the MSU file</param>
+    /// <param name="msuType">The desired MSU type, if applicable</param>
+    /// <returns>The MSU details if they are found</returns>
+    public MsuDetails? GetMsuDetailsForPath(string msuPath, MsuType? msuType);
 }

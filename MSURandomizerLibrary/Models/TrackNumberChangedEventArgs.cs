@@ -3,7 +3,7 @@ namespace MSURandomizerLibrary.Models;
 /// <summary>
 /// Class for holding the details when the currently played track number has changed
 /// </summary>
-public class TrackNumberChangedEventArgs
+public class TrackNumberChangedEventArgs : EventArgs
 {
     /// <summary>
     /// Constructor

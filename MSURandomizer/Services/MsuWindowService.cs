@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
 using AvaloniaControls.ControlServices;
@@ -151,8 +152,9 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         msuList.PopulateMsuViewModels(msus);
     }
 
-    public bool GenerateMsu(out string error, out bool openContinuousWindow, out Msu? msu)
+    public bool GenerateMsu(out string error, out bool openContinuousWindow, out Msu? msu, out string? warningMessage)
     {
+        warningMessage = "";
         error = "";
         msu = null;
 
@@ -211,6 +213,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 {
                     msu = response.Msu;
                     openContinuousWindow = options.OpenMonitorWindow;
+                    warningMessage = response.Message;
 
                     if (options.LaunchRom && !string.IsNullOrEmpty(options.OutputRomPath))
                     {
@@ -239,6 +242,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 {
                     msu = response.Msu;
                     openContinuousWindow = options.OpenMonitorWindow;
+                    warningMessage = response.Message;
                     
                     if (options.LaunchRom && !string.IsNullOrEmpty(options.OutputRomPath))
                     {
@@ -270,6 +274,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
             {
                 msu = response.Msu;
                 openContinuousWindow = options.OpenMonitorWindow;
+                warningMessage = response.Message;
                 
                 if (options.LaunchRom && !string.IsNullOrEmpty(options.OutputRomPath))
                 {

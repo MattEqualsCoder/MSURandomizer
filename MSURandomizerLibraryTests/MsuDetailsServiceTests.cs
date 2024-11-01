@@ -190,7 +190,8 @@ tracks:
     {
         var logger = TestHelpers.CreateMockLogger<MsuDetailsService>();
         var settingsService = TestHelpers.CreateMsuAppSettingsService(appSettings);
-        return new MsuDetailsService(logger);
+        var msuOptions = TestHelpers.CreateMockMsuUserOptionsService(null);
+        return new MsuDetailsService(logger, msuOptions);
     }
 
     private void DeleteYamlFile()

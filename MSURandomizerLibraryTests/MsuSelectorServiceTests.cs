@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using MSURandomizerLibrary;
+﻿using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
@@ -754,6 +753,8 @@ public class MsuSelectorServiceTests
 
         msus = lookupService.Msus.ToList();
         
-        return new MsuSelectorService(logger, msuDetailsService, msuTypeService, lookupService, msuUserOptionsService);
+        var messageSender = TestHelpers.CreateMockMsuMessageSender();
+        
+        return new MsuSelectorService(logger, msuDetailsService, msuTypeService, lookupService, msuUserOptionsService, messageSender);
     }
 }

@@ -127,7 +127,6 @@ internal class MsuHardwareService(
 
     private List<Msu> ProcessFileList(List<SnesFile> files)
     {
-        
         var snesMsus = files.Where(x => x.Name.EndsWith(".msu", StringComparison.OrdinalIgnoreCase));
 
         var toReturn = new List<Msu>();

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace MSURandomizerLibrary.Configs;
+﻿namespace MSURandomizerLibrary.Configs;
 
 /// <summary>
 /// Settings for the MSU Randomizer
@@ -97,6 +94,11 @@ public class MsuAppSettings
     /// If the hardware connection mode is disabled or not
     /// </summary>
     public bool DisableHardwareMode { get; set; }
+    
+    /// <summary>
+    /// If the messenger that sends generation and track notifications via grpc
+    /// </summary>
+    public bool DisableMessageSender { get; set; }
 
     /// <summary>
     /// Default directory for misc save data
@@ -125,7 +127,7 @@ public class MsuAppSettings
     {
         return MsuTypeNameOverrides == null
             ? msuName
-            : MsuTypeNameOverrides.TryGetValue(msuName, out var overrideName) ? overrideName : msuName;
+            : MsuTypeNameOverrides.GetValueOrDefault(msuName, msuName);
     }
 
     /// <summary>
@@ -134,6 +136,6 @@ public class MsuAppSettings
     public IEnumerable<string> ZeldaSuperMetroidSmz3MsuTypes =>
         MetroidFirstMsuTypes != null && ZeldaFirstMsuTypes != null
             ? MetroidFirstMsuTypes.Concat(ZeldaFirstMsuTypes)
-            : MetroidFirstMsuTypes ?? (ZeldaFirstMsuTypes ?? new List<string>());
+            : MetroidFirstMsuTypes ?? (ZeldaFirstMsuTypes ?? []);
 
 }

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Messenger;
 using MSURandomizerLibrary.Models;
 
 namespace MSURandomizerLibrary.Services;
@@ -13,14 +14,16 @@ internal class MsuSelectorService : IMsuSelectorService
     private readonly IMsuTypeService _msuTypeService;
     private readonly IMsuLookupService _msuLookupService;
     private readonly IMsuUserOptionsService _msuUserOptionsService;
+    private readonly IMsuMessageSender _msuMessageSender;
 
-    public MsuSelectorService(ILogger<MsuSelectorService> logger, IMsuDetailsService msuDetailsService, IMsuTypeService msuTypeService, IMsuLookupService msuLookupService, IMsuUserOptionsService msuUserOptionsService)
+    public MsuSelectorService(ILogger<MsuSelectorService> logger, IMsuDetailsService msuDetailsService, IMsuTypeService msuTypeService, IMsuLookupService msuLookupService, IMsuUserOptionsService msuUserOptionsService, IMsuMessageSender msuMessageSender)
     {
         _logger = logger;
         _msuDetailsService = msuDetailsService;
         _msuTypeService = msuTypeService;
         _msuLookupService = msuLookupService;
         _msuUserOptionsService = msuUserOptionsService;
+        _msuMessageSender = msuMessageSender;
         _random = new Random(System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, int.MaxValue));
         for (var i = 0; i < 100; i++)
         {
@@ -335,6 +338,8 @@ internal class MsuSelectorService : IMsuSelectorService
         var tracks = new List<Track>();
         var altOption = msu.Settings.AltOption;
         string? warningMessage = null;
+
+        _logger.LogInformation("Generating msu {Name} at {Path}", msu.DisplayName, msuPath);
         
         foreach (var trackNumber in msu.Tracks.Select(x => x.Number).Order())
         {
@@ -355,13 +360,13 @@ internal class MsuSelectorService : IMsuSelectorService
             {
                 if (source == destination)
                 {
-                    _logger.LogInformation("#{Number} ({Name}) Skipped: {Source}", trackNumber, msuTypeTrack?.Name, source);
+                    _logger.LogDebug("#{Number} ({Name}) Skipped: {Source}", trackNumber, msuTypeTrack?.Name, source);
                     var originalTrackName = track.OriginalTrackName;
                     tracks.Add(new Track(track) { OriginalMsu = track.OriginalMsu, OriginalTrackName = originalTrackName });
                 }
                 else if (CreatePcmFile(source, destination))
                 {
-                    _logger.LogInformation("#{Number} ({Name}): {Source} => {Destination} ({Duration}s)", trackNumber, msuTypeTrack?.Name, source, destination, track.Duration);
+                    _logger.LogDebug("#{Number} ({Name}): {Source} => {Destination} ({Duration}s)", trackNumber, msuTypeTrack?.Name, source, destination, track.Duration);
                     tracks.Add(new Track(track, number: trackNumber, path: destination, trackName: trackName) { OriginalMsu = track.OriginalMsu });
                     selectedPaths[trackNumber] = source;
                 }
@@ -372,7 +377,7 @@ internal class MsuSelectorService : IMsuSelectorService
                     {
                         var originalTrackName = track.OriginalTrackName;
                         tracks.Add(new Track(track) { OriginalMsu = track.OriginalMsu, OriginalTrackName = originalTrackName });
-                        _logger.LogInformation("Used previous PCM track {Destination}", destination);
+                        _logger.LogDebug("Used previous PCM track {Destination}", destination);
                     }
                     else
                     {
@@ -426,6 +431,11 @@ internal class MsuSelectorService : IMsuSelectorService
             response.Message = warningMessage;
         }
 
+        if (response.Successful)
+        {
+            _ = _msuMessageSender.SendMsuGenerated(outputMsu);
+        }
+        
         return response;
     }
 
@@ -612,7 +622,7 @@ internal class MsuSelectorService : IMsuSelectorService
         
         var matchingRequiredTracks = msu.Tracks.Select(x => x.Number).Intersect(msu.MsuType.RequiredTrackNumbers).Count();
         var percentRequiredTracks = 1.0f * matchingRequiredTracks / msu.MsuType.RequiredTrackNumbers.Count;
-        if (percentRequiredTracks < .9)
+        if (percentRequiredTracks < .95)
         {
             message = "MSU generated successfully but multiple required tracks are missing.";
         }
@@ -621,7 +631,7 @@ internal class MsuSelectorService : IMsuSelectorService
         {
             Successful = true,
             Message = message,
-            Msu = msu
+            Msu = msu,
         };
     }
 

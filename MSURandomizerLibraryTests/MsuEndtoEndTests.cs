@@ -424,13 +424,16 @@ public class MsuEndtoEndTests : IDisposable
     {
         var logger = TestHelpers.CreateMockLogger<MsuSelectorService>();
         var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
-        return new MsuSelectorService(logger, _msuDetailsService, _msuTypeService, _msuLookupService, msuUserOptionsService);
+        var messageSender = TestHelpers.CreateMockMsuMessageSender();
+        
+        return new MsuSelectorService(logger, _msuDetailsService, _msuTypeService, _msuLookupService, msuUserOptionsService, messageSender);
     }
 
     private MsuDetailsService CreateMsuDetailsService()
     {
         var logger = TestHelpers.CreateMockLogger<MsuDetailsService>();
-        return new MsuDetailsService(logger);
+        var msuOptions = TestHelpers.CreateMockMsuUserOptionsService(null);
+        return new MsuDetailsService(logger, msuOptions);
     }
     
     private string RandomString(int length)

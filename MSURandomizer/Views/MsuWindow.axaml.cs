@@ -200,7 +200,7 @@ public partial class MsuWindow : RestorableWindow
             return;
         }
         
-        var result = _service.GenerateMsu(out var error, out var openContinuousWindow, out var msu);
+        var result = _service.GenerateMsu(out var error, out var openContinuousWindow, out var msu, out var warningMessage);
         if (result != true)
         {
             var errorWindow = new MessageWindow(new MessageWindowRequest()
@@ -210,6 +210,27 @@ public partial class MsuWindow : RestorableWindow
                 Buttons = MessageWindowButtons.OK
             });
             errorWindow.ShowDialog(this);
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(warningMessage))
+        {
+            var warningWindow = new MessageWindow(new MessageWindowRequest()
+            {
+                Message = warningMessage,
+                Icon = MessageWindowIcon.Warning,
+                Buttons = MessageWindowButtons.OK
+            });
+
+            if (openContinuousWindow)
+            {
+                warningWindow.Closed += (_, _) =>
+                {
+                    OpenMsuMonitorWindow(msu);
+                };
+            }
+            
+            warningWindow.ShowDialog(this);
         }
         else if (openContinuousWindow)
         {
