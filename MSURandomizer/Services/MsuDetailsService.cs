@@ -28,6 +28,7 @@ public class MsuDetailsService(
             _parentModel.Msu.MsuType?.Tracks.OrderBy(x => x.Number)
                 .Select(t => new MsuTrackViewModel(t, _parentModel.Msu.Tracks)).ToList() ??
             [];
+        Model.TrackCount = Model.Tracks.Count;
         Model.MsuTypeNames = [""];
         Model.MsuTypeNames.AddRange(msuTypeService.MsuTypes.Select(x => x.DisplayName).OrderBy(x => x));
         Model.HasBeenModified = false;
@@ -38,6 +39,7 @@ public class MsuDetailsService(
     {
         if (Model.Msu == null) return;
         mapper.Map(Model, Model.Msu.Settings);
+        Model.Msu.Settings.IsUserUnknownMsu = string.IsNullOrEmpty(Model.MsuTypeName);
         userOptionsService.SaveMsuSettings(Model.Msu);
         _parentModel.MsuName = Model.Msu?.DisplayName;
         _parentModel.MsuCreator = Model.Msu?.DisplayCreator;

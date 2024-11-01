@@ -130,10 +130,15 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
     public void FilterMsuList(MsuList msuList)
     {
+        if (string.IsNullOrEmpty(Model.SelectedMsuType))
+        {
+            return;
+        }
+        
         var msuType = msuTypeService.GetMsuType(Model.SelectedMsuType);
         if (msuType == null)
         {
-            logger.LogWarning("Invalid MSU type");
+            logger.LogWarning("Invalid MSU type selected: {Selection}", Model.SelectedMsuType);
             return;
         }
         msuList.FilterMSUs(msuType, Model.Filter);

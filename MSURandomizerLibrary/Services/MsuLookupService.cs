@@ -123,6 +123,8 @@ internal class MsuLookupService : IMsuLookupService
             var cacheMsu = _msuCacheService.Get(msuPath, yamlHash, pcmFiles);
             if (cacheMsu != null)
             {
+                var cacheSettings = _msuUserOptions.GetMsuSettings(msuPath);
+                cacheMsu.Settings = cacheSettings;
                 return cacheMsu;
             }
         }

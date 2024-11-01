@@ -25,7 +25,13 @@ public interface IMsuUserOptionsService
     public void Save();
 
     /// <summary>
-    /// Saves the current state of the MSU's user settings
+    /// Updates the settings for a given MSU
+    /// </summary>
+    /// <param name="msu">The MSU to save the settings for</param>
+    public void UpdateMsuSettings(Msu msu);
+    
+    /// <summary>
+    /// Updates the settings for a given MSU and saves them
     /// </summary>
     /// <param name="msu">The MSU to save the settings for</param>
     public void SaveMsuSettings(Msu msu);

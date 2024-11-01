@@ -41,12 +41,14 @@
                     <controls:LabeledControl Text="MSU Type Override:">
                         <ComboBox ItemsSource="{Binding MsuTypeNames}"
                                   SelectedItem="{Binding MsuTypeName}"
+                                  IsEnabled="{Binding CanEditMsuType}"
                         ></ComboBox>
                     </controls:LabeledControl>
                     <controls:LabeledControl Text="Alt Track Shuffling:">
                         <controls:EnumComboBox
                             EnumType="{Binding AltOption, Converter={StaticResource TypeConverter}}"
                             Value="{Binding AltOption, Mode=TwoWay}"
+                            IsEnabled="{Binding CanEditMsuType}"
                         ></controls:EnumComboBox>
                     </controls:LabeledControl>
                     <controls:LabeledControl Text="MSU Path:">

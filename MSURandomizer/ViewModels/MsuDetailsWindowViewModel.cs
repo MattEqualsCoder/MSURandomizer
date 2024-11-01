@@ -10,6 +10,8 @@ namespace MSURandomizer.ViewModels;
 public class MsuDetailsWindowViewModel : ViewModelBase
 {
     [Reactive] public string MsuPath { get; set; } = "";
+    
+    [Reactive] public string AbbreviatedPath { get; set; } = "";
 
     [Reactive] public string? MsuTypeName { get; set; }
 
@@ -28,6 +30,14 @@ public class MsuDetailsWindowViewModel : ViewModelBase
     public List<MsuTrackViewModel> Tracks { get; set; } = new();
     
     public List<string> MsuTypeNames { get; set; } = new();
+    
+    public int TrackCount { get; set; }
 
-    public bool CanEditDetails => Msu?.HasDetails != true;
+    public string TrackCountString => $"{TrackCount} Tracks";
+
+    public bool CanEditDetails => Msu?.HasDetails != true && Msu?.IsHardwareMsu != true;
+
+    public bool CanEditMsuType => Msu?.IsHardwareMsu != true;
+
+    public bool IsNotLast { get; set; } = true;
 }
