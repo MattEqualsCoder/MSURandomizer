@@ -34,6 +34,11 @@ internal class MsuLookupService : IMsuLookupService
         return LookupMsus(_msuUserOptions.DefaultMsuPath, _msuUserOptions.MsuTypePaths);
     }
 
+    public void RefreshMsuDisplay()
+    {
+        OnMsuLookupComplete?.Invoke(this, new MsuListEventArgs(_msus, _errors));
+    }
+
     public IReadOnlyCollection<Msu> LookupMsus(string? defaultDirectory, Dictionary<MsuType, string>? msuTypeDirectories = null, bool ignoreCache = false)
     {
         if (!_msuTypeService.MsuTypes.Any())
@@ -180,6 +185,19 @@ internal class MsuLookupService : IMsuLookupService
         var baseName = Path.GetFileName(snesMsu.FullPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var msuType = GetMsuType(baseName, pcmFilePaths);
         
+        var msuSettings = _msuUserOptions.GetMsuSettings(snesMsu.FullPath);
+        msuSettings.MsuType = _msuTypeService.GetMsuType(msuSettings.MsuTypeName);
+        if (msuSettings.MsuType != null)
+        {
+            msuType = msuSettings.MsuType;
+            msuSettings.MsuTypeName = msuType.DisplayName;
+        }
+
+        if (msuSettings.MsuType != null)
+        {
+            msuType = msuSettings.MsuType;
+        }
+        
         var fullMsu = Msus.FirstOrDefault(x =>
             x.MsuTypeName == msuType?.DisplayName &&
             x.FolderName == snesMsu.ParentName && 
@@ -197,7 +215,10 @@ internal class MsuLookupService : IMsuLookupService
                 tracks: fullMsu.Tracks.Select(x => new Track(x)).ToList(),
                 msuDetails: null,
                 prevMsu: fullMsu,
-                isHardwareMsu: true);
+                isHardwareMsu: true)
+            {
+                Settings = msuSettings
+            };
         }
         else
         {
@@ -224,6 +245,7 @@ internal class MsuLookupService : IMsuLookupService
                     if (msu != null)
                     {
                         msu.IsHardwareMsu = true;
+                        msu.Settings = msuSettings;
                         return msu;
                     }
                 }
@@ -237,6 +259,7 @@ internal class MsuLookupService : IMsuLookupService
             _logger.LogInformation("Unknown MSU {Path} found", snesMsu.FullPath);
             var msu = LoadUnknownMsu(snesMsu.FullPath, snesMsu.FullPath.Replace(snesMsu.Name, ""), baseName, pcmFilePaths);
             msu.IsHardwareMsu = true;
+            msu.Settings = msuSettings;
             return msu;
         }
         else
@@ -244,6 +267,7 @@ internal class MsuLookupService : IMsuLookupService
             _logger.LogInformation("{MsuType} MSU {Path} found", msuType.DisplayName, snesMsu.FullPath);
             var msu = LoadBasicMsu(snesMsu.FullPath, snesMsu.FullPath.Replace(snesMsu.Name, ""), baseName, msuType, pcmFilePaths, null);
             msu.IsHardwareMsu = true;
+            msu.Settings = msuSettings;
             return msu;
         }
     }
@@ -502,6 +526,7 @@ internal class MsuLookupService : IMsuLookupService
     public event EventHandler? OnMsuLookupStarted;
     
     public event EventHandler<MsuListEventArgs>? OnMsuLookupComplete;
+    
     
     public void RefreshMsu(Msu msu)
     {

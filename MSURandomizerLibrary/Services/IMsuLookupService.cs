@@ -14,6 +14,11 @@ public interface IMsuLookupService
     /// </summary>
     /// <returns>A collection of all MSUs found</returns>
     public IReadOnlyCollection<Msu> LookupMsus();
+    
+    /// <summary>
+    /// Instructs the UI that some MSU display information has been updated
+    /// </summary>
+    public void RefreshMsuDisplay();
 
     /// <summary>
     /// Loads all MSUs within a directory and all subdirectories

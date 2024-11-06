@@ -16,7 +16,8 @@ public class MsuListService(AppInitializationService appInitializationService,
     IMsuUserOptionsService userOptions,
     IMsuTypeService msuTypeService,
     IMsuAppSettingsService appSettingsService,
-    IMsuMonitorService msuMonitorService) : ControlService
+    IMsuMonitorService msuMonitorService,
+    IMsuHardwareService msuHardwareService) : ControlService
 {
     public MsuListViewModel Model { get; set; } = new()
     {
@@ -40,9 +41,15 @@ public class MsuListService(AppInitializationService appInitializationService,
         appInitializationService.InitializationComplete += InitializationServiceOnInitializationComplete;
         msuLookupService.OnMsuLookupComplete += MsuLookupServiceOnOnMsuLookupComplete;
         msuLookupService.OnMsuLookupStarted += MsuLookupServiceOnOnMsuLookupStarted;
+        msuHardwareService.HardwareMsusChanged += MsuHardwareServiceOnHardwareMsusChanged;
         Model.IsMsuMonitorDisabled = appSettingsService.MsuAppSettings.DisableMsuMonitorWindow == true;
         CheckIfLoading();
         return Model;
+    }
+
+    private void MsuHardwareServiceOnHardwareMsusChanged(object? sender, MsuListEventArgs e)
+    {
+        PopulateMsuViewModels(e.Msus.ToList());
     }
 
     private void MsuLookupServiceOnOnMsuLookupStarted(object? sender, EventArgs e)
@@ -159,7 +166,7 @@ public class MsuListService(AppInitializationService appInitializationService,
             .Where(x => userOptions.MsuUserOptions.SelectedMsus?.Contains(x.MsuPath) == true).ToList();
 
         Model.DisplayUnknownMsuWindow =
-            Model.Msus.Any(x => x.MsuType == null && x is { NumUniqueTracks: > 15, IgnoreUnknown: false, IsHardwareMsu: false } && string.IsNullOrEmpty(x.Settings.MsuTypeName) );
+            Model.Msus.Any(x => x.MsuType == null && x is { NumUniqueTracks: > 15, IgnoreUnknown: false } && string.IsNullOrEmpty(x.Settings.MsuTypeName) );
 
         if (Model.DisplayUnknownMsuWindow)
         {
