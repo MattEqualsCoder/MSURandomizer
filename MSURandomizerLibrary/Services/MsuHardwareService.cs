@@ -14,7 +14,6 @@ internal class MsuHardwareService(
 {
     private Dictionary<string, (SnesFile msuFile, List<SnesFile> pcmFiles)> _hardwareFileCache = [];
     private Dictionary<string, Msu> _hardwareMsuList = [];
-    private List<Msu> _msus;
 
     public async Task<List<Msu>?> GetMsusFromDevice()
     {

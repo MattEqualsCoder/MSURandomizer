@@ -181,6 +181,7 @@ public class Msu
     /// <param name="filter">How closely this MSU needs to match the MSU type</param>
     /// <param name="type">The MSU type being looked for</param>
     /// <param name="path">The path being looked at</param>
+    /// <param name="compatibleMsuTypeNames">Optional list of MSU type names to use for filtering, unless the FilterType All is selected</param>
     /// <returns>True if matches, false otherwise</returns>
     public bool MatchesFilter(MsuFilter filter, MsuType type, string? path, List<string>? compatibleMsuTypeNames = null)
     {
