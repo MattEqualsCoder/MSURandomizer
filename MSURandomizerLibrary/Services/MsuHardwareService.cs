@@ -173,6 +173,12 @@ internal class MsuHardwareService(
                     x.ParentName == snesMsu.ParentName && x.Name.StartsWith(baseFileName) &&
                     x.Name.EndsWith(".pcm", StringComparison.OrdinalIgnoreCase))
                     .ToList();
+
+                if (pcmFiles.Count == 0)
+                {
+                    continue;
+                }
+                
                 toReturn.Add(msuLookupService.LoadHardwareMsu(snesMsu, pcmFiles));
                 _hardwareFileCache[snesMsu.FullPath] = (snesMsu, pcmFiles);
             }
