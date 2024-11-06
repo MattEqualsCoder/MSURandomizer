@@ -5,7 +5,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvaloniaControls.Extensions;
-using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
 using MSURandomizerLibrary;
@@ -42,11 +41,11 @@ public partial class MsuList : UserControl
         else
         {
             _service = this.GetControlService<MsuListService>();
+            DataContext = _model = _service!.InitializeModel();
             _service!.OnDisplayUnknownMsuWindowRequest += (sender, args) =>
             {
                 OpenUnknownMsuWindow();
             };
-            DataContext = _model = _service!.InitializeModel();
         }
     }
 
@@ -108,7 +107,7 @@ public partial class MsuList : UserControl
         Dispatcher.UIThread.Invoke(() =>
         {
             var parentWindow = TopLevel.GetTopLevel(this) as Window;
-            var unknownMsuWindow = new UnknownMsuWindow();
+            var unknownMsuWindow = new UnknownMsuWindow(_service?.Model.HardwareMode == true);
             unknownMsuWindow.ShowDialog(parentWindow!);
         });
     }

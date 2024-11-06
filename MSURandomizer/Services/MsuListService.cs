@@ -16,7 +16,8 @@ public class MsuListService(AppInitializationService appInitializationService,
     IMsuUserOptionsService userOptions,
     IMsuTypeService msuTypeService,
     IMsuAppSettingsService appSettingsService,
-    IMsuMonitorService msuMonitorService) : ControlService
+    IMsuMonitorService msuMonitorService,
+    IMsuHardwareService msuHardwareService) : ControlService
 {
     public MsuListViewModel Model { get; set; } = new()
     {
@@ -40,9 +41,15 @@ public class MsuListService(AppInitializationService appInitializationService,
         appInitializationService.InitializationComplete += InitializationServiceOnInitializationComplete;
         msuLookupService.OnMsuLookupComplete += MsuLookupServiceOnOnMsuLookupComplete;
         msuLookupService.OnMsuLookupStarted += MsuLookupServiceOnOnMsuLookupStarted;
+        msuHardwareService.HardwareMsusChanged += MsuHardwareServiceOnHardwareMsusChanged;
         Model.IsMsuMonitorDisabled = appSettingsService.MsuAppSettings.DisableMsuMonitorWindow == true;
         CheckIfLoading();
         return Model;
+    }
+
+    private void MsuHardwareServiceOnHardwareMsusChanged(object? sender, MsuListEventArgs e)
+    {
+        PopulateMsuViewModels(e.Msus.ToList());
     }
 
     private void MsuLookupServiceOnOnMsuLookupStarted(object? sender, EventArgs e)
@@ -70,8 +77,24 @@ public class MsuListService(AppInitializationService appInitializationService,
             userOptions.MsuUserOptions.DefaultMsuPath;
         var rootPath = Model.HardwareMode ? "" : GetMsuTypeBasePath(msuType);
         var useAbsolutePath = string.IsNullOrWhiteSpace(rootPath);
+        
+        // Hardware MSUs are more limited in compatibility
+        List<string>? compatibleMsuNames = null;
+        if (Model.HardwareMode)
+        {
+            if (appSettingsService.MsuAppSettings.HardwareCompatibleMsuTypes.TryGetValue(msuType.DisplayName,
+                    out compatibleMsuNames))
+            {
+                compatibleMsuNames.Add(msuType.DisplayName);
+            }
+            else
+            {
+                compatibleMsuNames = [msuType.DisplayName];
+            }
+        }
+        
         var filteredMsus = Model.MsuViewModels
-            .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, msuTypePath) &&
+            .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, msuTypePath, compatibleMsuNames) &&
                         (x.Msu.NumUniqueTracks > x.Msu.MsuType?.RequiredTrackNumbers.Count / 5 || x.Msu.NumUniqueTracks > 10))
             .OrderBy(x => x.MsuName)
             .ToList();
@@ -159,7 +182,7 @@ public class MsuListService(AppInitializationService appInitializationService,
             .Where(x => userOptions.MsuUserOptions.SelectedMsus?.Contains(x.MsuPath) == true).ToList();
 
         Model.DisplayUnknownMsuWindow =
-            Model.Msus.Any(x => x.MsuType == null && x is { NumUniqueTracks: > 15, IgnoreUnknown: false, IsHardwareMsu: false } && string.IsNullOrEmpty(x.Settings.MsuTypeName) );
+            Model.Msus.Any(x => x.MsuType == null && x is { NumUniqueTracks: > 15, IgnoreUnknown: false } && string.IsNullOrEmpty(x.Settings.MsuTypeName) );
 
         if (Model.DisplayUnknownMsuWindow)
         {

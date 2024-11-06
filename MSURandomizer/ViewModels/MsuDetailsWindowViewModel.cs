@@ -35,9 +35,9 @@ public class MsuDetailsWindowViewModel : ViewModelBase
 
     public string TrackCountString => $"{TrackCount} Tracks";
 
-    public bool CanEditDetails => Msu?.HasDetails != true && Msu?.IsHardwareMsu != true;
+    public bool CanEditDetails => Msu?.HasDetails != true;
 
-    public bool CanEditMsuType => Msu?.IsHardwareMsu != true;
+    public bool CanEditMsuType => true;
 
     public bool IsNotLast { get; set; } = true;
 }

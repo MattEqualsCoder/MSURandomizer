@@ -152,6 +152,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
     public void UpdateHardwareMode(MsuList msuList, List<Msu>? msus)
     {
+        Model.Filter = MsuFilter.Compatible;
         Model.IsHardwareModeEnabled = msus?.Count > 0;
         msuList.ToggleHardwareMode(Model.IsHardwareModeEnabled);
         msuList.PopulateMsuViewModels(msus);

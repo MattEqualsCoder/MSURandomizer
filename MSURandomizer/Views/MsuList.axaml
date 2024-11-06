@@ -33,7 +33,7 @@
                         <controls:ImageButton Grid.Column="0" Name="FavoriteButton" Margin="2" Tag="{Binding}" Click="FavoriteButton_OnClick">
                             <avalonia:MaterialIcon Kind="Star" Width="20" Height="20" Foreground="{Binding FavoriteIconColor}" Background="Transparent" />
                         </controls:ImageButton>
-                        <controls:ImageButton Grid.Column="1" Name="ShuffleFrequencyButton" Margin="2 2 5 2" Click="ShuffleFrequencyButton_OnClick">
+                        <controls:ImageButton Grid.Column="1" Name="ShuffleFrequencyButton" Margin="2 2 5 2" Click="ShuffleFrequencyButton_OnClick" IsVisible="{Binding ShowShuffleFrequency}">
                             <Button.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Shuffle the default amount" 

@@ -12,7 +12,8 @@ public class MsuDetailsService(
     IMapper mapper,
     IMsuTypeService msuTypeService,
     IMsuCacheService msuCacheService,
-    IMsuLookupService msuLookupService) : ControlService
+    IMsuLookupService msuLookupService,
+    IMsuHardwareService msuHardwareService) : ControlService
 {
     private MsuViewModel _parentModel = new();
     public MsuDetailsWindowViewModel Model { get; set; } = new();
@@ -31,6 +32,7 @@ public class MsuDetailsService(
         Model.TrackCount = Model.Tracks.Count;
         Model.MsuTypeNames = [""];
         Model.MsuTypeNames.AddRange(msuTypeService.MsuTypes.Select(x => x.DisplayName).OrderBy(x => x));
+        Model.MsuPath = _parentModel.MsuPath;
         Model.HasBeenModified = false;
         return Model;
     }
@@ -39,6 +41,7 @@ public class MsuDetailsService(
     {
         if (Model.Msu == null) return;
         mapper.Map(Model, Model.Msu.Settings);
+        Model.Msu.Settings.MsuType = msuTypeService.GetMsuType(Model.MsuTypeName);
         Model.Msu.Settings.IsUserUnknownMsu = string.IsNullOrEmpty(Model.MsuTypeName);
         userOptionsService.SaveMsuSettings(Model.Msu);
         _parentModel.MsuName = Model.Msu?.DisplayName;
@@ -46,11 +49,21 @@ public class MsuDetailsService(
         
         if (_originalMsuTypeName != Model.MsuTypeName)
         {
-            msuCacheService.Remove(Model.MsuPath, false);
-            ITaskService.Run(() =>
+            if (Model.Msu?.IsHardwareMsu != true)
             {
-                msuLookupService.LookupMsus();
-            });
+                msuCacheService.Remove(Model.MsuPath, false);
+                ITaskService.Run(() =>
+                {
+                    msuLookupService.LookupMsus();
+                });
+            }
+            else
+            {
+                ITaskService.Run(() =>
+                {
+                    msuHardwareService.RefreshMsu(Model.MsuPath);
+                });
+            }
         }
         
     }

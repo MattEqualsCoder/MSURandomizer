@@ -21,4 +21,28 @@ public interface IMsuHardwareService
     /// <param name="bootRomAfter"></param>
     /// <returns>Returns the MSU if one was successfully picked and uploaded to</returns>
     public Task<Msu?> UploadMsuRom(List<Msu> msus, string romFilePath, bool bootRomAfter);
+
+    /// <summary>
+    /// Refreshes the MSU matching the given path
+    /// </summary>
+    /// <param name="path">The path of the MSU to refresh</param>
+    /// <returns>The reloaded MSU</returns>
+    public Msu RefreshMsu(string path);
+    
+    /// <summary>
+    /// Gets the current cached MSUs
+    /// </summary>
+    /// <returns></returns>
+    public List<Msu> Msus { get; }
+
+    /// <summary>
+    /// Event fired once the list of hardware MSUs has been updated
+    /// </summary>
+    public event EventHandler<MsuListEventArgs> HardwareMsusLoaded;
+    
+    /// <summary>
+    /// Event fired once the list of hardware MSUs has been updated
+    /// </summary>
+    public event EventHandler<MsuListEventArgs> HardwareMsusChanged;
+
 }

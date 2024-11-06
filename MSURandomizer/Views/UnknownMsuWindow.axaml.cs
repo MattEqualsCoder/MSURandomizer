@@ -12,8 +12,10 @@ public partial class UnknownMsuWindow : ScalableWindow
 {
     private readonly UnknownMsuWindowService? _service;
     private bool _pressedSave;
-    
-    public UnknownMsuWindow()
+
+    public UnknownMsuWindow() : this(false) { }
+        
+    public UnknownMsuWindow(bool isHardwareMode)
     {
         InitializeComponent();
 
@@ -54,7 +56,7 @@ public partial class UnknownMsuWindow : ScalableWindow
         }
 
         _service = this.GetControlService<UnknownMsuWindowService>();
-        DataContext = _service!.InitilizeModel();
+        DataContext = _service!.InitilizeModel(isHardwareMode);
     }
 
     private void SaveButton_OnClick(object? sender, RoutedEventArgs e)
