@@ -24,3 +24,8 @@ MsuWindowDisplayOptionsButton: true
 MsuWindowDisplaySelectButton: false
 ForcedMsuType:
 DisableMessageSender: false
+HardwareCompatibleMsuTypes:
+  A Link to the Past:
+    - SMZ3 Combo Randomizer
+  Super Metroid:
+    - SMZ3 Classic (Metroid First)

@@ -77,8 +77,24 @@ public class MsuListService(AppInitializationService appInitializationService,
             userOptions.MsuUserOptions.DefaultMsuPath;
         var rootPath = Model.HardwareMode ? "" : GetMsuTypeBasePath(msuType);
         var useAbsolutePath = string.IsNullOrWhiteSpace(rootPath);
+        
+        // Hardware MSUs are more limited in compatibility
+        List<string>? compatibleMsuNames = null;
+        if (Model.HardwareMode)
+        {
+            if (appSettingsService.MsuAppSettings.HardwareCompatibleMsuTypes.TryGetValue(msuType.DisplayName,
+                    out compatibleMsuNames))
+            {
+                compatibleMsuNames.Add(msuType.DisplayName);
+            }
+            else
+            {
+                compatibleMsuNames = [msuType.DisplayName];
+            }
+        }
+        
         var filteredMsus = Model.MsuViewModels
-            .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, msuTypePath) &&
+            .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, msuTypePath, compatibleMsuNames) &&
                         (x.Msu.NumUniqueTracks > x.Msu.MsuType?.RequiredTrackNumbers.Count / 5 || x.Msu.NumUniqueTracks > 10))
             .OrderBy(x => x.MsuName)
             .ToList();

@@ -101,6 +101,11 @@ public class MsuAppSettings
     public bool DisableMessageSender { get; set; }
 
     /// <summary>
+    /// For hardware MSUs, the list of compatible MSU types
+    /// </summary>
+    public Dictionary<string, List<string>> HardwareCompatibleMsuTypes { get; set; } = [];
+
+    /// <summary>
     /// Default directory for misc save data
     /// </summary>
     public string SaveDataDirectory { get; set; } =

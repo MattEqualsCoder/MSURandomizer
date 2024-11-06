@@ -182,9 +182,21 @@ public class Msu
     /// <param name="type">The MSU type being looked for</param>
     /// <param name="path">The path being looked at</param>
     /// <returns>True if matches, false otherwise</returns>
-    public bool MatchesFilter(MsuFilter filter, MsuType type, string? path)
+    public bool MatchesFilter(MsuFilter filter, MsuType type, string? path, List<string>? compatibleMsuTypeNames = null)
     {
-        return MatchesFilterType(filter, type) && MatchesPath(path) && Tracks.Count >= 1;
+        if (MatchesFilterType(filter, type) && MatchesPath(path) && Tracks.Count >= 1)
+        {
+            if (compatibleMsuTypeNames == null || filter == MsuFilter.All)
+            {
+                return true;
+            }
+
+            return compatibleMsuTypeNames.Contains(MsuTypeName);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private bool MatchesFilterType(MsuFilter filter, MsuType type)
