@@ -1,6 +1,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using AvaloniaControls;
 using AvaloniaControls.Controls;
 using AvaloniaControls.Extensions;
 using MSURandomizer.Services;
@@ -30,6 +31,7 @@ public partial class UnknownMsuWindow : ScalableWindow
                         Name = "Test MSU",
                         Creator = "Test MSU Creator",
                         MsuPath = "/home/matt/Documents/Test/test.msu",
+                        AbbreviatedPath = "/home/matt/Documents/Test/test.msu",
                         Tracks = [],
                         TrackCount = 30
                     },
@@ -38,6 +40,7 @@ public partial class UnknownMsuWindow : ScalableWindow
                         Name = "Test MSU",
                         Creator = "Test MSU Creator",
                         MsuPath = "/home/matt/Documents/Test2/test2.msu",
+                        AbbreviatedPath = "...me/matt/Documents/Test2/test2.msu",
                         Tracks = [],
                         TrackCount = 43
                     },
@@ -46,6 +49,7 @@ public partial class UnknownMsuWindow : ScalableWindow
                         Name = "Test MSU",
                         Creator = "Test MSU Creator",
                         MsuPath = "/home/matt/Documents/Test3/test3.msu",
+                        AbbreviatedPath = "...me/matt/Documents/Test3/test3.msu",
                         Tracks = [],
                         TrackCount = 16,
                         IsNotLast = false
@@ -85,5 +89,15 @@ public partial class UnknownMsuWindow : ScalableWindow
         {
             _service?.SaveIgnore();
         }
+    }
+
+    private void OpenButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: string msuPath })
+        {
+            return;
+        }
+
+        CrossPlatformTools.OpenDirectory(msuPath, true);
     }
 }
