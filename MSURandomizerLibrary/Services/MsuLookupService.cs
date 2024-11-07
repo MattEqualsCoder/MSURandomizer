@@ -130,7 +130,10 @@ internal class MsuLookupService : IMsuLookupService
             {
                 var cacheSettings = _msuUserOptions.GetMsuSettings(msuPath);
                 cacheMsu.Settings = cacheSettings;
-                return cacheMsu;
+                if (cacheMsu.MsuType != null || cacheMsu.Settings.IsUserUnknownMsu)
+                {
+                    return cacheMsu;    
+                }
             }
         }
         
