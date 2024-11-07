@@ -6,7 +6,7 @@ namespace MSURandomizerLibrary.Services;
 
 internal class MsuCacheService : IMsuCacheService
 {
-    private const int CurrentCacheVersion = 2;
+    private const int CurrentCacheVersion = 3;
     private readonly IMsuTypeService _msuTypeService;
     private readonly MsuUserOptions _msuUserOptions;
     private readonly ILogger<MsuCacheService> _logger;

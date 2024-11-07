@@ -112,7 +112,7 @@ internal class MsuLookupService : IMsuLookupService
         {
             return null;
         }
-
+        
         var msuDetails = _msuDetailsService.GetMsuDetails(msuPath, out var yamlHash, out var yamlError);
         if (!string.IsNullOrEmpty(yamlError))
         {
@@ -121,6 +121,17 @@ internal class MsuLookupService : IMsuLookupService
         
         var baseName = Path.GetFileName(msuPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var pcmFiles = Directory.EnumerateFiles(directory, $"{baseName}-*.pcm", SearchOption.AllDirectories).ToList();
+        var msuDetailMismatch = false;
+
+        if (msuDetails?.Tracks != null && pcmFiles.Count > 0)
+        {
+            var msuDetailSongCount = msuDetails.Tracks.Values.Sum(x => 1 + (x.Alts?.Count ?? 0)) * 0.75;
+            if (pcmFiles.Count < msuDetailSongCount)
+            {
+                yamlHash = "";
+                msuDetailMismatch = true;
+            }
+        }
 
         // Load the MSU from cache if possible
         if (!ignoreCache)
@@ -130,10 +141,7 @@ internal class MsuLookupService : IMsuLookupService
             {
                 var cacheSettings = _msuUserOptions.GetMsuSettings(msuPath);
                 cacheMsu.Settings = cacheSettings;
-                if (cacheMsu.MsuType != null || cacheMsu.Settings.IsUserUnknownMsu)
-                {
-                    return cacheMsu;    
-                }
+                return cacheMsu;
             }
         }
         
@@ -153,7 +161,7 @@ internal class MsuLookupService : IMsuLookupService
         Msu msu;
         
         // If it's an unknown MSU type, simply load the details as is
-        if (msuType == null)
+        if (msuType == null || msuDetailMismatch)
         {
             msu = LoadUnknownMsu(msuPath, directory, baseName, pcmFiles);
         }
