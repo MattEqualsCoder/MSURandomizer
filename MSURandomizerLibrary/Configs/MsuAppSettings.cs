@@ -106,6 +106,11 @@ public class MsuAppSettings
     public Dictionary<string, List<string>> HardwareCompatibleMsuTypes { get; set; } = [];
 
     /// <summary>
+    /// List of MSU types that are allowed
+    /// </summary>
+    public List<string> MsuTypeFilter { get; set; } = [];
+
+    /// <summary>
     /// Default directory for misc save data
     /// </summary>
     public string SaveDataDirectory { get; set; } =
