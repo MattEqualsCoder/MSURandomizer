@@ -28,7 +28,10 @@ public class MsuLookupServiceTests
         var folder = new FileInfo(msuPath).Directory?.Parent?.FullName;
         
         var service = CreateMsuLookupService(tracks);
-        var msus = service.LookupMsus(folder);
+        var msus = service.LookupMsus(folder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, TestHelpers.TestMsuTypeName }
+        });
         
         Assert.That(service.Msus.Count, Is.EqualTo(2));
         Assert.That(service.Msus.Any(x => x.Name == "test-msu-1"));
@@ -47,7 +50,10 @@ public class MsuLookupServiceTests
         var folder = new FileInfo(msuPath).Directory?.Parent?.FullName;
         
         var service = CreateMsuLookupService(tracks);
-        service.LookupMsus(folder);
+        service.LookupMsus(folder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, TestHelpers.TestMsuTypeName }
+        });
         
         Assert.That(service.Msus.Count, Is.EqualTo(1));
         Assert.That(service.Msus.First().Tracks.Count, Is.EqualTo(5));
@@ -55,7 +61,10 @@ public class MsuLookupServiceTests
         tracks = new List<(int, int)>() { (1, 6) };
         TestHelpers.CreateMsu(tracks, "test-msu-1");
         
-        service.LookupMsus(folder);
+        service.LookupMsus(folder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, TestHelpers.TestMsuTypeName }
+        });
         Assert.That(service.Msus.Count, Is.EqualTo(1));
         Assert.That(service.Msus.First().Tracks.Count, Is.EqualTo(6));
     }
@@ -71,7 +80,10 @@ public class MsuLookupServiceTests
         var folder = new FileInfo(path1).Directory?.Parent?.FullName;
         
         var service = CreateMsuLookupService(tracks);
-        service.LookupMsus(folder);
+        service.LookupMsus(folder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, TestHelpers.TestMsuTypeName }
+        });
         Assert.That(service.Msus.Count, Is.EqualTo(3));
         
         var msus = service.GetMsusByPath(new List<string>() { path1, path2 });
@@ -91,7 +103,10 @@ public class MsuLookupServiceTests
         var folder = new FileInfo(path1).Directory?.Parent?.FullName;
         
         var service = CreateMsuLookupService(tracks);
-        service.LookupMsus(folder);
+        service.LookupMsus(folder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, TestHelpers.TestMsuTypeName }
+        });
         Assert.That(service.Msus.Count, Is.EqualTo(2));
         
         var msu = service.GetMsuByPath(path1);

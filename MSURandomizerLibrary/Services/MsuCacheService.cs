@@ -109,6 +109,15 @@ internal class MsuCacheService : IMsuCacheService
         }
     }
 
+    public void Clear(bool saveCache)
+    {
+        _cache.Data.Clear();
+        if (saveCache)
+        {
+            Save();
+        }
+    }
+
     public void Save()
     {
         if (!_initialized || !_hasUpdated) return;

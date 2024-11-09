@@ -749,7 +749,10 @@ public class MsuSelectorServiceTests
             index++;
         }
         var lookupService = new MsuLookupService(lookupLogger, msuTypeService, msuDetailsService, new MsuAppSettings(), msuCacheService, msuUserOptionsService);
-        lookupService.LookupMsus(folder);
+        lookupService.LookupMsus(folder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, TestHelpers.TestMsuTypeName }
+        });
 
         msus = lookupService.Msus.ToList();
         
