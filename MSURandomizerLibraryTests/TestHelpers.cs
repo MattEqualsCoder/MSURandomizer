@@ -10,6 +10,8 @@ namespace MSURandomizerLibraryTests;
 
 public abstract class TestHelpers
 {
+    public static readonly string TestMsuTypeName = "Test MSU Type";
+    
     public static IMsuAppSettingsService CreateMsuAppSettingsService(MsuAppSettings? settings = null)
     {
         settings ??= new MsuAppSettings();
@@ -58,8 +60,8 @@ public abstract class TestHelpers
 
         var msuType = new MsuType()
         {
-            Name = "Test MSU Type",
-            DisplayName = "Test MSU Type",
+            Name = TestMsuTypeName,
+            DisplayName = TestMsuTypeName,
             RequiredTrackNumbers = trackNumbers.ToHashSet(),
             ValidTrackNumbers = trackNumbers.ToHashSet(),
             Tracks = trackNumbers.Select(x => new MsuTypeTrack()
@@ -190,7 +192,7 @@ public abstract class TestHelpers
     {
         return CreateMsu(GetTracksFromRanges(tracks), msuName, deleteOld, createAlts, specialTracks);
     }
-
+    
     public static IMsuDetailsService CreateMockMsuDetailsService(MsuDetails? returnMsuDetails, Msu? returnMsu)
     {
         var msuDetailsService = new Mock<IMsuDetailsService>();

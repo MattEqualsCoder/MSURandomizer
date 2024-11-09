@@ -137,6 +137,11 @@ public class MsuUserOptions
     /// Directory roms should be copied to before randomizing
     /// </summary>
     public string? CopyRomDirectory { get; set; }
+
+    /// <summary>
+    /// Dictionary of all MSU directories and the MSU type associated with them
+    /// </summary>
+    public Dictionary<string, string> MsuDirectories { get; set; } = new();
     
     /// <summary>
     /// Specific directories to load for specific MSU types
@@ -159,7 +164,6 @@ public class MsuUserOptions
     /// <returns></returns>
     public bool HasMsuFolder()
     {
-        return (!string.IsNullOrEmpty(DefaultMsuPath) && Directory.Exists(DefaultMsuPath)) ||
-               MsuTypePaths.Values.Any(x => !string.IsNullOrEmpty(x) && Directory.Exists(x));
+        return MsuDirectories.Count > 0;
     }
 }

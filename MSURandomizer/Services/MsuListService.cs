@@ -72,11 +72,6 @@ public class MsuListService(AppInitializationService appInitializationService,
     {
         Model.MsuTypeName = msuType.DisplayName;
         Model.MsuType = msuType;
-        var msuTypePath = Model.HardwareMode ? "" :
-            userOptions.MsuUserOptions.MsuTypePaths.TryGetValue(msuType, out var path) ? path :
-            userOptions.MsuUserOptions.DefaultMsuPath;
-        var rootPath = Model.HardwareMode ? "" : GetMsuTypeBasePath(msuType);
-        var useAbsolutePath = string.IsNullOrWhiteSpace(rootPath);
         
         // Hardware MSUs are more limited in compatibility
         List<string>? compatibleMsuNames = null;
@@ -94,15 +89,10 @@ public class MsuListService(AppInitializationService appInitializationService,
         }
         
         var filteredMsus = Model.MsuViewModels
-            .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, msuTypePath, compatibleMsuNames) &&
+            .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, compatibleMsuNames) &&
                         (x.Msu.NumUniqueTracks > x.Msu.MsuType?.RequiredTrackNumbers.Count / 5 || x.Msu.NumUniqueTracks > 10))
             .OrderBy(x => x.MsuName)
             .ToList();
-        foreach (var filteredMsu in filteredMsus)
-        {
-            filteredMsu.DisplayPath = useAbsolutePath ? filteredMsu.MsuPath : Path.GetRelativePath(rootPath!, filteredMsu.MsuPath);
-        }
-
         Model.FilteredMsus = filteredMsus;
         Model.SelectedMsus = Model.FilteredMsus
             .Where(x => Model.SelectedMsus.Select(vm => vm.MsuPath).Contains(x.MsuPath)).ToList();
@@ -188,20 +178,5 @@ public class MsuListService(AppInitializationService appInitializationService,
         {
             OnDisplayUnknownMsuWindowRequest?.Invoke(this, EventArgs.Empty);    
         }
-    }
-
-    private string? GetMsuTypeBasePath(MsuType? msuType)
-    {
-        if (msuType == null)
-        {
-            return userOptions.MsuUserOptions.DefaultMsuPath;
-        }
-        
-        if (userOptions.MsuUserOptions.MsuTypeNamePaths.TryGetValue(msuType.DisplayName, out string? path))
-        {
-            return path;
-        }
-
-        return userOptions.MsuUserOptions.DefaultMsuPath;
     }
 }

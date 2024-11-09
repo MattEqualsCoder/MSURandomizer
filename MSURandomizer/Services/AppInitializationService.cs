@@ -31,7 +31,7 @@ public class AppInitializationService(
         msuRandomizerInitializationService.Initialize(new MsuRandomizerInitializationRequest()
         {
             InitializeAppSettings = true,
-            InitializeMsuTypes = false,
+            InitializeMsuTypes = true,
             InitializeCache = false,
             InitializeUserOptions = true,
             LookupMsus = false,
@@ -78,7 +78,7 @@ public class AppInitializationService(
                 InitializeAppSettings = false,
                 InitializeMsuTypes = true,
                 InitializeCache = true,
-                InitializeUserOptions = true,
+                InitializeUserOptions = false,
                 LookupMsus = true
             });
             msuGameService.InstallLuaScripts();

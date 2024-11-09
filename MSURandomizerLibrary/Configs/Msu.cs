@@ -116,6 +116,19 @@ public class Msu
     public ICollection<Track> Tracks { get; set; } = new List<Track>();
 
     /// <summary>
+    /// The MSU Type directory this was found under
+    /// </summary>
+    public string ParentMsuTypeDirectory { get; set; } = "";
+
+    /// <summary>
+    /// The relative path to the MSU from its parent msu type directory
+    /// </summary>
+    [JsonIgnore]
+    public string RelativePath => !string.IsNullOrEmpty(ParentMsuTypeDirectory)
+        ? System.IO.Path.GetRelativePath(ParentMsuTypeDirectory, Path)
+        : Path; 
+
+    /// <summary>
     /// If this unknown MSU should be ignored
     /// </summary>
     [JsonIgnore]
@@ -180,12 +193,11 @@ public class Msu
     /// </summary>
     /// <param name="filter">How closely this MSU needs to match the MSU type</param>
     /// <param name="type">The MSU type being looked for</param>
-    /// <param name="path">The path being looked at</param>
     /// <param name="compatibleMsuTypeNames">Optional list of MSU type names to use for filtering, unless the FilterType All is selected</param>
     /// <returns>True if matches, false otherwise</returns>
-    public bool MatchesFilter(MsuFilter filter, MsuType type, string? path, List<string>? compatibleMsuTypeNames = null)
+    public bool MatchesFilter(MsuFilter filter, MsuType type, List<string>? compatibleMsuTypeNames = null)
     {
-        if (MatchesFilterType(filter, type) && MatchesPath(path) && Tracks.Count >= 1)
+        if (MatchesFilterType(filter, type) && Tracks.Count >= 1)
         {
             if (compatibleMsuTypeNames == null || filter == MsuFilter.All)
             {
@@ -206,11 +218,6 @@ public class Msu
                (filter == MsuFilter.Favorite && Settings.IsFavorite) ||
                (filter == MsuFilter.Compatible && SelectedMsuType?.IsCompatibleWith(type) == true) ||
                (filter == MsuFilter.Exact && SelectedMsuType?.IsExactMatchWith(type) == true);
-    }
-
-    private bool MatchesPath(string? path)
-    {
-        return string.IsNullOrEmpty(path) || Path.StartsWith(path);
     }
 
     /// <summary>

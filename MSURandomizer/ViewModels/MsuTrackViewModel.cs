@@ -21,6 +21,15 @@ public class MsuTrackViewModel : BaseViewModel
             .Select(x => new MsuSongViewModel(x)).ToList();
         Display = Songs.Count != 0;
     }
+    
+    public MsuTrackViewModel(Track msuTrack, ICollection<Track> songs)
+    {
+        TrackNumber = msuTrack.Number;
+        TrackName = msuTrack.TrackName;
+        Songs = songs.Where(x => x.Number == msuTrack.Number && !x.IsCopied).OrderBy(x => x.IsAlt)
+            .Select(x => new MsuSongViewModel(x)).ToList();
+        Display = Songs.Count != 0;
+    }
 
     public string TrackDisplay => $"{TrackNumber} - {TrackName}";
     

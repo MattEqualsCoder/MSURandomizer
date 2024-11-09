@@ -14,6 +14,7 @@ internal class MsuDetailsService : IMsuDetailsService
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
     private readonly MsuUserOptions _msuUserOptions;
+    private readonly Dictionary<string, MsuDetails> _loadedDetails = [];
     
     public MsuDetailsService(ILogger<MsuDetailsService> logger, IMsuUserOptionsService msuUserOptionsService)
     {
@@ -76,12 +77,21 @@ internal class MsuDetailsService : IMsuDetailsService
 
     public MsuDetails? GetMsuDetailsForPath(string msuPath, MsuType? msuType)
     {
-        var yamlPath = GetMatchingYamlFile(msuPath, msuType);
-        if (yamlPath == null)
+        var msuFolder = new FileInfo(msuPath).Directory?.Name;
+        var msuFileName = Path.GetFileNameWithoutExtension(msuPath);
+
+        foreach (var (yamlPath, msuDetails) in _loadedDetails)
         {
-            return null;
+            var yamlFolder = new FileInfo(yamlPath).Directory?.Name;
+            var yamlFileName = Path.GetFileNameWithoutExtension(yamlPath);
+
+            if (msuFolder == yamlFolder && msuFileName == yamlFileName)
+            {
+                return msuDetails;
+            }
         }
-        return InternalGetMsuDetails(yamlPath, out var yamlHash, out var error);
+        
+        return null;
     }
 
     public MsuDetails? GetMsuDetails(string msuPath, out string yamlHash, out string? error)
@@ -222,7 +232,9 @@ internal class MsuDetailsService : IMsuDetailsService
             {
                 try
                 {
-                    return _deserializer.Deserialize<MsuDetails>(yamlText);
+                    var details = _deserializer.Deserialize<MsuDetails>(yamlText);
+                    _loadedDetails[yamlPath] = details;
+                    return details;
                 }
                 catch (Exception e)
                 {
@@ -402,40 +414,5 @@ internal class MsuDetailsService : IMsuDetailsService
             error = $"Could not load YAML file for converting: {e.Message}";
             return null;
         }
-    }
-
-    private string? GetMatchingYamlFile(string path, MsuType? msuType = null)
-    {
-        var msuFolder = new FileInfo(path).Directory?.Name;
-        var msuFileName = Path.GetFileNameWithoutExtension(path);
-        
-        if (Directory.Exists(_msuUserOptions.DefaultMsuPath))
-        {
-            foreach (var ymlFilePath in Directory.EnumerateFiles(_msuUserOptions.DefaultMsuPath, $"{msuFileName}.yml", SearchOption.AllDirectories))
-            {
-                if (new FileInfo(ymlFilePath).Directory?.Name == msuFolder)
-                {
-                    return ymlFilePath;
-                }
-            }
-        }
-        
-        if (msuType != null && _msuUserOptions.MsuTypePaths.TryGetValue(msuType, out var msuTypeDirectory))
-        {
-            if (!Directory.Exists(msuTypeDirectory))
-            {
-                return null;
-            }
-            
-            foreach (var ymlFilePath in Directory.EnumerateFiles(msuTypeDirectory, $"{msuFileName}.yml", SearchOption.AllDirectories))
-            {
-                if (new FileInfo(ymlFilePath).Directory?.Name == msuFolder)
-                {
-                    return ymlFilePath;
-                }
-            }  
-        }
-
-        return null;
     }
 }

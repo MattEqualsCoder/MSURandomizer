@@ -6,7 +6,7 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <Version>3.0.0-rc.3</Version>
+        <Version>3.0.0-rc.3a</Version>
         <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>MattEqualsCoder.MSURandomizer.Avalonia</PackageId>

@@ -53,9 +53,9 @@ public class MsuUserOptionsServiceTests
         Assert.That(options.Name, Is.Not.EqualTo(TestOptionName));
         
         options.Name = TestOptionName;
-        options.MsuTypeNamePaths = new Dictionary<string, string>()
+        options.MsuDirectories = new Dictionary<string, string>()
         {
-            { testMsuType.Name, TestMsuTypeValue }
+            { TestMsuTypeValue, testMsuType.Name }
         };
         msuUserOptionsService.Save();
         
@@ -64,8 +64,8 @@ public class MsuUserOptionsServiceTests
         
         msuUserOptionsService.Initialize(file.FullName);
         Assert.That(msuUserOptionsService.MsuUserOptions.Name, Is.EqualTo(TestOptionName), "Reloaded MSU User Options name is invalid");
-        Assert.That(msuUserOptionsService.MsuUserOptions.MsuTypePaths.Keys.Contains(testMsuType), Is.True);
-        Assert.That(msuUserOptionsService.MsuUserOptions.MsuTypePaths[testMsuType], Is.EqualTo(TestMsuTypeValue));
+        Assert.That(msuUserOptionsService.MsuUserOptions.MsuDirectories.Keys.Contains(TestMsuTypeValue), Is.True);
+        Assert.That(msuUserOptionsService.MsuUserOptions.MsuDirectories[TestMsuTypeValue], Is.EqualTo(testMsuType.Name ));
         file.Delete();
     }
     

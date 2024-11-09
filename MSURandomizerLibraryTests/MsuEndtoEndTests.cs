@@ -43,7 +43,10 @@ public class MsuEndtoEndTests : IDisposable
         TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
         CreateMsus(msuType!, msuCount, altCount, addSongInfo);
 
-        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, msuType.DisplayName }
+        });
         VerifyMsus(msus, msuCount, altCount, addSongInfo);
 
         var response = _msuSelectorService.CreateShuffledMsu(new MsuSelectorRequest()
@@ -69,7 +72,10 @@ public class MsuEndtoEndTests : IDisposable
         TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
         CreateMsus(msuType!, msuCount, altCount, addSongInfo);
 
-        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, msuType.DisplayName }
+        });
         VerifyMsus(msus, msuCount, altCount, addSongInfo);
 
         var response = _msuSelectorService.CreateShuffledMsu(new MsuSelectorRequest()
@@ -81,7 +87,7 @@ public class MsuEndtoEndTests : IDisposable
 
         VerifyResponse(response, msuType!, addSongInfo, true, false, false, false);
     }
-    
+
     [Test]
     public void AssignMsuTest()
     {
@@ -91,12 +97,17 @@ public class MsuEndtoEndTests : IDisposable
         var msuCount = 1;
         var altCount = 2;
         var addSongInfo = true;
-        
+
         TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
         CreateMsus(msuType!, msuCount, altCount, addSongInfo);
 
-        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
-        VerifyMsus(msus, msuCount, altCount, addSongInfo);
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder,
+            new Dictionary<string, string>()
+            {
+                { TestHelpers.MsuTestFolder, msuType.DisplayName }
+            });
+
+    VerifyMsus(msus, msuCount, altCount, addSongInfo);
 
         var response = _msuSelectorService.AssignMsu(new MsuSelectorRequest()
         {
@@ -121,7 +132,10 @@ public class MsuEndtoEndTests : IDisposable
         TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
         CreateMsus(msuType!, msuCount, altCount, addSongInfo);
 
-        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, msuType.DisplayName }
+        });
         VerifyMsus(msus, msuCount, altCount, addSongInfo);
 
         var response = _msuSelectorService.PickRandomMsu(new MsuSelectorRequest()
@@ -147,7 +161,10 @@ public class MsuEndtoEndTests : IDisposable
         TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
         CreateMsus(msuType!, msuCount, altCount, addSongInfo);
 
-        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, msuType.DisplayName }
+        });
         VerifyMsus(msus, msuCount, altCount, addSongInfo);
 
         var response = _msuSelectorService.SaveMsu(new MsuSelectorRequest()

@@ -25,10 +25,18 @@ public class MsuDetailsService(
         mapper.Map(_parentModel.Msu.Settings, Model);
         _originalMsuTypeName = Model.MsuTypeName;
         Model.Msu = _parentModel.Msu;
-        Model.Tracks =
-            _parentModel.Msu.MsuType?.Tracks.OrderBy(x => x.Number)
-                .Select(t => new MsuTrackViewModel(t, _parentModel.Msu.Tracks)).ToList() ??
-            [];
+
+        if (_parentModel.Msu.MsuType != null)
+        {
+            Model.Tracks = _parentModel.Msu.MsuType.Tracks.OrderBy(x => x.Number)
+                .Select(t => new MsuTrackViewModel(t, _parentModel.Msu.Tracks)).ToList();
+        }
+        else
+        {
+            Model.Tracks = _parentModel.Msu.Tracks.OrderBy(x => x.Number)
+                .Select(t => new MsuTrackViewModel(t, _parentModel.Msu.Tracks)).ToList();
+        }
+        
         Model.TrackCount = Model.Tracks.Count;
         Model.MsuTypeNames = [""];
         Model.MsuTypeNames.AddRange(msuTypeService.MsuTypes.Select(x => x.DisplayName).OrderBy(x => x));

@@ -31,7 +31,7 @@ internal class MsuLookupService : IMsuLookupService
 
     public IReadOnlyCollection<Msu> LookupMsus()
     {
-        return LookupMsus(_msuUserOptions.DefaultMsuPath, _msuUserOptions.MsuTypePaths);
+        return LookupMsus(_msuUserOptions.DefaultMsuPath, _msuUserOptions.MsuDirectories);
     }
 
     public void RefreshMsuDisplay()
@@ -39,13 +39,15 @@ internal class MsuLookupService : IMsuLookupService
         OnMsuLookupComplete?.Invoke(this, new MsuListEventArgs(_msus, _errors));
     }
 
-    public IReadOnlyCollection<Msu> LookupMsus(string? defaultDirectory, Dictionary<MsuType, string>? msuTypeDirectories = null, bool ignoreCache = false)
+    public IReadOnlyCollection<Msu> LookupMsus(string? defaultDirectory, Dictionary<string, string>? msuDirectories = null, bool ignoreCache = false)
     {
         if (!_msuTypeService.MsuTypes.Any())
         {
             throw new InvalidOperationException(
                 "No valid MSU Types found. Make sure to call IMsuTypeService.GetMsuTypes first.");
         }
+
+        msuDirectories ??= _msuUserOptions.MsuDirectories;
 
         _logger.LogInformation("MSU lookup started");
         _errors.Clear();
@@ -54,13 +56,29 @@ internal class MsuLookupService : IMsuLookupService
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        var msusToLoad = GetMsusToLoad(defaultDirectory, msuTypeDirectories);
+        if (!string.IsNullOrEmpty(defaultDirectory) && msuDirectories?.Count == 0)
+        {
+            msuDirectories = new Dictionary<string, string>()
+            {
+                { defaultDirectory, "" }
+            };
+        }
+
+        if (msuDirectories == null || msuDirectories.Count == 0)
+        {
+            _msus = [];
+            Status = MsuLoadStatus.Loaded;
+            OnMsuLookupComplete?.Invoke(this, new(_msus, _errors));
+            return [];
+        }
+
+        var msusToLoad = GetMsusToLoad(msuDirectories!);
 
         var msus = new ConcurrentBag<Msu>();
 
         Parallel.ForEach(msusToLoad, new ParallelOptions() { MaxDegreeOfParallelism = 5 }, loadInfo =>
         {
-            var msu = LoadMsu(loadInfo.Item1, loadInfo.Item2, false, ignoreCache);
+            var msu = LoadMsu(loadInfo.msuPath, loadInfo.msuType, false, ignoreCache, parentDirectory: loadInfo.msuTypeDirectory);
             if (msu != null)
             {
                 msus.Add(msu);
@@ -77,34 +95,26 @@ internal class MsuLookupService : IMsuLookupService
         return _msus;
     }
 
-    private List<(string, MsuType?)> GetMsusToLoad(string? defaultDirectory, Dictionary<MsuType, string>? msuTypeDirectories = null)
+    private List<(string msuPath, MsuType? msuType, string msuTypeDirectory)> GetMsusToLoad(Dictionary<string, string?> msuDirectories)
     {
-        var msuLookups = new List<(string, MsuType?)>();
+        var msuLookups = new List<(string, MsuType?, string)>();
         
-        if (Directory.Exists(defaultDirectory))
+        foreach (var msuDirectory in msuDirectories)
         {
-            foreach (var msuFile in Directory.EnumerateFiles(defaultDirectory, "*.msu", SearchOption.AllDirectories))
+            if (!Directory.Exists(msuDirectory.Key)) continue;
+            foreach (var msuFile in Directory.EnumerateFiles(msuDirectory.Key, "*.msu", SearchOption.AllDirectories))
             {
-                msuLookups.Add((msuFile, null));
-            }
-        }
-        
-        if (msuTypeDirectories != null)
-        {
-            foreach (var msuTypeDirectory in msuTypeDirectories)
-            {
-                if (!Directory.Exists(msuTypeDirectory.Value)) continue;
-                foreach (var msuFile in Directory.EnumerateFiles(msuTypeDirectory.Value, "*.msu", SearchOption.AllDirectories))
-                {
-                    msuLookups.Add((msuFile, msuTypeDirectory.Key));
-                }  
-            }
+                var msuType = _msuTypeService.GetMsuType(msuDirectory.Value);
+                msuLookups.Add((msuFile, msuType, msuDirectory.Key));
+            }  
         }
 
         return msuLookups;
     }
 
-    public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null, bool saveToCache = true, bool ignoreCache = false, bool forceLoad = false)
+    private Dictionary<string, string> _yamlFiles = [];
+    
+    public Msu? LoadMsu(string msuPath, MsuType? msuTypeFilter = null, bool saveToCache = true, bool ignoreCache = false, bool forceLoad = false, string parentDirectory = "")
     {
         var directory = new FileInfo(msuPath).Directory!.FullName;
 
@@ -112,7 +122,7 @@ internal class MsuLookupService : IMsuLookupService
         {
             return null;
         }
-
+        
         var msuDetails = _msuDetailsService.GetMsuDetails(msuPath, out var yamlHash, out var yamlError);
         if (!string.IsNullOrEmpty(yamlError))
         {
@@ -121,6 +131,17 @@ internal class MsuLookupService : IMsuLookupService
         
         var baseName = Path.GetFileName(msuPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var pcmFiles = Directory.EnumerateFiles(directory, $"{baseName}-*.pcm", SearchOption.AllDirectories).ToList();
+        var msuDetailMismatch = false;
+
+        if (msuDetails?.Tracks != null && pcmFiles.Count > 0)
+        {
+            var msuDetailSongCount = msuDetails.Tracks.Values.Sum(x => 1 + (x.Alts?.Count ?? 0)) * 0.75;
+            if (pcmFiles.Count < msuDetailSongCount)
+            {
+                yamlHash = "";
+                msuDetailMismatch = true;
+            }
+        }
 
         // Load the MSU from cache if possible
         if (!ignoreCache)
@@ -150,7 +171,7 @@ internal class MsuLookupService : IMsuLookupService
         Msu msu;
         
         // If it's an unknown MSU type, simply load the details as is
-        if (msuType == null)
+        if (msuType == null || msuDetailMismatch)
         {
             msu = LoadUnknownMsu(msuPath, directory, baseName, pcmFiles);
         }
@@ -171,6 +192,17 @@ internal class MsuLookupService : IMsuLookupService
         msu.Artist = msuDetails?.Artist;
         msu.Album = msuDetails?.Album;
         msu.Url = msuDetails?.Url;
+        
+        if (string.IsNullOrEmpty(parentDirectory))
+        {
+            var directoryInfo = new DirectoryInfo(directory);
+            msu.ParentMsuTypeDirectory = directoryInfo.Parent?.FullName ?? directory;
+        }
+        else
+        {
+            msu.ParentMsuTypeDirectory = parentDirectory;
+        }
+        
         
         _msuCacheService.Put(msu, yamlHash, pcmFiles, saveToCache);
 
@@ -534,7 +566,7 @@ internal class MsuLookupService : IMsuLookupService
         _errors.Clear();
         
         // Reload the MSU
-        var newMsu = LoadMsu(msu.Path);
+        var newMsu = LoadMsu(msu.Path, parentDirectory: msu.ParentMsuTypeDirectory);
         if (newMsu == null)
         {
             _logger.LogInformation("Reloaded MSU for Path {Path} returned null", msu.Path);
