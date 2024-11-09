@@ -64,6 +64,11 @@ internal class MsuMessageReceiver(ILogger<MsuMessageReceiver> logger) : IMsuMess
 
         if (!string.IsNullOrEmpty(url))
         {
+            var directory = Path.GetDirectoryName(Shared.GrpcUrlFile)!;
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
             File.WriteAllText(Shared.GrpcUrlFile, url);
             logger.LogInformation("Writing Grpc url {Url} to {Path}", url, Shared.GrpcUrlFile);
         }
