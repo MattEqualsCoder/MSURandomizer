@@ -212,6 +212,9 @@ public class Msu
         }
     }
 
+    [JsonIgnore]
+    public bool HasSufficientTracks => NumUniqueTracks > MsuType?.RequiredTrackNumbers.Count / 5 || NumUniqueTracks > 10;
+
     private bool MatchesFilterType(MsuFilter filter, MsuType type)
     {
         return filter == MsuFilter.All ||

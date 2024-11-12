@@ -89,8 +89,7 @@ public class MsuListService(AppInitializationService appInitializationService,
         }
         
         var filteredMsus = Model.MsuViewModels
-            .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, compatibleMsuNames) &&
-                        (x.Msu.NumUniqueTracks > x.Msu.MsuType?.RequiredTrackNumbers.Count / 5 || x.Msu.NumUniqueTracks > 10))
+            .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, compatibleMsuNames) && x.Msu.HasSufficientTracks)
             .OrderBy(x => x.MsuName)
             .ToList();
         Model.FilteredMsus = filteredMsus;

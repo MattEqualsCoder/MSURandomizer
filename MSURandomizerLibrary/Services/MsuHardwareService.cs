@@ -41,6 +41,7 @@ internal class MsuHardwareService(
                 .ContinueWith(tsk => tsk.Exception == default, CancellationToken.None);
         }
 
+        response = response?.Where(x => x.HasSufficientTracks).ToList();
         _hardwareMsuList = response?.ToDictionary(x => x.Path, x => x) ?? [];
         
         if (response?.Count > 0)
