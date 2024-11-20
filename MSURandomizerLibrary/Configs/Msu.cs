@@ -212,6 +212,9 @@ public class Msu
         }
     }
 
+    /// <summary>
+    /// If the MSU has enough to tracks to be displayed (>= 20% of required tracks or > 10 tracks)
+    /// </summary>
     [JsonIgnore]
     public bool HasSufficientTracks => NumUniqueTracks > MsuType?.RequiredTrackNumbers.Count / 5 || NumUniqueTracks > 10;
 
