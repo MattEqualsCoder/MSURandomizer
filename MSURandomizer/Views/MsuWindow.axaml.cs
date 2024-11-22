@@ -81,7 +81,7 @@ public partial class MsuWindow : RestorableWindow
             ITaskService.Run(async () =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(.5));
-                Dispatcher.UIThread.InvokeAsync(() =>
+                _ = Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     var settingsWindow = new SettingsWindow();
                     settingsWindow.ShowDialog(this);
