@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -77,8 +78,15 @@ public partial class MsuWindow : RestorableWindow
         _service?.FinishInitialization();
         if (_model is { HasMsuFolder: false, MsuWindowDisplayOptionsButton: true })
         {
-            var settingsWindow = new SettingsWindow();
-            settingsWindow.ShowDialog(this);
+            ITaskService.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(.5));
+                Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    var settingsWindow = new SettingsWindow();
+                    settingsWindow.ShowDialog(this);
+                });
+            });
         }
     }
 
