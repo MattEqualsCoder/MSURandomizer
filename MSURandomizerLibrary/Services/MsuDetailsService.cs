@@ -339,7 +339,8 @@ internal class MsuDetailsService : IMsuDetailsService
                 )
                 {
                     MsuName = trackInfo.Value.MsuName,
-                    MsuCreator = trackInfo.Value.MsuAuthor
+                    MsuCreator = trackInfo.Value.MsuAuthor,
+                    IsCopyrightSafe = track.IsCopyrightSafe,
                 });
             }
             // If there are alt tracks, we need to determine which file is which in case they've been swapped
@@ -382,7 +383,8 @@ internal class MsuDetailsService : IMsuDetailsService
                     )
                     {
                         MsuName = trackInfo.Value.MsuName,
-                        MsuCreator = trackInfo.Value.MsuAuthor
+                        MsuCreator = trackInfo.Value.MsuAuthor,
+                        IsCopyrightSafe = track.IsCopyrightSafe,
                     });
                 }
             }

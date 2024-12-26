@@ -7,31 +7,21 @@ using SnesConnectorLibrary.Responses;
 
 namespace MSURandomizerLibrary.Services;
 
-internal class MsuLookupService : IMsuLookupService
+internal class MsuLookupService(
+    ILogger<MsuLookupService> logger,
+    IMsuTypeService msuTypeService,
+    IMsuDetailsService msuDetailsService,
+    MsuAppSettings msuAppSettings,
+    IMsuCacheService msuCacheService,
+    IMsuUserOptionsService msuUserOptionsService) : IMsuLookupService
 {
-    private readonly ILogger<MsuLookupService> _logger;
-    private readonly IMsuTypeService _msuTypeService;
-    private readonly IMsuUserOptionsService _msuUserOptionsService;
-    private readonly IMsuDetailsService _msuDetailsService;
-    private readonly MsuAppSettings _msuAppSettings;
-    private readonly IMsuCacheService _msuCacheService;
     private readonly Dictionary<string, string> _errors = new();
     private IReadOnlyCollection<Msu> _msus = new List<Msu>();
-    private MsuUserOptions _msuUserOptions => _msuUserOptionsService.MsuUserOptions;
-
-    public MsuLookupService(ILogger<MsuLookupService> logger, IMsuTypeService msuTypeService, IMsuDetailsService msuDetailsService, MsuAppSettings msuAppSettings, IMsuCacheService msuCacheService, IMsuUserOptionsService msuUserOptionsService)
-    {
-        _logger = logger;
-        _msuTypeService = msuTypeService;
-        _msuDetailsService = msuDetailsService;
-        _msuAppSettings = msuAppSettings;
-        _msuCacheService = msuCacheService;
-        _msuUserOptionsService = msuUserOptionsService;
-    }
+    private MsuUserOptions MsuUserOptions => msuUserOptionsService.MsuUserOptions;
 
     public IReadOnlyCollection<Msu> LookupMsus()
     {
-        return LookupMsus(_msuUserOptions.DefaultMsuPath, _msuUserOptions.MsuDirectories);
+        return LookupMsus(MsuUserOptions.DefaultMsuPath, MsuUserOptions.MsuDirectories);
     }
 
     public void RefreshMsuDisplay()
@@ -41,15 +31,15 @@ internal class MsuLookupService : IMsuLookupService
 
     public IReadOnlyCollection<Msu> LookupMsus(string? defaultDirectory, Dictionary<string, string>? msuDirectories = null, bool ignoreCache = false)
     {
-        if (!_msuTypeService.MsuTypes.Any())
+        if (!msuTypeService.MsuTypes.Any())
         {
             throw new InvalidOperationException(
                 "No valid MSU Types found. Make sure to call IMsuTypeService.GetMsuTypes first.");
         }
 
-        msuDirectories ??= _msuUserOptions.MsuDirectories;
+        msuDirectories ??= MsuUserOptions.MsuDirectories;
 
-        _logger.LogInformation("MSU lookup started");
+        logger.LogInformation("MSU lookup started");
         _errors.Clear();
         Status = MsuLoadStatus.Loading;
         OnMsuLookupStarted?.Invoke(this, EventArgs.Empty);
@@ -86,10 +76,10 @@ internal class MsuLookupService : IMsuLookupService
         });
 
         _msus = msus.ToList();
-        _msuCacheService.Save();
+        msuCacheService.Save();
         
         stopwatch.Stop();
-        _logger.LogInformation("MSU lookup complete in {Seconds} seconds (found {Count} MSUs)", stopwatch.Elapsed.TotalSeconds, _msus.Count);
+        logger.LogInformation("MSU lookup complete in {Seconds} seconds (found {Count} MSUs)", stopwatch.Elapsed.TotalSeconds, _msus.Count);
         Status = MsuLoadStatus.Loaded;
         OnMsuLookupComplete?.Invoke(this, new(_msus, _errors));
         return _msus;
@@ -104,7 +94,7 @@ internal class MsuLookupService : IMsuLookupService
             if (!Directory.Exists(msuDirectory.Key)) continue;
             foreach (var msuFile in Directory.EnumerateFiles(msuDirectory.Key, "*.msu", SearchOption.AllDirectories))
             {
-                var msuType = _msuTypeService.GetMsuType(msuDirectory.Value);
+                var msuType = msuTypeService.GetMsuType(msuDirectory.Value);
                 msuLookups.Add((msuFile, msuType, msuDirectory.Key));
             }  
         }
@@ -123,7 +113,7 @@ internal class MsuLookupService : IMsuLookupService
             return null;
         }
         
-        var msuDetails = _msuDetailsService.GetMsuDetails(msuPath, out var yamlHash, out var yamlError);
+        var msuDetails = msuDetailsService.GetMsuDetails(msuPath, out var yamlHash, out var yamlError);
         if (!string.IsNullOrEmpty(yamlError))
         {
             _errors[msuPath] = yamlError;
@@ -146,27 +136,27 @@ internal class MsuLookupService : IMsuLookupService
         // Load the MSU from cache if possible
         if (!ignoreCache)
         {
-            var cacheMsu = _msuCacheService.Get(msuPath, yamlHash, pcmFiles);
+            var cacheMsu = msuCacheService.Get(msuPath, yamlHash, pcmFiles);
             if (cacheMsu != null)
             {
-                var cacheSettings = _msuUserOptions.GetMsuSettings(msuPath);
-                cacheMsu.Settings = cacheSettings;
+                var cacheSettings = MsuUserOptions.GetMsuSettings(msuPath);
+                ApplyMsuSettings(cacheMsu, cacheSettings);
                 return cacheMsu;
             }
         }
         
-        var msuSettings = _msuUserOptions.GetMsuSettings(msuPath);
+        var msuSettings = MsuUserOptions.GetMsuSettings(msuPath);
         
-        msuSettings.MsuType = _msuTypeService.GetMsuType(msuSettings.MsuTypeName);
+        msuSettings.MsuType = msuTypeService.GetMsuType(msuSettings.MsuTypeName);
 
         // Try to load the MSU type specified by the MSU details if possible, otherwise try to auto detect
         var originalMsuType = !string.IsNullOrEmpty(msuDetails?.MsuType) 
-            ? (_msuTypeService.GetMsuType(msuDetails.MsuType) ?? GetMsuType(baseName, pcmFiles, msuTypeFilter))
+            ? (msuTypeService.GetMsuType(msuDetails.MsuType) ?? GetMsuType(baseName, pcmFiles, msuTypeFilter))
             : GetMsuType(baseName, pcmFiles, msuTypeFilter);
         
         var msuType = msuSettings.MsuType ?? originalMsuType;
         
-        _logger.LogInformation("MSU {Name} found as MSU Type {Type}", baseName, msuType?.DisplayName ?? "Unknown");
+        logger.LogInformation("MSU {Name} found as MSU Type {Type}", baseName, msuType?.DisplayName ?? "Unknown");
 
         Msu msu;
         
@@ -186,7 +176,8 @@ internal class MsuLookupService : IMsuLookupService
             msu = LoadBasicMsu(msuPath, directory, baseName, msuType, pcmFiles, msuDetails);
         }
 
-        msu.Settings = msuSettings;
+        ApplyMsuSettings(msu, msuSettings);
+
         msu.MsuType = originalMsuType;
         msu.Version = msuDetails?.PackVersion;
         msu.Artist = msuDetails?.Artist;
@@ -203,22 +194,21 @@ internal class MsuLookupService : IMsuLookupService
             msu.ParentMsuTypeDirectory = parentDirectory;
         }
         
-        
-        _msuCacheService.Put(msu, yamlHash, pcmFiles, saveToCache);
+        msuCacheService.Put(msu, yamlHash, pcmFiles, saveToCache);
 
         return msu;
     }
 
     public Msu LoadHardwareMsu(SnesFile snesMsu, IEnumerable<SnesFile> hardwarePcmFiles)
     {
-        _logger.LogInformation("{MsuFilePath} msu file path found", snesMsu.FullPath);
+        logger.LogInformation("{MsuFilePath} msu file path found", snesMsu.FullPath);
         
         var pcmFilePaths = hardwarePcmFiles.Select(x => x.FullPath).ToList();
         var baseName = Path.GetFileName(snesMsu.FullPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
         var msuType = GetMsuType(baseName, pcmFilePaths);
         
-        var msuSettings = _msuUserOptions.GetMsuSettings(snesMsu.FullPath);
-        msuSettings.MsuType = _msuTypeService.GetMsuType(msuSettings.MsuTypeName);
+        var msuSettings = MsuUserOptions.GetMsuSettings(snesMsu.FullPath);
+        msuSettings.MsuType = msuTypeService.GetMsuType(msuSettings.MsuTypeName);
         if (msuSettings.MsuType != null)
         {
             msuType = msuSettings.MsuType;
@@ -237,7 +227,7 @@ internal class MsuLookupService : IMsuLookupService
 
         if (fullMsu != null && fullMsu.ValidTracks.Count >= pcmFilePaths.Count)
         {
-            _logger.LogInformation("MSU {Name} found for {Path}", fullMsu.DisplayName, snesMsu.FullPath);
+            logger.LogInformation("MSU {Name} found for {Path}", fullMsu.DisplayName, snesMsu.FullPath);
             return new Msu(
                 type: fullMsu.MsuType, 
                 name: fullMsu.DisplayName, 
@@ -254,16 +244,16 @@ internal class MsuLookupService : IMsuLookupService
         }
         else
         {
-            var msuDetails = _msuDetailsService.GetMsuDetailsForPath(snesMsu.FullPath, msuType);
+            var msuDetails = msuDetailsService.GetMsuDetailsForPath(snesMsu.FullPath, msuType);
             
             if (msuDetails != null)
             {
-                var msuDetailsType = _msuTypeService.GetMsuType(msuDetails.MsuType) ?? msuType;
+                var msuDetailsType = msuTypeService.GetMsuType(msuDetails.MsuType) ?? msuType;
 
                 if (msuDetailsType != null)
                 {
-                    _logger.LogInformation("Yaml Details found for {Path}", snesMsu.FullPath);
-                    var msu = _msuDetailsService.ConvertToMsu(
+                    logger.LogInformation("Yaml Details found for {Path}", snesMsu.FullPath);
+                    var msu = msuDetailsService.ConvertToMsu(
                         msuDetails: msuDetails,
                         msuType: msuDetailsType,
                         msuPath: snesMsu.FullPath,
@@ -284,11 +274,11 @@ internal class MsuLookupService : IMsuLookupService
             }
         }
         
-        _logger.LogInformation("No MSU found for {Path}", snesMsu.FullPath);
+        logger.LogInformation("No MSU found for {Path}", snesMsu.FullPath);
 
         if (msuType == null)
         {
-            _logger.LogInformation("Unknown MSU {Path} found", snesMsu.FullPath);
+            logger.LogInformation("Unknown MSU {Path} found", snesMsu.FullPath);
             var msu = LoadUnknownMsu(snesMsu.FullPath, snesMsu.FullPath.Replace(snesMsu.Name, ""), baseName, pcmFilePaths);
             msu.IsHardwareMsu = true;
             msu.Settings = msuSettings;
@@ -296,7 +286,7 @@ internal class MsuLookupService : IMsuLookupService
         }
         else
         {
-            _logger.LogInformation("{MsuType} MSU {Path} found", msuType.DisplayName, snesMsu.FullPath);
+            logger.LogInformation("{MsuType} MSU {Path} found", msuType.DisplayName, snesMsu.FullPath);
             var msu = LoadBasicMsu(snesMsu.FullPath, snesMsu.FullPath.Replace(snesMsu.Name, ""), baseName, msuType, pcmFilePaths, null);
             msu.IsHardwareMsu = true;
             msu.Settings = msuSettings;
@@ -306,9 +296,27 @@ internal class MsuLookupService : IMsuLookupService
 
     public IReadOnlyCollection<Msu> Msus => _msus.ToList();
 
+    private void ApplyMsuSettings(Msu msu, MsuSettings msuSettings)
+    {
+        msu.Settings = msuSettings;
+        
+        if (!(msuSettings.IsCopyrightSafeOverrides?.Count > 0)) return;
+        
+        foreach (var overrideDetails in msuSettings.IsCopyrightSafeOverrides)
+        {
+            var track = msu.Tracks.FirstOrDefault(x => x.Path == overrideDetails.Key);
+            if (track != null)
+            {
+                track.IsCopyrightSafeOverride = overrideDetails.Value;
+            }
+        }
+
+        msu.AreAllTracksCopyrightSafe = msu.Tracks.All(x => x.IsCopyrightSafeCombined);
+    }
+    
     private Msu LoadDetailedMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, MsuDetails basicDetails)
     {
-        var msu = _msuDetailsService.ConvertToMsu(basicDetails, msuType, msuPath, directory, baseName, out var yamlError);
+        var msu = msuDetailsService.ConvertToMsu(basicDetails, msuType, msuPath, directory, baseName, out var yamlError);
         
         if (!string.IsNullOrEmpty(yamlError))
         {
@@ -494,8 +502,8 @@ internal class MsuLookupService : IMsuLookupService
         
         var matchingMsus = new List<(MsuType Type, float PrimaryConfidence, int PrimaryCount, float SecondaryConfidence, int SecondaryCount)>();
         
-        var allowedMsuTypes = _msuTypeService.MsuTypes.ToList();
-        if (msuTypeFilter != null && !_msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(msuTypeFilter.DisplayName))
+        var allowedMsuTypes = msuTypeService.MsuTypes.ToList();
+        if (msuTypeFilter != null && !msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(msuTypeFilter.DisplayName))
         {
             allowedMsuTypes = allowedMsuTypes.Where(x => x.IsCompatibleWith(msuTypeFilter)).ToList();
         }
@@ -539,7 +547,7 @@ internal class MsuLookupService : IMsuLookupService
         }
         
         var matchedType = matchingMsus
-            .OrderByDescending(x => _msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(x.Type.DisplayName) || _msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(x.Type.Name))
+            .OrderByDescending(x => msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(x.Type.DisplayName) || msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(x.Type.Name))
             .ThenByDescending(x => x.PrimaryConfidence)
             .ThenByDescending(x => x.PrimaryCount)
             .ThenByDescending(x => x.SecondaryConfidence)
@@ -569,7 +577,7 @@ internal class MsuLookupService : IMsuLookupService
         var newMsu = LoadMsu(msu.Path, parentDirectory: msu.ParentMsuTypeDirectory);
         if (newMsu == null)
         {
-            _logger.LogInformation("Reloaded MSU for Path {Path} returned null", msu.Path);
+            logger.LogInformation("Reloaded MSU for Path {Path} returned null", msu.Path);
             throw new InvalidOperationException("Could not refresh MSU");
         }
         

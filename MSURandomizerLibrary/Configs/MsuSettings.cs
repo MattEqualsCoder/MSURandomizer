@@ -63,6 +63,11 @@ public class MsuSettings
     /// If the user confirmed that this is an unknown MSU
     /// </summary>
     public bool IsUserUnknownMsu { get; set; }
+    
+    /// <summary>
+    /// User overrides for if individual tracks are copyright safe
+    /// </summary>
+    public Dictionary<string, bool>? IsCopyrightSafeOverrides { get; set; }
 
     /// <summary>
     /// If this is not a favorite
@@ -104,5 +109,6 @@ public class MsuSettings
                                  || AltOption != AltOptions.Randomize
                                  || IsFavorite
                                  || ShuffleFrequency != ShuffleFrequency.Default
-                                 || IsUserUnknownMsu;
+                                 || IsUserUnknownMsu
+                                 || IsCopyrightSafeOverrides?.Count > 0;
 }

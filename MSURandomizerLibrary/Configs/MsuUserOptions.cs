@@ -34,6 +34,11 @@ public class MsuUserOptions
     public bool AvoidDuplicates { get; set; }
     
     /// <summary>
+    /// If only copyright safe tracks should be used
+    /// </summary>
+    public bool OnlyCopyrightSafeTracks { get; set; }
+    
+    /// <summary>
     /// If the folder should be opened after generating an MSU
     /// </summary>
     public bool OpenFolderOnCreate { get; set; }

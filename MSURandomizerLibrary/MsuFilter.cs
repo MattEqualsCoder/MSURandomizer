@@ -30,4 +30,10 @@ public enum MsuFilter
     /// </summary>
     [Description("Favorite")]
     Favorite,
+    
+    /// <summary>
+    /// If the MSU is marked as all copyright safe
+    /// </summary>
+    [Description("Copyright Safe")]
+    CopyrightSafe,
 }

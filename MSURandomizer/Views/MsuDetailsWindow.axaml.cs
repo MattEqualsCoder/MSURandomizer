@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvaloniaControls;
@@ -14,6 +15,7 @@ namespace MSURandomizer.Views;
 public partial class MsuDetailsWindow : ScalableWindow
 {
     private readonly MsuDetailsService? _service;
+    private MsuDetailsWindowViewModel _model = new();
     
     public MsuDetailsWindow()
     {
@@ -21,35 +23,42 @@ public partial class MsuDetailsWindow : ScalableWindow
 
         if (Design.IsDesignMode)
         {
-            DataContext = new MsuDetailsWindowViewModel()
+            DataContext = _model = new MsuDetailsWindowViewModel
             {
                 Name = "Test MSU",
                 Creator = "Test MSU Creator",
                 MsuPath = "/home/matt/Documents/Test",
-                Tracks = new List<MsuTrackViewModel>()
-                {
-                    new MsuTrackViewModel() 
+                Tracks =
+                [
+                    new MsuTrackViewModel
                     {
                         TrackNumber = 1,
                         TrackName = "Test Track",
-                        Songs = new List<MsuSongViewModel>()
-                        {
-                            new MsuSongViewModel(new Track()
+                        Display = true,
+                        Songs =
+                        [
+                            new MsuSongViewModel(new Track
                             {
                                 TrackName = "Test Track Name Alt",
                                 Artist = "Test Artist",
                                 IsAlt = true,
-                                Path = "/home/matt/Documents/test.json"
+                                Path = "/home/matt/Documents/test.json",
+                                IsCopyrightSafe = true,
+                                IsCopyrightSafeOverride = null
                             }),
-                            new MsuSongViewModel(new Track()
+
+                            new MsuSongViewModel(new Track
                             {
                                 TrackName = "Test Track Name",
                                 Artist = "Test Artist",
-                                Path = "/home/matt/Documents/test.json"
+                                Path = "/home/matt/Documents/test.json",
+                                IsCopyrightSafe = true,
+                                IsCopyrightSafeOverride = false
                             })
-                        }
-                    },
-                }
+                        ]
+                    }
+
+                ]
             };
             return;
         }
@@ -60,7 +69,7 @@ public partial class MsuDetailsWindow : ScalableWindow
     public void Show(MsuViewModel model, Window? parentWindow)
     {
         Owner = parentWindow;
-        DataContext = _service?.InitilizeModel(model);
+        DataContext = _model = _service?.InitilizeModel(model) ?? new MsuDetailsWindowViewModel();
         if (parentWindow == null)
         {
             base.Show();
@@ -92,5 +101,50 @@ public partial class MsuDetailsWindow : ScalableWindow
     private void CloseButton_OnClick(object? sender, RoutedEventArgs e)
     {
         Close();
+    }
+
+    private void CopyrightOverrideUndoButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button)
+        {
+            return;
+        }
+
+        if (button.Tag is MsuSongViewModel song)
+        {
+            song.IsCopyrightSafeOverrideValue = null;
+        }
+        else
+        {
+            foreach (var trackSong in _model.Tracks.SelectMany(x => x.Songs))
+            {
+                trackSong.IsCopyrightSafeOverrideValue = null;
+            }
+        }
+        
+        _model.UpdateCopyrightOptions();
+    }
+
+    private void CopyrightCheckboxButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button)
+        {
+            return;
+        }
+        
+        if (button.Tag is MsuSongViewModel song)
+        {
+            song.IsCopyrightSafeOverrideValue = !song.IsCopyrightSafeCombined;
+        }
+        else
+        {
+            var newValue = !_model.AreAllCopyrightSafe;
+            foreach (var trackSong in _model.Tracks.SelectMany(x => x.Songs))
+            {
+                trackSong.IsCopyrightSafeOverrideValue = newValue;
+            }
+        }
+        
+        _model.UpdateCopyrightOptions();
     }
 }

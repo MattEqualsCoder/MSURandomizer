@@ -16,6 +16,8 @@ public class MsuGenerationViewModel : ViewModelBase
     [Reactive] public string? OutputFolderPath { get; set; }
 
     [Reactive] public bool AvoidDuplicates { get; set; }
+    
+    [Reactive] public bool OnlyCopyrightSafeTracks { get; set; }
 
     [Reactive] public bool OpenFolderOnCreate { get; set; }
 
@@ -34,7 +36,7 @@ public class MsuGenerationViewModel : ViewModelBase
     [Reactive] public bool IsLaunchRomVisible { get; set; }
     
     [Reactive] 
-    [ReactiveLinkedProperties(nameof(IsOpenFolderVisible), nameof(IsAvoidDuplicatesVisible), nameof(IsOpenMonitorVisible), nameof(IsMsuShuffleStyleVisible))]
+    [ReactiveLinkedProperties(nameof(IsOpenFolderVisible), nameof(IsAvoidDuplicatesVisible), nameof(IsOpenMonitorVisible), nameof(IsMsuShuffleStyleVisible), nameof(IsOnlyCopyrightSafeTracks))]
     public MsuRandomizationStyle RandomizationStyle { get; set; }
     
     [Reactive]
@@ -44,6 +46,8 @@ public class MsuGenerationViewModel : ViewModelBase
     public bool IsOpenFolderVisible => RandomizationStyle != MsuRandomizationStyle.Continuous;
 
     public bool IsAvoidDuplicatesVisible => RandomizationStyle != MsuRandomizationStyle.Single;
+    
+    public bool IsOnlyCopyrightSafeTracks => RandomizationStyle != MsuRandomizationStyle.Single;
 
     public bool IsOpenMonitorVisible =>
         RandomizationStyle != MsuRandomizationStyle.Continuous && !IsMsuMonitorDisabled;

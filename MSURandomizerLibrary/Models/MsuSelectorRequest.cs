@@ -64,6 +64,11 @@ public class MsuSelectorRequest
     public bool? AvoidDuplicates { get; set; }
     
     /// <summary>
+    /// If only copyright safe tracks should be used
+    /// </summary>
+    public bool? OnlyCopyrightSafeTracks { get; set; }
+    
+    /// <summary>
     /// The shuffling style
     /// </summary>
     public MsuShuffleStyle ShuffleStyle { get; set; }

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using AvaloniaControls.Models;
+using Material.Icons;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using ReactiveUI.Fody.Helpers;
@@ -27,9 +29,9 @@ public class MsuDetailsWindowViewModel : ViewModelBase
 
     public Msu? Msu { get; set; }
     
-    public List<MsuTrackViewModel> Tracks { get; set; } = new();
+    public List<MsuTrackViewModel> Tracks { get; set; } = [];
     
-    public List<string> MsuTypeNames { get; set; } = new();
+    public List<string> MsuTypeNames { get; set; } = [];
     
     public int TrackCount { get; set; }
 
@@ -40,4 +42,22 @@ public class MsuDetailsWindowViewModel : ViewModelBase
     public bool CanEditMsuType => true;
 
     public bool IsNotLast { get; set; } = true;
+    
+    [Reactive, ReactiveLinkedProperties(nameof(UndoOpacity))]
+    public bool IsAnyCopyrightSafeValueOverridden { get; set; }
+    
+    [Reactive, ReactiveLinkedProperties(nameof(CheckedIconKind))]
+    public bool AreAllCopyrightSafe { get; set; }
+    
+    public MaterialIconKind CheckedIconKind =>
+        AreAllCopyrightSafe ? MaterialIconKind.CheckboxOutline : MaterialIconKind.CheckBoxOutlineBlank;
+
+    public float UndoOpacity => IsAnyCopyrightSafeValueOverridden ? 1.0f : 0.3f;
+
+    public void UpdateCopyrightOptions()
+    {
+        var allSongs = Tracks.SelectMany(x => x.Songs).ToList();
+        IsAnyCopyrightSafeValueOverridden = allSongs.Any(x => x.IsCopyrightSafeValueOverridden);
+        AreAllCopyrightSafe = allSongs.All(x => x.IsCopyrightSafeCombined);
+    }
 }

@@ -70,6 +70,8 @@ public class Track
         OriginalPath = other.OriginalPath;
         OriginalMsu = other.OriginalMsu ?? other.Msu;
         Duration = other.Duration;
+        IsCopyrightSafe = other.IsCopyrightSafe;
+        IsCopyrightSafeOverride = other.IsCopyrightSafeOverride;
     }
 
     /// <summary>
@@ -156,6 +158,23 @@ public class Track
     /// The length of the song
     /// </summary>
     public double Duration { get; set; }
+    
+    /// <summary>
+    /// If the track has been tested and shown to be safe for streams/vods
+    /// </summary>
+    public bool IsCopyrightSafe { get; set; }
+    
+    /// <summary>
+    /// If the track has been tested and shown to be safe for streams/vods
+    /// </summary>
+    [JsonIgnore]
+    public bool? IsCopyrightSafeOverride { get; set; }
+    
+    /// <summary>
+    /// If the track has been tested and shown to be safe for streams/vods
+    /// </summary>
+    [JsonIgnore]
+    public bool IsCopyrightSafeCombined => IsCopyrightSafeOverride ?? IsCopyrightSafe;
     
     /// <summary>
     /// The MSU this track is currently part of

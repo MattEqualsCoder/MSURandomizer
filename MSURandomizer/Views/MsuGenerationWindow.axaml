@@ -50,6 +50,12 @@
                     Avoid duplicate tracks if possible
                 </CheckBox>
                 <CheckBox Margin="2 5" 
+                          IsChecked="{Binding OnlyCopyrightSafeTracks}"
+                          IsVisible="{Binding IsOnlyCopyrightSafeTracks}"
+                >
+                    Only use known copyright safe tracks
+                </CheckBox>
+                <CheckBox Margin="2 5" 
                           IsChecked="{Binding OpenMonitorWindow}"
                           IsVisible="{Binding IsOpenMonitorVisible}"
                 >

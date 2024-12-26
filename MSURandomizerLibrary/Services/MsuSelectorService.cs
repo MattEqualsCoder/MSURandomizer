@@ -193,6 +193,11 @@ internal class MsuSelectorService : IMsuSelectorService
                 possibleTracks = possibleTracks.Where(x => !selectedPaths.Contains(x.Path)).ToList();
             }
 
+            if (request.OnlyCopyrightSafeTracks == true)
+            {
+                possibleTracks = possibleTracks.Where(x => x.IsCopyrightSafeCombined).ToList();
+            }
+
             var track = possibleTracks.Random(_random);
             if (track == null)
             {
@@ -700,6 +705,7 @@ internal class MsuSelectorService : IMsuSelectorService
 
         request.OpenFolder ??= userOptions.OpenFolderOnCreate;
         request.AvoidDuplicates ??= userOptions.AvoidDuplicates;
+        request.OnlyCopyrightSafeTracks ??= userOptions.OnlyCopyrightSafeTracks;
 
         return null;
     }

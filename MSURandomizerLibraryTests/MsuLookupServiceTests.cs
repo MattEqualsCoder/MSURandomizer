@@ -20,6 +20,39 @@ public class MsuLookupServiceTests
     }
     
     [Test]
+    public void LoadMsuCopyrightSettingsTest()
+    {
+        var tracks = new List<(int, int)>() { (1, 3) };
+        var msuPath = TestHelpers.CreateMsu(tracks);
+        var msuSettings = new MsuSettings()
+        {
+            MsuPath = msuPath,
+            IsCopyrightSafeOverrides = new Dictionary<string, bool>()
+            {
+                { msuPath.Replace(".msu", "-1.pcm"), true },
+                { msuPath.Replace(".msu", "-2.pcm"), false },
+            }
+        };
+        var service = CreateMsuLookupService(tracks, msuSettings);
+        
+        var msu = service.LoadMsu(msuPath);
+        
+        Assert.That(msu, Is.Not.Null);
+        Assert.That(msu?.Name, Is.EqualTo("test-msu"));
+        Assert.That(msu?.Tracks.Count, Is.EqualTo(3));
+        Assert.That(File.Exists(msu?.Tracks.First().Path), Is.True);
+        Assert.That(msu.Tracks?.First(x => x.Number == 1).IsCopyrightSafeCombined, Is.True);
+        Assert.That(msu.Tracks?.First(x => x.Number == 1).IsCopyrightSafe, Is.False);
+        Assert.That(msu.Tracks?.First(x => x.Number == 1).IsCopyrightSafeOverride, Is.True);
+        Assert.That(msu.Tracks?.First(x => x.Number == 2).IsCopyrightSafeCombined, Is.False);
+        Assert.That(msu.Tracks?.First(x => x.Number == 2).IsCopyrightSafe, Is.False);
+        Assert.That(msu.Tracks?.First(x => x.Number == 2).IsCopyrightSafeOverride, Is.False);
+        Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafeCombined, Is.False);
+        Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafe, Is.False);
+        Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafeOverride, Is.Null);
+    }
+    
+    [Test]
     public void LookupMsusTest()
     {
         var tracks = new List<(int, int)>() { (1, 5) };
@@ -116,13 +149,21 @@ public class MsuLookupServiceTests
         Assert.That(msu, Is.Null);
     }
 
-    private MsuLookupService CreateMsuLookupService(List<(int, int)> tracks)
+    private MsuLookupService CreateMsuLookupService(List<(int, int)> tracks, MsuSettings? msuSettings = null)
     {
+        MsuUserOptions? msuUserOptions = null;
+        if (msuSettings != null)
+        {
+            msuUserOptions = new MsuUserOptions()
+            {
+                MsuSettings = [ msuSettings ]
+            };
+        }
         var logger = TestHelpers.CreateMockLogger<MsuLookupService>();
         var msuTypeService = TestHelpers.CreateMockMsuTypeService(tracks, out var msuTypes);
         var msuDetailsService = TestHelpers.CreateMockMsuDetailsService(null, null);
         var msuCacheService = TestHelpers.CreateMockMsuCacheService();
-        var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
+        var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(msuUserOptions);
         return new MsuLookupService(logger, msuTypeService, msuDetailsService, new MsuAppSettings(), msuCacheService, msuUserOptionsService);
     }
 }

@@ -2,6 +2,7 @@ using System.Linq;
 using AutoMapper;
 using AvaloniaControls.ControlServices;
 using AvaloniaControls.Services;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MSURandomizer.ViewModels;
 using MSURandomizerLibrary.Services;
 
@@ -41,6 +42,7 @@ public class MsuDetailsService(
         Model.MsuTypeNames = [""];
         Model.MsuTypeNames.AddRange(msuTypeService.MsuTypes.Select(x => x.DisplayName).OrderBy(x => x));
         Model.MsuPath = _parentModel.MsuPath;
+        Model.UpdateCopyrightOptions();
         Model.HasBeenModified = false;
         return Model;
     }
@@ -51,6 +53,24 @@ public class MsuDetailsService(
         mapper.Map(Model, Model.Msu.Settings);
         Model.Msu.Settings.MsuType = msuTypeService.GetMsuType(Model.MsuTypeName);
         Model.Msu.Settings.IsUserUnknownMsu = string.IsNullOrEmpty(Model.MsuTypeName);
+        Model.Msu.Settings.IsCopyrightSafeOverrides = Model.Tracks.SelectMany(x => x.Songs)
+            .Where(x => x.IsCopyrightSafeValueOverridden)
+            .ToDictionary(x => x.Path, x => x.IsCopyrightSafeCombined);
+
+        foreach (var track in Model.Msu.Tracks)
+        {
+            if (Model.Msu.Settings.IsCopyrightSafeOverrides.TryGetValue(track.Path, out var value))
+            {
+                track.IsCopyrightSafeOverride = value;
+            }
+            else
+            {
+                track.IsCopyrightSafeOverride = null;
+            }
+        }
+        
+        Model.Msu.AreAllTracksCopyrightSafe = Model.Msu.Tracks.All(x => x.IsCopyrightSafeCombined);
+        
         userOptionsService.SaveMsuSettings(Model.Msu);
         _parentModel.MsuName = Model.Msu?.DisplayName;
         _parentModel.MsuCreator = Model.Msu?.DisplayCreator;

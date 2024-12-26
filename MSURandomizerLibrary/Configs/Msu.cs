@@ -187,6 +187,12 @@ public class Msu
     /// </summary>
     [JsonIgnore]
     public string AbbreviatedPath => GetAbbreviatedPath();
+    
+    /// <summary>
+    /// If all tracks are marked as copyright safe
+    /// </summary>
+    [JsonIgnore]
+    public bool AreAllTracksCopyrightSafe { get; set; }
 
     /// <summary>
     /// If the MSU matches filter settings
@@ -223,7 +229,8 @@ public class Msu
         return filter == MsuFilter.All ||
                (filter == MsuFilter.Favorite && Settings.IsFavorite) ||
                (filter == MsuFilter.Compatible && SelectedMsuType?.IsCompatibleWith(type) == true) ||
-               (filter == MsuFilter.Exact && SelectedMsuType?.IsExactMatchWith(type) == true);
+               (filter == MsuFilter.Exact && SelectedMsuType?.IsExactMatchWith(type) == true) ||
+               (filter == MsuFilter.CopyrightSafe && AreAllTracksCopyrightSafe);
     }
 
     /// <summary>
