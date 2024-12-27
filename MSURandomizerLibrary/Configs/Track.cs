@@ -162,7 +162,7 @@ public class Track
     /// <summary>
     /// If the track has been tested and shown to be safe for streams/vods
     /// </summary>
-    public bool IsCopyrightSafe { get; set; }
+    public bool? IsCopyrightSafe { get; set; }
     
     /// <summary>
     /// If the track has been tested and shown to be safe for streams/vods
@@ -174,7 +174,7 @@ public class Track
     /// If the track has been tested and shown to be safe for streams/vods
     /// </summary>
     [JsonIgnore]
-    public bool IsCopyrightSafeCombined => IsCopyrightSafeOverride ?? IsCopyrightSafe;
+    public bool IsCopyrightSafeCombined => IsCopyrightSafeOverride ?? IsCopyrightSafe ?? false;
     
     /// <summary>
     /// The MSU this track is currently part of

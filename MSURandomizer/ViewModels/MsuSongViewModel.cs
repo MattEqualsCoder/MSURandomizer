@@ -12,9 +12,9 @@ public class MsuSongViewModel(Track track) : ViewModelBase
     public string Path { get; set; } = track.Path;
     public string? Url { get; set; } = track.Url;
     public bool DisplayUrl => !string.IsNullOrWhiteSpace(Url);
-    public bool IsCopyrightSafeCombined => IsCopyrightSafeOverrideValue ?? IsCopyrightSafeOriginalValue;
+    public bool IsCopyrightSafeCombined => IsCopyrightSafeOverrideValue ?? IsCopyrightSafeOriginalValue ?? false;
     public bool IsCopyrightSafeValueOverridden => IsCopyrightSafeOverrideValue != null && IsCopyrightSafeOverrideValue != IsCopyrightSafeOriginalValue;
-    public bool IsCopyrightSafeOriginalValue { get; set; } = track.IsCopyrightSafe;
+    public bool? IsCopyrightSafeOriginalValue { get; set; } = track.IsCopyrightSafe;
     
     [Reactive, ReactiveLinkedProperties(nameof(CheckedIconKind), nameof(UndoOpacity), nameof(IsCopyrightSafeValueOverridden))]
     public bool? IsCopyrightSafeOverrideValue { get; set; } = track.IsCopyrightSafeOverride;

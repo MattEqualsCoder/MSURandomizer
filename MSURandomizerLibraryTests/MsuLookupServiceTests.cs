@@ -42,13 +42,13 @@ public class MsuLookupServiceTests
         Assert.That(msu?.Tracks.Count, Is.EqualTo(3));
         Assert.That(File.Exists(msu?.Tracks.First().Path), Is.True);
         Assert.That(msu.Tracks?.First(x => x.Number == 1).IsCopyrightSafeCombined, Is.True);
-        Assert.That(msu.Tracks?.First(x => x.Number == 1).IsCopyrightSafe, Is.False);
+        Assert.That(msu.Tracks?.First(x => x.Number == 1).IsCopyrightSafe, Is.Null);
         Assert.That(msu.Tracks?.First(x => x.Number == 1).IsCopyrightSafeOverride, Is.True);
         Assert.That(msu.Tracks?.First(x => x.Number == 2).IsCopyrightSafeCombined, Is.False);
-        Assert.That(msu.Tracks?.First(x => x.Number == 2).IsCopyrightSafe, Is.False);
+        Assert.That(msu.Tracks?.First(x => x.Number == 2).IsCopyrightSafe, Is.Null);
         Assert.That(msu.Tracks?.First(x => x.Number == 2).IsCopyrightSafeOverride, Is.False);
         Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafeCombined, Is.False);
-        Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafe, Is.False);
+        Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafe, Is.Null);
         Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafeOverride, Is.Null);
     }
     
