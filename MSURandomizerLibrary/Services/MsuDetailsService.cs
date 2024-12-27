@@ -154,6 +154,8 @@ internal class MsuDetailsService : IMsuDetailsService
         {
             output.Url = track.Url;
         }
+        
+        output.IsCopyrightSafe = track.IsCopyrightSafe;
 
         if (tracks.Count() == 1)
         {
@@ -203,6 +205,8 @@ internal class MsuDetailsService : IMsuDetailsService
             {
                 altOutput.Url = altTrack.Url;
             }
+            
+            altOutput.IsCopyrightSafe = altTrack.IsCopyrightSafe;
             
             if (!altOutput.CalculateAltInfo(msu.Path, altTrack.Path))
             {
