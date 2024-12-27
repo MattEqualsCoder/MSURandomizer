@@ -58,6 +58,9 @@ tracks:
                     songName: "Test Song", 
                     path:"Test Path"
                 )
+                {
+                    IsCopyrightSafe = true
+                }
             },
             msuDetails: null,
             prevMsu: null
@@ -78,6 +81,7 @@ tracks:
               Test Track:
                 track_number: 1
                 name: Test Song
+                is_copyright_safe: true
 
             """;
 
