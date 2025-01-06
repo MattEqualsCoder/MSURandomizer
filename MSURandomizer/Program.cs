@@ -95,7 +95,7 @@ sealed class Program
     private static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .With(new X11PlatformOptions() { UseDBusFilePicker = false })
+            .With(new X11PlatformOptions() { UseDBusFilePicker = false, RenderingMode = [ X11RenderingMode.Software ] })
             .WithInterFont()
             .LogToTrace()
             .UseReactiveUI();

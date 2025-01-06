@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using AvaloniaControls;
 using AvaloniaControls.Controls;
 using AvaloniaControls.ControlServices;
 using AvaloniaControls.Models;
@@ -26,6 +28,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     IMsuLookupService msuLookupService,
     IMsuMonitorService msuMonitorService,
     IRomLauncherService romLauncherService,
+    IMsuHardwareService msuHardwareService,
     IRomCopyService romCopyService) : ControlService
 {
     public MsuWindowViewModel Model { get; set; } = new();
@@ -69,6 +72,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         Model.CanDisplayContinuousShuffleButton = settings.MsuWindowDisplayContinuousButton == true;
         Model.CanDisplaySelectMsuButton = settings.MsuWindowDisplaySelectButton == true;
         Model.CanDisplayCancelButton = settings.MsuWindowDisplaySelectButton == true;
+        Model.CanDisplayUploadButton = settings.MsuWindowDisplayUploadButton == true;
         Model.IsHardwareModeButtonVisible = !appSettings.MsuAppSettings.DisableHardwareMode;
         Model.MsuWindowDisplayOptionsButton = appSettings.MsuAppSettings.MsuWindowDisplayOptionsButton != false;
         Model.HasMsuFolder = Model.MsuWindowDisplayOptionsButton && userOptions.MsuUserOptions.HasMsuFolder();
@@ -152,10 +156,41 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
     public void UpdateHardwareMode(MsuList msuList, List<Msu>? msus)
     {
+        logger.LogInformation("Hardware mode MSU list updating with {Count} msus", msus?.Count ?? 0);
         Model.Filter = MsuFilter.Compatible;
         Model.IsHardwareModeEnabled = msus?.Count > 0;
         msuList.ToggleHardwareMode(Model.IsHardwareModeEnabled);
         msuList.PopulateMsuViewModels(msus);
+        logger.LogInformation("Hardware mode MSU list updated");
+    }
+
+    public async Task UploadMsu(MsuWindow msuWindow, MsuList msuList)
+    {
+        var msuPathToUpload = await GetMsuToUpload(msuWindow);
+        if (string.IsNullOrEmpty(msuPathToUpload))
+        {
+            return;
+        }
+        
+        var hardwareDirectoriesWindow = new HardwareDirectoriesWindow();
+        await hardwareDirectoriesWindow.ShowDialog(msuWindow, msuPathToUpload);
+        
+        if (hardwareDirectoriesWindow.HardwareMsus?.Count > 0)
+        {
+            UpdateHardwareMode(msuList, hardwareDirectoriesWindow.HardwareMsus);
+        }
+        
+    }
+    
+    public async Task BrowseDevice(MsuWindow msuWindow, MsuList msuList)
+    {
+        var hardwareDirectoriesWindow = new HardwareDirectoriesWindow();
+        await hardwareDirectoriesWindow.ShowDialog(msuWindow, null);
+        
+        if (hardwareDirectoriesWindow.HardwareMsus?.Count > 0)
+        {
+            UpdateHardwareMode(msuList, hardwareDirectoriesWindow.HardwareMsus);
+        }
     }
 
     public bool GenerateMsu(out string error, out bool openContinuousWindow, out Msu? msu, out string? warningMessage)
@@ -318,5 +353,47 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     {
         Model.MsusTypes = msuTypeService.MsuTypes.Select(x => x.DisplayName).Order().ToList();
         Model.SelectedMsuType = userOptions.MsuUserOptions.OutputMsuType ?? Model.MsusTypes.First();
+    }
+
+    private async Task<string?> GetMsuToUpload(MsuWindow msuWindow)
+    {
+        var outputMsuType = msuTypeService.GetMsuType(Model.SelectedMsuType);
+        if (outputMsuType == null)
+        {
+            return null;
+        }
+
+        var selectedPath = "";
+        
+        foreach (var entry in userOptions.MsuUserOptions.MsuDirectories)
+        {
+            var path = entry.Key;
+            var msuTypeName = entry.Value;
+            var directoryMsuType = msuTypeService.GetMsuType(Model.SelectedMsuType);
+            if (directoryMsuType == null)
+            {
+                continue;
+            }
+
+            if (outputMsuType.IsCompatibleWith(directoryMsuType))
+            {
+                selectedPath = path;
+                break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(selectedPath))
+        {
+            return null;
+        }
+        
+        var storagePath = await CrossPlatformTools.OpenFileDialogAsync(msuWindow, FileInputControlType.OpenFile, "MSU files (*.msu)|*.msu|All files (*.*)|*.*", selectedPath);
+
+        if (storagePath == null)
+        {
+            return "";
+        }
+
+        return storagePath.TryGetLocalPath();
     }
 }

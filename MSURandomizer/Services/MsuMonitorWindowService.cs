@@ -124,7 +124,9 @@ public class MsuMonitorWindowService(
         }
         
         snesConnectorService.Connect(connectorSettings);
-
+        
+        snesConnectorService.UpdateTimeoutSeconds(connectorSettings.TimeoutSeconds);
+        
         if (msuUserOptionsService.MsuUserOptions.SnesConnectorSettings.ConnectorType != connectorSettings.ConnectorType)
         {
             msuUserOptionsService.MsuUserOptions.SnesConnectorSettings.ConnectorType = connectorSettings.ConnectorType;

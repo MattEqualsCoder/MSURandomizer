@@ -79,6 +79,18 @@
                 <Grid ColumnDefinitions="*, Auto" Margin="5">
                     <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding MsuCountText}" Margin="5" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Name="BrowseFilesButton" 
+                                Margin="5" 
+                                Content="Browse Files on Device"
+                                IsVisible="{Binding IsMsuWindowUploadButtonVisible}" 
+                                Click="BrowseFilesButton_OnClick"
+                        />
+                        <Button Name="UploadMsuButton" 
+                                Margin="5" 
+                                Content="Upload MSU to Device"
+                                IsVisible="{Binding IsMsuWindowUploadButtonVisible}" 
+                                Click="UploadMsuButton_OnClick"
+                        />
                         <Button Name="SelectMsuButton" 
                                 Margin="5" 
                                 Content="{Binding SelectMsusText}" 

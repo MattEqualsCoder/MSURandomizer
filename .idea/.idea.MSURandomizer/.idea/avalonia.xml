@@ -6,6 +6,7 @@
         <entry key="MSURandomizer/App.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/CurrentPlayingTrackControl.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/HardwareConnectorSelectionWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
+        <entry key="MSURandomizer/Views/HardwareDirectoriesWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/HardwareModeWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/HardwareMsuWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/MsuDetailsWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />

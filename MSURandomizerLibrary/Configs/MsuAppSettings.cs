@@ -66,6 +66,11 @@ public class MsuAppSettings
     public bool? MsuWindowDisplaySelectButton { get; set; }
     
     /// <summary>
+    /// If the button to upload MSUs to hardware can be displayed
+    /// </summary>
+    public bool? MsuWindowDisplayUploadButton { get; set; }
+    
+    /// <summary>
     /// The name of an MSU type that should be forced to be used as output
     /// </summary>
     public string? ForcedMsuType { get; set; }

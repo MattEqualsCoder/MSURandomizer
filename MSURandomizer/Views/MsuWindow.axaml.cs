@@ -76,7 +76,7 @@ public partial class MsuWindow : RestorableWindow
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
         _service?.FinishInitialization();
-        if (_model is { HasMsuFolder: false, MsuWindowDisplayOptionsButton: true })
+        if (!Design.IsDesignMode && _model is { HasMsuFolder: false, MsuWindowDisplayOptionsButton: true })
         {
             ITaskService.Run(async () =>
             {
@@ -268,6 +268,37 @@ public partial class MsuWindow : RestorableWindow
         }
 
         _service?.UpdateHardwareMode(_msuList, selectedMsus);
-        
+    }
+
+    private async void UploadMsuButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_service == null)
+            {
+                return;
+            }
+            await _service.UploadMsu(this, _msuList);
+        }
+        catch 
+        {
+            await MessageWindow.ShowErrorDialog("Unable to upload msu to device.");
+        }
+    }
+
+    private async void BrowseFilesButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_service == null)
+            {
+                return;
+            }
+            await _service.BrowseDevice(this, _msuList);
+        }
+        catch 
+        {
+            await MessageWindow.ShowErrorDialog("Unable to upload msu to device.");
+        }
     }
 }
