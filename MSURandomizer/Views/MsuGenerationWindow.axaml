@@ -37,7 +37,7 @@
                     IsVisible="{Binding IsMsuShuffleStyleVisible}"
                 ></controls:EnumComboBox>
                 
-                <TextBlock Margin="2" IsVisible="{Binding IsMsuShuffleStyleVisible}">Copyright strike safety</TextBlock>
+                <TextBlock Margin="2" IsVisible="{Binding IsMsuShuffleStyleVisible}">Copyright Strike Safety</TextBlock>
                 <controls:EnumComboBox
                     Margin="2"
                     EnumType="{Binding MsuCopyrightSafety, Converter={StaticResource TypeConverter}}"
