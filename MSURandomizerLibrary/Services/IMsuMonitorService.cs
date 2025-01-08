@@ -38,6 +38,7 @@ public interface IMsuMonitorService : IDisposable
     /// </summary>
     /// <param name="request">The shuffle request to redo</param>
     /// <param name="seconds">The frequency in which to reshuffle</param>
+    /// 
     public Task StartShuffle(MsuSelectorRequest request, int seconds = 60);
 
     /// <summary>

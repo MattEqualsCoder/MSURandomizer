@@ -20,6 +20,8 @@ public class MsuMonitorWindowViewModel : ViewModelBase
     
     public string ClientName { get; set; } = "MSURandomizer";
     
+    [Reactive] public bool ShowConnectorDropdown { get; set; }
+    
     [Reactive] public string ConnectionStatus { get; set; } = "Disconnected";
 
     [Reactive]

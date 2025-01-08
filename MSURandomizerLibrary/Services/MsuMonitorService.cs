@@ -18,6 +18,7 @@ internal class MsuMonitorService(
     private Track? _currentTrack;
     private CancellationTokenSource _cts = new();
     private string? _outputPath;
+    private bool _monitorEnabled = false;
 
     public event MsuTrackChangedEventHandler? MsuTrackChanged;
 
@@ -33,8 +34,14 @@ internal class MsuMonitorService(
     {
         logger.LogInformation("Start shuffling");
         UpdateOutputPath();
-        gameService.SetMsuType(request.OutputMsuType!);
-        gameService.OnTrackChanged += GameServiceOnOnTrackChanged;
+        
+        if (request.OutputMsuType != null && gameService.IsMsuTypeCompatible(request.OutputMsuType))
+        {
+            gameService.SetMsuType(request.OutputMsuType!);
+            gameService.OnTrackChanged += GameServiceOnOnTrackChanged;
+            _monitorEnabled = true;
+        }
+        
         _currentMsu = null;
         _currentTrack = null;
         MsuMonitorStarted?.Invoke(this, EventArgs.Empty);
@@ -62,6 +69,7 @@ internal class MsuMonitorService(
         UpdateOutputPath();
         gameService.SetMsuType(msuType);
         gameService.OnTrackChanged += GameServiceOnOnTrackChanged;
+        _monitorEnabled = true;
         _currentMsu = msu;
         _currentTrack = null;
         MsuMonitorStarted?.Invoke(this, EventArgs.Empty);
@@ -71,8 +79,13 @@ internal class MsuMonitorService(
     {
         logger.LogInformation("Stop monitor");
         _cts.Cancel();
-        gameService.OnTrackChanged -= GameServiceOnOnTrackChanged;
-        gameService.Disconnect();
+        
+        if (_monitorEnabled)
+        {
+            gameService.OnTrackChanged -= GameServiceOnOnTrackChanged;
+            gameService.Disconnect();    
+        }
+        
         _currentMsu = null;
         _currentTrack = null;
         MsuMonitorStopped?.Invoke(this, EventArgs.Empty);

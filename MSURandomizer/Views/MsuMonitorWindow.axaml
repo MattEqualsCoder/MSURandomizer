@@ -17,7 +17,7 @@
         <DockPanel>
             <controls:HeaderFooter DockPanel.Dock="Bottom" Padding="5">
                 <Grid ColumnDefinitions="Auto,*">
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" IsVisible="{Binding ShowConnectorDropdown}">
                         <controls:EnumComboBox
                             EnumType="{Binding ConnectorType, Converter={StaticResource TypeConverter}}"
                             Value="{Binding ConnectorType, Mode=TwoWay}"
