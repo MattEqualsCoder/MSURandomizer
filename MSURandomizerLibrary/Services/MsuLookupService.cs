@@ -234,7 +234,7 @@ internal class MsuLookupService(
                 folderName: fullMsu.FolderName, 
                 fileName: fullMsu.FileName, 
                 path: snesMsu.FullPath, 
-                tracks: fullMsu.Tracks.Select(x => new Track(x)).ToList(),
+                tracks: fullMsu.Tracks.Where(x => !x.IsAlt).Select(x => new Track(x)).ToList(),
                 msuDetails: null,
                 prevMsu: fullMsu,
                 isHardwareMsu: true)

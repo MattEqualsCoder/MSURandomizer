@@ -89,7 +89,7 @@ internal class MsuMonitorService(
 
     private void GameServiceOnOnTrackChanged(object sender, TrackNumberChangedEventArgs e)
     {
-        _currentTrack = _currentMsu?.Tracks.FirstOrDefault(x => x.Number == e.TrackNumber);
+        _currentTrack = _currentMsu?.Tracks.Where(x => x.Number == e.TrackNumber).OrderBy(x => x.IsAlt).FirstOrDefault();
         var currentMsuTypeTrack = _currentMsu?.MsuType?.Tracks.FirstOrDefault(x => x.Number == e.TrackNumber);
         logger.LogInformation("Track changed #{Number} ({TrackName}): {Song}", e.TrackNumber, currentMsuTypeTrack?.Name, _currentTrack?.GetDisplayText(TrackDisplayFormat.HorizonalWithMsu));
         
