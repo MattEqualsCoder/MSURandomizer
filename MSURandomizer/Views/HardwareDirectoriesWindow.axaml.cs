@@ -92,7 +92,7 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
         _service?.CreateNewDirectory(result.ResponseText.Trim());
     }
 
-    private async void Window_OnClosing(object? sender, WindowClosingEventArgs e)
+    private void Window_OnClosing(object? sender, WindowClosingEventArgs e)
     {
         if (_model?.DidUpdate == true && _service != null)
         {

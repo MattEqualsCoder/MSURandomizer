@@ -28,7 +28,6 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     IMsuLookupService msuLookupService,
     IMsuMonitorService msuMonitorService,
     IRomLauncherService romLauncherService,
-    IMsuHardwareService msuHardwareService,
     IRomCopyService romCopyService) : ControlService
 {
     public MsuWindowViewModel Model { get; set; } = new();
