@@ -17,7 +17,7 @@ public class MsuGenerationViewModel : ViewModelBase
 
     [Reactive] public bool AvoidDuplicates { get; set; }
     
-    [Reactive] public bool OnlyCopyrightSafeTracks { get; set; }
+    [Reactive] public MsuCopyrightSafety MsuCopyrightSafety { get; set; }
 
     [Reactive] public bool OpenFolderOnCreate { get; set; }
 

@@ -55,7 +55,7 @@ public class MsuDetailsService(
         Model.Msu.Settings.IsUserUnknownMsu = string.IsNullOrEmpty(Model.MsuTypeName);
         Model.Msu.Settings.IsCopyrightSafeOverrides = Model.Tracks.SelectMany(x => x.Songs)
             .Where(x => x.IsCopyrightSafeValueOverridden)
-            .ToDictionary(x => x.Path, x => x.IsCopyrightSafeCombined);
+            .ToDictionary(x => x.Path, x => x.IsCopyrightSafeCombined ?? false);
 
         foreach (var track in Model.Msu.Tracks)
         {
@@ -69,7 +69,7 @@ public class MsuDetailsService(
             }
         }
         
-        Model.Msu.AreAllTracksCopyrightSafe = Model.Msu.Tracks.All(x => x.IsCopyrightSafeCombined);
+        Model.Msu.AreAllTracksCopyrightSafe = Model.Msu.Tracks.All(x => x.IsCopyrightSafeCombined == true);
         
         userOptionsService.SaveMsuSettings(Model.Msu);
         _parentModel.MsuName = Model.Msu?.DisplayName;

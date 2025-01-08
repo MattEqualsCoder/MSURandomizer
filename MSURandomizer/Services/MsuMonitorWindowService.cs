@@ -73,6 +73,7 @@ public class MsuMonitorWindowService(
                     Msus = msus,
                     OutputMsuType = outputMsuType,
                     ShuffleStyle = msuUserOptionsService.MsuUserOptions.MsuShuffleStyle,
+                    MsuCopyrightSafety = msuUserOptionsService.MsuUserOptions.MsuCopyrightSafety,
                     OpenFolder = false
                 }, msuAppSettingsService.MsuAppSettings.ContinuousReshuffleSeconds ?? 60);
 

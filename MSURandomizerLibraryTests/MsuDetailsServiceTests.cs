@@ -279,7 +279,7 @@ tracks:
         Assert.Multiple(() =>
         {
             Assert.That(track3?.IsCopyrightSafe, Is.Null);
-            Assert.That(track3?.IsCopyrightSafeCombined, Is.False);
+            Assert.That(track3?.IsCopyrightSafeCombined, Is.Null);
         });
     }
 

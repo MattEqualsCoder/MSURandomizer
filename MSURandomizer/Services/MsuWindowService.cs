@@ -300,7 +300,8 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 EmptyFolder = true,
                 Msus = msus,
                 OutputMsuType = outputMsuType,
-                ShuffleStyle = options.MsuShuffleStyle
+                ShuffleStyle = options.MsuShuffleStyle,
+                MsuCopyrightSafety = options.MsuCopyrightSafety,
             });
             
             if (!response.Successful)

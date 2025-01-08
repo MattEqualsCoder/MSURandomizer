@@ -47,7 +47,7 @@ public class MsuLookupServiceTests
         Assert.That(msu.Tracks?.First(x => x.Number == 2).IsCopyrightSafeCombined, Is.False);
         Assert.That(msu.Tracks?.First(x => x.Number == 2).IsCopyrightSafe, Is.Null);
         Assert.That(msu.Tracks?.First(x => x.Number == 2).IsCopyrightSafeOverride, Is.False);
-        Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafeCombined, Is.False);
+        Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafeCombined, Is.Null);
         Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafe, Is.Null);
         Assert.That(msu.Tracks?.First(x => x.Number == 3).IsCopyrightSafeOverride, Is.Null);
     }

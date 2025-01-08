@@ -66,7 +66,7 @@ public class MsuSelectorRequest
     /// <summary>
     /// If only copyright safe tracks should be used
     /// </summary>
-    public bool? OnlyCopyrightSafeTracks { get; set; }
+    public MsuCopyrightSafety MsuCopyrightSafety { get; set; }
     
     /// <summary>
     /// The shuffling style

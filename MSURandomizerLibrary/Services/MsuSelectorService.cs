@@ -193,9 +193,13 @@ internal class MsuSelectorService : IMsuSelectorService
                 possibleTracks = possibleTracks.Where(x => !selectedPaths.Contains(x.Path)).ToList();
             }
 
-            if (request.OnlyCopyrightSafeTracks == true)
+            if (request.MsuCopyrightSafety == MsuCopyrightSafety.IgnoreUnsafe)
             {
-                possibleTracks = possibleTracks.Where(x => x.IsCopyrightSafeCombined).ToList();
+                possibleTracks = possibleTracks.Where(x => x.IsCopyrightSafeCombined != false).ToList();
+            }
+            else if (request.MsuCopyrightSafety == MsuCopyrightSafety.SafeTracksOnly)
+            {
+                possibleTracks = possibleTracks.Where(x => x.IsCopyrightSafeCombined == true).ToList();
             }
 
             var track = possibleTracks.Random(_random);
@@ -705,7 +709,6 @@ internal class MsuSelectorService : IMsuSelectorService
 
         request.OpenFolder ??= userOptions.OpenFolderOnCreate;
         request.AvoidDuplicates ??= userOptions.AvoidDuplicates;
-        request.OnlyCopyrightSafeTracks ??= userOptions.OnlyCopyrightSafeTracks;
 
         return null;
     }

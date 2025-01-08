@@ -134,7 +134,14 @@ public partial class MsuDetailsWindow : ScalableWindow
         
         if (button.Tag is MsuSongViewModel song)
         {
-            song.IsCopyrightSafeOverrideValue = !song.IsCopyrightSafeCombined;
+            if (song.IsCopyrightSafeCombined == null)
+            {
+                song.IsCopyrightSafeOverrideValue = true;
+            }
+            else
+            {
+                song.IsCopyrightSafeOverrideValue = !song.IsCopyrightSafeCombined;
+            }
         }
         else
         {

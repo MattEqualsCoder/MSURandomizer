@@ -66,7 +66,7 @@
                                 </controls:ImageButton>
                                 
                                 <controls:ImageButton Click="CopyrightCheckboxButton_OnClick">
-                                    <avalonia:MaterialIcon Kind="{Binding CheckedIconKind}" Width="20" Height="20" />
+                                    <avalonia:MaterialIcon Kind="{Binding CheckedIconKind}" Foreground="{Binding CopyrightIconBrush}" Width="20" Height="20" />
                                 </controls:ImageButton>
                             </StackPanel>
                         </controls:CardControl.HeaderButtons>
@@ -101,7 +101,7 @@
                                                                 Click="CopyrightCheckboxButton_OnClick"
                                                                 Tag="{Binding}"
                                                             >
-                                                                <avalonia:MaterialIcon Kind="{Binding CheckedIconKind}" Width="20" Height="20" />
+                                                                <avalonia:MaterialIcon Kind="{Binding CheckedIconKind}" Foreground="{Binding CopyrightIconBrush}" Width="20" Height="20" />
                                                             </controls:ImageButton>
                                                         </StackPanel>
                                                     </Grid>

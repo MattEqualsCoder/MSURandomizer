@@ -299,8 +299,12 @@ internal class MsuLookupService(
     private void ApplyMsuSettings(Msu msu, MsuSettings msuSettings)
     {
         msu.Settings = msuSettings;
-        
-        if (!(msuSettings.IsCopyrightSafeOverrides?.Count > 0)) return;
+
+        if (!(msuSettings.IsCopyrightSafeOverrides?.Count > 0))
+        {
+            msu.AreAllTracksCopyrightSafe = msu.Tracks.All(x => x.IsCopyrightSafeCombined == true);
+            return;
+        }
         
         foreach (var overrideDetails in msuSettings.IsCopyrightSafeOverrides)
         {
@@ -311,7 +315,7 @@ internal class MsuLookupService(
             }
         }
 
-        msu.AreAllTracksCopyrightSafe = msu.Tracks.All(x => x.IsCopyrightSafeCombined);
+        msu.AreAllTracksCopyrightSafe = msu.Tracks.All(x => x.IsCopyrightSafeCombined == true);
     }
     
     private Msu LoadDetailedMsu(string msuPath, string directory, string baseName, MsuType msuType, IEnumerable<string> pcmFiles, MsuDetails basicDetails)
