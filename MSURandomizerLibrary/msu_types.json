@@ -1544,7 +1544,7 @@
           "title": "Item Acquisition Fanfare",
           "nonlooping": true,
           "special_track": true,
-          "description": "Song played when you retrieve an item. Does not loop and plays for 6-7 seconds. Not used in SMZ3."
+          "description": "Song played when you retrieve an item. Does not loop and plays for 6-7 seconds. Not used in SMZ3 or SM Map Rando."
         },
         {
           "title": "Item room",
@@ -1714,7 +1714,7 @@
         },
         {
           "title": "Ceres Station",
-          "description": "Song played in the intro area of the game where you go to initially fight Ridley. Not used in SMZ3."
+          "description": "Song played in the intro area of the game where you go to initially fight Ridley. Not used in SMZ3 or SM Map Rando."
         },
         {
           "title": "Wrecked Ship Power Off",
@@ -1815,11 +1815,15 @@
           "notes": [
             "Mother Brain 3"
           ],
-          "description": "Extended track that plays during the Mother Brain battle after receiving the Hyper Beam from the baby Metroid. If not present, the Samus' Ship theme will be played."
+          "description": "Extended track that plays during the Mother Brain battle after receiving the Hyper Beam from the baby Metroid. If not present, the Samus' Ship theme will be played. Not used in SM Map Rando."
         },
         {
           "title": "Game Over",
-          "description": "Extended track that plays after the Samus Death Cry before loading from the last save point. If not present, ambient noise will be played."
+          "description": "Extended track that plays after the Samus Death Cry before loading from the last save point. If not present, ambient noise will be played. Not used in SM Map Rando."
+        },
+        {
+          "title": "Crateria (Storm Without Music)",
+          "description": "Thunder sound effects track that is played when near the ship in Crateria after Zebes is awake but before you have power bombs. Only used in the SM Map Rando."
         }
       ],
       "longest": 37,

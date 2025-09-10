@@ -179,7 +179,7 @@ public class MsuTypeTests
         
         path = TestHelpers.CreateMsu(new List<(int, int)>()
         {
-            (1, 40)
+            (1, 41)
         });
         msu = _msuLookupService.LoadMsu(path);
         Assert.That(msu, Is.Not.Null);
