@@ -5,6 +5,7 @@ using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public class MsuSelectorServiceTests
 {
     [Test]

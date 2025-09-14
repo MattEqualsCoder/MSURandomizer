@@ -6,6 +6,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public class MsuTypeYamlTests
 {
     private MsuTypeService _msuTypeService = null!;

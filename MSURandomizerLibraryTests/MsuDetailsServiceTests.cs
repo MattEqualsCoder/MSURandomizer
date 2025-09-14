@@ -3,6 +3,7 @@ using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public class MsuDetailsServiceTests
 {
     private readonly string _msuPath = new FileInfo("unit-test.msu").FullName;

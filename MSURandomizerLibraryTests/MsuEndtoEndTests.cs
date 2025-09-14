@@ -7,6 +7,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public class MsuEndtoEndTests : IDisposable
 {
     private MsuTypeService _msuTypeService = null!;

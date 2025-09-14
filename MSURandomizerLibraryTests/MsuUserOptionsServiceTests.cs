@@ -4,6 +4,7 @@ using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public class MsuUserOptionsServiceTests
 {
     private const string TestMsuTypeName = "TestMSUType";

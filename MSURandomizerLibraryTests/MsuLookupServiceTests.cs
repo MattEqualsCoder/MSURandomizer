@@ -3,6 +3,7 @@ using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public class MsuLookupServiceTests
 {
     [Test]

@@ -8,6 +8,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public abstract class TestHelpers
 {
     public static readonly string TestMsuTypeName = "Test MSU Type";
