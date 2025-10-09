@@ -58,20 +58,26 @@ public class CurrentPlayingTrackService(
     {
         if (innerWidth < outerWidth)
             return;
-        
-        Model.MaxTicks = (innerWidth - outerWidth) / 50 * 30;
-        Model.TargetMargin = outerWidth - innerWidth;
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            Model.MaxTicks = (innerWidth - outerWidth) / 50 * 30;
+            Model.TargetMargin = outerWidth - innerWidth;
+        });
         _ = StartTimer();
     }
 
     private async Task StartTimer()
     {
-        Model.Ticks = 0;
-        Model.AnimationMargin = new Thickness(0);
+        Dispatcher.UIThread.Post(() =>
+        {
+            Model.Ticks = 0;
+            Model.AnimationMargin = new Thickness(0);
+        });
         var cts = _cts = new CancellationTokenSource();
         await Task.Delay(TimeSpan.FromSeconds(3), cts.Token);
         if (cts.IsCancellationRequested) return;
-        _dispatcherTimer?.Start();
+        Dispatcher.UIThread.Post(() => { _dispatcherTimer?.Start(); });
     }
 
     private async Task RestartTimer()
@@ -96,9 +102,14 @@ public class CurrentPlayingTrackService(
     private void ChangeMessage(string message)
     {
         _cts.Cancel();
-        _dispatcherTimer?.Stop();
-        Model.AnimationMargin = new Thickness(0);
-        Model.Message = message;
+        
+        Dispatcher.UIThread.Post(() =>
+        {
+            _dispatcherTimer?.Stop();
+            Model.AnimationMargin = new Thickness(0);
+            Model.Message = message;
+        });
+        
         TrackChanged?.Invoke(this, EventArgs.Empty);
     }
 

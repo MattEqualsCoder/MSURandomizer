@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=MSU Randomizer
+GenericName=Frontend for the libretro API
+Type=Application
+Comment=UI application for creating MSUs and PCM files
+Icon=org.mattequalscoder.msurandomizer
+Exec=/usr/bin/MSURandomizer
+Terminal=false
+StartupNotify=false
+StartupWMClass=MSURandomizer
+Keywords=msu;msupcm;pcm
+Categories=Development
