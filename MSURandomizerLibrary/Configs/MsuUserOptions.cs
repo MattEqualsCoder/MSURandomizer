@@ -154,6 +154,11 @@ public class MsuUserOptions
     [YamlIgnore] public Dictionary<MsuType, string> MsuTypePaths { get; set; } = new();
     
     /// <summary>
+    /// Setting to skip asking to install the Linux desktop file
+    /// </summary>
+    public bool SkipDesktopFile { get; set; }
+    
+    /// <summary>
     /// Gets the MSU Settings for a specific MSU path
     /// </summary>
     /// <param name="path">The path to the MSU file</param>

@@ -76,15 +76,33 @@ public partial class MsuWindow : RestorableWindow
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
         _service?.FinishInitialization();
-        if (!Design.IsDesignMode && _model is { HasMsuFolder: false, MsuWindowDisplayOptionsButton: true })
+
+        if (Design.IsDesignMode)
+        {
+            return;
+        }
+        
+        if (!Design.IsDesignMode && (_model.DisplayDesktopPopupOnLoad || _model.DisplaySettingsWindowOnLoad))
         {
             ITaskService.Run(async () =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(.5));
-                _ = Dispatcher.UIThread.InvokeAsync(() =>
+                _ = Dispatcher.UIThread.Invoke(async () =>
                 {
-                    var settingsWindow = new SettingsWindow();
-                    settingsWindow.ShowDialog(this);
+                    if (_model.DisplayDesktopPopupOnLoad)
+                    {
+                        _model.DisplayDesktopPopupOnLoad = false;
+                        var response = await MessageWindow.ShowYesNoDialog(
+                            "Would you like to add the MSU Randomizer to your menu by creating a desktop file?",
+                            "MSU Randomizer", this);
+                        _service!.HandleUserDesktopResponse(response);
+                    }
+
+                    if (_model.DisplaySettingsWindowOnLoad)
+                    {
+                        var settingsWindow = new SettingsWindow();
+                        await settingsWindow.ShowDialog(this);
+                    }
                 });
             });
         }

@@ -93,6 +93,10 @@ public class MsuWindowViewModel : ViewModelBase
     public bool HasGitHubUrl => !string.IsNullOrEmpty(GitHubUrl);
     
     public bool HasMsuFolder { get; set; }
+    
+    public bool DisplayDesktopPopupOnLoad { get; set; }
+    
+    public bool DisplaySettingsWindowOnLoad { get; set; }
 
     public int FilterColumnIndex { get; set; } = 1;
 }

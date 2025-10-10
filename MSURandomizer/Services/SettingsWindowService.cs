@@ -76,6 +76,11 @@ public class SettingsWindowService(
         }
     }
 
+    public void CreateDesktopFile()
+    {
+        
+    }
+
     private bool HasPathUpdated(MsuUserOptions options)
     {
         if (_model.MsuDirectoryList.Count != options.MsuDirectories.Count)

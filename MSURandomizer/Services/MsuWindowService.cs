@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AppImageDesktopFileCreator;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using AvaloniaControls;
@@ -41,23 +42,23 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
     public MsuWindowViewModel InitializeModel()
     {
-        msuLookupService.OnMsuLookupStarted += (sender, args) =>
+        msuLookupService.OnMsuLookupStarted += (_, _) =>
         {
             Model.AreMsusLoading = true;
         };
         
-        msuLookupService.OnMsuLookupComplete += (sender, args) =>
+        msuLookupService.OnMsuLookupComplete += (_, _) =>
         {
             Model.AreMsusLoading = false;
         };
 
-        msuMonitorService.MsuMonitorStarted += (sender, args) =>
+        msuMonitorService.MsuMonitorStarted += (_, _) =>
         {
             Model.IsMsuMonitorActive = true;
             MsuMonitorStarted?.Invoke(this, EventArgs.Empty);
         };
         
-        msuMonitorService.MsuMonitorStopped += (sender, args) =>
+        msuMonitorService.MsuMonitorStopped += (_, _) =>
         {
             Model.IsMsuMonitorActive = false;
             MsuMonitorStopped?.Invoke(this, EventArgs.Empty);
@@ -83,8 +84,29 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
             Model.DisplayMsuTypeComboBox = false;
             Model.FilterColumnIndex = 0;
         }
+
+        Model.DisplaySettingsWindowOnLoad = Model is { MsuWindowDisplayOptionsButton: true, HasMsuFolder: false };
+
+        if (OperatingSystem.IsLinux() && Model.MsuWindowDisplayOptionsButton && !userOptions.MsuUserOptions.SkipDesktopFile &&
+            !DesktopFileCreator.CheckIfDesktopFileExists("org.mattequalscoder.msurandomizer"))
+        {
+            Model.DisplayDesktopPopupOnLoad = true;
+        }
         
         return Model;
+    }
+
+    public void HandleUserDesktopResponse(bool addDesktopFile)
+    {
+        if (addDesktopFile && OperatingSystem.IsLinux())
+        {
+            Program.BuildLinuxDesktopFile();
+        }
+        else
+        {
+            userOptions.MsuUserOptions.SkipDesktopFile = true;
+            userOptions.Save();
+        }
     }
 
     private void AppInitializationServiceOnInitializationComplete(object? sender, EventArgs e)
@@ -96,7 +118,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
         Dispatcher.UIThread.Invoke(() =>
         {
-            var messageWindow = new MessageWindow(new MessageWindowRequest()
+            var messageWindow = new MessageWindow(new MessageWindowRequest
             {
                 Title = $"MSU Randomizer {appInitializationService.LatestFullRelease.Tag}",
                 Message = "A new version of the MSU Randomizer has been released.",
@@ -106,7 +128,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 CheckBoxText = "Do not check for updates",
                 Buttons = MessageWindowButtons.OK
             });
-            messageWindow.Closed += (o, args) =>
+            messageWindow.Closed += (_, _) =>
             {
                 if (messageWindow.DialogResult?.CheckedBox == true)
                 {
@@ -368,7 +390,6 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         foreach (var entry in userOptions.MsuUserOptions.MsuDirectories)
         {
             var path = entry.Key;
-            var msuTypeName = entry.Value;
             var directoryMsuType = msuTypeService.GetMsuType(Model.SelectedMsuType);
             if (directoryMsuType == null)
             {

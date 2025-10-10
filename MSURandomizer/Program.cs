@@ -2,8 +2,11 @@
 using Avalonia.ReactiveUI;
 using System;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
+using AppImageDesktopFileCreator;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
 using AvaloniaControls.Services;
@@ -25,7 +28,6 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        
         var loggerConfiguration = new LoggerConfiguration();
         
 #if DEBUG
@@ -89,6 +91,26 @@ sealed class Program
             ShowExceptionPopup(e).ContinueWith(_ => source.Cancel(), TaskScheduler.FromCurrentSynchronizationContext());
             Dispatcher.UIThread.MainLoop(source.Token);
         }
+    }
+    
+    [SupportedOSPlatform("linux")]
+    internal static CreateDesktopFileResponse BuildLinuxDesktopFile()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        return new DesktopFileBuilder("org.mattequalscoder.msurandomizer", "MSU Randomizer")
+            .AddDescription("UI application for applying, randomizing, and shuffling MSUs")
+            .AddCategory(DesktopFileCategories.Game)
+            .AddWindowClass("MSURandomizer")
+            .AddIcon(assembly, "MSURandomizer.Assets.icon.16.png", 16)
+            .AddIcon(assembly, "MSURandomizer.Assets.icon.32.png", 32)
+            .AddIcon(assembly, "MSURandomizer.Assets.icon.48.png", 48)
+            .AddIcon(assembly, "MSURandomizer.Assets.icon.64.png", 64)
+            .AddIcon(assembly, "MSURandomizer.Assets.icon.128.png", 128)
+            .AddIcon(assembly, "MSURandomizer.Assets.icon.256.png", 256)
+            .AddIcon(assembly, "MSURandomizer.Assets.icon.512.png", 512)
+            .AddIcon(assembly, "MSURandomizer.Assets.icon.svg")
+            .AddUninstallAction(Directories.AppDataFolder)
+            .Build();
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
