@@ -84,27 +84,26 @@ public partial class MsuWindow : RestorableWindow
         
         if (!Design.IsDesignMode && (_model.DisplayDesktopPopupOnLoad || _model.DisplaySettingsWindowOnLoad))
         {
-            ITaskService.Run(async () =>
-            {
-                await Task.Delay(TimeSpan.FromSeconds(.5));
-                _ = Dispatcher.UIThread.Invoke(async () =>
-                {
-                    if (_model.DisplayDesktopPopupOnLoad)
-                    {
-                        _model.DisplayDesktopPopupOnLoad = false;
-                        var response = await MessageWindow.ShowYesNoDialog(
-                            "Would you like to add the MSU Randomizer to your menu by creating a desktop file?",
-                            "MSU Randomizer", this);
-                        _service!.HandleUserDesktopResponse(response);
-                    }
+            _ = Dispatcher.UIThread.InvokeAsync(OpenStartingWindows);
+        }
+    }
 
-                    if (_model.DisplaySettingsWindowOnLoad)
-                    {
-                        var settingsWindow = new SettingsWindow();
-                        await settingsWindow.ShowDialog(this);
-                    }
-                });
-            });
+    private async Task OpenStartingWindows()
+    {
+        await Task.Delay(TimeSpan.FromSeconds(.5));
+        if (_model.DisplayDesktopPopupOnLoad)
+        {
+            _model.DisplayDesktopPopupOnLoad = false;
+            var response = await MessageWindow.ShowYesNoDialog(
+                "Would you like to add the MSU Randomizer to your menu by creating a desktop file?",
+                "MSU Randomizer", this);
+            _service!.HandleUserDesktopResponse(response);
+        }
+
+        if (_model.DisplaySettingsWindowOnLoad)
+        {
+            var settingsWindow = new SettingsWindow();
+            await settingsWindow.ShowDialog(this);
         }
     }
 

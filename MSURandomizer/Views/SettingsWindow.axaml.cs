@@ -86,7 +86,7 @@ public partial class SettingsWindow : ScalableWindow
     {
         if (OperatingSystem.IsLinux())
         {
-            Program.BuildLinuxDesktopFile();
+            App.BuildLinuxDesktopFile();
         }
     }
 }

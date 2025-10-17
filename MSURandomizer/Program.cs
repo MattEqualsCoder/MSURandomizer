@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
-using AppImageDesktopFileCreator;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
 using AvaloniaControls.Services;
@@ -92,14 +91,6 @@ sealed class Program
         }
     }
     
-    [SupportedOSPlatform("linux")]
-    internal static CreateDesktopFileResponse BuildLinuxDesktopFile()
-    {
-        return new DesktopFileBuilder("org.mattequalscoder.msurandomizer", "MSU Randomizer")
-            .AddUninstallAction(Directories.AppDataFolder)
-            .Build();
-    }
-
     // Avalonia configuration, don't remove; also used by visual designer.
     private static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
