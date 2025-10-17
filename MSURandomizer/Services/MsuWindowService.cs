@@ -88,7 +88,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         Model.DisplaySettingsWindowOnLoad = Model is { MsuWindowDisplayOptionsButton: true, HasMsuFolder: false };
 
         if (OperatingSystem.IsLinux() && Model.MsuWindowDisplayOptionsButton && !userOptions.MsuUserOptions.SkipDesktopFile &&
-            !DesktopFileCreator.CheckIfDesktopFileExists("org.mattequalscoder.msurandomizer"))
+            !DesktopFileCreator.DoesDesktopFileExist("org.mattequalscoder.msurandomizer"))
         {
             Model.DisplayDesktopPopupOnLoad = true;
         }
