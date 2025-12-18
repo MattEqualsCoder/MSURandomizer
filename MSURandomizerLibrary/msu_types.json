@@ -1538,7 +1538,7 @@
           "name": "Samus Aran's Appearance Fanfare",
           "nonlooping": true,
           "special_track": true,
-          "description": "Song played when first starting at the ship or a save station before you can start moving. Does not loop and plays for about 8 seconds."
+          "description": "Song played when first starting at the ship or a save station before you can start moving. Does not loop and plays for about 6 seconds."
         },
         {
           "title": "Item Acquisition Fanfare",
@@ -1614,7 +1614,11 @@
             "Crateria/Central",
             "Crateria/East"
           ],
-          "description": "Song played on the surface by Samus's ship later in the game after receiving power bombs. Also played after getting the Hyper Beam from the baby Metroid when fighting Mother Brain if no extended Hyper Beam track is present."
+          "description": "Song played on the surface by Samus's ship later in the game after receiving power bombs. Also played after getting the Hyper Beam from the baby Metroid when fighting Mother Brain if no extended Hyper Beam track is present.",
+          "paired_tracks": [
+            18,
+            39
+          ]
         },
         {
           "title": "Brinstar with vegetation",
@@ -1653,7 +1657,11 @@
         },
         {
           "title": "Mother Brain Battle",
-          "description": "Song played in the Mother Brain battle after the first phase and before Mother Brain kills the baby Metroid."
+          "description": "Song played in the Mother Brain battle after the first phase and before Mother Brain kills the baby Metroid.",
+          "paired_tracks": [
+            10,
+            39
+          ]
         },
         {
           "title": "Big Boss Battle 1",
@@ -1815,7 +1823,11 @@
           "notes": [
             "Mother Brain 3"
           ],
-          "description": "Extended track that plays during the Mother Brain battle after receiving the Hyper Beam from the baby Metroid. If not present, the Samus' Ship theme will be played. Not used in SM Map Rando."
+          "description": "Extended track that plays during the Mother Brain battle after receiving the Hyper Beam from the baby Metroid. If not present, the Samus' Ship theme will be played. Not used in SM Map Rando.",
+          "paired_tracks": [
+            10,
+            18
+          ]
         },
         {
           "title": "Game Over",
