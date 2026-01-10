@@ -1,61 +1,67 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <Nullable>enable</Nullable>
-        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
-        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <Version>3.2.0</Version>
-        <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageId>MattEqualsCoder.MSURandomizer.Avalonia</PackageId>
-        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <Version>3.2.0-rc.1</Version>
+    <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>MattEqualsCoder.MSURandomizer.Avalonia</PackageId>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <AvaloniaResource Include="Assets\**" />
-    </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\**" />
+    <AvaloniaResource Include="Assets\MSURandomizerIcon.ico" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <None Remove="MSURandomizerIcon.ico" />
-    </ItemGroup>
+  <ItemGroup>
+    <None Remove="MSURandomizerIcon.ico" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <AvaloniaResource Include="MSURandomizerIcon.ico" />
-    </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="MSURandomizerIcon.ico" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <Content Include="MSURandomizerIcon.ico" />
-    </ItemGroup>
-
-
-    <ItemGroup>
-        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Include="MattEqualsCoder.AvaloniaControls" Version="1.5.3" />
-        <PackageReference Include="MattEqualsCoder.GitHubReleaseChecker" Version="1.1.3" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
-        <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
-        <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-        <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
-        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <Content Include="MSURandomizerIcon.ico" />
+  </ItemGroup>
 
 
-    <ItemGroup>
-      <Reference Include="Microsoft.Extensions.Hosting.Abstractions">
-        <HintPath>..\..\..\..\.nuget\packages\microsoft.extensions.hosting.abstractions\8.0.0\lib\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
-      </Reference>
-      <Reference Include="Serilog">
-        <HintPath>..\..\..\..\.nuget\packages\serilog\3.1.1\lib\net7.0\Serilog.dll</HintPath>
-      </Reference>
-      <Reference Include="Serilog.Sinks.File">
-        <HintPath>..\..\..\..\.nuget\packages\serilog.sinks.file\5.0.0\lib\net5.0\Serilog.Sinks.File.dll</HintPath>
-      </Reference>
-    </ItemGroup>
+  <ItemGroup>
+    <!--Condition
+    below is needed to remove Avalonia.Diagnostics package from build output in Release
+    configuration.-->
+    <PackageReference Include="MattEqualsCoder.AppImageManager" Version="0.1.3" />
+    <PackageReference Include="MattEqualsCoder.AvaloniaControls" Version="1.9.1" />
+    <PackageReference Include="MattEqualsCoder.GitHubReleaseChecker" Version="1.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.9" />
+    <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
 
 
-    <ItemGroup>
-      <ProjectReference Include="..\MSURandomizerLibrary\MSURandomizerLibrary.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Hosting.Abstractions">
+      <HintPath>
+        ..\..\..\..\.nuget\packages\microsoft.extensions.hosting.abstractions\8.0.0\lib\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog">
+      <HintPath>..\..\..\..\.nuget\packages\serilog\3.1.1\lib\net7.0\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File">
+      <HintPath>
+        ..\..\..\..\.nuget\packages\serilog.sinks.file\5.0.0\lib\net5.0\Serilog.Sinks.File.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\MSURandomizerLibrary\MSURandomizerLibrary.csproj" />
+  </ItemGroup>
 </Project>

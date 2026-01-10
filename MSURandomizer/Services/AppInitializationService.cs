@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AvaloniaControls.Controls;
 using GitHubReleaseChecker;
-using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
@@ -87,6 +86,7 @@ public class AppInitializationService(
 
     public GitHubRelease? LatestFullRelease { get; private set; }
     public GitHubRelease? LatestPreRelease { get; private set; }
+    public string? ReleaseDownloadUrl { get; private set; }
     public bool IsLoading { get; private set; }
 
     public event EventHandler? InitializationComplete;
@@ -119,6 +119,11 @@ public class AppInitializationService(
         if (latestRelease != null && gitHubReleaseCheckerService.IsCurrentVersionOutOfDate(version, latestRelease.Tag))
         {
             LatestPreRelease = latestRelease;
+        }
+
+        if (OperatingSystem.IsLinux())
+        {
+            ReleaseDownloadUrl = LatestFullRelease?.Asset.FirstOrDefault(x => x.Url.ToLower().EndsWith(".appimage"))?.Url;
         }
         
         IsLoading = false;

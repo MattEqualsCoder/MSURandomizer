@@ -1,3 +1,5 @@
+using System.Runtime.Versioning;
+using AppImageManager;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -9,6 +11,9 @@ namespace MSURandomizer;
 
 public class App : Application
 {
+    public const string AppId = "org.mattequalscoder.msurandomizer";
+    public const string AppName = "MSU Randomizer";
+    
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -24,5 +29,13 @@ public class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+    
+    [SupportedOSPlatform("linux")]
+    internal static CreateDesktopFileResponse BuildLinuxDesktopFile()
+    {
+        return new DesktopFileBuilder(AppId, AppName)
+            .AddUninstallAction(Directories.AppDataFolder)
+            .Build();
     }
 }

@@ -2,6 +2,7 @@
 using Avalonia.ReactiveUI;
 using System;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -25,7 +26,6 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        
         var loggerConfiguration = new LoggerConfiguration();
         
 #if DEBUG
@@ -90,7 +90,7 @@ sealed class Program
             Dispatcher.UIThread.MainLoop(source.Token);
         }
     }
-
+    
     // Avalonia configuration, don't remove; also used by visual designer.
     private static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()

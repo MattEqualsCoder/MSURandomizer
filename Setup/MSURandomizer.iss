@@ -30,6 +30,8 @@ Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 
+[Setup]
+ArchitecturesInstallIn64BitMode=x64
 
 [Code]
 function InitializeSetup: Boolean;

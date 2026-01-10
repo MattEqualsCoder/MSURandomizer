@@ -127,6 +127,12 @@
                                 ></TextBox>
                             </controls:LabeledControl>
                             
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0" IsVisible="{Binding DisplayDesktopFileButton}">
+                                <Button Click="CreateDesktopFileButton_OnClick">
+                                    Create Linux .desktop File
+                                </Button>
+                            </StackPanel>
+                            
                         </StackPanel>
                     </controls:CardControl>
                     

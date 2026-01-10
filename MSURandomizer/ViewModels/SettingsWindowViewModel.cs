@@ -46,6 +46,8 @@ public class SettingsWindowViewModel : ViewModelBase
     [Reactive]
     [ReactiveLinkedProperties(nameof(TrackDisplayExample))]
     public TrackDisplayFormat TrackDisplayFormat { get; set; }
+
+    public bool DisplayDesktopFileButton => OperatingSystem.IsLinux();
     
     public string TrackDisplayExample =>
         "Ex" + TrackDisplayFormat.GetDescription()[

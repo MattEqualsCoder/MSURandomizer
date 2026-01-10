@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AppImageManager;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using AvaloniaControls;
@@ -41,23 +42,23 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
     public MsuWindowViewModel InitializeModel()
     {
-        msuLookupService.OnMsuLookupStarted += (sender, args) =>
+        msuLookupService.OnMsuLookupStarted += (_, _) =>
         {
             Model.AreMsusLoading = true;
         };
         
-        msuLookupService.OnMsuLookupComplete += (sender, args) =>
+        msuLookupService.OnMsuLookupComplete += (_, _) =>
         {
             Model.AreMsusLoading = false;
         };
 
-        msuMonitorService.MsuMonitorStarted += (sender, args) =>
+        msuMonitorService.MsuMonitorStarted += (_, _) =>
         {
             Model.IsMsuMonitorActive = true;
             MsuMonitorStarted?.Invoke(this, EventArgs.Empty);
         };
         
-        msuMonitorService.MsuMonitorStopped += (sender, args) =>
+        msuMonitorService.MsuMonitorStopped += (_, _) =>
         {
             Model.IsMsuMonitorActive = false;
             MsuMonitorStopped?.Invoke(this, EventArgs.Empty);
@@ -83,8 +84,29 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
             Model.DisplayMsuTypeComboBox = false;
             Model.FilterColumnIndex = 0;
         }
+
+        Model.DisplaySettingsWindowOnLoad = Model is { MsuWindowDisplayOptionsButton: true, HasMsuFolder: false };
+
+        if (OperatingSystem.IsLinux() && Model.MsuWindowDisplayOptionsButton && !userOptions.MsuUserOptions.SkipDesktopFile &&
+            !AppImage.DoesDesktopFileExist(App.AppId))
+        {
+            Model.DisplayDesktopPopupOnLoad = true;
+        }
         
         return Model;
+    }
+
+    public void HandleUserDesktopResponse(bool addDesktopFile)
+    {
+        if (addDesktopFile && OperatingSystem.IsLinux())
+        {
+            App.BuildLinuxDesktopFile();
+        }
+        else
+        {
+            userOptions.MsuUserOptions.SkipDesktopFile = true;
+            userOptions.Save();
+        }
     }
 
     private void AppInitializationServiceOnInitializationComplete(object? sender, EventArgs e)
@@ -93,10 +115,13 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         {
             return;
         }
+        
+        var downloadUrl = appInitializationService.ReleaseDownloadUrl;
+        var hasDownloadUrl = !string.IsNullOrEmpty(downloadUrl);
 
-        Dispatcher.UIThread.Invoke(() =>
+        Dispatcher.UIThread.Invoke(async () =>
         {
-            var messageWindow = new MessageWindow(new MessageWindowRequest()
+            var messageWindow = new MessageWindow(new MessageWindowRequest
             {
                 Title = $"MSU Randomizer {appInitializationService.LatestFullRelease.Tag}",
                 Message = "A new version of the MSU Randomizer has been released.",
@@ -104,17 +129,45 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 LinkUrl = appInitializationService.LatestFullRelease.Url,
                 Icon = MessageWindowIcon.Info,
                 CheckBoxText = "Do not check for updates",
-                Buttons = MessageWindowButtons.OK
+                Buttons = hasDownloadUrl ? MessageWindowButtons.YesNo : MessageWindowButtons.OK,
+                PrimaryButtonText = hasDownloadUrl ? "Download Update" : "OK",
+                SecondaryButtonText = "Close"
             });
-            messageWindow.Closed += (o, args) =>
+            await messageWindow.ShowDialog(MessageWindow.GlobalParentWindow!);
+            
+            if (messageWindow.DialogResult?.CheckedBox == true)
             {
-                if (messageWindow.DialogResult?.CheckedBox == true)
+                userOptions.MsuUserOptions.PromptOnUpdate = false;
+                userOptions.Save();    
+            }
+
+            if (hasDownloadUrl && messageWindow.DialogResult?.PressedAcceptButton == true)
+            {
+                if (OperatingSystem.IsLinux())
                 {
-                    userOptions.MsuUserOptions.PromptOnUpdate = false;
-                    userOptions.Save();    
+                    var downloadResult = await AppImage.DownloadAsync(new DownloadAppImageRequest
+                    {
+                        Url = downloadUrl!
+                    });
+                    
+                    if (downloadResult.Success)
+                    {
+                        MessageWindow.GlobalParentWindow!.Close();
+                    }
+                    else if (downloadResult.DownloadedSuccessfully)
+                    {
+                        await MessageWindow.ShowErrorDialog("AppImage was downloaded, but it could not be launched.");
+                    }
+                    else
+                    {
+                        await MessageWindow.ShowErrorDialog("Failed downloading AppImage");
+                    }
                 }
-            };
-            messageWindow.ShowDialog();
+                else
+                {
+                    throw new InvalidOperationException("Download functionality is only available on Linux");
+                }
+            }
         });
         
     }
@@ -374,7 +427,6 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         foreach (var entry in userOptions.MsuUserOptions.MsuDirectories)
         {
             var path = entry.Key;
-            var msuTypeName = entry.Value;
             var directoryMsuType = msuTypeService.GetMsuType(Model.SelectedMsuType);
             if (directoryMsuType == null)
             {

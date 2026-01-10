@@ -81,4 +81,12 @@ public partial class SettingsWindow : ScalableWindow
         }
         _service.RemoveDirectory(directory);
     }
+
+    private void CreateDesktopFileButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (OperatingSystem.IsLinux())
+        {
+            App.BuildLinuxDesktopFile();
+        }
+    }
 }
