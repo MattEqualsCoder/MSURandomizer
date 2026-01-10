@@ -3,7 +3,7 @@
 # Define variables
 APP_NAME="MSURandomizer.app"
 ZIP_FILE="MSURandomizer.zip"
-PUBLISH_OUTPUT_DIRECTORY="MSURandomizer/bin/Release/net8.0/osx-arm64/publish"
+PUBLISH_OUTPUT_DIRECTORY="MSURandomizer/bin/Release/net10.0/osx-arm64/publish"
 INFO_PLIST="Info.plist"
 ICON_FILE="AppIcon.icns"
 
