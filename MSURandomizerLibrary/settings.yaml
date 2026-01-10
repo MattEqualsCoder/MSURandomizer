@@ -3,6 +3,8 @@ MsuTypeNameOverrides:
   "Super Metroid / A Link to the Past Combination Randomizer": "SMZ3 Combo Randomizer"
   "Teenage Mutant Ninja Turtles: Turtles in Time": "TMNT: Turtles in Time"
   "The Legend of Zelda: A Link to the Past": "A Link to the Past"
+  "The Legend of Zelda": "Zelda 1 SNES Port"
+  "Metroid": "Metroid 1 SNES Port"
 Smz3MsuTypes:
   - SMZ3 Classic (Metroid First)
   - SMZ3 Combo Randomizer
@@ -20,4 +22,11 @@ MsuWindowDisplayShuffleButton: true
 MsuWindowDisplayContinuousButton: true
 MsuWindowDisplayOptionsButton: true
 MsuWindowDisplaySelectButton: false
+MsuWindowDisplayUploadButton: true
 ForcedMsuType:
+DisableMessageSender: false
+HardwareCompatibleMsuTypes:
+  A Link to the Past:
+    - SMZ3 Combo Randomizer
+  Super Metroid:
+    - SMZ3 Classic (Metroid First)

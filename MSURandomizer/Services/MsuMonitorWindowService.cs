@@ -55,11 +55,13 @@ public class MsuMonitorWindowService(
             }
             else if (!VerifyMsuTypeCompatibility(outputMsuType))
             {
-                _model.ErrorMessage = "Sorry, that game is not compatible yet with reading the current playing track";
-                return;
+                _model.ErrorMessage = "The selected MSU type is not compatible with reading the current\r\nplaying tracks, but the MSU will be re-shuffled every 60 seconds\r\nas long as you keep this window up.";
             }
-            
-            ConnectToSnes();
+            else
+            {
+                ConnectToSnes();
+                _model.ShowConnectorDropdown = true;
+            }
             
             ITaskService.Run(() =>
             {
@@ -71,6 +73,7 @@ public class MsuMonitorWindowService(
                     Msus = msus,
                     OutputMsuType = outputMsuType,
                     ShuffleStyle = msuUserOptionsService.MsuUserOptions.MsuShuffleStyle,
+                    MsuCopyrightSafety = msuUserOptionsService.MsuUserOptions.MsuCopyrightSafety,
                     OpenFolder = false
                 }, msuAppSettingsService.MsuAppSettings.ContinuousReshuffleSeconds ?? 60);
 
@@ -91,10 +94,13 @@ public class MsuMonitorWindowService(
             }
             else if (!VerifyMsuTypeCompatibility(msu.MsuType))
             {
-                _model.ErrorMessage = "Sorry, that game is not compatible yet with reading the current playing track";
+                _model.ErrorMessage =
+                    "The selected MSU type is not compatible with reading the current\r\nplaying tracks.";
                 return;
             }
 
+            _model.ShowConnectorDropdown = true;
+            
             outputMsuType ??= msu.MsuType;
             
             ConnectToSnes();
@@ -108,7 +114,7 @@ public class MsuMonitorWindowService(
 
     public void ConnectToSnes()
     {
-        if (_model.ConnectorType == _model.CurrentConnectorType)
+        if (_model.ConnectorType == _model.CurrentConnectorType || !_model.ShowConnectorDropdown)
         {
             return;
         }
@@ -124,7 +130,9 @@ public class MsuMonitorWindowService(
         }
         
         snesConnectorService.Connect(connectorSettings);
-
+        
+        snesConnectorService.UpdateTimeoutSeconds(connectorSettings.TimeoutSeconds);
+        
         if (msuUserOptionsService.MsuUserOptions.SnesConnectorSettings.ConnectorType != connectorSettings.ConnectorType)
         {
             msuUserOptionsService.MsuUserOptions.SnesConnectorSettings.ConnectorType = connectorSettings.ConnectorType;

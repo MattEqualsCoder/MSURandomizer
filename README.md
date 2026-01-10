@@ -41,7 +41,6 @@ Having problems? You can view the [support document](Docs/support.md) for more a
 Interested in using the MSU Randomizer libraries in your own .net based application? Lookup MattEqualsCoder.MSURandomizer.Library and MattEqualsCoder.MSURandomizer.UI on nuget to use them in your project!
 
 - [MSU Randomizer Library Documentation](./MSURandomizerLibrary/README.md)
-- [MSU Randomizer UI Documentation](./MSURandomizerUI/README.md)
 
 ## Credits & Thanks
 

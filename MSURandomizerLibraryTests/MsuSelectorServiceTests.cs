@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using MSURandomizerLibrary;
+﻿using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public class MsuSelectorServiceTests
 {
     [Test]
@@ -649,6 +649,201 @@ public class MsuSelectorServiceTests
     }
     
     [Test]
+    public void FrequencyTestCopyrightSafeUser()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 100) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 100) },
+                new() { (1, 100) },
+            },
+            out var msuTypes, out var msus);
+
+        foreach (var track in msus.First().Tracks)
+        {
+            track.IsCopyrightSafeOverride = true;
+        }
+
+        var firstMsuCount = 0;
+        for (var i = 0; i < 100; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                MsuCopyrightSafety = MsuCopyrightSafety.SafeTracksOnly
+            });
+
+            firstMsuCount += response.Msu!.Tracks.Count(x => x.OriginalMsu == msus.First());
+        }
+
+        Assert.That(firstMsuCount, Is.EqualTo(10000));
+    }
+    
+    [Test]
+    public void FrequencyTestCopyrightUnsafeUser()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 100) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 100) },
+                new() { (1, 100) },
+            },
+            out var msuTypes, out var msus);
+
+        foreach (var track in msus.First().Tracks)
+        {
+            track.IsCopyrightSafeOverride = false;
+        }
+
+        var firstMsuCount = 0;
+        for (var i = 0; i < 100; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                MsuCopyrightSafety = MsuCopyrightSafety.SafeTracksOnly
+            });
+
+            firstMsuCount += response.Msu!.Tracks.Count(x => x.OriginalMsu == msus.First());
+        }
+
+        Assert.That(firstMsuCount, Is.EqualTo(0));
+    }
+    
+    [Test]
+    public void FrequencyTestCopyrightNotUnsafeUser()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 100) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 100) },
+                new() { (1, 100) },
+            },
+            out var msuTypes, out var msus);
+
+        foreach (var track in msus.First().Tracks)
+        {
+            track.IsCopyrightSafeOverride = true;
+        }
+
+        var firstMsuCount = 0;
+        for (var i = 0; i < 100; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                MsuCopyrightSafety = MsuCopyrightSafety.IgnoreUnsafe
+            });
+
+            firstMsuCount += response.Msu!.Tracks.Count(x => x.OriginalMsu == msus.First());
+        }
+
+        Assert.That(firstMsuCount, Is.GreaterThan(2500).And.LessThan(7500));
+    }
+    
+    [Test]
+    public void FrequencyTestCopyrightNotUnsafeUser2()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 100) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 100) },
+                new() { (1, 100) },
+            },
+            out var msuTypes, out var msus);
+
+        foreach (var track in msus.First().Tracks)
+        {
+            track.IsCopyrightSafeOverride = false;
+        }
+
+        var firstMsuCount = 0;
+        for (var i = 0; i < 100; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                MsuCopyrightSafety = MsuCopyrightSafety.IgnoreUnsafe
+            });
+
+            firstMsuCount += response.Msu!.Tracks.Count(x => x.OriginalMsu == msus.First());
+        }
+
+        Assert.That(firstMsuCount, Is.EqualTo(0));
+    }
+    
+    [Test]
+    public void FrequencyTestCopyrightSafeOriginal()
+    {
+        var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
+            {
+                new() { (1, 100) }
+            },
+            new List<List<(int, int)>>()
+            {
+                new() { (1, 100) },
+                new() { (1, 100) },
+            },
+            out var msuTypes, out var msus);
+
+        foreach (var track in msus.First().Tracks)
+        {
+            track.IsCopyrightSafe = true;
+        }
+
+        var firstMsuCount = 0;
+        for (var i = 0; i < 100; i++)
+        {
+            var response = msuSelectService.CreateShuffledMsu(new MsuSelectorRequest()
+            {
+                Msus = msus,
+                OutputMsuType = msuTypes.First(),
+                OutputPath = msus.First().Path.Replace(".msu", "-output.msu"),
+                EmptyFolder = false,
+                OpenFolder = false,
+                PrevMsu = null,
+                MsuCopyrightSafety = MsuCopyrightSafety.SafeTracksOnly
+            });
+
+            firstMsuCount += response.Msu!.Tracks.Count(x => x.OriginalMsu == msus.First());
+        }
+
+        Assert.That(firstMsuCount, Is.EqualTo(10000));
+    }
+    
+    [Test]
     public void ConvertMsusTest()
     {
         var msuSelectService = CreateMsuSelectorService(new List<List<(int, int)>>()
@@ -750,10 +945,15 @@ public class MsuSelectorServiceTests
             index++;
         }
         var lookupService = new MsuLookupService(lookupLogger, msuTypeService, msuDetailsService, new MsuAppSettings(), msuCacheService, msuUserOptionsService);
-        lookupService.LookupMsus(folder);
+        lookupService.LookupMsus(folder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, TestHelpers.TestMsuTypeName }
+        });
 
         msus = lookupService.Msus.ToList();
         
-        return new MsuSelectorService(logger, msuDetailsService, msuTypeService, lookupService, msuUserOptionsService);
+        var messageSender = TestHelpers.CreateMockMsuMessageSender();
+        
+        return new MsuSelectorService(logger, msuDetailsService, msuTypeService, lookupService, msuUserOptionsService, messageSender);
     }
 }

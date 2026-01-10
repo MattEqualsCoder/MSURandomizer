@@ -14,6 +14,11 @@ public interface IMsuMonitorService : IDisposable
     public event MsuTrackChangedEventHandler? MsuTrackChanged;
     
     /// <summary>
+    /// Event for before the MSU has been reshuffled
+    /// </summary>
+    public event EventHandler? PreMsuShuffle;
+    
+    /// <summary>
     /// Event for when the MSU has been reshuffled
     /// </summary>
     public event EventHandler? MsuShuffled;
@@ -33,6 +38,7 @@ public interface IMsuMonitorService : IDisposable
     /// </summary>
     /// <param name="request">The shuffle request to redo</param>
     /// <param name="seconds">The frequency in which to reshuffle</param>
+    /// 
     public Task StartShuffle(MsuSelectorRequest request, int seconds = 60);
 
     /// <summary>

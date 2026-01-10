@@ -34,6 +34,11 @@ public class MsuUserOptions
     public bool AvoidDuplicates { get; set; }
     
     /// <summary>
+    /// If only copyright safe tracks should be used
+    /// </summary>
+    public MsuCopyrightSafety MsuCopyrightSafety { get; set; }
+    
+    /// <summary>
     /// If the folder should be opened after generating an MSU
     /// </summary>
     public bool OpenFolderOnCreate { get; set; }
@@ -137,11 +142,21 @@ public class MsuUserOptions
     /// Directory roms should be copied to before randomizing
     /// </summary>
     public string? CopyRomDirectory { get; set; }
+
+    /// <summary>
+    /// Dictionary of all MSU directories and the MSU type associated with them
+    /// </summary>
+    public Dictionary<string, string> MsuDirectories { get; set; } = new();
     
     /// <summary>
     /// Specific directories to load for specific MSU types
     /// </summary>
     [YamlIgnore] public Dictionary<MsuType, string> MsuTypePaths { get; set; } = new();
+    
+    /// <summary>
+    /// Setting to skip asking to install the Linux desktop file
+    /// </summary>
+    public bool SkipDesktopFile { get; set; }
     
     /// <summary>
     /// Gets the MSU Settings for a specific MSU path
@@ -159,7 +174,6 @@ public class MsuUserOptions
     /// <returns></returns>
     public bool HasMsuFolder()
     {
-        return (!string.IsNullOrEmpty(DefaultMsuPath) && Directory.Exists(DefaultMsuPath)) ||
-               MsuTypePaths.Values.Any(x => !string.IsNullOrEmpty(x) && Directory.Exists(x));
+        return MsuDirectories.Count > 0;
     }
 }

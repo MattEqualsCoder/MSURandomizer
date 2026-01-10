@@ -59,6 +59,11 @@ public class MsuDetailsTrack
     public string? Path { get; set; }
     
     /// <summary>
+    /// If the track has been tested to be copyright safe
+    /// </summary>
+    public bool? IsCopyrightSafe { get; set; }
+    
+    /// <summary>
     /// A list of all of the alt tracks. If alt tracks are added, the file length, hash, and path for all tracks
     /// (including the base track) is required
     /// </summary>

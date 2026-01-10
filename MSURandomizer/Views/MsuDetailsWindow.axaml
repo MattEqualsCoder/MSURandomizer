@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:MSURandomizer.ViewModels"
         xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d"
         d:DesignWidth="800" 
         d:DesignHeight="600"
@@ -41,19 +42,34 @@
                     <controls:LabeledControl Text="MSU Type Override:">
                         <ComboBox ItemsSource="{Binding MsuTypeNames}"
                                   SelectedItem="{Binding MsuTypeName}"
+                                  IsEnabled="{Binding CanEditMsuType}"
                         ></ComboBox>
                     </controls:LabeledControl>
                     <controls:LabeledControl Text="Alt Track Shuffling:">
                         <controls:EnumComboBox
                             EnumType="{Binding AltOption, Converter={StaticResource TypeConverter}}"
                             Value="{Binding AltOption, Mode=TwoWay}"
+                            IsEnabled="{Binding CanEditMsuType}"
                         ></controls:EnumComboBox>
                     </controls:LabeledControl>
                     <controls:LabeledControl Text="MSU Path:">
                         <TextBlock Text="{Binding MsuPath}" VerticalAlignment="Center" Margin="0 5 0 0"></TextBlock>
                     </controls:LabeledControl>
             
-                    <controls:CardControl HeaderText="Tracks" Margin="0 5 0 0">
+                    <controls:CardControl HeaderText="Tracks" Margin="0 5 0 0" DisplayHeaderButtons="True">
+                        <controls:CardControl.HeaderButtons>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 5 0">
+                                
+                                <TextBlock VerticalAlignment="Center" Margin="0 0 5 0">Is Copyright Safe:</TextBlock>
+                                <controls:ImageButton IsEnabled="{Binding IsAnyCopyrightSafeValueOverridden}" Click="CopyrightOverrideUndoButton_OnClick">
+                                    <avalonia:MaterialIcon Kind="Undo" Opacity="{Binding UndoOpacity}" Width="20" Height="20" />
+                                </controls:ImageButton>
+                                
+                                <controls:ImageButton Click="CopyrightCheckboxButton_OnClick">
+                                    <avalonia:MaterialIcon Kind="{Binding CheckedIconKind}" Foreground="{Binding CopyrightIconBrush}" Width="20" Height="20" />
+                                </controls:ImageButton>
+                            </StackPanel>
+                        </controls:CardControl.HeaderButtons>
                         <ItemsControl ItemsSource="{Binding Tracks}" >
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -62,12 +78,33 @@
                                         <ItemsControl ItemsSource="{Binding Songs}" Margin="0 2 0 0" >
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <StackPanel Orientation="Vertical" Margin="8 2 0 0">
-                                                        <TextBlock Text="{Binding SongDetails}" TextWrapping="Wrap"></TextBlock>
-                                                        <controls:LinkControl x:Name="TrackLinkButton" Click="TrackLinkButton_OnClick" Tag="{Binding DisplayUrl}"></controls:LinkControl>
-                                                        <TextBlock Text="{Binding Path}" Foreground="Gray" Margin="10 0 0 0"></TextBlock>
-                                                        <Decorator></Decorator>
-                                                    </StackPanel>
+                                                    <Grid ColumnDefinitions="*, Auto">
+                                                        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="8 2 0 0">
+                                                            <TextBlock Text="{Binding SongDetails}" TextWrapping="Wrap"></TextBlock>
+                                                            <controls:LinkControl x:Name="TrackLinkButton" Click="TrackLinkButton_OnClick" Tag="{Binding DisplayUrl}"></controls:LinkControl>
+                                                            <TextBlock Text="{Binding Path}" Foreground="Gray" Margin="10 0 0 0"></TextBlock>
+                                                        </StackPanel>
+                                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                            <controls:ImageButton 
+                                                                IsEnabled="{Binding IsCopyrightSafeValueOverridden}"
+                                                                Click="CopyrightOverrideUndoButton_OnClick"
+                                                                Tag="{Binding}"
+                                                            >
+                                                                <avalonia:MaterialIcon Kind="Undo" 
+                                                                    Opacity="{Binding UndoOpacity}" 
+                                                                    Width="20" 
+                                                                    Height="20"
+                                                                />
+                                                            </controls:ImageButton>
+                                
+                                                            <controls:ImageButton 
+                                                                Click="CopyrightCheckboxButton_OnClick"
+                                                                Tag="{Binding}"
+                                                            >
+                                                                <avalonia:MaterialIcon Kind="{Binding CheckedIconKind}" Foreground="{Binding CopyrightIconBrush}" Width="20" Height="20" />
+                                                            </controls:ImageButton>
+                                                        </StackPanel>
+                                                    </Grid>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>

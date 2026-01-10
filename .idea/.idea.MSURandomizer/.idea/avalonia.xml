@@ -6,6 +6,7 @@
         <entry key="MSURandomizer/App.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/CurrentPlayingTrackControl.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/HardwareConnectorSelectionWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
+        <entry key="MSURandomizer/Views/HardwareDirectoriesWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/HardwareModeWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/HardwareMsuWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/MsuDetailsWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
@@ -15,6 +16,7 @@
         <entry key="MSURandomizer/Views/MsuWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/SettingsWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/SnesConnectorSelectionWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
+        <entry key="MSURandomizer/Views/UnknownMsuWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizerCrossPlatform/App.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
         <entry key="MSURandomizerCrossPlatform/Controls/MsuDetailsWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />
         <entry key="MSURandomizerCrossPlatform/Controls/MsuGenerationWindow.axaml" value="MSURandomizerCrossPlatform/MSURandomizerCrossPlatform.csproj" />

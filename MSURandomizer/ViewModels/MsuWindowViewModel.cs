@@ -26,6 +26,8 @@ public class MsuWindowViewModel : ViewModelBase
     
     [Reactive] public bool CanDisplayContinuousShuffleButton { get; set; }
     
+    [Reactive] public bool CanDisplayUploadButton { get; set; }
+    
     [Reactive] public bool WasClosed { get; set; }
 
     [Reactive] public bool IsHardwareModeButtonVisible { get; set; } = true;
@@ -35,7 +37,7 @@ public class MsuWindowViewModel : ViewModelBase
     [Reactive] public bool DisplayMsuTypeComboBox { get; set; } = true;
     
     [Reactive] 
-    [ReactiveLinkedProperties(nameof(IsShuffledMsuButtonVisible), nameof(IsContinuousShuffleButtonVisible))]
+    [ReactiveLinkedProperties(nameof(IsShuffledMsuButtonVisible), nameof(IsContinuousShuffleButtonVisible), nameof(IsMsuWindowUploadButtonVisible))]
     public bool IsHardwareModeEnabled { get; set; } = false;
 
     public bool IsSelectMsuButtonVisible => CanDisplaySelectMsuButton;
@@ -47,6 +49,8 @@ public class MsuWindowViewModel : ViewModelBase
     public bool IsShuffledMsuButtonVisible => CanDisplayShuffledMsuButton && !IsHardwareModeEnabled;
 
     public bool IsContinuousShuffleButtonVisible => CanDisplayContinuousShuffleButton && !IsHardwareModeEnabled;
+    
+    public bool IsMsuWindowUploadButtonVisible => CanDisplayUploadButton && IsHardwareModeEnabled;
 
     [Reactive]
     [ReactiveLinkedProperties(nameof(IsSelectMsuEnabled), nameof(IsRandomMsuEnabled), nameof(IsShuffledMsuEnabled), 
@@ -89,6 +93,10 @@ public class MsuWindowViewModel : ViewModelBase
     public bool HasGitHubUrl => !string.IsNullOrEmpty(GitHubUrl);
     
     public bool HasMsuFolder { get; set; }
+    
+    public bool DisplayDesktopPopupOnLoad { get; set; }
+    
+    public bool DisplaySettingsWindowOnLoad { get; set; }
 
     public int FilterColumnIndex { get; set; } = 1;
 }

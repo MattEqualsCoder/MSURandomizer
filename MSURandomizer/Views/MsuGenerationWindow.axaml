@@ -30,13 +30,21 @@
                 <TextBlock Margin="2">MSU Name</TextBlock>
                 <TextBox Margin="2" Text="{Binding Name}" />
                 <TextBlock Margin="2" IsVisible="{Binding IsMsuShuffleStyleVisible}">Shuffle Style</TextBlock>
-                <controls:EnumComboBox Margin="2">
-                    <controls:EnumComboBox
-                        EnumType="{Binding MsuShuffleStyle, Converter={StaticResource TypeConverter}}"
-                        Value="{Binding MsuShuffleStyle, Mode=TwoWay}"
-                        IsVisible="{Binding IsMsuShuffleStyleVisible}"
-                    ></controls:EnumComboBox>
-                </controls:EnumComboBox>
+                <controls:EnumComboBox
+                    Margin="2"
+                    EnumType="{Binding MsuShuffleStyle, Converter={StaticResource TypeConverter}}"
+                    Value="{Binding MsuShuffleStyle, Mode=TwoWay}"
+                    IsVisible="{Binding IsMsuShuffleStyleVisible}"
+                ></controls:EnumComboBox>
+                
+                <TextBlock Margin="2" IsVisible="{Binding IsMsuShuffleStyleVisible}">Copyright Strike Safety</TextBlock>
+                <controls:EnumComboBox
+                    Margin="2"
+                    EnumType="{Binding MsuCopyrightSafety, Converter={StaticResource TypeConverter}}"
+                    Value="{Binding MsuCopyrightSafety, Mode=TwoWay}"
+                    IsVisible="{Binding IsOnlyCopyrightSafeTracks}"
+                ></controls:EnumComboBox>
+                
                 <CheckBox Margin="2 5" 
                           IsChecked="{Binding OpenFolderOnCreate}"
                           IsVisible="{Binding IsOpenFolderVisible}"

@@ -12,10 +12,14 @@ internal class MsuHardwareService(
     IMsuUserOptionsService msuUserOptionsService,
     ILogger<MsuHardwareService> logger) : IMsuHardwareService
 {
+    private Dictionary<string, (SnesFile msuFile, List<SnesFile> pcmFiles)> _hardwareFileCache = [];
+    private Dictionary<string, Msu> _hardwareMsuList = [];
+
     public async Task<List<Msu>?> GetMsusFromDevice()
     {
         var cts = new CancellationTokenSource();
         List<Msu>? response = null;
+        _hardwareFileCache = [];
 
         if (!snesConnectorService.GetFileList(new SnesFileListRequest()
             {
@@ -35,6 +39,14 @@ internal class MsuHardwareService(
         {
             await Task.Delay(TimeSpan.FromSeconds(0.25), cts.Token)
                 .ContinueWith(tsk => tsk.Exception == default, CancellationToken.None);
+        }
+
+        response = response?.Where(x => x.HasSufficientTracks).ToList();
+        _hardwareMsuList = response?.ToDictionary(x => x.Path, x => x) ?? [];
+        
+        if (response?.Count > 0)
+        {
+            HardwareMsusLoaded?.Invoke(this, new MsuListEventArgs(response, new Dictionary<string, string>()));
         }
         
         return response;
@@ -119,6 +131,27 @@ internal class MsuHardwareService(
         return msu;
     }
 
+    public Msu RefreshMsu(string path)
+    {
+        if (!_hardwareFileCache.TryGetValue(path, out var files) || !_hardwareMsuList.ContainsKey(path))
+        {
+            throw new InvalidOperationException($"Hardware msu {path} could not be found to refresh");
+        }
+
+        _hardwareMsuList.Remove(path);
+        var newMsu = msuLookupService.LoadHardwareMsu(files.msuFile, files.pcmFiles);
+        _hardwareMsuList.Add(path, newMsu);
+        HardwareMsusChanged?.Invoke(this, new MsuListEventArgs(_hardwareMsuList.Values.ToList(), new Dictionary<string, string>()));
+        return newMsu;
+    }
+
+    public List<Msu> Msus => _hardwareMsuList.Values.ToList();
+
+
+    public event EventHandler<MsuListEventArgs>? HardwareMsusLoaded;
+    
+    public event EventHandler<MsuListEventArgs>? HardwareMsusChanged;
+
     private bool IsMsuFile(string fileName)
     {
         return fileName.EndsWith(".msu", StringComparison.OrdinalIgnoreCase) ||
@@ -127,7 +160,6 @@ internal class MsuHardwareService(
 
     private List<Msu> ProcessFileList(List<SnesFile> files)
     {
-        
         var snesMsus = files.Where(x => x.Name.EndsWith(".msu", StringComparison.OrdinalIgnoreCase));
 
         var toReturn = new List<Msu>();
@@ -139,8 +171,16 @@ internal class MsuHardwareService(
                 var baseFileName = snesMsu.Name.Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
                 var pcmFiles = files.Where(x =>
                     x.ParentName == snesMsu.ParentName && x.Name.StartsWith(baseFileName) &&
-                    x.Name.EndsWith(".pcm", StringComparison.OrdinalIgnoreCase));
+                    x.Name.EndsWith(".pcm", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (pcmFiles.Count == 0)
+                {
+                    continue;
+                }
+                
                 toReturn.Add(msuLookupService.LoadHardwareMsu(snesMsu, pcmFiles));
+                _hardwareFileCache[snesMsu.FullPath] = (snesMsu, pcmFiles);
             }
             catch (Exception e)
             {

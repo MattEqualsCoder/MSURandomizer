@@ -3,6 +3,7 @@ using MSURandomizerLibrary.Configs;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public class TrackDisplayTests
 {
     [Test]

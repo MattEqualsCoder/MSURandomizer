@@ -58,7 +58,7 @@ internal class MsuGameService(ILogger<MsuGameService> logger, ISnesConnectorServ
             return;
         }
         
-        logger.LogInformation("Setup game connector");
+        logger.LogInformation("Setup game connector MSU track monitor");
 
         _currentGame.OnTrackChanged += (sender, args) =>
         {

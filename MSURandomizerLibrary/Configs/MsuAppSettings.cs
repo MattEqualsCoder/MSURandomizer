@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace MSURandomizerLibrary.Configs;
+﻿namespace MSURandomizerLibrary.Configs;
 
 /// <summary>
 /// Settings for the MSU Randomizer
@@ -69,6 +66,11 @@ public class MsuAppSettings
     public bool? MsuWindowDisplaySelectButton { get; set; }
     
     /// <summary>
+    /// If the button to upload MSUs to hardware can be displayed
+    /// </summary>
+    public bool? MsuWindowDisplayUploadButton { get; set; }
+    
+    /// <summary>
     /// The name of an MSU type that should be forced to be used as output
     /// </summary>
     public string? ForcedMsuType { get; set; }
@@ -97,6 +99,21 @@ public class MsuAppSettings
     /// If the hardware connection mode is disabled or not
     /// </summary>
     public bool DisableHardwareMode { get; set; }
+    
+    /// <summary>
+    /// If the messenger that sends generation and track notifications via grpc
+    /// </summary>
+    public bool DisableMessageSender { get; set; }
+
+    /// <summary>
+    /// For hardware MSUs, the list of compatible MSU types
+    /// </summary>
+    public Dictionary<string, List<string>> HardwareCompatibleMsuTypes { get; set; } = [];
+
+    /// <summary>
+    /// List of MSU types that are allowed
+    /// </summary>
+    public List<string> MsuTypeFilter { get; set; } = [];
 
     /// <summary>
     /// Default directory for misc save data
@@ -125,7 +142,7 @@ public class MsuAppSettings
     {
         return MsuTypeNameOverrides == null
             ? msuName
-            : MsuTypeNameOverrides.TryGetValue(msuName, out var overrideName) ? overrideName : msuName;
+            : MsuTypeNameOverrides.GetValueOrDefault(msuName, msuName);
     }
 
     /// <summary>
@@ -134,6 +151,6 @@ public class MsuAppSettings
     public IEnumerable<string> ZeldaSuperMetroidSmz3MsuTypes =>
         MetroidFirstMsuTypes != null && ZeldaFirstMsuTypes != null
             ? MetroidFirstMsuTypes.Concat(ZeldaFirstMsuTypes)
-            : MetroidFirstMsuTypes ?? (ZeldaFirstMsuTypes ?? new List<string>());
+            : MetroidFirstMsuTypes ?? (ZeldaFirstMsuTypes ?? []);
 
 }

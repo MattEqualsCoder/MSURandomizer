@@ -114,6 +114,25 @@ public class Msu
     /// The list of tracks in this MSU
     /// </summary>
     public ICollection<Track> Tracks { get; set; } = new List<Track>();
+
+    /// <summary>
+    /// The MSU Type directory this was found under
+    /// </summary>
+    public string ParentMsuTypeDirectory { get; set; } = "";
+
+    /// <summary>
+    /// The relative path to the MSU from its parent msu type directory
+    /// </summary>
+    [JsonIgnore]
+    public string RelativePath => !string.IsNullOrEmpty(ParentMsuTypeDirectory)
+        ? System.IO.Path.GetRelativePath(ParentMsuTypeDirectory, Path)
+        : Path; 
+
+    /// <summary>
+    /// If this unknown MSU should be ignored
+    /// </summary>
+    [JsonIgnore]
+    public bool IgnoreUnknown => Settings.IsUserUnknownMsu;
     
     /// <summary>
     /// User settings applied to the MSU
@@ -168,30 +187,50 @@ public class Msu
     /// </summary>
     [JsonIgnore]
     public string AbbreviatedPath => GetAbbreviatedPath();
+    
+    /// <summary>
+    /// If all tracks are marked as copyright safe
+    /// </summary>
+    [JsonIgnore]
+    public bool AreAllTracksCopyrightSafe { get; set; }
 
     /// <summary>
     /// If the MSU matches filter settings
     /// </summary>
     /// <param name="filter">How closely this MSU needs to match the MSU type</param>
     /// <param name="type">The MSU type being looked for</param>
-    /// <param name="path">The path being looked at</param>
+    /// <param name="compatibleMsuTypeNames">Optional list of MSU type names to use for filtering, unless the FilterType All is selected</param>
     /// <returns>True if matches, false otherwise</returns>
-    public bool MatchesFilter(MsuFilter filter, MsuType type, string? path)
+    public bool MatchesFilter(MsuFilter filter, MsuType type, List<string>? compatibleMsuTypeNames = null)
     {
-        return MatchesFilterType(filter, type) && MatchesPath(path) && Tracks.Count >= 1;
+        if (MatchesFilterType(filter, type) && Tracks.Count >= 1)
+        {
+            if (compatibleMsuTypeNames == null || filter == MsuFilter.All)
+            {
+                return true;
+            }
+
+            return compatibleMsuTypeNames.Contains(MsuTypeName);
+        }
+        else
+        {
+            return false;
+        }
     }
+
+    /// <summary>
+    /// If the MSU has enough to tracks to be displayed (>= 20% of required tracks or > 10 tracks)
+    /// </summary>
+    [JsonIgnore]
+    public bool HasSufficientTracks => NumUniqueTracks > MsuType?.RequiredTrackNumbers.Count / 5 || NumUniqueTracks > 10;
 
     private bool MatchesFilterType(MsuFilter filter, MsuType type)
     {
         return filter == MsuFilter.All ||
                (filter == MsuFilter.Favorite && Settings.IsFavorite) ||
                (filter == MsuFilter.Compatible && SelectedMsuType?.IsCompatibleWith(type) == true) ||
-               (filter == MsuFilter.Exact && SelectedMsuType?.IsExactMatchWith(type) == true);
-    }
-
-    private bool MatchesPath(string? path)
-    {
-        return string.IsNullOrEmpty(path) || Path.StartsWith(path);
+               (filter == MsuFilter.Exact && SelectedMsuType?.IsExactMatchWith(type) == true) ||
+               (filter == MsuFilter.CopyrightSafe && AreAllTracksCopyrightSafe);
     }
 
     /// <summary>

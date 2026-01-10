@@ -22,12 +22,14 @@ public class MsuViewModel : ViewModelBase
         Msu = msu;
         MsuName = msu.DisplayName;
         MsuCreator = msu.DisplayCreator;
-        MsuPath = DisplayPath = msu.Path;
+        MsuPath = msu.Path;
+        DisplayPath = msu.RelativePath;
         MsuTypeName = msu.MsuType?.DisplayName ?? msu.MsuTypeName;
         MsuTrackCount = $"{msu.ValidTracks.Count} Tracks";
         IsFavorite = msu.Settings.IsFavorite;
         ShuffleFrequency = msu.Settings.ShuffleFrequency;
         IsHardwareMsu = msu.IsHardwareMsu;
+        ShowShuffleFrequency = !IsHardwareMsu;
     }
     
     [Reactive] public Msu Msu { get; init; }
@@ -64,6 +66,8 @@ public class MsuViewModel : ViewModelBase
     [Reactive]
     [ReactiveLinkedProperties(nameof(ShuffleFrequencyIcon), nameof(ShuffleFrequencyColor))]
     public ShuffleFrequency ShuffleFrequency { get; set; }
+
+    [Reactive] public bool ShowShuffleFrequency { get; set; } = true;
     
     public string ListText => string.IsNullOrEmpty(MsuCreator) ? MsuName ?? "" : $"{MsuName} by {MsuCreator}";
     

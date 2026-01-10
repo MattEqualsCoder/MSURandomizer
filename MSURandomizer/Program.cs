@@ -2,17 +2,16 @@
 using Avalonia.ReactiveUI;
 using System;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using AvaloniaControls.Controls;
-using AvaloniaControls.Extensions;
 using AvaloniaControls.Services;
 using GitHubReleaseChecker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MSURandomizer.Services;
-using MSURandomizerLibrary;
 using Serilog;
 
 namespace MSURandomizer;
@@ -27,11 +26,17 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        
         var loggerConfiguration = new LoggerConfiguration();
         
 #if DEBUG
-        loggerConfiguration = loggerConfiguration.MinimumLevel.Debug();
+        if (args.Contains("-d"))
+        {
+            loggerConfiguration = loggerConfiguration.MinimumLevel.Verbose();
+        }
+        else
+        {
+            loggerConfiguration = loggerConfiguration.MinimumLevel.Debug();
+        }
 #else
         if (args.Contains("-d"))
         {
@@ -68,7 +73,7 @@ sealed class Program
         MainHost.Services.GetRequiredService<ITaskService>();
         MainHost.Services.GetRequiredService<IControlServiceFactory>();
         MainHost.Services.GetRequiredService<AppInitializationService>().Initialize(args);
-
+        
         ExceptionWindow.GitHubUrl = "https://github.com/MattEqualsCoder/MSURandomizer/issues";
         ExceptionWindow.LogPath = Directories.LogFolder;
         
@@ -81,16 +86,16 @@ sealed class Program
         }
         catch (Exception e)
         {
-            ShowExceptionPopup(e).ContinueWith(t => source.Cancel(), TaskScheduler.FromCurrentSynchronizationContext());
+            ShowExceptionPopup(e).ContinueWith(_ => source.Cancel(), TaskScheduler.FromCurrentSynchronizationContext());
             Dispatcher.UIThread.MainLoop(source.Token);
         }
     }
-
+    
     // Avalonia configuration, don't remove; also used by visual designer.
     private static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .With(new X11PlatformOptions() { UseDBusFilePicker = false })
+            .With(new X11PlatformOptions() { UseDBusFilePicker = false, RenderingMode = [ X11RenderingMode.Software ] })
             .WithInterFont()
             .LogToTrace()
             .UseReactiveUI();

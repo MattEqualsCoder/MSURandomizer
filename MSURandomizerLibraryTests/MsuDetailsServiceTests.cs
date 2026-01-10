@@ -3,6 +3,7 @@ using MSURandomizerLibrary.Services;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public class MsuDetailsServiceTests
 {
     private readonly string _msuPath = new FileInfo("unit-test.msu").FullName;
@@ -58,6 +59,9 @@ tracks:
                     songName: "Test Song", 
                     path:"Test Path"
                 )
+                {
+                    IsCopyrightSafe = true
+                }
             },
             msuDetails: null,
             prevMsu: null
@@ -70,14 +74,17 @@ tracks:
         var success = service.SaveMsuDetails(msu, _yamlPath, out var error);
 
         var expectedResult =
-            @"pack_name: Test MSU Pack
-pack_author: Test Creator
-pack_version: 1
-tracks:
-  Test Track:
-    track_number: 1
-    name: Test Song
-";
+            """
+            pack_name: Test MSU Pack
+            pack_author: Test Creator
+            pack_version: "1"
+            tracks:
+              Test Track:
+                track_number: 1
+                name: Test Song
+                is_copyright_safe: true
+
+            """;
 
         var output = success ? File.ReadAllText(_yamlPath) : "";
         DeleteYamlFile();
@@ -176,6 +183,106 @@ tracks:
             Assert.That(track2?.Number, Is.EqualTo(101));
         });
     }
+    
+    [Test]
+    public void LoadMsuDetailsCopyrightSafeTest()
+    {
+        SaveTestYamlFile(@"pack_name: Test MSU Pack
+pack_author: Test Creator
+artist: Test Artist
+tracks:
+  light_world:
+    name: Test Song 1
+    album: Test Album 1
+    url: Test Url 1
+    is_copyright_safe: true
+  bunny_theme:
+    name: Test Song 2
+    album: Test Album 2
+    url: Test Url 2
+    is_copyright_safe: false
+  samus_fanfare:
+    name: Test Song 3
+    album: Test Album 3
+    artist: Test Artist 3");
+
+        var msuType = new MsuType()
+        {
+            Name = "Test MSU Type",
+            DisplayName = "Test MSU Type",
+            RequiredTrackNumbers = new HashSet<int>() { 2, 4, 101 },
+            ValidTrackNumbers = new HashSet<int>() { 2, 4, 101 },
+            Tracks = new List<MsuTypeTrack>()
+            {
+                new()
+                {
+                    Number = 2,
+                    Name = "Track 2",
+                    YamlName = "light_world"
+                },
+                new()
+                {
+                    Number = 4,
+                    Name = "Track 4",
+                    YamlName = "bunny_theme"
+                },
+                new()
+                {
+                    Number = 101,
+                    Name = "Track 101",
+                    YamlName = "Whatever",
+                    YamlNameSecondary = "samus_fanfare"
+                }
+            }
+        };
+        
+        var service = GetMsuDetailsService(new MsuAppSettings()
+        {
+            Smz3MsuTypes = new List<string> { "Test MSU Type" }
+        });
+
+        var msuDetails = service.GetMsuDetails(_msuPath, out _, out var basicError);
+        Assert.That(msuDetails, Is.Not.Null);
+        
+        if (!File.Exists(_msuPath.Replace(".msu", "-2.pcm")) || !File.Exists(_msuPath.Replace(".msu", "-4.pcm")) || !File.Exists(_msuPath.Replace(".msu", "-101.pcm")))
+        {
+            using (File.Create(_msuPath.Replace(".msu", "-2.pcm"))) {}
+            using (File.Create(_msuPath.Replace(".msu", "-4.pcm"))) {}
+            using (File.Create(_msuPath.Replace(".msu", "-101.pcm"))) {}
+        }
+
+        var msu = service.ConvertToMsu(msuDetails!, msuType, _msuPath, new FileInfo(_msuPath).DirectoryName!, "unit-test",
+            out var error);
+        Assert.Multiple(() =>
+        {
+            Assert.That(msu, Is.Not.Null);
+            Assert.That(string.IsNullOrEmpty(error), Is.True);
+            Assert.That(msu?.Name, Is.EqualTo("Test MSU Pack"));
+            Assert.That(msu?.Creator, Is.EqualTo("Test Creator"));
+            Assert.That(msu?.Tracks.Count, Is.EqualTo(3));
+        });
+
+        var track1 = msu?.Tracks.First(x => x.Number == 2);
+        Assert.Multiple(() =>
+        {
+            Assert.That(track1?.IsCopyrightSafe, Is.True);
+            Assert.That(track1?.IsCopyrightSafeCombined, Is.True);
+        });
+        
+        var track2 = msu?.Tracks.First(x => x.Number == 4);
+        Assert.Multiple(() =>
+        {
+            Assert.That(track2?.IsCopyrightSafe, Is.False);
+            Assert.That(track2?.IsCopyrightSafeCombined, Is.False);
+        });
+        
+        var track3 = msu?.Tracks.First(x => x.Number == 101);
+        Assert.Multiple(() =>
+        {
+            Assert.That(track3?.IsCopyrightSafe, Is.Null);
+            Assert.That(track3?.IsCopyrightSafeCombined, Is.Null);
+        });
+    }
 
     private void SaveTestYamlFile(string text)
     {
@@ -188,7 +295,8 @@ tracks:
     {
         var logger = TestHelpers.CreateMockLogger<MsuDetailsService>();
         var settingsService = TestHelpers.CreateMsuAppSettingsService(appSettings);
-        return new MsuDetailsService(logger);
+        var msuOptions = TestHelpers.CreateMockMsuUserOptionsService(null);
+        return new MsuDetailsService(logger, msuOptions);
     }
 
     private void DeleteYamlFile()

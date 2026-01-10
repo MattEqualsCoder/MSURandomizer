@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using AvaloniaControls.Extensions;
-using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
 using MSURandomizerLibrary;
@@ -42,6 +42,10 @@ public partial class MsuList : UserControl
         {
             _service = this.GetControlService<MsuListService>();
             DataContext = _model = _service!.InitializeModel();
+            _service!.OnDisplayUnknownMsuWindowRequest += (sender, args) =>
+            {
+                OpenUnknownMsuWindow();
+            };
         }
     }
 
@@ -96,6 +100,16 @@ public partial class MsuList : UserControl
     public void ToggleHardwareMode(bool isEnabled)
     {
         _service?.ToggleHardwareMode(isEnabled);
+    }
+
+    public void OpenUnknownMsuWindow()
+    {
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            var parentWindow = TopLevel.GetTopLevel(this) as Window;
+            var unknownMsuWindow = new UnknownMsuWindow(_service?.Model.HardwareMode == true);
+            unknownMsuWindow.ShowDialog(parentWindow!);
+        });
     }
     
     private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -189,5 +203,13 @@ public partial class MsuList : UserControl
         
         var window = new MsuMonitorWindow();
         window.Show(model.Msu, _model.MsuType);
+    }
+
+    private void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        if (_model.DisplayUnknownMsuWindow)
+        {
+            OpenUnknownMsuWindow();
+        }
     }
 }

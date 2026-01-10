@@ -134,6 +134,9 @@ internal class MsuTypeService : IMsuTypeService
     
     private void FinalizeConfigs(IEnumerable<MsuTypeConfig> configs)
     {
+        var msuTypeFilter = _msuAppSettings.MsuAppSettings.MsuTypeFilter;
+        var hasMsuTypeFilter = msuTypeFilter.Count > 0;
+        
         foreach (var config in configs)
         {
             // Copy tracks from other configs
@@ -143,6 +146,12 @@ internal class MsuTypeService : IMsuTypeService
             }
 
             var type = ConvertMsuTypeConfig(config);
+
+            if (hasMsuTypeFilter && !msuTypeFilter.Contains(type.DisplayName))
+            {
+                continue;
+            }
+            
             _msuTypes.Add(type);
             _logger.LogInformation("MSU type {ConfigName} found with {TrackCount} tracks", config.Meta.Name, config.FullTrackList.Count);
         }

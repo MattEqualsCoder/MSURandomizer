@@ -58,6 +58,16 @@ public class MsuSettings
     /// How frequent this MSU should come up
     /// </summary>
     public ShuffleFrequency ShuffleFrequency { get; set; }
+    
+    /// <summary>
+    /// If the user confirmed that this is an unknown MSU
+    /// </summary>
+    public bool IsUserUnknownMsu { get; set; }
+    
+    /// <summary>
+    /// User overrides for if individual tracks are copyright safe
+    /// </summary>
+    public Dictionary<string, bool>? IsCopyrightSafeOverrides { get; set; }
 
     /// <summary>
     /// If this is not a favorite
@@ -92,11 +102,13 @@ public class MsuSettings
     /// <summary>
     /// If there are any specified settings
     /// </summary>
-    [YamlIgnore] 
+    [YamlIgnore]
     public bool HasSettings => !string.IsNullOrEmpty(MsuTypeName) 
                                  || !string.IsNullOrEmpty(Name) 
                                  || !string.IsNullOrEmpty(Creator) 
                                  || AltOption != AltOptions.Randomize
                                  || IsFavorite
-                                 || ShuffleFrequency != ShuffleFrequency.Default;
+                                 || ShuffleFrequency != ShuffleFrequency.Default
+                                 || IsUserUnknownMsu
+                                 || IsCopyrightSafeOverrides?.Count > 0;
 }

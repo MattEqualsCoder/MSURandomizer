@@ -1,15 +1,18 @@
-﻿using System.Collections;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
 using MSURandomizerLibrary.Configs;
+using MSURandomizerLibrary.Messenger;
 using MSURandomizerLibrary.Services;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public abstract class TestHelpers
 {
+    public static readonly string TestMsuTypeName = "Test MSU Type";
+    
     public static IMsuAppSettingsService CreateMsuAppSettingsService(MsuAppSettings? settings = null)
     {
         settings ??= new MsuAppSettings();
@@ -58,8 +61,8 @@ public abstract class TestHelpers
 
         var msuType = new MsuType()
         {
-            Name = "Test MSU Type",
-            DisplayName = "Test MSU Type",
+            Name = TestMsuTypeName,
+            DisplayName = TestMsuTypeName,
             RequiredTrackNumbers = trackNumbers.ToHashSet(),
             ValidTrackNumbers = trackNumbers.ToHashSet(),
             Tracks = trackNumbers.Select(x => new MsuTypeTrack()
@@ -121,6 +124,11 @@ public abstract class TestHelpers
         service.Setup(x => x.SaveMsuSettings(It.IsAny<Msu>()));
 
         return service.Object;
+    }
+
+    public static IMsuMessageSender CreateMockMsuMessageSender()
+    {
+        return new Mock<IMsuMessageSender>().Object;
     }
     
     public static IMsuCacheService CreateMockMsuCacheService()
@@ -185,7 +193,7 @@ public abstract class TestHelpers
     {
         return CreateMsu(GetTracksFromRanges(tracks), msuName, deleteOld, createAlts, specialTracks);
     }
-
+    
     public static IMsuDetailsService CreateMockMsuDetailsService(MsuDetails? returnMsuDetails, Msu? returnMsu)
     {
         var msuDetailsService = new Mock<IMsuDetailsService>();
@@ -195,7 +203,7 @@ public abstract class TestHelpers
         msuDetailsService.Setup(x => x.GetMsuDetails(It.IsAny<string>(), out outString1, out outString2))
             .Returns(value: returnMsuDetails);
 
-        msuDetailsService.Setup(x => x.ConvertToMsu(It.IsAny<MsuDetails>(),It.IsAny<MsuType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), out outString1))
+        msuDetailsService.Setup(x => x.ConvertToMsu(It.IsAny<MsuDetails>(),It.IsAny<MsuType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), out outString1, It.IsAny<bool>(), It.IsAny<List<string>?>()))
             .Returns(value: returnMsu);
         
         msuDetailsService.Setup(x => x.SaveMsuDetails(It.IsAny<Msu>(), It.IsAny<string>(), out outString1))

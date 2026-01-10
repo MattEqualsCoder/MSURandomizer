@@ -2,7 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using AppImageManager;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using AvaloniaControls;
 using AvaloniaControls.Controls;
 using AvaloniaControls.ControlServices;
 using AvaloniaControls.Models;
@@ -38,23 +42,23 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
     public MsuWindowViewModel InitializeModel()
     {
-        msuLookupService.OnMsuLookupStarted += (sender, args) =>
+        msuLookupService.OnMsuLookupStarted += (_, _) =>
         {
             Model.AreMsusLoading = true;
         };
         
-        msuLookupService.OnMsuLookupComplete += (sender, args) =>
+        msuLookupService.OnMsuLookupComplete += (_, _) =>
         {
             Model.AreMsusLoading = false;
         };
 
-        msuMonitorService.MsuMonitorStarted += (sender, args) =>
+        msuMonitorService.MsuMonitorStarted += (_, _) =>
         {
             Model.IsMsuMonitorActive = true;
             MsuMonitorStarted?.Invoke(this, EventArgs.Empty);
         };
         
-        msuMonitorService.MsuMonitorStopped += (sender, args) =>
+        msuMonitorService.MsuMonitorStopped += (_, _) =>
         {
             Model.IsMsuMonitorActive = false;
             MsuMonitorStopped?.Invoke(this, EventArgs.Empty);
@@ -68,6 +72,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         Model.CanDisplayContinuousShuffleButton = settings.MsuWindowDisplayContinuousButton == true;
         Model.CanDisplaySelectMsuButton = settings.MsuWindowDisplaySelectButton == true;
         Model.CanDisplayCancelButton = settings.MsuWindowDisplaySelectButton == true;
+        Model.CanDisplayUploadButton = settings.MsuWindowDisplayUploadButton == true;
         Model.IsHardwareModeButtonVisible = !appSettings.MsuAppSettings.DisableHardwareMode;
         Model.MsuWindowDisplayOptionsButton = appSettings.MsuAppSettings.MsuWindowDisplayOptionsButton != false;
         Model.HasMsuFolder = Model.MsuWindowDisplayOptionsButton && userOptions.MsuUserOptions.HasMsuFolder();
@@ -79,8 +84,29 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
             Model.DisplayMsuTypeComboBox = false;
             Model.FilterColumnIndex = 0;
         }
+
+        Model.DisplaySettingsWindowOnLoad = Model is { MsuWindowDisplayOptionsButton: true, HasMsuFolder: false };
+
+        if (OperatingSystem.IsLinux() && Model.MsuWindowDisplayOptionsButton && !userOptions.MsuUserOptions.SkipDesktopFile &&
+            !AppImage.DoesDesktopFileExist(App.AppId))
+        {
+            Model.DisplayDesktopPopupOnLoad = true;
+        }
         
         return Model;
+    }
+
+    public void HandleUserDesktopResponse(bool addDesktopFile)
+    {
+        if (addDesktopFile && OperatingSystem.IsLinux())
+        {
+            App.BuildLinuxDesktopFile();
+        }
+        else
+        {
+            userOptions.MsuUserOptions.SkipDesktopFile = true;
+            userOptions.Save();
+        }
     }
 
     private void AppInitializationServiceOnInitializationComplete(object? sender, EventArgs e)
@@ -89,10 +115,13 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         {
             return;
         }
+        
+        var downloadUrl = appInitializationService.ReleaseDownloadUrl;
+        var hasDownloadUrl = !string.IsNullOrEmpty(downloadUrl);
 
-        Dispatcher.UIThread.Invoke(() =>
+        Dispatcher.UIThread.Invoke(async () =>
         {
-            var messageWindow = new MessageWindow(new MessageWindowRequest()
+            var messageWindow = new MessageWindow(new MessageWindowRequest
             {
                 Title = $"MSU Randomizer {appInitializationService.LatestFullRelease.Tag}",
                 Message = "A new version of the MSU Randomizer has been released.",
@@ -100,17 +129,45 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 LinkUrl = appInitializationService.LatestFullRelease.Url,
                 Icon = MessageWindowIcon.Info,
                 CheckBoxText = "Do not check for updates",
-                Buttons = MessageWindowButtons.OK
+                Buttons = hasDownloadUrl ? MessageWindowButtons.YesNo : MessageWindowButtons.OK,
+                PrimaryButtonText = hasDownloadUrl ? "Download Update" : "OK",
+                SecondaryButtonText = "Close"
             });
-            messageWindow.Closed += (o, args) =>
+            await messageWindow.ShowDialog(MessageWindow.GlobalParentWindow!);
+            
+            if (messageWindow.DialogResult?.CheckedBox == true)
             {
-                if (messageWindow.DialogResult?.CheckedBox == true)
+                userOptions.MsuUserOptions.PromptOnUpdate = false;
+                userOptions.Save();    
+            }
+
+            if (hasDownloadUrl && messageWindow.DialogResult?.PressedAcceptButton == true)
+            {
+                if (OperatingSystem.IsLinux())
                 {
-                    userOptions.MsuUserOptions.PromptOnUpdate = false;
-                    userOptions.Save();    
+                    var downloadResult = await AppImage.DownloadAsync(new DownloadAppImageRequest
+                    {
+                        Url = downloadUrl!
+                    });
+                    
+                    if (downloadResult.Success)
+                    {
+                        MessageWindow.GlobalParentWindow!.Close();
+                    }
+                    else if (downloadResult.DownloadedSuccessfully)
+                    {
+                        await MessageWindow.ShowErrorDialog("AppImage was downloaded, but it could not be launched.");
+                    }
+                    else
+                    {
+                        await MessageWindow.ShowErrorDialog("Failed downloading AppImage");
+                    }
                 }
-            };
-            messageWindow.ShowDialog();
+                else
+                {
+                    throw new InvalidOperationException("Download functionality is only available on Linux");
+                }
+            }
         });
         
     }
@@ -129,10 +186,15 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
     public void FilterMsuList(MsuList msuList)
     {
+        if (string.IsNullOrEmpty(Model.SelectedMsuType))
+        {
+            return;
+        }
+        
         var msuType = msuTypeService.GetMsuType(Model.SelectedMsuType);
         if (msuType == null)
         {
-            logger.LogWarning("Invalid MSU type");
+            logger.LogWarning("Invalid MSU type selected: {Selection}", Model.SelectedMsuType);
             return;
         }
         msuList.FilterMSUs(msuType, Model.Filter);
@@ -146,13 +208,46 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
 
     public void UpdateHardwareMode(MsuList msuList, List<Msu>? msus)
     {
+        logger.LogInformation("Hardware mode MSU list updating with {Count} msus", msus?.Count ?? 0);
+        Model.Filter = MsuFilter.Compatible;
         Model.IsHardwareModeEnabled = msus?.Count > 0;
         msuList.ToggleHardwareMode(Model.IsHardwareModeEnabled);
         msuList.PopulateMsuViewModels(msus);
+        logger.LogInformation("Hardware mode MSU list updated");
     }
 
-    public bool GenerateMsu(out string error, out bool openContinuousWindow, out Msu? msu)
+    public async Task UploadMsu(MsuWindow msuWindow, MsuList msuList)
     {
+        var msuPathToUpload = await GetMsuToUpload(msuWindow);
+        if (string.IsNullOrEmpty(msuPathToUpload))
+        {
+            return;
+        }
+        
+        var hardwareDirectoriesWindow = new HardwareDirectoriesWindow();
+        await hardwareDirectoriesWindow.ShowDialog(msuWindow, msuPathToUpload);
+        
+        if (hardwareDirectoriesWindow.HardwareMsus?.Count > 0)
+        {
+            UpdateHardwareMode(msuList, hardwareDirectoriesWindow.HardwareMsus);
+        }
+        
+    }
+    
+    public async Task BrowseDevice(MsuWindow msuWindow, MsuList msuList)
+    {
+        var hardwareDirectoriesWindow = new HardwareDirectoriesWindow();
+        await hardwareDirectoriesWindow.ShowDialog(msuWindow, null);
+        
+        if (hardwareDirectoriesWindow.HardwareMsus?.Count > 0)
+        {
+            UpdateHardwareMode(msuList, hardwareDirectoriesWindow.HardwareMsus);
+        }
+    }
+
+    public bool GenerateMsu(out string error, out bool openContinuousWindow, out Msu? msu, out string? warningMessage)
+    {
+        warningMessage = "";
         error = "";
         msu = null;
 
@@ -211,6 +306,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 {
                     msu = response.Msu;
                     openContinuousWindow = options.OpenMonitorWindow;
+                    warningMessage = response.Message;
 
                     if (options.LaunchRom && !string.IsNullOrEmpty(options.OutputRomPath))
                     {
@@ -239,6 +335,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 {
                     msu = response.Msu;
                     openContinuousWindow = options.OpenMonitorWindow;
+                    warningMessage = response.Message;
                     
                     if (options.LaunchRom && !string.IsNullOrEmpty(options.OutputRomPath))
                     {
@@ -256,7 +353,8 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 EmptyFolder = true,
                 Msus = msus,
                 OutputMsuType = outputMsuType,
-                ShuffleStyle = options.MsuShuffleStyle
+                ShuffleStyle = options.MsuShuffleStyle,
+                MsuCopyrightSafety = options.MsuCopyrightSafety,
             });
             
             if (!response.Successful)
@@ -270,6 +368,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
             {
                 msu = response.Msu;
                 openContinuousWindow = options.OpenMonitorWindow;
+                warningMessage = response.Message;
                 
                 if (options.LaunchRom && !string.IsNullOrEmpty(options.OutputRomPath))
                 {
@@ -303,9 +402,56 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         return msuTypeService.GetMsuType(msuTypeName);
     }
 
+    public void SaveSelectedMsuType()
+    {
+        userOptions.MsuUserOptions.OutputMsuType = Model.SelectedMsuType;
+        userOptions.Save();
+    }
+
     private void MsuTypeServiceOnOnMsuTypeLoadComplete(object? sender, EventArgs e)
     {
         Model.MsusTypes = msuTypeService.MsuTypes.Select(x => x.DisplayName).Order().ToList();
         Model.SelectedMsuType = userOptions.MsuUserOptions.OutputMsuType ?? Model.MsusTypes.First();
+    }
+
+    private async Task<string?> GetMsuToUpload(MsuWindow msuWindow)
+    {
+        var outputMsuType = msuTypeService.GetMsuType(Model.SelectedMsuType);
+        if (outputMsuType == null)
+        {
+            return null;
+        }
+
+        var selectedPath = "";
+        
+        foreach (var entry in userOptions.MsuUserOptions.MsuDirectories)
+        {
+            var path = entry.Key;
+            var directoryMsuType = msuTypeService.GetMsuType(Model.SelectedMsuType);
+            if (directoryMsuType == null)
+            {
+                continue;
+            }
+
+            if (outputMsuType.IsCompatibleWith(directoryMsuType))
+            {
+                selectedPath = path;
+                break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(selectedPath))
+        {
+            return null;
+        }
+        
+        var storagePath = await CrossPlatformTools.OpenFileDialogAsync(msuWindow, FileInputControlType.OpenFile, "MSU files (*.msu)|*.msu|All files (*.*)|*.*", selectedPath);
+
+        if (storagePath == null)
+        {
+            return "";
+        }
+
+        return storagePath.TryGetLocalPath();
     }
 }

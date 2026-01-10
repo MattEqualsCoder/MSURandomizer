@@ -13,11 +13,15 @@ internal class MsuDetailsService : IMsuDetailsService
     private readonly ILogger<MsuDetailsService> _logger;
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
-
-    public MsuDetailsService(ILogger<MsuDetailsService> logger)
+    private readonly MsuUserOptions _msuUserOptions;
+    private readonly Dictionary<string, MsuDetails> _loadedDetails = [];
+    
+    public MsuDetailsService(ILogger<MsuDetailsService> logger, IMsuUserOptionsService msuUserOptionsService)
     {
         _logger = logger;
+        _msuUserOptions = msuUserOptionsService.MsuUserOptions;
         _serializer = new SerializerBuilder()
+            .WithQuotingNecessaryStrings()
             .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitDefaults)
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
             .Build();
@@ -69,6 +73,25 @@ internal class MsuDetailsService : IMsuDetailsService
             _logger.LogError(e, "Unable to write MSU YAML details to {Path}", outputPath);
             return false;
         }
+    }
+
+    public MsuDetails? GetMsuDetailsForPath(string msuPath, MsuType? msuType)
+    {
+        var msuFolder = new FileInfo(msuPath).Directory?.Name;
+        var msuFileName = Path.GetFileNameWithoutExtension(msuPath);
+
+        foreach (var (yamlPath, msuDetails) in _loadedDetails)
+        {
+            var yamlFolder = new FileInfo(yamlPath).Directory?.Name;
+            var yamlFileName = Path.GetFileNameWithoutExtension(yamlPath);
+
+            if (msuFolder == yamlFolder && msuFileName == yamlFileName)
+            {
+                return msuDetails;
+            }
+        }
+        
+        return null;
     }
 
     public MsuDetails? GetMsuDetails(string msuPath, out string yamlHash, out string? error)
@@ -131,6 +154,8 @@ internal class MsuDetailsService : IMsuDetailsService
         {
             output.Url = track.Url;
         }
+        
+        output.IsCopyrightSafe = track.IsCopyrightSafe;
 
         if (tracks.Count() == 1)
         {
@@ -181,6 +206,8 @@ internal class MsuDetailsService : IMsuDetailsService
                 altOutput.Url = altTrack.Url;
             }
             
+            altOutput.IsCopyrightSafe = altTrack.IsCopyrightSafe;
+            
             if (!altOutput.CalculateAltInfo(msu.Path, altTrack.Path))
             {
                 _logger.LogWarning("Unable to calculate alt track info for {Path}", altTrack.Path);
@@ -209,7 +236,9 @@ internal class MsuDetailsService : IMsuDetailsService
             {
                 try
                 {
-                    return _deserializer.Deserialize<MsuDetails>(yamlText);
+                    var details = _deserializer.Deserialize<MsuDetails>(yamlText);
+                    _loadedDetails[yamlPath] = details;
+                    return details;
                 }
                 catch (Exception e)
                 {
@@ -265,7 +294,7 @@ internal class MsuDetailsService : IMsuDetailsService
         }
     }
 
-    private List<Track> GetTrackDetails(MsuType msuType, MsuDetails msuDetails, string directory, string baseName, out string? error)
+    private List<Track> GetTrackDetails(MsuType msuType, MsuDetails msuDetails, string directory, string baseName, out string? error, bool ignoreAlts = false, List<string>? pcmPaths = null)
     {
         error = null;
         
@@ -291,12 +320,12 @@ internal class MsuDetailsService : IMsuDetailsService
             var trackNumber = msuTypeTrack.Number;
             
             // If there's no alt data for the track, simply load the base PCM file as the track
-            if (!track.HasAltTrackData)
+            if (!track.HasAltTrackData || ignoreAlts)
             {
                 var pcmFilePath = $"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm";
                 track.Path = pcmFilePath;
 
-                if (!File.Exists(pcmFilePath))
+                if (!File.Exists(pcmFilePath) && pcmPaths?.Any(x => x.EndsWith($"{baseName}-{trackNumber}.pcm")) != true)
                 {
                     continue;
                 }
@@ -314,7 +343,8 @@ internal class MsuDetailsService : IMsuDetailsService
                 )
                 {
                     MsuName = trackInfo.Value.MsuName,
-                    MsuCreator = trackInfo.Value.MsuAuthor
+                    MsuCreator = trackInfo.Value.MsuAuthor,
+                    IsCopyrightSafe = track.IsCopyrightSafe,
                 });
             }
             // If there are alt tracks, we need to determine which file is which in case they've been swapped
@@ -357,7 +387,8 @@ internal class MsuDetailsService : IMsuDetailsService
                     )
                     {
                         MsuName = trackInfo.Value.MsuName,
-                        MsuCreator = trackInfo.Value.MsuAuthor
+                        MsuCreator = trackInfo.Value.MsuAuthor,
+                        IsCopyrightSafe = track.IsCopyrightSafe,
                     });
                 }
             }
@@ -366,11 +397,11 @@ internal class MsuDetailsService : IMsuDetailsService
         return toReturn;
     }
     
-    public Msu? ConvertToMsu(MsuDetails msuDetails, MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, out string? error)
+    public Msu? ConvertToMsu(MsuDetails msuDetails, MsuType msuType, string msuPath, string msuDirectory, string msuBaseName, out string? error, bool ignoreAlts = false, List<string>? pcmPaths = null)
     {
         try
         {
-            var tracks = GetTrackDetails(msuType, msuDetails, msuDirectory, msuBaseName, out error);
+            var tracks = GetTrackDetails(msuType, msuDetails, msuDirectory, msuBaseName, out error, ignoreAlts, pcmPaths);
             return new Msu(
                 type: msuType, 
                 name: string.IsNullOrWhiteSpace(msuDetails.PackName) ? msuBaseName : msuDetails.PackName, 

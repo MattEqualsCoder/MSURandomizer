@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using AvaloniaControls;
 using AvaloniaControls.Models;
 using MSURandomizerLibrary;
@@ -36,11 +37,17 @@ public class SettingsWindowViewModel : ViewModelBase
 
     public bool LaunchArgumentsEnabled => !string.IsNullOrEmpty(LaunchApplication);
     
+    [Reactive] public bool DisplayNoMsuDirectoriesMessage { get; set; }
+
+    public ObservableCollection<MsuDirectory> MsuDirectoryList { get; set; } = [];
+    
     [Reactive] public string? LaunchArguments { get; set; }
     
     [Reactive]
     [ReactiveLinkedProperties(nameof(TrackDisplayExample))]
     public TrackDisplayFormat TrackDisplayFormat { get; set; }
+
+    public bool DisplayDesktopFileButton => OperatingSystem.IsLinux();
     
     public string TrackDisplayExample =>
         "Ex" + TrackDisplayFormat.GetDescription()[
@@ -59,6 +66,21 @@ public class MsuTypePath : ViewModelBase
     [Reactive] public string DefaultDirectory { get; set; } = "";
     
     public string MsuTypeName => MsuType?.DisplayName ?? "A Link to the Past";
+}
+
+public class MsuDirectory : ViewModelBase
+{
+    public MsuDirectory(string path, string msuTypeName = "", List<string>? msuTypes = null)
+    {
+        Path = path;
+        MsuTypeName = msuTypeName;
+        MsuTypes = msuTypes ?? [];
+    }
+    
+    [Reactive] public string Path { get; set; }
+    [Reactive] public string MsuTypeName { get; set; }
+    [Reactive] public List<string> MsuTypes { get; set; }
+    public string AbbreviatedPath => Path.Length > 40 ? string.Concat("...", Path.AsSpan(Path.Length - 38)) : Path;
 }
 
 [MapsTo(typeof(SnesConnectorSettings))]

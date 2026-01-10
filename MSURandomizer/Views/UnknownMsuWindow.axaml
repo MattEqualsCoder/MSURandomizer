@@ -1,0 +1,65 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
+        xmlns:viewModels="clr-namespace:MSURandomizer.ViewModels"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="800"
+        Height="450"
+        MinWidth="800"
+        MinHeight="450"
+        x:Class="MSURandomizer.Views.UnknownMsuWindow"
+        CanResize="False"
+        Title="Unknown MSUs"
+        Closed="TopLevel_OnClosed"
+        x:DataType="viewModels:UnknownMsuWindowViewModel">
+    <LayoutTransformControl Name="MainLayout">
+        <DockPanel>
+            <controls:HeaderFooter DockPanel.Dock="Bottom">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5" DockPanel.Dock="Bottom">
+                    <Button Click="SaveButton_OnClick" Margin="5" >Save Options</Button>
+                    <Button Click="CancelButton_OnClick" Margin="5" >Cancel</Button>
+                </StackPanel>    
+            </controls:HeaderFooter>
+            <controls:HeaderFooter DockPanel.Dock="Top" BorderSize="0 0 0 3" Padding="5">
+                <TextBlock TextWrapping="Wrap">
+                    The below MSUs have at least 15 tracks, but the application was unable to discern what type of MSU it is. You can manually set an MSU type below or leave it as blank to have it not included as a known compatible MSU. You can always change this later by right clicking on an MSU and viewing its details.
+                </TextBlock> 
+            </controls:HeaderFooter>
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding UnknownMsus}" >
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical" Margin="5">
+                                <Grid ColumnDefinitions="Auto, *, *" RowDefinitions="Auto, Auto">
+                                    <Button Grid.Row="0" 
+                                            Grid.Column="0" 
+                                            Grid.RowSpan="2" 
+                                            ToolTip.Tip="Open Folder" 
+                                            Margin="0, 0, 8, 0" 
+                                            Click="OpenButton_OnClick" 
+                                            Tag="{Binding Path=MsuPath}" 
+                                            IsVisible="{Binding !Msu.IsHardwareMsu}"
+                                    >
+                                        <avalonia:MaterialIcon Kind="Folder" Width="20" Height="20" Background="Transparent" />
+                                    </Button>
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding AbbreviatedPath}" ToolTip.Tip="{Binding MsuPath}"></TextBlock>
+                                    <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding TrackCountString}"></TextBlock>
+                                    <ComboBox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" ItemsSource="{Binding MsuTypeNames}"
+                                              SelectedItem="{Binding MsuTypeName}"
+                                              HorizontalAlignment="Right"
+                                              Width="250"
+                                    ></ComboBox>
+                                </Grid>
+                                
+                                <Separator Margin="0 10 0 0" IsVisible="{Binding IsNotLast}"></Separator>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+    </LayoutTransformControl>
+</Window>

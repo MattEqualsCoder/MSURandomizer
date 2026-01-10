@@ -102,6 +102,7 @@
   38: the_baby
   39: hyper_beam
   40: metroid_game_over
+  41: crateria_landing_thunder_only
 "Super Metroid / A Link to the Past Combination Randomizer":
   1: zelda_title
   2: light_world
@@ -205,6 +206,7 @@
   138: the_baby
   139: hyper_beam
   140: metroid_game_over
+  141: crateria_landing_thunder_only
 "Super Metroid / A Link to the Past Combination Randomizer Legacy":
   1: samus_fanfare
   2: item_acquired
@@ -246,6 +248,7 @@
   38: the_baby
   39: hyper_beam
   40: metroid_game_over
+  41: crateria_landing_thunder_only
   99: smz3_credits
   101: zelda_title
   102: light_world

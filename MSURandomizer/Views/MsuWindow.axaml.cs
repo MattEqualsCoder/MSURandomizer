@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -75,10 +76,34 @@ public partial class MsuWindow : RestorableWindow
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
         _service?.FinishInitialization();
-        if (_model is { HasMsuFolder: false, MsuWindowDisplayOptionsButton: true })
+
+        if (Design.IsDesignMode)
+        {
+            return;
+        }
+        
+        if (!Design.IsDesignMode && (_model.DisplayDesktopPopupOnLoad || _model.DisplaySettingsWindowOnLoad))
+        {
+            _ = Dispatcher.UIThread.InvokeAsync(OpenStartingWindows);
+        }
+    }
+
+    private async Task OpenStartingWindows()
+    {
+        await Task.Delay(TimeSpan.FromSeconds(.5));
+        if (_model.DisplayDesktopPopupOnLoad)
+        {
+            _model.DisplayDesktopPopupOnLoad = false;
+            var response = await MessageWindow.ShowYesNoDialog(
+                "Would you like to add the MSU Randomizer to your menu by creating a desktop file?",
+                "MSU Randomizer", this);
+            _service!.HandleUserDesktopResponse(response);
+        }
+
+        if (_model.DisplaySettingsWindowOnLoad)
         {
             var settingsWindow = new SettingsWindow();
-            settingsWindow.ShowDialog(this);
+            await settingsWindow.ShowDialog(this);
         }
     }
 
@@ -134,6 +159,7 @@ public partial class MsuWindow : RestorableWindow
         if (_model.IsHardwareModeEnabled)
         {
             var msuType = _service?.GetMsuType(_model.SelectedMsuType) ?? _model.SelectedMsus.First().Msu.MsuType;
+            _service?.SaveSelectedMsuType();
             var hardwareMsuWindow = new HardwareMsuWindow();
             hardwareMsuWindow.ShowDialog(this, _model.SelectedMsus.ToList(), msuType!);
         }
@@ -200,7 +226,7 @@ public partial class MsuWindow : RestorableWindow
             return;
         }
         
-        var result = _service.GenerateMsu(out var error, out var openContinuousWindow, out var msu);
+        var result = _service.GenerateMsu(out var error, out var openContinuousWindow, out var msu, out var warningMessage);
         if (result != true)
         {
             var errorWindow = new MessageWindow(new MessageWindowRequest()
@@ -210,6 +236,27 @@ public partial class MsuWindow : RestorableWindow
                 Buttons = MessageWindowButtons.OK
             });
             errorWindow.ShowDialog(this);
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(warningMessage))
+        {
+            var warningWindow = new MessageWindow(new MessageWindowRequest()
+            {
+                Message = warningMessage,
+                Icon = MessageWindowIcon.Warning,
+                Buttons = MessageWindowButtons.OK
+            });
+
+            if (openContinuousWindow)
+            {
+                warningWindow.Closed += (_, _) =>
+                {
+                    OpenMsuMonitorWindow(msu);
+                };
+            }
+            
+            warningWindow.ShowDialog(this);
         }
         else if (openContinuousWindow)
         {
@@ -239,6 +286,37 @@ public partial class MsuWindow : RestorableWindow
         }
 
         _service?.UpdateHardwareMode(_msuList, selectedMsus);
-        
+    }
+
+    private async void UploadMsuButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_service == null)
+            {
+                return;
+            }
+            await _service.UploadMsu(this, _msuList);
+        }
+        catch 
+        {
+            await MessageWindow.ShowErrorDialog("Unable to upload msu to device.");
+        }
+    }
+
+    private async void BrowseFilesButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_service == null)
+            {
+                return;
+            }
+            await _service.BrowseDevice(this, _msuList);
+        }
+        catch 
+        {
+            await MessageWindow.ShowErrorDialog("Unable to upload msu to device.");
+        }
     }
 }

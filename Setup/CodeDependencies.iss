@@ -1,7 +1,6 @@
-﻿; https://github.com/DomGries/InnoDependencyInstaller
+﻿[Code]
+// https://github.com/DomGries/InnoDependencyInstaller
 
-
-[Code]
 // types and variables
 type
   TDependency_Entry = record
@@ -17,7 +16,7 @@ type
 var
   Dependency_Memo: String;
   Dependency_List: array of TDependency_Entry;
-  Dependency_NeedRestart, Dependency_ForceX86: Boolean;
+  Dependency_NeedToRestart, Dependency_ForceX86: Boolean;
   Dependency_DownloadPage: TDownloadWizardPage;
 
 procedure Dependency_Add(const Filename, Parameters, Title, URL, Checksum: String; const ForceSuccess, RestartAfter: Boolean);
@@ -47,13 +46,13 @@ begin
 end;
 
 <event('InitializeWizard')>
-procedure Dependency_Internal1;
+procedure Dependency_InitializeWizard;
 begin
   Dependency_DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), nil);
 end;
 
 <event('PrepareToInstall')>
-function Dependency_Internal2(var NeedsRestart: Boolean): String;
+function Dependency_PrepareToInstall(var NeedsRestart: Boolean): String;
 var
   DependencyCount, DependencyIndex, ResultCode: Integer;
   Retry: Boolean;
@@ -102,10 +101,14 @@ begin
 
         while True do begin
           ResultCode := 0;
+#ifdef Dependency_CustomExecute
+          if {#Dependency_CustomExecute}(ExpandConstant('{tmp}{\}') + Dependency_List[DependencyIndex].Filename, Dependency_List[DependencyIndex].Parameters, ResultCode) then begin
+#else
           if ShellExec('', ExpandConstant('{tmp}{\}') + Dependency_List[DependencyIndex].Filename, Dependency_List[DependencyIndex].Parameters, '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode) then begin
+#endif
             if Dependency_List[DependencyIndex].RestartAfter then begin
               if DependencyIndex = DependencyCount - 1 then begin
-                Dependency_NeedRestart := True;
+                Dependency_NeedToRestart := True;
               end else begin
                 NeedsRestart := True;
                 Result := Dependency_List[DependencyIndex].Title;
@@ -118,7 +121,7 @@ begin
               Result := Dependency_List[DependencyIndex].Title;
               break;
             end else if ResultCode = 3010 then begin // ERROR_SUCCESS_REBOOT_REQUIRED (3010)
-              Dependency_NeedRestart := True;
+              Dependency_NeedToRestart := True;
               break;
             end;
           end;
@@ -152,8 +155,10 @@ begin
   end;
 end;
 
+#ifndef Dependency_NoUpdateReadyMemo
 <event('UpdateReadyMemo')>
-function Dependency_Internal3(const Space, NewLine, MemoUserInfoInfo, MemoDirInfo, MemoTypeInfo, MemoComponentsInfo, MemoGroupInfo, MemoTasksInfo: String): String;
+#endif
+function Dependency_UpdateReadyMemo(const Space, NewLine, MemoUserInfoInfo, MemoDirInfo, MemoTypeInfo, MemoComponentsInfo, MemoGroupInfo, MemoTasksInfo: String): String;
 begin
   Result := '';
   if MemoUserInfoInfo <> '' then begin
@@ -184,9 +189,9 @@ begin
 end;
 
 <event('NeedRestart')>
-function Dependency_Internal4: Boolean;
+function Dependency_NeedRestart: Boolean;
 begin
-  Result := Dependency_NeedRestart;
+  Result := Dependency_NeedToRestart;
 end;
 
 function Dependency_IsX64: Boolean;
@@ -285,12 +290,24 @@ begin
 end;
 
 procedure Dependency_AddDotNet48;
+begin
+    // https://dotnet.microsoft.com/download/dotnet-framework/net48
+    if not IsDotNetInstalled(net48, 0) then begin
+      Dependency_Add('dotnetfx48.exe',
+        '/lcid ' + IntToStr(GetUILanguage) + ' /passive /norestart',
+        '.NET Framework 4.8',
+        'https://go.microsoft.com/fwlink/?LinkId=2085155',
+        '', False, False);
+    end;
+end;
+
+procedure Dependency_AddDotNet481;
 var
   Version: Cardinal;
 begin
   // https://dotnet.microsoft.com/download/dotnet-framework/net481
   if not RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full', 'Release', Version) or (Version < 533320) then begin
-    Dependency_Add('dotnetfx48.exe',
+    Dependency_Add('dotnetfx481.exe',
       '/lcid ' + IntToStr(GetUILanguage) + ' /passive /norestart',
       '.NET Framework 4.8.1',
       'https://go.microsoft.com/fwlink/?LinkId=2203304',
@@ -446,11 +463,11 @@ end;
 procedure Dependency_AddDotNet80;
 begin
   // https://dotnet.microsoft.com/download/dotnet/8.0
-  if not Dependency_IsNetCoreInstalled('-n Microsoft.NETCore.App -v 8.0.0') then begin
+  if not Dependency_IsNetCoreInstalled('-n Microsoft.NETCore.App -v 8.0.10') then begin
     Dependency_Add('dotnet80' + Dependency_ArchSuffix + '.exe',
       '/lcid ' + IntToStr(GetUILanguage) + ' /passive /norestart',
-      '.NET Runtime 8.0.0' + Dependency_ArchTitle,
-      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/593685c9-7e98-455a-8e34-4b8ad1be9489/6ccf85c6fc244428d61f74ca3aee0645/dotnet-runtime-8.0.0-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/7f4d5cbc-4449-4ea5-9578-c467821f251f/b9b19f89d0642bf78f4b612c6a741637/dotnet-runtime-8.0.0-win-x64.exe'),
+      '.NET Runtime 8.0.10' + Dependency_ArchTitle,
+      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/3f9cf5a6-d4d6-4fe0-a02b-cd700df1899b/75c95e00aab7258aed5f4ffe80526803/dotnet-runtime-8.0.10-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/f55ed80e-ba58-4ac8-a2b3-f2227cd628de/6fabf1c613cf9386d14ddbaaca1a5eb8/dotnet-runtime-8.0.10-win-x64.exe'),
       '', False, False);
   end;
 end;
@@ -458,11 +475,11 @@ end;
 procedure Dependency_AddDotNet80Asp;
 begin
   // https://dotnet.microsoft.com/download/dotnet/8.0
-  if not Dependency_IsNetCoreInstalled('-n Microsoft.AspNetCore.App -v 8.0.0') then begin
+  if not Dependency_IsNetCoreInstalled('-n Microsoft.AspNetCore.App -v 8.0.10') then begin
     Dependency_Add('dotnet80asp' + Dependency_ArchSuffix + '.exe',
       '/lcid ' + IntToStr(GetUILanguage) + ' /passive /norestart',
-      'ASP.NET Core Runtime 8.0.0' + Dependency_ArchTitle,
-      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/66ae7d00-596a-4e36-be73-2ebc0c332329/e2f6e37933e204fef5687e338a95b749/aspnetcore-runtime-8.0.0-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/89d3660b-d344-47c5-a1cd-d8343a3f3779/9f55af82923dab7e3dce912f5c5b9d60/aspnetcore-runtime-8.0.0-win-x64.exe'),
+      'ASP.NET Core Runtime 8.0.10' + Dependency_ArchTitle,
+      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/175256c9-8d8d-4f9a-a873-ff7b36161506/1b91f2b288e6077e30714485ebe8acb5/aspnetcore-runtime-8.0.10-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/a17b907f-8457-45a8-90db-53f2665ee49e/49bccd33593ebceb2847674fe5fd768e/aspnetcore-runtime-8.0.10-win-x64.exe'),
       '', False, False);
   end;
 end;
@@ -470,11 +487,47 @@ end;
 procedure Dependency_AddDotNet80Desktop;
 begin
   // https://dotnet.microsoft.com/download/dotnet/8.0
-  if not Dependency_IsNetCoreInstalled('-n Microsoft.WindowsDesktop.App -v 8.0.0') then begin
+  if not Dependency_IsNetCoreInstalled('-n Microsoft.WindowsDesktop.App -v 8.0.10') then begin
     Dependency_Add('dotnet80desktop' + Dependency_ArchSuffix + '.exe',
       '/lcid ' + IntToStr(GetUILanguage) + ' /passive /norestart',
-      '.NET Desktop Runtime 8.0.0' + Dependency_ArchTitle,
-      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/f9e3b581-059d-429f-9f0d-1d1167ff7e32/bd7661030cd5d66cd3eee0fd20b24540/windowsdesktop-runtime-8.0.0-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/b280d97f-25a9-4ab7-8a12-8291aa3af117/a37ed0e68f51fcd973e9f6cb4f40b1a7/windowsdesktop-runtime-8.0.0-win-x64.exe'),
+      '.NET Desktop Runtime 8.0.10' + Dependency_ArchTitle,
+      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/9836a475-66af-47eb-a726-8046c47ce6d5/ccb7d60db407a6d022a856852ef9e763/windowsdesktop-runtime-8.0.10-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/f398d462-9d4e-4b9c-abd3-86c54262869a/4a8e3a10ca0a9903a989578140ef0499/windowsdesktop-runtime-8.0.10-win-x64.exe'),
+      '', False, False);
+  end;
+end;
+
+procedure Dependency_AddDotNet90;
+begin
+  // https://dotnet.microsoft.com/download/dotnet/9.0
+  if not Dependency_IsNetCoreInstalled('-n Microsoft.NETCore.App -v 9.0.0') then begin
+    Dependency_Add('dotnet90' + Dependency_ArchSuffix + '.exe',
+      '/lcid ' + IntToStr(GetUILanguage) + ' /passive /norestart',
+      '.NET Runtime 9.0.0' + Dependency_ArchTitle,
+      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/0e89cce9-dc02-423c-a657-0c2b421edf21/af2e916785775fe7e023b953af404db5/dotnet-runtime-9.0.0-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/99bd07c2-c95c-44dc-9d47-36d3b18df240/bdf26c62f69c1b783687c1dce83ccf7a/dotnet-runtime-9.0.0-win-x64.exe'),
+      '', False, False);
+  end;
+end;
+
+procedure Dependency_AddDotNet90Asp;
+begin
+  // https://dotnet.microsoft.com/download/dotnet/9.0
+  if not Dependency_IsNetCoreInstalled('-n Microsoft.AspNetCore.App -v 9.0.0') then begin
+    Dependency_Add('dotnet90asp' + Dependency_ArchSuffix + '.exe',
+      '/lcid ' + IntToStr(GetUILanguage) + ' /passive /norestart',
+      'ASP.NET Core Runtime 9.0.0' + Dependency_ArchTitle,
+      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/70c1a68c-e5e4-45ef-9f2c-df1d3f195a2e/6b8e20fe1e45f886e464908cf18efd96/aspnetcore-runtime-9.0.0-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/815e6104-b92c-4cd5-8971-cba2f685002a/37befaa217f3269a152016da80a922c1/aspnetcore-runtime-9.0.0-win-x64.exe'),
+      '', False, False);
+  end;
+end;
+
+procedure Dependency_AddDotNet90Desktop;
+begin
+  // https://dotnet.microsoft.com/download/dotnet/9.0
+  if not Dependency_IsNetCoreInstalled('-n Microsoft.WindowsDesktop.App -v 9.0.0') then begin
+    Dependency_Add('dotnet90desktop' + Dependency_ArchSuffix + '.exe',
+      '/lcid ' + IntToStr(GetUILanguage) + ' /passive /norestart',
+      '.NET Desktop Runtime 9.0.0' + Dependency_ArchTitle,
+      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/8dfbde7b-c316-418d-934a-d3246253f342/69c6a35b77a4f01b95588e1df2bddf9a/windowsdesktop-runtime-9.0.0-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/685792b6-4827-4dca-a971-bce5d7905170/1bf61b02151bc56e763dc711e45f0e1e/windowsdesktop-runtime-9.0.0-win-x64.exe'),
       '', False, False);
   end;
 end;
@@ -542,7 +595,7 @@ end;
 procedure Dependency_AddVC2015To2022;
 begin
   // https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
-  if not IsMsiProductInstalled(Dependency_String('{65E5BD06-6392-3027-8C26-853107D3CF1A}', '{36F68A90-239C-34DF-B58C-64B30153CE35}'), PackVersionComponents(14, 30, 30704, 0)) then begin
+  if not IsMsiProductInstalled(Dependency_String('{65E5BD06-6392-3027-8C26-853107D3CF1A}', '{36F68A90-239C-34DF-B58C-64B30153CE35}'), PackVersionComponents(14, 30, 33810, 0)) then begin
     Dependency_Add('vcredist2022' + Dependency_ArchSuffix + '.exe',
       '/passive /norestart',
       'Visual C++ 2015-2022 Redistributable' + Dependency_ArchTitle,

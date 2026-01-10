@@ -36,7 +36,7 @@ public partial class CurrentPlayingTrackControl : UserControl
             Task.Run(async () =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(0.1));
-                 _ = Dispatcher.UIThread.InvokeAsync(StartMarquee);
+                 Dispatcher.UIThread.Post(StartMarquee);
             });
         };
     }

@@ -16,21 +16,24 @@ public class MsuListService(AppInitializationService appInitializationService,
     IMsuUserOptionsService userOptions,
     IMsuTypeService msuTypeService,
     IMsuAppSettingsService appSettingsService,
-    IMsuMonitorService msuMonitorService) : ControlService
+    IMsuMonitorService msuMonitorService,
+    IMsuHardwareService msuHardwareService) : ControlService
 {
     public MsuListViewModel Model { get; set; } = new()
     {
         IsLoading = true
     };
+
+    public event EventHandler? OnDisplayUnknownMsuWindowRequest;
     
     public MsuListViewModel InitializeModel()
     {
-        msuMonitorService.MsuMonitorStarted += (sender, args) =>
+        msuMonitorService.MsuMonitorStarted += (_, _) =>
         {
             Model.IsMsuMonitorActive = true;
         };
         
-        msuMonitorService.MsuMonitorStopped += (sender, args) =>
+        msuMonitorService.MsuMonitorStopped += (_, _) =>
         {
             Model.IsMsuMonitorActive = false;
         };
@@ -38,9 +41,15 @@ public class MsuListService(AppInitializationService appInitializationService,
         appInitializationService.InitializationComplete += InitializationServiceOnInitializationComplete;
         msuLookupService.OnMsuLookupComplete += MsuLookupServiceOnOnMsuLookupComplete;
         msuLookupService.OnMsuLookupStarted += MsuLookupServiceOnOnMsuLookupStarted;
+        msuHardwareService.HardwareMsusChanged += MsuHardwareServiceOnHardwareMsusChanged;
         Model.IsMsuMonitorDisabled = appSettingsService.MsuAppSettings.DisableMsuMonitorWindow == true;
         CheckIfLoading();
         return Model;
+    }
+
+    private void MsuHardwareServiceOnHardwareMsusChanged(object? sender, MsuListEventArgs e)
+    {
+        PopulateMsuViewModels(e.Msus.ToList());
     }
 
     private void MsuLookupServiceOnOnMsuLookupStarted(object? sender, EventArgs e)
@@ -63,21 +72,26 @@ public class MsuListService(AppInitializationService appInitializationService,
     {
         Model.MsuTypeName = msuType.DisplayName;
         Model.MsuType = msuType;
-        var msuTypePath = Model.HardwareMode ? "" :
-            userOptions.MsuUserOptions.MsuTypePaths.TryGetValue(msuType, out var path) ? path :
-            userOptions.MsuUserOptions.DefaultMsuPath;
-        var rootPath = Model.HardwareMode ? "" : GetMsuTypeBasePath(msuType);
-        var useAbsolutePath = string.IsNullOrWhiteSpace(rootPath);
+        
+        // Hardware MSUs are more limited in compatibility
+        List<string>? compatibleMsuNames = null;
+        if (Model.HardwareMode)
+        {
+            if (appSettingsService.MsuAppSettings.HardwareCompatibleMsuTypes.TryGetValue(msuType.DisplayName,
+                    out compatibleMsuNames))
+            {
+                compatibleMsuNames.Add(msuType.DisplayName);
+            }
+            else
+            {
+                compatibleMsuNames = [msuType.DisplayName];
+            }
+        }
+        
         var filteredMsus = Model.MsuViewModels
-            .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, msuTypePath) &&
-                        x.Msu.NumUniqueTracks > x.Msu.MsuType?.RequiredTrackNumbers.Count / 5)
+            .Where(x => x.Msu.MatchesFilter(msuFilter, msuType, compatibleMsuNames) && x.Msu.HasSufficientTracks)
             .OrderBy(x => x.MsuName)
             .ToList();
-        foreach (var filteredMsu in filteredMsus)
-        {
-            filteredMsu.DisplayPath = useAbsolutePath ? filteredMsu.MsuPath : Path.GetRelativePath(rootPath!, filteredMsu.MsuPath);
-        }
-
         Model.FilteredMsus = filteredMsus;
         Model.SelectedMsus = Model.FilteredMsus
             .Where(x => Model.SelectedMsus.Select(vm => vm.MsuPath).Contains(x.MsuPath)).ToList();
@@ -155,20 +169,13 @@ public class MsuListService(AppInitializationService appInitializationService,
         FilterMSUs(filterMsuType, userOptions.MsuUserOptions.Filter);
         Model.SelectedMsus = Model.FilteredMsus
             .Where(x => userOptions.MsuUserOptions.SelectedMsus?.Contains(x.MsuPath) == true).ToList();
-    }
 
-    private string? GetMsuTypeBasePath(MsuType? msuType)
-    {
-        if (msuType == null)
-        {
-            return userOptions.MsuUserOptions.DefaultMsuPath;
-        }
-        
-        if (userOptions.MsuUserOptions.MsuTypeNamePaths.TryGetValue(msuType.DisplayName, out string? path))
-        {
-            return path;
-        }
+        Model.DisplayUnknownMsuWindow =
+            Model.Msus.Any(x => x.MsuType == null && x is { NumUniqueTracks: > 15, IgnoreUnknown: false } && string.IsNullOrEmpty(x.Settings.MsuTypeName) );
 
-        return userOptions.MsuUserOptions.DefaultMsuPath;
+        if (Model.DisplayUnknownMsuWindow)
+        {
+            OnDisplayUnknownMsuWindowRequest?.Invoke(this, EventArgs.Empty);    
+        }
     }
 }

@@ -5,6 +5,7 @@
         xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
         xmlns:tools="clr-namespace:AvaloniaControls.Converters;assembly=AvaloniaControls"
         xmlns:viewModels="clr-namespace:MSURandomizer.ViewModels"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d" 
         d:DesignWidth="800" d:DesignHeight="450"
         Width="800" Height="500"
@@ -23,6 +24,31 @@
             </controls:HeaderFooter>
             <ScrollViewer>
                 <StackPanel Orientation="Vertical" Grid.IsSharedSizeScope="True" Margin="10">
+                    <controls:CardControl HeaderText="MSU Directories" Padding="6" Margin="0 0 0 6">
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="{Binding DisplayNoMsuDirectoriesMessage}">
+                                <avalonia:MaterialIcon Kind="Error" Height="20" Width="20" Margin="0 0 5 0" Foreground="IndianRed"></avalonia:MaterialIcon>
+                                <TextBlock FontSize="16" Margin="0 3 0 5" VerticalAlignment="Bottom">
+                                    At least one MSU directory must be added.
+                                </TextBlock>
+                            </StackPanel>
+                            <ItemsControl ItemsSource="{Binding MsuDirectoryList}" >
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <controls:LabeledControl Text="{Binding AbbreviatedPath}" Margin="3" ToolTip.Tip="{Binding Path}">
+                                            <Grid ColumnDefinitions="*, Auto">
+                                                <ComboBox Grid.Column="0" ItemsSource="{Binding MsuTypes}" SelectedItem="{Binding MsuTypeName}"></ComboBox>
+                                                <Button Grid.Column="1" Margin="3 0 0 0" Tag="{Binding Path}" Click="RemoveDirectoryButton_OnClick">
+                                                    <avalonia:MaterialIcon Kind="Close" Width="15" Height="15" Background="Transparent"/>
+                                                </Button>
+                                            </Grid>
+                                        </controls:LabeledControl>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Click="AddDirectoryButton_OnClick">Add Directory</Button>
+                        </StackPanel>
+                    </controls:CardControl>
                     <controls:CardControl HeaderText="Basic Settings" Padding="6">
                         <StackPanel Orientation="Vertical">
                             <controls:LabeledControl Text="Check for Updates" Hint="Shows a popup when first launching when there is a new update on GitHub." DisplayHint="True" Margin="3">
@@ -32,14 +58,6 @@
                                     HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Stretch"
                                 ></ComboBox>
-                            </controls:LabeledControl>
-                            
-                            <controls:LabeledControl Text="Default MSU Directory" Hint="The default directory to look for MSUs if a specific folder isn't set for an MSU type." DisplayHint="True" Margin="3">
-                                <controls:FileControl 
-                                    FilePath="{Binding DefaultMsuPath, Mode=TwoWay}"
-                                    DefaultPath="{Binding DefaultDirectory}"
-                                    FileInputType="Folder"
-                                ></controls:FileControl>
                             </controls:LabeledControl>
                             
                             <controls:LabeledControl Text="Track Display Format" Hint="How currently played tracks will be displayed." DisplayHint="True" Margin="3">
@@ -109,24 +127,15 @@
                                 ></TextBox>
                             </controls:LabeledControl>
                             
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0" IsVisible="{Binding DisplayDesktopFileButton}">
+                                <Button Click="CreateDesktopFileButton_OnClick">
+                                    Create Linux .desktop File
+                                </Button>
+                            </StackPanel>
+                            
                         </StackPanel>
                     </controls:CardControl>
                     
-                    <controls:CardControl HeaderText="Individual Game Directories" Margin="0 6 0 0" Padding="6">
-                        <ItemsControl ItemsSource="{Binding MsuTypeNamePathsList}" >
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <controls:LabeledControl Text="{Binding MsuTypeName}" Margin="3">
-                                        <controls:FileControl 
-                                            FileInputType="Folder"
-                                            DefaultPath="{Binding DefaultDirectory}"
-                                            FilePath="{Binding Path, Mode=TwoWay}"
-                                        ></controls:FileControl>
-                                    </controls:LabeledControl>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </controls:CardControl>
                 </StackPanel>
             </ScrollViewer>
         </DockPanel>

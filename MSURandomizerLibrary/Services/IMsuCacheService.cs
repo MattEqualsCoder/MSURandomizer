@@ -42,4 +42,10 @@ public interface IMsuCacheService
     /// Saves the cache to the path specified in the Initialize method
     /// </summary>
     public void Save();
+
+    /// <summary>
+    /// Removes everything from the cache
+    /// </summary>
+    /// <param name="saveCache">If the cache should be immediately saved after the operation</param>
+    public void Clear(bool saveCache);
 }

@@ -70,17 +70,16 @@ public class HardwareMsuWindowService(ITaskService taskService,
             if (msuUserOptionsService.MsuUserOptions.LaunchRom)
             {
                 _model.Message = "Booting rom";
+                await Task.Delay(TimeSpan.FromSeconds(5));
+                _model.Complete = true;
+                _model.Message = "Complete";
 
                 if (msuUserOptionsService.MsuUserOptions.OpenMonitorWindow)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(5));
-                    _model.Complete = true;
                     OpenMsuMonitorWindow?.Invoke(this, EventArgs.Empty);    
                 }
                 else
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(5));
-                    _model.Complete = true;
                     Disconnect(true);
                 }
             }
@@ -88,8 +87,17 @@ public class HardwareMsuWindowService(ITaskService taskService,
             {
                 await Task.Delay(TimeSpan.FromSeconds(5));
                 _model.Complete = true;
-                Disconnect(true);
                 _model.Message = "Complete";
+                
+                if (msuUserOptionsService.MsuUserOptions.OpenMonitorWindow)
+                {
+                    OpenMsuMonitorWindow?.Invoke(this, EventArgs.Empty);    
+                }
+                else
+                {
+                    Disconnect(true);
+                }
+                
             }
             
         });

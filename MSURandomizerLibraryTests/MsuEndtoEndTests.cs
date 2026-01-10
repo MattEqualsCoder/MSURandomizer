@@ -7,6 +7,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace MSURandomizerLibraryTests;
 
+[NonParallelizable]
 public class MsuEndtoEndTests : IDisposable
 {
     private MsuTypeService _msuTypeService = null!;
@@ -43,7 +44,10 @@ public class MsuEndtoEndTests : IDisposable
         TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
         CreateMsus(msuType!, msuCount, altCount, addSongInfo);
 
-        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, msuType.DisplayName }
+        });
         VerifyMsus(msus, msuCount, altCount, addSongInfo);
 
         var response = _msuSelectorService.CreateShuffledMsu(new MsuSelectorRequest()
@@ -69,7 +73,10 @@ public class MsuEndtoEndTests : IDisposable
         TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
         CreateMsus(msuType!, msuCount, altCount, addSongInfo);
 
-        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, msuType.DisplayName }
+        });
         VerifyMsus(msus, msuCount, altCount, addSongInfo);
 
         var response = _msuSelectorService.CreateShuffledMsu(new MsuSelectorRequest()
@@ -81,7 +88,7 @@ public class MsuEndtoEndTests : IDisposable
 
         VerifyResponse(response, msuType!, addSongInfo, true, false, false, false);
     }
-    
+
     [Test]
     public void AssignMsuTest()
     {
@@ -91,12 +98,17 @@ public class MsuEndtoEndTests : IDisposable
         var msuCount = 1;
         var altCount = 2;
         var addSongInfo = true;
-        
+
         TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
         CreateMsus(msuType!, msuCount, altCount, addSongInfo);
 
-        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
-        VerifyMsus(msus, msuCount, altCount, addSongInfo);
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder,
+            new Dictionary<string, string>()
+            {
+                { TestHelpers.MsuTestFolder, msuType.DisplayName }
+            });
+
+    VerifyMsus(msus, msuCount, altCount, addSongInfo);
 
         var response = _msuSelectorService.AssignMsu(new MsuSelectorRequest()
         {
@@ -121,7 +133,10 @@ public class MsuEndtoEndTests : IDisposable
         TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
         CreateMsus(msuType!, msuCount, altCount, addSongInfo);
 
-        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, msuType.DisplayName }
+        });
         VerifyMsus(msus, msuCount, altCount, addSongInfo);
 
         var response = _msuSelectorService.PickRandomMsu(new MsuSelectorRequest()
@@ -147,7 +162,10 @@ public class MsuEndtoEndTests : IDisposable
         TestHelpers.DeleteFolder(TestHelpers.MsuTestFolder);
         CreateMsus(msuType!, msuCount, altCount, addSongInfo);
 
-        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder);
+        var msus = _msuLookupService.LookupMsus(TestHelpers.MsuTestFolder, new Dictionary<string, string>()
+        {
+            { TestHelpers.MsuTestFolder, msuType.DisplayName }
+        });
         VerifyMsus(msus, msuCount, altCount, addSongInfo);
 
         var response = _msuSelectorService.SaveMsu(new MsuSelectorRequest()
@@ -424,13 +442,16 @@ public class MsuEndtoEndTests : IDisposable
     {
         var logger = TestHelpers.CreateMockLogger<MsuSelectorService>();
         var msuUserOptionsService = TestHelpers.CreateMockMsuUserOptionsService(null);
-        return new MsuSelectorService(logger, _msuDetailsService, _msuTypeService, _msuLookupService, msuUserOptionsService);
+        var messageSender = TestHelpers.CreateMockMsuMessageSender();
+        
+        return new MsuSelectorService(logger, _msuDetailsService, _msuTypeService, _msuLookupService, msuUserOptionsService, messageSender);
     }
 
     private MsuDetailsService CreateMsuDetailsService()
     {
         var logger = TestHelpers.CreateMockLogger<MsuDetailsService>();
-        return new MsuDetailsService(logger);
+        var msuOptions = TestHelpers.CreateMockMsuUserOptionsService(null);
+        return new MsuDetailsService(logger, msuOptions);
     }
     
     private string RandomString(int length)

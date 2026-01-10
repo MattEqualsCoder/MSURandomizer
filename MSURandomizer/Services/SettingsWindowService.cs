@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Collections.ObjectModel;
 using System.Linq;
 using AutoMapper;
 using AvaloniaControls.Controls;
@@ -16,23 +16,23 @@ public class SettingsWindowService(
     IMsuUserOptionsService userOptionsService, 
     IMsuTypeService msuTypeService, 
     IMsuLookupService msuLookupService, 
+    IMsuCacheService msuCacheService,
     IMapper mapper) : ControlService
 {
     private readonly SettingsWindowViewModel _model = new();
+    private Dictionary<string, MsuType> _msuTypes = [];
+    private List<string> _msuTypeList = [];
     
     public SettingsWindowViewModel InitializeModel()
     {
         mapper.Map(userOptionsService.MsuUserOptions, _model);
         _model.DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        foreach (var msuType in msuTypeService.MsuTypes.OrderBy(x => x.DisplayName))
-        {
-            _model.MsuTypeNamePathsList.Add(new MsuTypePath()
-            {
-                MsuType = msuType,
-                Path = _model.MsuTypeNamePaths.GetValueOrDefault(msuType.DisplayName, ""),
-                DefaultDirectory = _model.DefaultDirectory
-            });
-        }
+        _msuTypes = msuTypeService.MsuTypes.OrderBy(x => x.DisplayName).ToDictionary(x => x.DisplayName, x => x);
+        _msuTypeList = _msuTypes.Keys.ToList();
+        _model.MsuDirectoryList = new ObservableCollection<MsuDirectory>(
+            userOptionsService.MsuUserOptions.MsuDirectories.Select(x =>
+                new MsuDirectory(x.Key, x.Value, _msuTypeList)));
+        _model.DisplayNoMsuDirectoriesMessage = _model.MsuDirectoryList.Count == 0;
         return _model;
     }
 
@@ -41,12 +41,7 @@ public class SettingsWindowService(
         var options = userOptionsService.MsuUserOptions;
         var hasPathUpdated = HasPathUpdated(options);
         mapper.Map(_model, options);
-        options.MsuTypePaths = _model.MsuTypeNamePathsList
-            .Where(x => !string.IsNullOrWhiteSpace(x.Path) && Directory.Exists(x.Path) && x.MsuType != null)
-            .ToDictionary(x => x.MsuType!, x => x.Path);
-        options.MsuTypeNamePaths = _model.MsuTypeNamePathsList
-            .Where(x => !string.IsNullOrWhiteSpace(x.Path) && Directory.Exists(x.Path) && x.MsuType != null)
-            .ToDictionary(x => x.MsuType!.DisplayName, x => x.Path);
+        options.MsuDirectories = _model.MsuDirectoryList.ToDictionary(x => x.Path, x => x.MsuTypeName);
         userOptionsService.Save();
         ScalableWindow.GlobalScaleFactor = options.UiScaling;
 
@@ -54,28 +49,47 @@ public class SettingsWindowService(
         {
             ITaskService.Run(() =>
             {
+                msuCacheService.Clear(false);
                 msuLookupService.LookupMsus();
             });
         }
     }
 
+    public bool AddDirectory(string directory)
+    {
+        if (_model.MsuDirectoryList.Any(x => x.Path == directory))
+        {
+            return false;
+        }
+        _model.MsuDirectoryList.Add(new MsuDirectory(directory, _msuTypeList.FirstOrDefault() ?? "", _msuTypeList));
+        _model.DisplayNoMsuDirectoriesMessage = false;
+        return true;
+    }
+
+    public void RemoveDirectory(string directory)
+    {
+        var directoryToRemove = _model.MsuDirectoryList.FirstOrDefault(x => x.Path == directory);
+        if (directoryToRemove != null)
+        {
+            _model.MsuDirectoryList.Remove(directoryToRemove);
+            _model.DisplayNoMsuDirectoriesMessage = _model.MsuDirectoryList.Count == 0;
+        }
+    }
+
+    public void CreateDesktopFile()
+    {
+        
+    }
+
     private bool HasPathUpdated(MsuUserOptions options)
     {
-        if (_model.DefaultMsuPath != options.DefaultMsuPath)
+        if (_model.MsuDirectoryList.Count != options.MsuDirectories.Count)
         {
             return true;
         }
-        
-        foreach (var msuPath in _model.MsuTypeNamePathsList.Where(x => x.MsuType != null))
-        {
-            var newPath = msuPath.Path.Trim();
-            var oldPath = options.MsuTypePaths.GetValueOrDefault(msuPath.MsuType!, "").Trim();
-            if (newPath != oldPath)
-            {
-                return true;
-            }
-        }
 
-        return false;
+        var currentDirectories = options.MsuDirectories.Select(x => $"{x.Key}={x.Value}");
+        var newDirectories = _model.MsuDirectoryList.Select(x => $"{x.Path}={x.MsuTypeName}");
+        return !currentDirectories.SequenceEqual(newDirectories);
     }
 }
