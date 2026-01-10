@@ -2,7 +2,7 @@ name: .NET Build + Test + Publish
 
 on:
   push:
-    branches: [main, appimage]
+    branches: [main, dotnet-10]
   pull_request:
     branches: [main]
 
@@ -27,7 +27,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
@@ -41,18 +41,18 @@ jobs:
         run: dotnet build --no-restore  --configuration Release -p:PostBuildEvent=
       - name: Publish Windows 64bit
         if: ${{ github.event_name != 'pull_request' }}
-        run: dotnet publish --os win --arch x64 -f net9.0 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
+        run: dotnet publish --os win --arch x64 -f net10.0 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
       - name: Publish Windows 32bit
         if: ${{ github.event_name != 'pull_request' }}
-        run: dotnet publish --os win --arch x86 -f net9.0 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
+        run: dotnet publish --os win --arch x86 -f net10.0 -c Release --self-contained false MSURandomizer/MSURandomizer.csproj
       - name: Publish Windows 64bit
         if: ${{ github.event_name != 'pull_request' }}
-        run: dotnet publish -f net9.0
+        run: dotnet publish -f net10.0
       - name: Get version number
         if: ${{ github.event_name != 'pull_request' }}
         id: version
         run: |
-          $version = (Get-Item "MSURandomizer\bin\Release\net9.0\win-x86\publish\MSURandomizer.exe").VersionInfo.ProductVersion
+          $version = (Get-Item "MSURandomizer\bin\Release\net10.0\win-x86\publish\MSURandomizer.exe").VersionInfo.ProductVersion
           $version = $version -replace "\+.*", ""
           Write-Output "number=$version" >> $env:GITHUB_OUTPUT
         shell: pwsh
@@ -91,7 +91,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
       - name: Install PupNet
         run: dotnet tool install -g KuiperZone.PupNet
       - name: Download AppImageTool

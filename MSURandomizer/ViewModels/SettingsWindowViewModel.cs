@@ -1,51 +1,51 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using AvaloniaControls;
+using AvaloniaControls.Extensions;
 using AvaloniaControls.Models;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 using SnesConnectorLibrary;
 
 namespace MSURandomizer.ViewModels;
 
 [MapsTo(typeof(MsuUserOptions))]
-public class SettingsWindowViewModel : ViewModelBase
+public partial class SettingsWindowViewModel : ViewModelBase
 {
-    [Reactive] public bool PromptOnUpdate { get; set; }
+    [Reactive] public partial bool PromptOnUpdate { get; set; }
 
-    [Reactive] public string DefaultMsuPath { get; set; } = "";
+    [Reactive] public partial string DefaultMsuPath { get; set; }
 
-    [Reactive] public string MsuCurrentSongOutputFilePath { get; set; } = "";
+    [Reactive] public partial string MsuCurrentSongOutputFilePath { get; set; }
 
-    [Reactive] public string DefaultDirectory { get; set; } = "";
+    [Reactive] public partial string DefaultDirectory { get; set; }
 
-    [Reactive] public double UiScaling { get; set; } = 1;
+    [Reactive] public partial double UiScaling { get; set; }
 
-    [Reactive] public SnesConnectorSettingsViewModel SnesConnectorSettings { get; set; } = new();
+    [Reactive] public partial SnesConnectorSettingsViewModel SnesConnectorSettings { get; set; }
 
-    [Reactive] public Dictionary<string, string> MsuTypeNamePaths { get; set; } = new();
+    [Reactive] public partial Dictionary<string, string> MsuTypeNamePaths { get; set; }
 
-    [Reactive] public List<MsuTypePath> MsuTypeNamePathsList { get; set; } = new();
+    [Reactive] public partial List<MsuTypePath> MsuTypeNamePathsList { get; set; }
     
-    [Reactive] public string? CopyRomDirectory { get; set; }
+    [Reactive] public partial string? CopyRomDirectory { get; set; }
     
     [Reactive]
     [ReactiveLinkedProperties(nameof(LaunchArgumentsEnabled))]
-    public string? LaunchApplication { get; set; }
+    public partial string? LaunchApplication { get; set; }
 
     public bool LaunchArgumentsEnabled => !string.IsNullOrEmpty(LaunchApplication);
     
-    [Reactive] public bool DisplayNoMsuDirectoriesMessage { get; set; }
+    [Reactive] public partial bool DisplayNoMsuDirectoriesMessage { get; set; }
 
     public ObservableCollection<MsuDirectory> MsuDirectoryList { get; set; } = [];
     
-    [Reactive] public string? LaunchArguments { get; set; }
+    [Reactive] public partial string? LaunchArguments { get; set; }
     
     [Reactive]
     [ReactiveLinkedProperties(nameof(TrackDisplayExample))]
-    public TrackDisplayFormat TrackDisplayFormat { get; set; }
+    public partial TrackDisplayFormat TrackDisplayFormat { get; set; }
 
     public bool DisplayDesktopFileButton => OperatingSystem.IsLinux();
     
@@ -55,20 +55,37 @@ public class SettingsWindowViewModel : ViewModelBase
     
     public Func<string, string> TrackDisplayComboBoxText =>
         s => s[..s.IndexOf(':', StringComparison.Ordinal)];
+
+    public SettingsWindowViewModel()
+    {
+        DefaultMsuPath = "";
+        MsuCurrentSongOutputFilePath = "";
+        DefaultDirectory = "";
+        UiScaling = 1;
+        SnesConnectorSettings = new SnesConnectorSettingsViewModel();
+        MsuTypeNamePaths = new Dictionary<string, string>();
+        MsuTypeNamePathsList = [];
+    }
 }
 
-public class MsuTypePath : ViewModelBase
+public partial class MsuTypePath : ViewModelBase
 {
-    [Reactive] public MsuType? MsuType { get; set; }
+    [Reactive] public partial MsuType? MsuType { get; set; }
     
-    [Reactive] public string Path { get; set; } = "";
+    [Reactive] public partial string Path { get; set; }
 
-    [Reactive] public string DefaultDirectory { get; set; } = "";
+    [Reactive] public partial string DefaultDirectory { get; set; }
     
     public string MsuTypeName => MsuType?.DisplayName ?? "A Link to the Past";
+
+    public MsuTypePath()
+    {
+        Path = string.Empty;
+        DefaultDirectory = string.Empty;
+    }
 }
 
-public class MsuDirectory : ViewModelBase
+public partial class MsuDirectory : ViewModelBase
 {
     public MsuDirectory(string path, string msuTypeName = "", List<string>? msuTypes = null)
     {
@@ -77,18 +94,25 @@ public class MsuDirectory : ViewModelBase
         MsuTypes = msuTypes ?? [];
     }
     
-    [Reactive] public string Path { get; set; }
-    [Reactive] public string MsuTypeName { get; set; }
-    [Reactive] public List<string> MsuTypes { get; set; }
+    [Reactive] public partial string Path { get; set; }
+    [Reactive] public partial string MsuTypeName { get; set; }
+    [Reactive] public partial List<string> MsuTypes { get; set; }
     public string AbbreviatedPath => Path.Length > 40 ? string.Concat("...", Path.AsSpan(Path.Length - 38)) : Path;
 }
 
 [MapsTo(typeof(SnesConnectorSettings))]
-public class SnesConnectorSettingsViewModel : ViewModelBase
+public partial class SnesConnectorSettingsViewModel : ViewModelBase
 {
-    [Reactive] public string Usb2SnesAddress { get; set; } = "";
+    [Reactive] public partial string Usb2SnesAddress { get; set; }
     
-    [Reactive] public string SniAddress { get; set; } = "";
+    [Reactive] public partial string SniAddress { get; set; }
     
-    [Reactive] public string LuaAddress { get; set; } = "";
+    [Reactive] public partial string LuaAddress { get; set; }
+
+    public SnesConnectorSettingsViewModel()
+    {
+        Usb2SnesAddress = string.Empty;
+        SniAddress = string.Empty;
+        LuaAddress = string.Empty;
+    }
 }

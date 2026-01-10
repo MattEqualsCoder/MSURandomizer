@@ -1,16 +1,16 @@
 using System;
 using AvaloniaControls.Models;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 using SnesConnectorLibrary;
 
 namespace MSURandomizer.ViewModels;
 
 [MapsTo(typeof(SnesConnectorSettings))]
-public class MsuMonitorWindowViewModel : ViewModelBase
+public partial class MsuMonitorWindowViewModel : ViewModelBase
 {
     [Reactive]
     [ReactiveLinkedProperties(nameof(IsLuaFolderButtonVisible))]
-    public SnesConnectorType ConnectorType { get; set; }
+    public partial SnesConnectorType ConnectorType { get; set; }
     
     public string Usb2SnesAddress { get; set; } = "";
 
@@ -20,17 +20,17 @@ public class MsuMonitorWindowViewModel : ViewModelBase
     
     public string ClientName { get; set; } = "MSURandomizer";
     
-    [Reactive] public bool ShowConnectorDropdown { get; set; }
+    [Reactive] public partial bool ShowConnectorDropdown { get; set; }
     
-    [Reactive] public string ConnectionStatus { get; set; } = "Disconnected";
+    [Reactive] public partial string ConnectionStatus { get; set; }
 
     [Reactive]
     [ReactiveLinkedProperties(nameof(HasErrorMessage))]
-    public string? ErrorMessage { get; set; }
+    public partial string? ErrorMessage { get; set; }
     
     [Reactive]
     [ReactiveLinkedProperties(nameof(LastUpdateTimeText))]
-    public DateTime LastUpdateTime { get; set; } = DateTime.Now;
+    public partial DateTime LastUpdateTime { get; set; }
 
     public bool IsLuaFolderButtonVisible => ConnectorType == SnesConnectorType.Lua;
 
@@ -42,4 +42,10 @@ public class MsuMonitorWindowViewModel : ViewModelBase
     
     public Func<Enum, bool> FilterConnectorTypes => @enum =>
         (SnesConnectorType)@enum is SnesConnectorType.None or SnesConnectorType.Sni or SnesConnectorType.Usb2Snes or SnesConnectorType.Lua;
+
+    public MsuMonitorWindowViewModel()
+    {
+        ConnectionStatus = "Disconnected";
+        LastUpdateTime = DateTime.Now;
+    }
 }

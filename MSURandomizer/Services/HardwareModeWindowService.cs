@@ -1,8 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using AutoMapper;
-using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using Microsoft.Extensions.Logging;
 using MSURandomizer.ViewModels;
 using MSURandomizerLibrary.Services;

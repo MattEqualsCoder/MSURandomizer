@@ -8,7 +8,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using AvaloniaControls;
 using AvaloniaControls.Controls;
-using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using AvaloniaControls.Models;
 using Microsoft.Extensions.Logging;
 using MSURandomizer.ViewModels;

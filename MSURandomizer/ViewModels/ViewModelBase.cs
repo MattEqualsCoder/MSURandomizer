@@ -1,12 +1,10 @@
-﻿using System;
-using AvaloniaControls;
-using AvaloniaControls.Extensions;
+﻿using AvaloniaControls.Extensions;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 
 namespace MSURandomizer.ViewModels;
 
-public class ViewModelBase : ReactiveObject
+public partial class ViewModelBase : ReactiveObject
 {
     public ViewModelBase()
     {
@@ -21,5 +19,5 @@ public class ViewModelBase : ReactiveObject
         };
     }
     
-    [Reactive] public bool HasBeenModified { get; set; }
+    [Reactive] public partial bool HasBeenModified { get; set; }
 }

@@ -5,24 +5,24 @@ using AvaloniaControls.Models;
 using Material.Icons;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 
 namespace MSURandomizer.ViewModels;
 
 [MapsTo(typeof(MsuSettings))]
-public class MsuDetailsWindowViewModel : ViewModelBase
+public partial class MsuDetailsWindowViewModel : ViewModelBase
 {
-    [Reactive] public string MsuPath { get; set; } = "";
+    [Reactive] public partial string MsuPath { get; set; }
     
-    [Reactive] public string AbbreviatedPath { get; set; } = "";
+    [Reactive] public partial string AbbreviatedPath { get; set; }
 
-    [Reactive] public string? MsuTypeName { get; set; }
+    [Reactive] public partial string? MsuTypeName { get; set; }
 
-    [Reactive] public AltOptions AltOption { get; set; }
+    [Reactive] public partial AltOptions AltOption { get; set; }
 
-    [Reactive] public string? Name { get; set; }
+    [Reactive] public partial string? Name { get; set; }
     
-    [Reactive] public string? Creator { get; set; }
+    [Reactive] public partial string? Creator { get; set; }
 
     public string DefaultMsuName => Msu?.Name ?? "";
     
@@ -45,10 +45,10 @@ public class MsuDetailsWindowViewModel : ViewModelBase
     public bool IsNotLast { get; set; } = true;
     
     [Reactive, ReactiveLinkedProperties(nameof(UndoOpacity))]
-    public bool IsAnyCopyrightSafeValueOverridden { get; set; }
+    public partial bool IsAnyCopyrightSafeValueOverridden { get; set; }
     
     [Reactive, ReactiveLinkedProperties(nameof(CheckedIconKind), nameof(CopyrightIconBrush))]
-    public bool? AreAllCopyrightSafe { get; set; }
+    public partial bool? AreAllCopyrightSafe { get; set; }
     
     public MaterialIconKind CheckedIconKind => AreAllCopyrightSafe switch
     {
@@ -65,6 +65,12 @@ public class MsuDetailsWindowViewModel : ViewModelBase
     };
 
     public float UndoOpacity => IsAnyCopyrightSafeValueOverridden ? 1.0f : 0.3f;
+
+    public MsuDetailsWindowViewModel()
+    {
+        MsuPath = string.Empty;
+        AbbreviatedPath = string.Empty;
+    }
 
     public void UpdateCopyrightOptions()
     {

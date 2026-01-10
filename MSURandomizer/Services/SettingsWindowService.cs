@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using AutoMapper;
 using AvaloniaControls.Controls;
-using AvaloniaControls.ControlServices;
 using AvaloniaControls.Services;
 using MSURandomizer.ViewModels;
 using MSURandomizerLibrary.Configs;
