@@ -142,6 +142,7 @@ public partial class MsuWindow : RestorableWindow
         if (_model.IsHardwareModeEnabled)
         {
             var msuType = _service?.GetMsuType(_model.SelectedMsuType) ?? _model.SelectedMsus.First().Msu.MsuType;
+            _service?.SaveSelectedMsuType();
             var hardwareMsuWindow = new HardwareMsuWindow();
             hardwareMsuWindow.ShowDialog(this, _model.SelectedMsus.ToList(), msuType!);
         }

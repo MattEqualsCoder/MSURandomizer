@@ -349,6 +349,12 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         return msuTypeService.GetMsuType(msuTypeName);
     }
 
+    public void SaveSelectedMsuType()
+    {
+        userOptions.MsuUserOptions.OutputMsuType = Model.SelectedMsuType;
+        userOptions.Save();
+    }
+
     private void MsuTypeServiceOnOnMsuTypeLoadComplete(object? sender, EventArgs e)
     {
         Model.MsusTypes = msuTypeService.MsuTypes.Select(x => x.DisplayName).Order().ToList();
