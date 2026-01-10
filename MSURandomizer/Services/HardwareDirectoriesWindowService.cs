@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AvaloniaControls.Controls;
-using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using Microsoft.Extensions.Logging;
 using MSURandomizer.ViewModels;
 using MSURandomizer.Views;

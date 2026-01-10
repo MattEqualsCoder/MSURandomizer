@@ -1,28 +1,28 @@
 using System.Collections.Generic;
 using AvaloniaControls.Models;
 using Material.Icons;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 
 namespace MSURandomizer.ViewModels;
 
-public class HardwareDirectoriesWindowViewModel : ViewModelBase
+public partial class HardwareDirectoriesWindowViewModel : ViewModelBase
 {
-    [Reactive] public List<HardwareItem> TreeNodes { get; set; } = [];
+    [Reactive] public partial List<HardwareItem> TreeNodes { get; set; }
     
     [Reactive, ReactiveLinkedProperties(nameof(IsHardwareDirectorySelected), nameof(IsHardwareItemSelected))]
-    public HardwareItem? SelectedTreeNode { get; set; }
+    public partial HardwareItem? SelectedTreeNode { get; set; }
 
     [Reactive]
     [ReactiveLinkedProperties(nameof(IsHardwareDirectorySelected), nameof(IsHardwareItemSelected))]
-    public bool IsLoadingData { get; set; } = true;
+    public partial bool IsLoadingData { get; set; }
     
-    [Reactive] public string LoadingDataText { get; set; } = "Loading...";
+    [Reactive] public partial string LoadingDataText { get; set; }
 
-    [Reactive] public bool IsLoadingIndeterminate { get; set; } = true;
+    [Reactive] public partial bool IsLoadingIndeterminate { get; set; }
     
-    [Reactive] public double LoadingItemCount { get; set; }
+    [Reactive] public partial double LoadingItemCount { get; set; }
     
-    [Reactive] public double LoadingProgress { get; set; }
+    [Reactive] public partial double LoadingProgress { get; set; }
     
     public bool IsHardwareItemSelected => SelectedTreeNode != null && !IsLoadingData;
     
@@ -32,11 +32,20 @@ public class HardwareDirectoriesWindowViewModel : ViewModelBase
     
     [Reactive]
     [ReactiveLinkedProperties(nameof(CloseButtonText), nameof(IsSelectWindow))]
-    public string? MsuToUpload { get; set; } = "";
+    public partial string? MsuToUpload { get; set; }
 
     public string CloseButtonText => string.IsNullOrEmpty(MsuToUpload) ? "Close" : "Cancel";
 
     public bool DidUpdate { get; set; }
+
+    public HardwareDirectoriesWindowViewModel()
+    {
+        TreeNodes = [];
+        MsuToUpload = string.Empty;
+        IsLoadingData = true;
+        LoadingDataText = "Loading...";
+        IsLoadingIndeterminate = true;
+    }
 }
 
 public class HardwareItem(string name, string path, string parentPath, bool isFolder)

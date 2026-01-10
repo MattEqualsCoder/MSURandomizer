@@ -1,44 +1,43 @@
-using System;
 using System.Collections.Generic;
 using AvaloniaControls.Models;
 using MSURandomizerLibrary;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 
 namespace MSURandomizer.ViewModels;
 
-public class MsuWindowViewModel : ViewModelBase
+public partial class MsuWindowViewModel : ViewModelBase
 {
-    [Reactive] public MsuFilter Filter { get; set; }
+    [Reactive] public partial MsuFilter Filter { get; set; }
 
-    [Reactive] public string SelectedMsuType { get; set; } = "";
+    [Reactive] public partial string SelectedMsuType { get; set; }
 
-    [Reactive] public List<string> MsusTypes { get; set; } = new();
+    [Reactive] public partial List<string> MsusTypes { get; set; }
 
-    [Reactive] public ICollection<MsuViewModel> SelectedMsus { get; set; } = new List<MsuViewModel>();
+    [Reactive] public partial ICollection<MsuViewModel> SelectedMsus { get; set; }
     
-    [Reactive] public bool CanDisplaySelectMsuButton { get; set; }
+    [Reactive] public partial bool CanDisplaySelectMsuButton { get; set; }
     
-    [Reactive] public bool CanDisplayCancelButton { get; set; }
+    [Reactive] public partial bool CanDisplayCancelButton { get; set; }
     
-    [Reactive] public bool CanDisplayRandomMsuButton { get; set; }
+    [Reactive] public partial bool CanDisplayRandomMsuButton { get; set; }
     
-    [Reactive] public bool CanDisplayShuffledMsuButton { get; set; }
+    [Reactive] public partial bool CanDisplayShuffledMsuButton { get; set; }
     
-    [Reactive] public bool CanDisplayContinuousShuffleButton { get; set; }
+    [Reactive] public partial bool CanDisplayContinuousShuffleButton { get; set; }
     
-    [Reactive] public bool CanDisplayUploadButton { get; set; }
+    [Reactive] public partial bool CanDisplayUploadButton { get; set; }
     
-    [Reactive] public bool WasClosed { get; set; }
+    [Reactive] public partial bool WasClosed { get; set; }
 
-    [Reactive] public bool IsHardwareModeButtonVisible { get; set; } = true;
+    [Reactive] public partial bool IsHardwareModeButtonVisible { get; set; }
 
-    [Reactive] public bool MsuWindowDisplayOptionsButton { get; set; } = true;
+    [Reactive] public partial bool MsuWindowDisplayOptionsButton { get; set; }
     
-    [Reactive] public bool DisplayMsuTypeComboBox { get; set; } = true;
+    [Reactive] public partial bool DisplayMsuTypeComboBox { get; set; }
     
     [Reactive] 
     [ReactiveLinkedProperties(nameof(IsShuffledMsuButtonVisible), nameof(IsContinuousShuffleButtonVisible), nameof(IsMsuWindowUploadButtonVisible))]
-    public bool IsHardwareModeEnabled { get; set; } = false;
+    public partial bool IsHardwareModeEnabled { get; set; }
 
     public bool IsSelectMsuButtonVisible => CanDisplaySelectMsuButton;
 
@@ -55,24 +54,24 @@ public class MsuWindowViewModel : ViewModelBase
     [Reactive]
     [ReactiveLinkedProperties(nameof(IsSelectMsuEnabled), nameof(IsRandomMsuEnabled), nameof(IsShuffledMsuEnabled), 
         nameof(IsContinuousShuffleEnabled), nameof(MsuCountText), nameof(SelectMsusText), nameof(RandomMsuText))]
-    public int MsuCount { get; set; }
+    public partial int MsuCount { get; set; }
     
     [Reactive]
     [ReactiveLinkedProperties(nameof(IsSelectMsuEnabled), nameof(IsRandomMsuEnabled), nameof(IsShuffledMsuEnabled), 
         nameof(IsContinuousShuffleEnabled))]
-    public bool AreMsusLoading { get; set; } = true;
+    public partial bool AreMsusLoading { get; set; }
 
     [Reactive]
     [ReactiveLinkedProperties(nameof(IsSelectMsuEnabled), nameof(IsRandomMsuEnabled), nameof(IsShuffledMsuEnabled),
         nameof(IsContinuousShuffleEnabled))]
-    public bool IsMsuMonitorActive { get; set; }
+    public partial bool IsMsuMonitorActive { get; set; }
 
     [Reactive]
     [ReactiveLinkedProperties(nameof(HasGitHubUrl))]
-    public string? GitHubUrl { get; set; }
+    public partial string? GitHubUrl { get; set; }
     
     [Reactive]
-    public bool IsSingleSelectionMode { get; set; }
+    public partial bool IsSingleSelectionMode { get; set; }
 
     public bool IsSelectMsuEnabled  => MsuCount > 0 && !AreMsusLoading && !IsMsuMonitorActive;
 
@@ -99,4 +98,15 @@ public class MsuWindowViewModel : ViewModelBase
     public bool DisplaySettingsWindowOnLoad { get; set; }
 
     public int FilterColumnIndex { get; set; } = 1;
+
+    public MsuWindowViewModel()
+    {
+        SelectedMsuType = string.Empty;
+        MsusTypes = [];
+        SelectedMsus = new List<MsuViewModel>();
+        IsHardwareModeButtonVisible = true;
+        MsuWindowDisplayOptionsButton = true;
+        DisplayMsuTypeComboBox = true;
+        AreMsusLoading = true;
+    }
 }

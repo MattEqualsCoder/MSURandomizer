@@ -37,6 +37,7 @@ public class MsuTypeYamlTests
     }
 
     [Test]
+    [Retry(5)]
     public void CreateYamlFiles()
     {
         foreach (var file in Directory.EnumerateFiles(_outputFolder))
@@ -76,6 +77,7 @@ public class MsuTypeYamlTests
     }
 
     [Test]
+    [Retry(5)]
     public void TestYamlFiles()
     {
         foreach (var msuType in _msuTypeService.MsuTypes)

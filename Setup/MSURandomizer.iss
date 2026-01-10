@@ -7,7 +7,7 @@
 #define MyAppPublisher "MattEqualsCoder"
 #define MyAppURL "https://github.com/MattEqualsCoder"
 #define MyAppExeName "MSURandomizer.exe"
-#define MyAppVersion GetStringFileInfo("..\MSURandomizer\bin\Release\net9.0\win-x64\publish\" + MyAppExeName, "ProductVersion")
+#define MyAppVersion GetStringFileInfo("..\MSURandomizer\bin\Release\net10.0\win-x64\publish\" + MyAppExeName, "ProductVersion")
 #define MyAppVersion Copy(MyAppVersion, 0, Pos('+', MyAppVersion)-1)
 
 [Setup]
@@ -36,8 +36,8 @@ ArchitecturesInstallIn64BitMode=x64
 [Code]
 function InitializeSetup: Boolean;
 begin
-  Dependency_AddDotNet90Desktop;
-  Dependency_AddDotNet90Asp;
+  Dependency_AddDotNet100Desktop;
+  Dependency_AddDotNet100Asp;
   Result := True;
 end;
 
@@ -50,8 +50,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "netcorecheck.exe"; Flags: dontcopy noencryption
 Source: "netcorecheck_x64.exe"; Flags: dontcopy noencryption
-Source: "..\MSURandomizer\bin\Release\net9.0\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: Is64BitInstallMode;
-Source: "..\MSURandomizer\bin\Release\net9.0\win-x86\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: "not Is64BitInstallMode";
+Source: "..\MSURandomizer\bin\Release\net10.0\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: Is64BitInstallMode;
+Source: "..\MSURandomizer\bin\Release\net10.0\win-x86\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: "not Is64BitInstallMode";
 ; Source: "..\ConfigRepo\resources\snes\*"; Excludes: "*.txt,*.bps"; DestDir: "{localappdata}\MSURandomizer\Configs\snes"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

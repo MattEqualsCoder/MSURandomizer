@@ -3,22 +3,22 @@ using AvaloniaControls.Models;
 using Material.Icons;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 
 namespace MSURandomizer.ViewModels;
 
-public class MsuSongViewModel(Track track) : ViewModelBase
+public partial class MsuSongViewModel : ViewModelBase
 {
-    public string SongDetails { get; set; } = $"• {track.GetDisplayText(TrackDisplayFormat.Horizontal)}";
-    public string Path { get; set; } = track.Path;
-    public string? Url { get; set; } = track.Url;
+    public string SongDetails { get; set; }
+    public string Path { get; set; }
+    public string? Url { get; set; }
     public bool DisplayUrl => !string.IsNullOrWhiteSpace(Url);
     public bool? IsCopyrightSafeCombined => IsCopyrightSafeOverrideValue ?? IsCopyrightSafeOriginalValue;
     public bool IsCopyrightSafeValueOverridden => IsCopyrightSafeOverrideValue != null && IsCopyrightSafeOverrideValue != IsCopyrightSafeOriginalValue;
-    public bool? IsCopyrightSafeOriginalValue { get; set; } = track.IsCopyrightSafe;
+    public bool? IsCopyrightSafeOriginalValue { get; set; }
     
     [Reactive, ReactiveLinkedProperties(nameof(CheckedIconKind), nameof(UndoOpacity), nameof(IsCopyrightSafeValueOverridden), nameof(CopyrightIconBrush))]
-    public bool? IsCopyrightSafeOverrideValue { get; set; } = track.IsCopyrightSafeOverride;
+    public partial bool? IsCopyrightSafeOverrideValue { get; set; }
 
     public MaterialIconKind CheckedIconKind => IsCopyrightSafeCombined switch
     {
@@ -35,4 +35,13 @@ public class MsuSongViewModel(Track track) : ViewModelBase
     };
 
     public float UndoOpacity => IsCopyrightSafeValueOverridden ? 1.0f : 0.3f;
+
+    public MsuSongViewModel(Track track)
+    {
+        SongDetails = $"• {track.GetDisplayText(TrackDisplayFormat.Horizontal)}";
+        Path = track.Path;
+        Url = track.Url;
+        IsCopyrightSafeOriginalValue = track.IsCopyrightSafe;
+        IsCopyrightSafeOverrideValue = track.IsCopyrightSafeOverride;
+    }
 }
