@@ -134,7 +134,7 @@ jobs:
       run: dotnet restore MSURandomizer/MSURandomizer.csproj
     - name: Build
       if: ${{ github.event_name != 'pull_request' }}
-      run: dotnet build --no-restore  -v Release -p:PostBuildEvent= MSURandomizer/MSURandomizer.csproj
+      run: dotnet build --no-restore  -c Release -p:PostBuildEvent= MSURandomizer/MSURandomizer.csproj
     - name: Publish Mac OS
       if: ${{ github.event_name != 'pull_request' }}
       run: dotnet publish -r osx-arm64  -f net10.0 -c Release -p:UseAppHost=true MSURandomizer/MSURandomizer.csproj
