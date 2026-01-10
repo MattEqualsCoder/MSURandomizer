@@ -1,18 +1,24 @@
 using System.Collections.Generic;
 using MSURandomizerLibrary.Configs;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 
 namespace MSURandomizer.ViewModels;
 
-public class HardwareMsuViewModel : ViewModelBase
+public partial class HardwareMsuViewModel : ViewModelBase
 {
-    [Reactive] public string Message { get; set; } = "Connecting";
+    [Reactive] public partial string Message { get; set; }
 
-    public List<MsuViewModel> Msus { get; set; } = new();
+    public List<MsuViewModel> Msus { get; set; }
     
     public bool Complete { get; set; }
     
     public Msu? SelectedMsu { get; set; }
     
     public MsuType? SelectedMsuType { get; set; }
+
+    public HardwareMsuViewModel()
+    {
+        Message = "Connecting";
+        Msus = [];
+    }
 }

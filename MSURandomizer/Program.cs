@@ -1,8 +1,8 @@
 ﻿using Avalonia;
-using Avalonia.ReactiveUI;
 using System;
+using System.CodeDom.Compiler;
 using System.Linq;
-using System.Runtime.Versioning;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -12,6 +12,10 @@ using GitHubReleaseChecker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MSURandomizer.Services;
+using MSURandomizer.Views;
+using ReactiveUI;
+using ReactiveUI.Avalonia;
+using ReactiveUI.SourceGenerators;
 using Serilog;
 
 namespace MSURandomizer;
@@ -56,6 +60,10 @@ sealed class Program
             .WriteTo.Console()
 #endif
             .CreateLogger();
+        
+#if DEBUG
+        CheckReactiveProperties();
+#endif
 
         MainHost = Host.CreateDefaultBuilder(args)
             .UseSerilog()
@@ -67,6 +75,7 @@ sealed class Program
             {
                 services.AddMsuRandomizerAppServices();
                 services.AddGitHubReleaseCheckerServices();
+                services.AddAutoMapper(x => x.AddProfile(new ViewModelMapperConfig<Program>()));
             })
             .Build();
         
@@ -112,5 +121,44 @@ sealed class Program
                 await Task.Delay(500);
             }
         });
+    }
+    
+    private static void CheckReactiveProperties()
+    {
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        
+        foreach (var asm in assemblies)
+        {
+            foreach (var type in asm.GetTypes())
+            {
+                if (!InheritsFromType<ReactiveObject>(type))
+                {
+                    continue;
+                }
+                
+                var props = type.GetProperties(
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Select(x => (Property: x, Attributes: x.GetCustomAttributes(true)))
+                    .Where(x => x.Attributes.Any(a => a is ReactiveAttribute) && !x.Attributes.Any(a => a is GeneratedCodeAttribute))
+                    .ToList();
+                
+                foreach (var prop in props)
+                {
+                    Log.Logger.Warning("Class {Class} property {Property} has ReactiveAttribute but is missing partial", type.FullName, prop.Property.Name);
+                }
+            }
+        }
+    }
+    
+    static bool InheritsFromType<T>(Type type)
+    {
+        var checkType = type;
+        while (checkType != null && checkType != typeof(object))
+        {
+            if (checkType == typeof(T))
+                return true;
+            checkType = checkType.BaseType;
+        }
+        return false;
     }
 }

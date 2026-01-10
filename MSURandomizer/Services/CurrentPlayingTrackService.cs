@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Threading;
-using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using MSURandomizer.ViewModels;
 using MSURandomizerLibrary.Models;
 using MSURandomizerLibrary.Services;

@@ -1,40 +1,47 @@
-using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using AvaloniaControls.Models;
 using MSURandomizerLibrary.Configs;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 
 namespace MSURandomizer.ViewModels;
 
-public class MsuListViewModel : ViewModelBase
+public partial class MsuListViewModel : ViewModelBase
 {
-    [Reactive] public bool IsLoading { get; set; }
+    [Reactive] public partial bool IsLoading { get; set; }
 
-    [Reactive] public IReadOnlyCollection<Msu> Msus { get; set; } = new List<Msu>();
+    [Reactive] public partial IReadOnlyCollection<Msu> Msus { get; set; }
 
-    [Reactive] public List<MsuViewModel> MsuViewModels { get; set; } = new();
+    [Reactive] public partial List<MsuViewModel> MsuViewModels { get; set; }
     
-    [Reactive] public List<MsuViewModel> SelectedMsus { get; set; } = new();
+    [Reactive] public partial List<MsuViewModel> SelectedMsus { get; set; }
     
-    [Reactive] public List<MsuViewModel> FilteredMsus { get; set; } = new();
+    [Reactive] public partial List<MsuViewModel> FilteredMsus { get; set; }
     
-    [Reactive] public string? MsuTypeName { get; set; }
+    [Reactive] public partial string? MsuTypeName { get; set; }
     
-    [Reactive] public MsuType? MsuType { get; set; }
+    [Reactive] public partial MsuType? MsuType { get; set; }
     
-    [Reactive] public bool IsMsuMonitorActive { get; set; }
+    [Reactive] public partial bool IsMsuMonitorActive { get; set; }
     
-    [Reactive] public bool IsMsuMonitorDisabled { get; set; }
+    [Reactive] public partial bool IsMsuMonitorDisabled { get; set; }
     
-    [Reactive] public bool HardwareMode { get; set; }
+    [Reactive] public partial bool HardwareMode { get; set; }
     
     [Reactive]
     [ReactiveLinkedProperties(nameof(SelectionMode))]
-    public bool IsSingleSelectionMode { get; set; }
+    public partial bool IsSingleSelectionMode { get; set; }
 
     public bool DisplayUnknownMsuWindow { get; set; }
     
     public SelectionMode SelectionMode =>
         IsSingleSelectionMode ? SelectionMode.Single : SelectionMode.Multiple | SelectionMode.Toggle;
+
+    public MsuListViewModel()
+    {
+        Msus = [];
+        MsuViewModels = [];
+        SelectedMsus = [];
+        FilteredMsus = [];
+    }
 }

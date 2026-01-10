@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using AutoMapper;
-using AvaloniaControls.ControlServices;
+using AvaloniaControls.Services;
 using MSURandomizer.ViewModels;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Services;

@@ -4,17 +4,23 @@ using AvaloniaControls.Models;
 using Material.Icons;
 using MSURandomizerLibrary;
 using MSURandomizerLibrary.Configs;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 
 namespace MSURandomizer.ViewModels;
 
 [MapsTo(typeof(MsuViewModel))]
-public class MsuViewModel : ViewModelBase
+public partial class MsuViewModel : ViewModelBase
 {
 
     public MsuViewModel()
     {
-        Msu = new();
+        Msu = new Msu();
+        MsuPath = string.Empty;
+        DisplayPath = string.Empty;
+        MsuTrackCount = string.Empty;
+        MsuTypeName = string.Empty;
+        Tracks = [];
+        ShowShuffleFrequency = true;
     }
     
     public MsuViewModel(Msu msu)
@@ -30,44 +36,44 @@ public class MsuViewModel : ViewModelBase
         ShuffleFrequency = msu.Settings.ShuffleFrequency;
         IsHardwareMsu = msu.IsHardwareMsu;
         ShowShuffleFrequency = !IsHardwareMsu;
+        Tracks = [];
     }
     
-    [Reactive] public Msu Msu { get; init; }
+    [Reactive] public partial Msu Msu { get; set; }
 
     [Reactive] 
     [ReactiveLinkedProperties(nameof(ListText))]
-    public string? MsuName { get; set; }
+    public partial string? MsuName { get; set; }
     
     [Reactive] 
     [ReactiveLinkedProperties(nameof(ListText))]
-    public string? MsuCreator { get; set; }
+    public partial string? MsuCreator { get; set; }
     
+    [Reactive] public partial AltOptions AltOptions { get; set; }
+
+    [Reactive] public partial string MsuPath { get; set; }
+
+    [Reactive] public partial string DisplayPath { get; set; }
+
+    [Reactive] public partial string MsuTypeName { get; set; }
+
+    [Reactive] public partial string MsuTrackCount { get; set; }
     
-    [Reactive] public AltOptions AltOptions { get; set; }
+    [Reactive] public partial bool IsHardwareMsu { get; set; }
 
-    [Reactive] public string MsuPath { get; init; } = "";
-
-    [Reactive] public string DisplayPath { get; set; } = "";
-
-    [Reactive] public string MsuTypeName { get; init; } = "";
-
-    [Reactive] public string MsuTrackCount { get; init; } = "";
+    [Reactive] public partial List<MsuTrackViewModel>? Tracks { get; set; }
     
-    [Reactive] public bool IsHardwareMsu { get; init; }
-
-    [Reactive] public List<MsuTrackViewModel>? Tracks { get; init; } = new();
-    
-    [Reactive] public bool IsMonitorWindowAvailable { get; set; }
+    [Reactive] public partial bool IsMonitorWindowAvailable { get; set; }
 
     [Reactive] 
     [ReactiveLinkedProperties(nameof(FavoriteIconColor))]
-    public bool IsFavorite { get; set; }
+    public partial bool IsFavorite { get; set; }
     
     [Reactive]
     [ReactiveLinkedProperties(nameof(ShuffleFrequencyIcon), nameof(ShuffleFrequencyColor))]
-    public ShuffleFrequency ShuffleFrequency { get; set; }
+    public partial ShuffleFrequency ShuffleFrequency { get; set; }
 
-    [Reactive] public bool ShowShuffleFrequency { get; set; } = true;
+    [Reactive] public partial bool ShowShuffleFrequency { get; set; }
     
     public string ListText => string.IsNullOrEmpty(MsuCreator) ? MsuName ?? "" : $"{MsuName} by {MsuCreator}";
     

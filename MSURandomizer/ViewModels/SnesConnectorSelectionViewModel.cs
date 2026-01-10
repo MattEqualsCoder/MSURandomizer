@@ -1,16 +1,14 @@
 using System;
-using System.Collections.Generic;
 using AvaloniaControls.Models;
-using MSURandomizerLibrary.Configs;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 using SnesConnectorLibrary;
 
 namespace MSURandomizer.ViewModels;
 
 [MapsTo(typeof(SnesConnectorSettings))]
-public class SnesConnectorSelectionViewModel : ViewModelBase
+public partial class SnesConnectorSelectionViewModel : ViewModelBase
 {
-    [Reactive] public SnesConnectorType ConnectorType { get; set; }
+    [Reactive] public partial SnesConnectorType ConnectorType { get; set; }
 
     public string Usb2SnesAddress { get; set; } = "";
 
