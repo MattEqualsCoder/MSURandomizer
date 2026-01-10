@@ -2,7 +2,7 @@ name: .NET Build + Test + Publish
 
 on:
   push:
-    branches: [main, appimage]
+    branches: [main, mac-test-build]
   pull_request:
     branches: [main]
 
