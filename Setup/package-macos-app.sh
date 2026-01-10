@@ -5,7 +5,7 @@ APP_NAME="MSURandomizer.app"
 ZIP_FILE="MSURandomizer.zip"
 PUBLISH_OUTPUT_DIRECTORY="MSURandomizer/bin/Release/net10.0/osx-arm64/publish"
 INFO_PLIST="Info.plist"
-ICON_FILE="AppIcon.icns"
+ICON_FILE="Icons/icon.icns"
 
 # Remove old .app bundle if it exists
 if [ -d "$APP_NAME" ]; then
