@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using AvaloniaControls;
 using AvaloniaControls.Services;
 using MSURandomizer.ViewModels;
@@ -39,10 +40,16 @@ public class HardwareMsuWindowService(ITaskService taskService,
     {
         if (!msuUserOptionsService.MsuUserOptions.PassedRomArgument)
         {
-            var path = await CrossPlatformTools.OpenFileDialogAsync((Window)ParentControl!, FileInputControlType.OpenFile,
-                "Rom Files:*.sfc,*.smc,*.gb,*.gbc",
-                msuUserOptionsService.MsuUserOptions.OutputRomPath ??
-                msuUserOptionsService.MsuUserOptions.OutputFolderPath);
+            IStorageItem? path = null;
+
+            await Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                path = await CrossPlatformTools.OpenFileDialogAsync((Window)ParentControl!,
+                    FileInputControlType.OpenFile,
+                    "Rom Files:*.sfc,*.smc,*.gb,*.gbc",
+                    msuUserOptionsService.MsuUserOptions.OutputRomPath ??
+                    msuUserOptionsService.MsuUserOptions.OutputFolderPath);
+            });
         
             if (path is not IStorageFile file || file.TryGetLocalPath() == null)
             {

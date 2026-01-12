@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="MSURandomizer.App"
              xmlns:local="using:MSURandomizer"
+             Name="MSU Randomizer"
              RequestedThemeVariant="Dark">
 
     <Application.DataTemplates>
