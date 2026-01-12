@@ -5,6 +5,11 @@
              Name="MSU Randomizer"
              RequestedThemeVariant="Dark">
 
+    <NativeMenu.Menu>
+        <NativeMenu>
+        </NativeMenu>
+    </NativeMenu.Menu>
+    
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
