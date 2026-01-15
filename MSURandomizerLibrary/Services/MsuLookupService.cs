@@ -374,6 +374,12 @@ internal class MsuLookupService(
             directory = directory.Substring(0, directory.Length - 1);
         }
         
+        var pathCharacter = msuPath.Contains('/')
+            ? '/'
+            : msuPath.Contains('\\')
+                ? '\\'
+                : Path.DirectorySeparatorChar;
+        
         var tracks = pcmFiles
             .Select(x =>
                 Path.GetFileName(x).Replace($"{baseName}-", "", StringComparison.OrdinalIgnoreCase).Replace(".pcm", "", StringComparison.OrdinalIgnoreCase))
@@ -383,7 +389,7 @@ internal class MsuLookupService(
                     trackName: $"Track #{x}",
                     number: int.Parse(x),
                     songName: $"Track #{x}",
-                    path: $"{directory}{Path.DirectorySeparatorChar}{baseName}-{x}.pcm",
+                    path: $"{directory}{pathCharacter}{baseName}-{x}.pcm",
                     isBaseFile: true
                 ));
 
@@ -405,6 +411,12 @@ internal class MsuLookupService(
         {
             directory = directory.Substring(0, directory.Length - 1);
         }
+
+        var pathCharacter = directory.Contains('/')
+            ? '/'
+            : directory.Contains('\\')
+                ? '\\'
+                : Path.DirectorySeparatorChar;
 
         var allPcmFiles = pcmFiles.ToList();
         
@@ -440,7 +452,7 @@ internal class MsuLookupService(
             }
 
             var path = allPcmFiles.FirstOrDefault(x =>
-                x.Equals($"{directory}{Path.DirectorySeparatorChar}{baseName}-{trackNumber}.pcm",
+                x.Equals($"{directory}{pathCharacter}{baseName}-{trackNumber}.pcm",
                     StringComparison.OrdinalIgnoreCase));
 
             if (path == null)
