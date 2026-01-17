@@ -2,7 +2,7 @@ name: .NET Build + Test + Publish
 
 on:
   push:
-    branches: [main, dotnet-10]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -114,6 +114,50 @@ jobs:
           path: "Setup/Output/MSURandomizer*.AppImage"
           name: MSURandomizerLinux
 
+  build-mac:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "MattEqualsCoder/ALttPMSUShuffler"
+          file: "msu_types.json"
+          target: "MSURandomizerLibrary/msu_types.json"
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore dependencies
+        run: dotnet restore MSURandomizer/MSURandomizer.csproj
+      - name: Build
+        if: ${{ github.event_name != 'pull_request' }}
+        run: dotnet build --no-restore  -c Release -p:PostBuildEvent= MSURandomizer/MSURandomizer.csproj
+      - name: Publish Mac OS
+        if: ${{ github.event_name != 'pull_request' }}
+        run: dotnet publish -r osx-arm64  -f net10.0 -c Release -p:UseAppHost=true MSURandomizer/MSURandomizer.csproj
+      - name: Get version number
+        id: version
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          $version = (Get-Item "MSURandomizer\bin\Release\net10.0\osx-arm64\publish\MSURandomizer.dll").VersionInfo.ProductVersion
+          $version = $version -replace "\+.*", ""
+          $versionShort = $version -replace "\-.*", ""
+          (Get-Content Setup/Info.plist).Replace('%FULL_VERSION%', $version).Replace('%SHORT_VERSION%', $versionShort) | Set-Content Setup/Info.plist
+          Write-Output "number=$version" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+      - name: Prepare packaging script
+        run: |
+          chmod +x ./Setup/package-macos-app.sh
+          ./Setup/package-macos-app.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          path: "setup/Output/*"
+          name: MSURandomizerMac
+
   package:
     runs-on: ubuntu-22.04
 
@@ -131,9 +175,10 @@ jobs:
         with:
           name: MSURandomizerLinux
           path: out
-      - name: Extract some files
-        run: |
-          ls -alR
+      - uses: actions/download-artifact@v5
+        with:
+          name: MSURandomizerMac
+          path: out
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         if: ${{ github.event_name != 'pull_request' }}
@@ -146,3 +191,4 @@ jobs:
           name: |
             MSURandomizerWindows
             MSURandomizerLinux
+            MSURandomizerMac
