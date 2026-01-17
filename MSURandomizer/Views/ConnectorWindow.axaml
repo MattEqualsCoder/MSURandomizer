@@ -11,7 +11,7 @@
         x:DataType="viewModels:ConnectorWindowViewModel"
         Closing="Window_OnClosing"
         WindowStartupLocation="CenterOwner"
-        Title="ConnectorWindow">
+        Title="Connect">
     <LayoutTransformControl Name="MainLayout">
         <DockPanel>
             <controls:HeaderFooter DockPanel.Dock="Bottom">
