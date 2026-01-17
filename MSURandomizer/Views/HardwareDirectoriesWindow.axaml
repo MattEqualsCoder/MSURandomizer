@@ -10,11 +10,12 @@
         WindowStartupLocation="CenterOwner"
         x:Class="MSURandomizer.Views.HardwareDirectoriesWindow"
         x:DataType="viewModels:HardwareDirectoriesWindowViewModel"
+        Loaded="Control_OnLoaded"
         Closing="Window_OnClosing"
         Title="Hardware Directory Listing">
     <LayoutTransformControl Name="MainLayout">
         <DockPanel>
-            <controls:HeaderFooter DockPanel.Dock="Top" BorderSize="0 0  0 3">
+            <controls:HeaderFooter DockPanel.Dock="Top" BorderSize="0 0  0 3" IsVisible="{Binding ShowHeader}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5" DockPanel.Dock="Bottom">
                     <Button Margin="5" 
                             Click="DeleteDirectoryButton_OnClick"
@@ -36,9 +37,8 @@
                             IsEnabled="{Binding IsHardwareDirectorySelected}" 
                             Click="UploadButton_OnClick"
                             IsVisible="{Binding IsSelectWindow}"
-                    >
-                        Upload MSU
-                    </Button>
+                            Content="{Binding AcceptButtonText}"
+                    />
                     <Button Margin="5" Click="CancelButton_OnClick" Content="{Binding CloseButtonText}" />
                 </StackPanel>    
             </controls:HeaderFooter>

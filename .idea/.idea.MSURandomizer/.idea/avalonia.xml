@@ -4,6 +4,7 @@
     <option name="projectPerEditor">
       <map>
         <entry key="MSURandomizer/App.axaml" value="MSURandomizer/MSURandomizer.csproj" />
+        <entry key="MSURandomizer/Views/ConnectorWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/CurrentPlayingTrackControl.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/HardwareConnectorSelectionWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />
         <entry key="MSURandomizer/Views/HardwareDirectoriesWindow.axaml" value="MSURandomizer/MSURandomizer.csproj" />

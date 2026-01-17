@@ -31,6 +31,9 @@ public class SettingsWindowService(
         _model.MsuDirectoryList = new ObservableCollection<MsuDirectory>(
             userOptionsService.MsuUserOptions.MsuDirectories.Select(x =>
                 new MsuDirectory(x.Key, x.Value, _msuTypeList)));
+        _model.MsuHardwareDirectoryList = new ObservableCollection<MsuDirectory>(
+            userOptionsService.MsuUserOptions.HardwareMsuDirectories.Select(x =>
+                new MsuDirectory(x.Key, x.Value, _msuTypeList)));
         _model.DisplayNoMsuDirectoriesMessage = _model.MsuDirectoryList.Count == 0;
         return _model;
     }
@@ -41,6 +44,7 @@ public class SettingsWindowService(
         var hasPathUpdated = HasPathUpdated(options);
         mapper.Map(_model, options);
         options.MsuDirectories = _model.MsuDirectoryList.ToDictionary(x => x.Path, x => x.MsuTypeName);
+        options.HardwareMsuDirectories = _model.MsuHardwareDirectoryList.ToDictionary(x => x.Path, x => x.MsuTypeName);
         userOptionsService.Save();
         ScalableWindow.GlobalScaleFactor = options.UiScaling;
 
@@ -64,6 +68,16 @@ public class SettingsWindowService(
         _model.DisplayNoMsuDirectoriesMessage = false;
         return true;
     }
+    
+    public bool AddHardwareDirectory(string directory)
+    {
+        if (_model.MsuHardwareDirectoryList.Any(x => x.Path == directory))
+        {
+            return false;
+        }
+        _model.MsuHardwareDirectoryList.Add(new MsuDirectory(directory, _msuTypeList.FirstOrDefault() ?? "", _msuTypeList));
+        return true;
+    }
 
     public void RemoveDirectory(string directory)
     {
@@ -75,9 +89,13 @@ public class SettingsWindowService(
         }
     }
 
-    public void CreateDesktopFile()
+    public void RemoveHardwareDirectory(string directory)
     {
-        
+        var directoryToRemove = _model.MsuHardwareDirectoryList.FirstOrDefault(x => x.Path == directory);
+        if (directoryToRemove != null)
+        {
+            _model.MsuHardwareDirectoryList.Remove(directoryToRemove);
+        }
     }
 
     private bool HasPathUpdated(MsuUserOptions options)

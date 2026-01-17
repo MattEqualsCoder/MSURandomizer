@@ -10,6 +10,7 @@ internal class MsuHardwareService(
     ISnesConnectorService snesConnectorService,
     IMsuLookupService msuLookupService,
     IMsuUserOptionsService msuUserOptionsService,
+    IMsuTypeService msuTypeService,
     ILogger<MsuHardwareService> logger) : IMsuHardwareService
 {
     private Dictionary<string, (SnesFile msuFile, List<SnesFile> pcmFiles)> _hardwareFileCache = [];
@@ -139,7 +140,9 @@ internal class MsuHardwareService(
         }
 
         _hardwareMsuList.Remove(path);
-        var newMsu = msuLookupService.LoadHardwareMsu(files.msuFile, files.pcmFiles);
+        
+        var preferredMsuType = GetPreferredMsuTypeForPath(files.msuFile.FullPath);
+        var newMsu = msuLookupService.LoadHardwareMsu(files.msuFile, files.pcmFiles, preferredMsuType);
         _hardwareMsuList.Add(path, newMsu);
         HardwareMsusChanged?.Invoke(this, new MsuListEventArgs(_hardwareMsuList.Values.ToList(), new Dictionary<string, string>()));
         return newMsu;
@@ -178,8 +181,9 @@ internal class MsuHardwareService(
                 {
                     continue;
                 }
-                
-                toReturn.Add(msuLookupService.LoadHardwareMsu(snesMsu, pcmFiles));
+
+                var preferredMsuType = GetPreferredMsuTypeForPath(snesMsu.FullPath);
+                toReturn.Add(msuLookupService.LoadHardwareMsu(snesMsu, pcmFiles, preferredMsuType));
                 _hardwareFileCache[snesMsu.FullPath] = (snesMsu, pcmFiles);
             }
             catch (Exception e)
@@ -189,5 +193,25 @@ internal class MsuHardwareService(
         }
     
         return toReturn;
+    }
+
+    private MsuType? GetPreferredMsuTypeForPath(string path)
+    {
+        var hardwareMsuTypeDirectories = msuUserOptionsService.MsuUserOptions.HardwareMsuDirectories.Keys.ToList();
+        var hardwareMsuTypes = msuUserOptionsService.MsuUserOptions.HardwareMsuDirectories;
+        
+        string? preferredMsuTypeName = null;
+        var preferredMsuTypePath = string.Empty;
+
+        foreach (var currentPath in hardwareMsuTypeDirectories.Where(x => path.StartsWith(x)))
+        {
+            if (currentPath.Length > preferredMsuTypePath.Length)
+            {
+                preferredMsuTypePath = currentPath;
+                preferredMsuTypeName = hardwareMsuTypes[currentPath];
+            }
+        }
+                
+        return preferredMsuTypePath == string.Empty ? null : msuTypeService.GetMsuType(preferredMsuTypeName);
     }
 }

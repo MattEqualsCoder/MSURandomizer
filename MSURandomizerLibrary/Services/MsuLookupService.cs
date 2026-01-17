@@ -199,13 +199,13 @@ internal class MsuLookupService(
         return msu;
     }
 
-    public Msu LoadHardwareMsu(SnesFile snesMsu, IEnumerable<SnesFile> hardwarePcmFiles)
+    public Msu LoadHardwareMsu(SnesFile snesMsu, IEnumerable<SnesFile> hardwarePcmFiles, MsuType? preferredMsuType = null)
     {
         logger.LogInformation("{MsuFilePath} msu file path found", snesMsu.FullPath);
         
         var pcmFilePaths = hardwarePcmFiles.Select(x => x.FullPath).ToList();
         var baseName = Path.GetFileName(snesMsu.FullPath).Replace(".msu", "", StringComparison.OrdinalIgnoreCase);
-        var msuType = GetMsuType(baseName, pcmFilePaths);
+        var msuType = GetMsuType(baseName, pcmFilePaths, preferredMsuType, true);
         
         var msuSettings = MsuUserOptions.GetMsuSettings(snesMsu.FullPath);
         msuSettings.MsuType = msuTypeService.GetMsuType(msuSettings.MsuTypeName);
@@ -507,7 +507,7 @@ internal class MsuLookupService(
         );
     }
 
-    private MsuType? GetMsuType(string baseName, IEnumerable<string> pcmFiles, MsuType? msuTypeFilter = null)
+    private MsuType? GetMsuType(string baseName, IEnumerable<string> pcmFiles, MsuType? msuTypeFilter = null, bool strictFilter = false)
     {
         var trackNumbers = pcmFiles
             .Select(x =>
@@ -521,7 +521,7 @@ internal class MsuLookupService(
         var allowedMsuTypes = msuTypeService.MsuTypes.ToList();
         if (msuTypeFilter != null && !msuAppSettings.ZeldaSuperMetroidSmz3MsuTypes.Contains(msuTypeFilter.DisplayName))
         {
-            allowedMsuTypes = allowedMsuTypes.Where(x => x.IsCompatibleWith(msuTypeFilter)).ToList();
+            allowedMsuTypes = strictFilter ? [msuTypeFilter] : allowedMsuTypes.Where(x => x.IsCompatibleWith(msuTypeFilter)).ToList();
         }
         
         foreach (var msuType in allowedMsuTypes)

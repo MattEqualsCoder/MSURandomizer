@@ -149,6 +149,11 @@ public class MsuUserOptions
     public Dictionary<string, string> MsuDirectories { get; set; } = new();
     
     /// <summary>
+    /// Dictionary of all hardware MSU directories and the MSU type associated with them
+    /// </summary>
+    public Dictionary<string, string> HardwareMsuDirectories { get; set; } = new();
+    
+    /// <summary>
     /// Specific directories to load for specific MSU types
     /// </summary>
     [YamlIgnore] public Dictionary<MsuType, string> MsuTypePaths { get; set; } = new();

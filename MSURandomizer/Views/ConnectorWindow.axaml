@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AvaloniaControls.Controls;assembly=AvaloniaControls"
+        xmlns:viewModels="clr-namespace:MSURandomizer.ViewModels"
+        mc:Ignorable="d" 
+        d:DesignWidth="400" d:DesignHeight="175"
+        Width="400" Height="175"
+        x:Class="MSURandomizer.Views.ConnectorWindow"
+        x:DataType="viewModels:ConnectorWindowViewModel"
+        Closing="Window_OnClosing"
+        WindowStartupLocation="CenterOwner"
+        Title="ConnectorWindow">
+    <LayoutTransformControl Name="MainLayout">
+        <DockPanel>
+            <controls:HeaderFooter DockPanel.Dock="Bottom">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" DockPanel.Dock="Bottom">
+                    <Button Click="AcceptButton_OnClick" Margin="5" IsEnabled="{Binding CanAccept}" >Continue</Button>
+                    <Button Click="CancelButton_OnClick" Margin="5" >Cancel</Button>
+                </StackPanel>    
+            </controls:HeaderFooter>
+            <StackPanel Orientation="Vertical" Grid.IsSharedSizeScope="True" Margin="10">
+                <TextBlock TextWrapping="Wrap" Margin="0 0 0 10">
+                    Make sure to have a cable connected to your hardware device. Ensure you have qUsbSnes or Sni running and select the appropriate connector to continue.  
+                </TextBlock>
+                <controls:EnumComboBox
+                    EnumType="{Binding SnesConnectorSettings.ConnectorType, Converter={StaticResource TypeConverter}}"
+                    Value="{Binding SnesConnectorSettings.ConnectorType, Mode=TwoWay}"
+                    MinWidth="150"
+                    Filter="{Binding SnesConnectorSettings.FilterConnectorTypes}"
+                    ValueChanged="ConnectorTypeEnumComboBox_OnValueChanged"
+                />
+                <TextBlock Text="{Binding ConnectionStatus}" HorizontalAlignment="Center" Margin="0 5 0 0"/>
+            </StackPanel>
+        </DockPanel>
+    </LayoutTransformControl>
+</Window>

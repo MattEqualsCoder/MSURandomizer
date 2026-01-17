@@ -25,8 +25,10 @@ public class HardwareDirectoriesWindowService(ISnesConnectorService snesConnecto
     private CancellationTokenSource? _cts;
     private HardwareDirectoriesWindow _hardwareDirectoriesWindow = null!;
     
-    public HardwareDirectoriesWindowViewModel InitializeModel(HardwareDirectoriesWindow window)
+    public HardwareDirectoriesWindowViewModel InitializeModel(HardwareDirectoriesWindow window, bool isUpload)
     {
+        _model.IsUpload = isUpload;
+        _model.IsConnected = snesConnectorService.IsConnected;
         _hardwareDirectoriesWindow = window;
         snesConnectorService.Connected += SnesConnectorServiceOnConnected;
         return _model;
@@ -34,6 +36,11 @@ public class HardwareDirectoriesWindowService(ISnesConnectorService snesConnecto
 
     public void LoadData()
     {
+        if (_model.HasConnectorWindowUp)
+        {
+            return;
+        }
+        
         if (snesConnectorService.IsConnected)
         {
             LoadHardwareDirectories();    
@@ -230,6 +237,11 @@ public class HardwareDirectoriesWindowService(ISnesConnectorService snesConnecto
 
     public void LoadHardwareDirectories()
     {
+        if (_model.HasConnectorWindowUp)
+        {
+            return;
+        }
+        
         _model.LoadingDataText = "Loading directory list...";
         _model.IsLoadingIndeterminate = true;
         _model.IsLoadingData = true;

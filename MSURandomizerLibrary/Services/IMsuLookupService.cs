@@ -47,8 +47,9 @@ public interface IMsuLookupService
     /// </summary>
     /// <param name="snesMsu">The hardware file for the MSU itself</param>
     /// <param name="hardwarePcmFiles">The PCM files on the hardware</param>
+    /// <param name="preferredMsuType">The preferred MSU type for try to assign</param>
     /// <returns>The generated MSU</returns>
-    public Msu LoadHardwareMsu(SnesFile snesMsu, IEnumerable<SnesFile> hardwarePcmFiles);
+    public Msu LoadHardwareMsu(SnesFile snesMsu, IEnumerable<SnesFile> hardwarePcmFiles, MsuType? preferredMsuType = null);
 
     /// <summary>
     /// The collection of loaded MSUs

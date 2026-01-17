@@ -72,6 +72,34 @@ public partial class SettingsWindow : ScalableWindow
             _ = MessageWindow.ShowErrorDialog("That directory has already been selected");
         }
     }
+    
+    private async void AddHardwareDirectoryButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (_service == null)
+            {
+                return;
+            }
+        
+            var hardwareDirectoriesWindow = new HardwareDirectoriesWindow(false);
+            var path = await hardwareDirectoriesWindow.ShowDialog<string?>(this);
+        
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            if (!_service.AddHardwareDirectory(path))
+            {
+                _ = MessageWindow.ShowErrorDialog("That directory has already been selected");
+            }
+        }
+        catch (Exception exception)
+        {
+            // Do nothing
+        }
+    }
 
     private void RemoveDirectoryButton_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -80,6 +108,15 @@ public partial class SettingsWindow : ScalableWindow
             return;
         }
         _service.RemoveDirectory(directory);
+    }
+    
+    private void RemoveHardwareDirectoryButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: string directory } || _service == null)
+        {
+            return;
+        }
+        _service.RemoveHardwareDirectory(directory);
     }
 
     private void CreateDesktopFileButton_OnClick(object? sender, RoutedEventArgs e)

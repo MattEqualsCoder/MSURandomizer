@@ -49,6 +49,27 @@
                             <Button Click="AddDirectoryButton_OnClick">Add Directory</Button>
                         </StackPanel>
                     </controls:CardControl>
+                    
+                    <controls:CardControl HeaderText="Hardware MSU Directories" Padding="6" Margin="0 0 0 6">
+                        <StackPanel Orientation="Vertical">
+                            <ItemsControl ItemsSource="{Binding MsuHardwareDirectoryList}" >
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <controls:LabeledControl Text="{Binding AbbreviatedPath}" Margin="3" ToolTip.Tip="{Binding Path}">
+                                            <Grid ColumnDefinitions="*, Auto">
+                                                <ComboBox Grid.Column="0" ItemsSource="{Binding MsuTypes}" SelectedItem="{Binding MsuTypeName}"></ComboBox>
+                                                <Button Grid.Column="1" Margin="3 0 0 0" Tag="{Binding Path}" Click="RemoveHardwareDirectoryButton_OnClick">
+                                                    <avalonia:MaterialIcon Kind="Close" Width="15" Height="15" Background="Transparent"/>
+                                                </Button>
+                                            </Grid>
+                                        </controls:LabeledControl>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Click="AddHardwareDirectoryButton_OnClick">Add Directory</Button>
+                        </StackPanel>
+                    </controls:CardControl>
+                    
                     <controls:CardControl HeaderText="Basic Settings" Padding="6">
                         <StackPanel Orientation="Vertical">
                             <controls:LabeledControl Text="Check for Updates" Hint="Shows a popup when first launching when there is a new update on GitHub." DisplayHint="True" Margin="3">

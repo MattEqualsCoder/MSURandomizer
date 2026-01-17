@@ -41,6 +41,8 @@ public partial class SettingsWindowViewModel : ViewModelBase
 
     public ObservableCollection<MsuDirectory> MsuDirectoryList { get; set; } = [];
     
+    public ObservableCollection<MsuDirectory> MsuHardwareDirectoryList { get; set; } = [];
+    
     [Reactive] public partial string? LaunchArguments { get; set; }
     
     [Reactive]

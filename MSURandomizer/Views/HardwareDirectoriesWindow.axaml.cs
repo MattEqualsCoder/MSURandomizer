@@ -50,15 +50,26 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
         }
         else
         {
-            _service = this.GetControlService<HardwareDirectoriesWindowService>();
-            
-            if (_service == null)
-            {
-                return;
-            }
-
-            DataContext = _model = _service.InitializeModel(this);
+            InitModelAndService(true);
         }
+    }
+
+    public HardwareDirectoriesWindow(bool isUpload)
+    {
+        InitializeComponent();
+        InitModelAndService(isUpload);
+    }
+
+    private void InitModelAndService(bool isUpload)
+    {
+        _service = this.GetControlService<HardwareDirectoriesWindowService>();
+            
+        if (_service == null)
+        {
+            return;
+        }
+
+        DataContext = _model = _service.InitializeModel(this, isUpload);
     }
 
     public async Task<bool?> ShowDialog(Window window, string? msuToUpload)
@@ -172,6 +183,12 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
                 return;
             }
 
+            if (_model?.IsUpload == false)
+            {
+                var deviceDirectory = $"{_model.SelectedTreeNode?.Path}/";
+                Close(deviceDirectory);
+            }
+
             if (await _service.UploadMsu())
             {
                 await MessageWindow.ShowInfoDialog("Upload completed successfully.", "Success", parentWindow: this);
@@ -191,5 +208,24 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
     private void CancelButton_OnClick(object? sender, RoutedEventArgs e)
     {
         Close(false);
+    }
+
+    private async void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        if (_model?.IsConnected == false)
+        {
+            _model.HasConnectorWindowUp = true;
+            var connectorWindow = new ConnectorWindow();
+            var isConnected = await connectorWindow.ShowDialog<bool>(this);
+            if (!isConnected)
+            {
+                Close(_model.IsUpload ? false : null);
+            }
+            else
+            {
+                _model.HasConnectorWindowUp = false;
+                _service?.LoadData();
+            }
+        }
     }
 }
