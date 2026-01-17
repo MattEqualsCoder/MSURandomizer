@@ -95,7 +95,7 @@ public partial class SettingsWindow : ScalableWindow
                 _ = MessageWindow.ShowErrorDialog("That directory has already been selected");
             }
         }
-        catch (Exception exception)
+        catch (Exception)
         {
             // Do nothing
         }
