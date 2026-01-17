@@ -75,7 +75,6 @@ sealed class Program
             {
                 services.AddMsuRandomizerAppServices();
                 services.AddGitHubReleaseCheckerServices();
-                services.AddAutoMapper(x => x.AddProfile(new ViewModelMapperConfig<Program>()));
             })
             .Build();
         
