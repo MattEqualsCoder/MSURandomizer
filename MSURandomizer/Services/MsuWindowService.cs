@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AppImageManager;
 using Avalonia.Platform.Storage;
@@ -118,6 +120,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
         
         var downloadUrl = appInitializationService.ReleaseDownloadUrl;
         var hasDownloadUrl = !string.IsNullOrEmpty(downloadUrl);
+        var canDownload = hasDownloadUrl && (OperatingSystem.IsWindows() || OperatingSystem.IsLinux());
 
         Dispatcher.UIThread.Invoke(async () =>
         {
@@ -129,8 +132,8 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 LinkUrl = appInitializationService.LatestFullRelease.Url,
                 Icon = MessageWindowIcon.Info,
                 CheckBoxText = "Do not check for updates",
-                Buttons = hasDownloadUrl ? MessageWindowButtons.YesNo : MessageWindowButtons.OK,
-                PrimaryButtonText = hasDownloadUrl ? "Download Update" : "OK",
+                Buttons = canDownload ? MessageWindowButtons.YesNo : MessageWindowButtons.OK,
+                PrimaryButtonText = canDownload ? "Download Update" : "OK",
                 SecondaryButtonText = "Close"
             });
             await messageWindow.ShowDialog(MessageWindow.GlobalParentWindow!);
@@ -141,35 +144,118 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                 userOptions.Save();    
             }
 
-            if (hasDownloadUrl && messageWindow.DialogResult?.PressedAcceptButton == true)
+            if (canDownload && messageWindow.DialogResult?.PressedAcceptButton == true)
             {
+                string? error;
+                
                 if (OperatingSystem.IsLinux())
                 {
-                    var downloadResult = await AppImage.DownloadAsync(new DownloadAppImageRequest
-                    {
-                        Url = downloadUrl!
-                    });
-                    
-                    if (downloadResult.Success)
-                    {
-                        MessageWindow.GlobalParentWindow!.Close();
-                    }
-                    else if (downloadResult.DownloadedSuccessfully)
-                    {
-                        await MessageWindow.ShowErrorDialog("AppImage was downloaded, but it could not be launched.");
-                    }
-                    else
-                    {
-                        await MessageWindow.ShowErrorDialog("Failed downloading AppImage");
-                    }
+                    error = await DownloadLinuxVersion(downloadUrl!);
+                }
+                else if (OperatingSystem.IsWindows())
+                {
+                    error = await DownloadWindowsVersion(downloadUrl!);
                 }
                 else
                 {
-                    throw new InvalidOperationException("Download functionality is only available on Linux");
+                    error = "Download functionality is only available on Windows and Linux";
+                }
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    await MessageWindow.ShowErrorDialog(error, "Update Failed", MessageWindow.GlobalParentWindow);
                 }
             }
         });
         
+    }
+
+    [System.Runtime.Versioning.SupportedOSPlatform("Linux")]
+    private async Task<string?> DownloadLinuxVersion(string url)
+    {
+        var downloadResult = await AppImage.DownloadAsync(new DownloadAppImageRequest
+        {
+            Url = url
+        });
+                    
+        if (downloadResult.Success)
+        {
+            MessageWindow.GlobalParentWindow!.Close();
+            return null;
+        }
+        else if (downloadResult.DownloadedSuccessfully)
+        {
+            return "AppImage was downloaded, but it could not be launched.";
+        }
+        else
+        {
+            return "Failed downloading AppImage";
+        }
+    }
+
+    [System.Runtime.Versioning.SupportedOSPlatform("Windows")]
+    private async Task<string?> DownloadWindowsVersion(string url)
+    {
+        var filename = Path.GetFileName(new Uri(url).AbsolutePath);
+        var localPath = Path.Combine(Path.GetTempPath(), filename);
+
+        logger.LogInformation("Downloading {Url} to {LocalPath}", url, localPath);
+
+        var response = await DownloadFileAsyncAttempt(url, localPath);
+
+        if (!response.Item1)
+        {
+            logger.LogInformation("Download failed: {Error}", response.Item2);
+            return response.Item2;
+        }
+
+        try
+        {
+            logger.LogInformation("Launching setup file");
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = localPath,
+                UseShellExecute = true,
+                RedirectStandardOutput = false,
+                RedirectStandardError = false,
+                RedirectStandardInput = false,
+                CreateNoWindow = true
+            };
+
+            Process.Start(psi);
+            return null;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to download and install update");
+            return "Failed to start setup file";
+        }
+    }
+    
+    private static async Task<(bool, string?)> DownloadFileAsyncAttempt(string url, string target, int attemptNumber = 0, int totalAttempts = 3)
+    {
+        using var httpClient = new HttpClient();
+
+        try
+        {
+            await using var downloadStream = await httpClient.GetStreamAsync(url);
+            await using var fileStream = new FileStream(target, FileMode.Create);
+            await downloadStream.CopyToAsync(fileStream);
+            return (true, null);
+        }
+        catch (Exception ex)
+        {
+            if (attemptNumber < totalAttempts)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(attemptNumber));
+                return await DownloadFileAsyncAttempt(url, target, attemptNumber + 1, totalAttempts);
+            }
+            else
+            {
+                return (false, $"Download failed: {ex.Message}");
+            }
+        }
     }
 
     public void OnSelectedMsusChanged(ICollection<MsuViewModel>? msus)
