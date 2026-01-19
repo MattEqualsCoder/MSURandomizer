@@ -166,7 +166,7 @@ internal class MsuDetailsService : IMsuDetailsService
         if (!output.CalculateAltInfo(msu.Path, track.Path))
         {
             _logger.LogWarning("Unable to calculate alt track info for {Path}", track.Path);
-            error = $"Unable to calculate alt track info for {track.Path}";
+            error = $"Unable to calculate alt track info for {track.Path} as the file was not found.";
         }
             
         foreach (var altTrack in trackGroup.Where(x => x != track))
@@ -211,7 +211,7 @@ internal class MsuDetailsService : IMsuDetailsService
             if (!altOutput.CalculateAltInfo(msu.Path, altTrack.Path))
             {
                 _logger.LogWarning("Unable to calculate alt track info for {Path}", altTrack.Path);
-                error = $"Unable to calculate alt track info for {altTrack.Path}";
+                error = $"Unable to calculate alt track info for {altTrack.Path} as the file was not found.";
             }
             
             alts.Add(altOutput);
