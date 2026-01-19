@@ -161,9 +161,13 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                     error = "Download functionality is only available on Windows and Linux";
                 }
 
-                if (!string.IsNullOrEmpty(error))
+                if (string.IsNullOrEmpty(error))
                 {
-                    await MessageWindow.ShowErrorDialog(error, "Update Failed", MessageWindow.GlobalParentWindow);
+                    MessageWindow.GlobalParentWindow!.Close();
+                }
+                else
+                {
+                    await MessageWindow.ShowErrorDialog(error, "Update Failed", MessageWindow.GlobalParentWindow);   
                 }
             }
         });
@@ -180,7 +184,6 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
                     
         if (downloadResult.Success)
         {
-            MessageWindow.GlobalParentWindow!.Close();
             return null;
         }
         else if (downloadResult.DownloadedSuccessfully)

@@ -125,6 +125,10 @@ public class AppInitializationService(
         {
             ReleaseDownloadUrl = LatestFullRelease?.Asset.FirstOrDefault(x => x.Url.ToLower().EndsWith(".appimage"))?.Url;
         }
+        else if (OperatingSystem.IsWindows())
+        {
+            ReleaseDownloadUrl = LatestFullRelease?.Asset.FirstOrDefault(x => x.Url.ToLower().EndsWith(".exe"))?.Url;
+        }
         
         IsLoading = false;
         InitializationComplete?.Invoke(this, EventArgs.Empty);
