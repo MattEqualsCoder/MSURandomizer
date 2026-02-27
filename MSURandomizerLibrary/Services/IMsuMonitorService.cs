@@ -47,6 +47,13 @@ public interface IMsuMonitorService : IDisposable
     /// <param name="msu">The MSU to play</param>
     /// <param name="msuType">The MSU type to use for monitoring</param>
     public void StartMonitor(Msu msu, MsuType msuType);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    public Task ManualShuffle(MsuSelectorRequest? request = null);
 
     /// <summary>
     /// Stops the monitor

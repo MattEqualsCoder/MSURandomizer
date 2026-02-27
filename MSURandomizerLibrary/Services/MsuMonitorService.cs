@@ -19,6 +19,9 @@ internal class MsuMonitorService(
     private CancellationTokenSource _cts = new();
     private string? _outputPath;
     private bool _monitorEnabled = false;
+    private bool _isShuffling = false;
+    private MsuSelectorRequest _savedRequest = new();
+    private TimeSpan _preDelay = TimeSpan.FromMilliseconds(100);
 
     public event MsuTrackChangedEventHandler? MsuTrackChanged;
 
@@ -34,6 +37,7 @@ internal class MsuMonitorService(
     {
         logger.LogInformation("Start shuffling");
         UpdateOutputPath();
+        _savedRequest = request;
         
         if (request.OutputMsuType != null && gameService.IsMsuTypeCompatible(request.OutputMsuType))
         {
@@ -47,18 +51,12 @@ internal class MsuMonitorService(
         MsuMonitorStarted?.Invoke(this, EventArgs.Empty);
         _cts = new CancellationTokenSource();
 
-        var preDelay = TimeSpan.FromMilliseconds(100);
-        var postDelay = TimeSpan.FromSeconds(seconds).Subtract(preDelay);
+        
+        var postDelay = TimeSpan.FromSeconds(seconds).Subtract(_preDelay);
         
         do
         {
-            PreMsuShuffle?.Invoke(this, EventArgs.Empty);
-            await Task.Delay(preDelay, _cts.Token);
-            request.CurrentTrack = _currentTrack;
-            request.PrevMsu = _currentMsu;
-            var response = msuSelectorService.CreateShuffledMsu(request);
-            _currentMsu = response.Msu;
-            MsuShuffled?.Invoke(this, EventArgs.Empty);
+            await ManualShuffle();
             await Task.Delay(postDelay, _cts.Token);
         } while (!_cts.Token.IsCancellationRequested);
     }
@@ -89,6 +87,26 @@ internal class MsuMonitorService(
         _currentMsu = null;
         _currentTrack = null;
         MsuMonitorStopped?.Invoke(this, EventArgs.Empty);
+    }
+
+    public async Task ManualShuffle(MsuSelectorRequest? request = null)
+    {
+        if (_isShuffling)
+        {
+            return;
+        }
+
+        request ??= _savedRequest;
+        
+        _isShuffling = true;
+        PreMsuShuffle?.Invoke(this, EventArgs.Empty);
+        await Task.Delay(_preDelay, _cts.Token);
+        request.CurrentTrack = _currentTrack;
+        request.PrevMsu = _currentMsu;
+        var response = msuSelectorService.CreateShuffledMsu(request);
+        _currentMsu = response.Msu;
+        MsuShuffled?.Invoke(this, EventArgs.Empty);
+        _isShuffling = false;
     }
 
     private void UpdateOutputPath()
