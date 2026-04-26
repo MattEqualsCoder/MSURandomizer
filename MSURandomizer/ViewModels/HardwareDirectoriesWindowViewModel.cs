@@ -64,6 +64,7 @@ public partial class HardwareDirectoriesWindowViewModel : ViewModelBase
         IsLoadingData = true;
         LoadingDataText = "Loading...";
         IsLoadingIndeterminate = true;
+        AllPaths = [];
     }
 }
 
