@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -17,6 +18,8 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
     private HardwareDirectoriesWindowViewModel? _model;
     
     public List<Msu>? HardwareMsus { get; set; }
+    public List<string>? AllPaths { get; set; }
+    public bool KeepConnectionAlive { get; set; }
     
     public HardwareDirectoriesWindow()
     {
@@ -50,17 +53,23 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
         }
         else
         {
-            InitModelAndService(true);
+            InitModelAndService(true, null);
         }
     }
 
     public HardwareDirectoriesWindow(bool isUpload)
     {
         InitializeComponent();
-        InitModelAndService(isUpload);
+        InitModelAndService(isUpload, null);
+    }
+    
+    public HardwareDirectoriesWindow(List<string> allowedExtensions)
+    {
+        InitializeComponent();
+        InitModelAndService(false, allowedExtensions);
     }
 
-    private void InitModelAndService(bool isUpload)
+    private void InitModelAndService(bool isUpload, List<string>? allowedExtensions)
     {
         _service = this.GetControlService<HardwareDirectoriesWindowService>();
             
@@ -69,7 +78,7 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
             return;
         }
 
-        DataContext = _model = _service.InitializeModel(this, isUpload);
+        DataContext = _model = _service.InitializeModel(this, isUpload, allowedExtensions);
     }
 
     public async Task<bool?> ShowDialog(Window window, string? msuToUpload)
@@ -81,6 +90,16 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
         }
         
         return await ShowDialog<bool?>(window);
+    }
+    
+    public async Task<string?> ShowFileDialog(Window window)
+    {
+        if (_model != null)
+        {
+            _service?.LoadData();
+        }
+        
+        return await ShowDialog<string?>(window);
     }
 
     private async void CreateDirectoryButton_OnClick(object? sender, RoutedEventArgs e)
@@ -118,8 +137,11 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
             _ = ConfirmCancel();
             return;
         }
-        
-        _service?.Disconnect();
+
+        if (!KeepConnectionAlive)
+        {
+            _service?.Disconnect();
+        }
     }
 
     private async Task ConfirmCancel()
@@ -174,7 +196,7 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
         }
     }
 
-    private async void UploadButton_OnClick(object? sender, RoutedEventArgs e)
+    private async void AcceptButton_OnClick(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -183,9 +205,13 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
                 return;
             }
 
+            AllPaths = _model?.AllPaths;
+
             if (_model?.IsUpload == false)
             {
-                var deviceDirectory = $"{_model.SelectedTreeNode?.Path}/";
+                var deviceDirectory = _model.SelectedTreeNode?.IsFolder == true
+                    ? $"{_model.SelectedTreeNode?.Path}/"
+                    : _model.SelectedTreeNode?.Path;
                 Close(deviceDirectory);
             }
 
@@ -207,7 +233,7 @@ public partial class HardwareDirectoriesWindow : ScalableWindow
 
     private void CancelButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        Close(false);
+        Close(_model?.IsUpload == true ? false : null);
     }
 
     private async void Control_OnLoaded(object? sender, RoutedEventArgs e)

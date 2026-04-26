@@ -34,16 +34,26 @@ public partial class HardwareDirectoriesWindowViewModel : ViewModelBase
     
     public bool IsHardwareItemSelected => SelectedTreeNode != null && !IsLoadingData;
     
-    public bool IsHardwareDirectorySelected => SelectedTreeNode is { IsFolder: true } && !IsLoadingData;
+    public bool IsHardwareDirectorySelected => (SelectedTreeNode is { IsFolder: true } || AllowedExtensions?.Count > 0) && !IsLoadingData;
     
     public bool IsSelectWindow => !string.IsNullOrEmpty(MsuToUpload) || !IsUpload;
     
     [Reactive]
     [ReactiveLinkedProperties(nameof(CloseButtonText), nameof(IsSelectWindow))]
     public partial string? MsuToUpload { get; set; }
+    
+    public List<string> AllPaths { get; set; }
 
     public string CloseButtonText => string.IsNullOrEmpty(MsuToUpload) ? "Close" : "Cancel";
-    public string AcceptButtonText => IsUpload ? "Upload MSU" : "Select Folder";
+
+    public string AcceptButtonText =>
+        IsUpload 
+            ? "Upload MSU" 
+            : AllowedExtensions == null 
+                ? "Select Folder" 
+                : "Select Path";
+    
+    public List<string>? AllowedExtensions { get; set; } = [];
 
     public bool DidUpdate { get; set; }
 

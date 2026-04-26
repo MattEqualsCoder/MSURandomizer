@@ -6,9 +6,10 @@
         xmlns:viewModels="clr-namespace:MSURandomizer.ViewModels"
         mc:Ignorable="d" 
         d:DesignWidth="400" d:DesignHeight="175"
-        Width="400" Height="175"
+        Width="400"
         x:Class="MSURandomizer.Views.ConnectorWindow"
         x:DataType="viewModels:ConnectorWindowViewModel"
+        SizeToContent="Height"
         Closing="Window_OnClosing"
         WindowStartupLocation="CenterOwner"
         Title="Connect">
@@ -16,7 +17,8 @@
         <DockPanel>
             <controls:HeaderFooter DockPanel.Dock="Bottom">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" DockPanel.Dock="Bottom">
-                    <Button Click="AcceptButton_OnClick" Margin="5" IsEnabled="{Binding CanAccept}" >Continue</Button>
+                    <Button Click="AcceptButton_OnClick" Margin="5" IsEnabled="{Binding CanAccept}" Content="{Binding PrimaryButtonText}" />
+                    <Button Click="AcceptSecondaryButton_OnClick" Margin="5" IsEnabled="{Binding CanAccept}" Content="{Binding SecondaryButtonText}" IsVisible="{Binding DisplaySecondaryButton}"/>
                     <Button Click="CancelButton_OnClick" Margin="5" >Cancel</Button>
                 </StackPanel>    
             </controls:HeaderFooter>

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -9,7 +8,6 @@ using Avalonia.Threading;
 using AvaloniaControls.Controls;
 using AvaloniaControls.Extensions;
 using AvaloniaControls.Models;
-using AvaloniaControls.Services;
 using MSURandomizer.Services;
 using MSURandomizer.ViewModels;
 using MSURandomizerLibrary;
@@ -62,15 +60,25 @@ public partial class MsuWindow : RestorableWindow
     protected override int DefaultHeight => 600;
 
     public ICollection<string> GetSelectedMsus() => MsuList.SelectedMsus?.Select(x => x.MsuPath).ToList() ?? [];
+    
+    public ICollection<Msu> GetSelectedMsusDetails() => MsuList.SelectedMsus?.Select(x => x.Msu).ToList() ?? [];
 
+    public bool HardwareMode;
+    
     public bool DialogResult;
 
-    public void ShowDialog(Window window, bool isSingleSelect, string? msuBasePath = null)
+    public Task ShowDialog(Window window, bool isSingleSelect, string? msuBasePath = null)
     {
         _model.IsSingleSelectionMode = isSingleSelect;
         _service?.SetMsuBasePath(msuBasePath);
         MsuList.SetIsSingleSelectionMode(isSingleSelect);
-        ShowDialog(window);
+
+        if (HardwareMode)
+        {
+            _service?.LoadHardwareMsus(MsuList);
+        }
+        
+        return ShowDialog(window);
     }
     
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
@@ -167,7 +175,7 @@ public partial class MsuWindow : RestorableWindow
         {
             var generationWindow = new MsuGenerationWindow();
             generationWindow.ShowDialog(this, MsuRandomizationStyle.Single, _service.Model.SelectedMsuType, _service.Model.SelectedMsus.Select(x => x.MsuPath).ToList());
-            generationWindow.Closed += (o, args) =>
+            generationWindow.Closed += (_, _) =>
             {
                 if (!generationWindow.DialogResult)
                 {
@@ -188,7 +196,7 @@ public partial class MsuWindow : RestorableWindow
         
         var generationWindow = new MsuGenerationWindow();
         generationWindow.ShowDialog(this, MsuRandomizationStyle.Continuous, _service.Model.SelectedMsuType, _service.Model.SelectedMsus.Select(x => x.MsuPath).ToList());
-        generationWindow.Closed += (o, args) =>
+        generationWindow.Closed += (_, _) =>
         {
             if (!generationWindow.DialogResult)
             {
@@ -208,7 +216,7 @@ public partial class MsuWindow : RestorableWindow
         
         var generationWindow = new MsuGenerationWindow();
         generationWindow.ShowDialog(this, MsuRandomizationStyle.Shuffled, _service.Model.SelectedMsuType, _service.Model.SelectedMsus.Select(x => x.MsuPath).ToList());
-        generationWindow.Closed += (o, args) =>
+        generationWindow.Closed += (_, _) =>
         {
             if (!generationWindow.DialogResult)
             {

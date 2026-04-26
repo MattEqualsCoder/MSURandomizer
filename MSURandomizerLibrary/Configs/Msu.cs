@@ -119,6 +119,11 @@ public class Msu
     /// The MSU Type directory this was found under
     /// </summary>
     public string ParentMsuTypeDirectory { get; set; } = "";
+    
+    /// <summary>
+    /// MSU on the user's local machine that is associated with the hardware MSU
+    /// </summary>
+    public string? LocalMsuForHardwareMsu { get; set; }
 
     /// <summary>
     /// The relative path to the MSU from its parent msu type directory

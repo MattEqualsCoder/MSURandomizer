@@ -35,7 +35,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5" DockPanel.Dock="Bottom">
                     <Button Margin="5" 
                             IsEnabled="{Binding IsHardwareDirectorySelected}" 
-                            Click="UploadButton_OnClick"
+                            Click="AcceptButton_OnClick"
                             IsVisible="{Binding IsSelectWindow}"
                             Content="{Binding AcceptButtonText}"
                     />

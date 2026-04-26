@@ -25,10 +25,11 @@ public class HardwareDirectoriesWindowService(ISnesConnectorService snesConnecto
     private CancellationTokenSource? _cts;
     private HardwareDirectoriesWindow _hardwareDirectoriesWindow = null!;
     
-    public HardwareDirectoriesWindowViewModel InitializeModel(HardwareDirectoriesWindow window, bool isUpload)
+    public HardwareDirectoriesWindowViewModel InitializeModel(HardwareDirectoriesWindow window, bool isUpload, List<string>? allowedExtensions)
     {
         _model.IsUpload = isUpload;
         _model.IsConnected = snesConnectorService.IsConnected;
+        _model.AllowedExtensions = allowedExtensions;
         _hardwareDirectoriesWindow = window;
         snesConnectorService.Connected += SnesConnectorServiceOnConnected;
         return _model;
@@ -264,6 +265,12 @@ public class HardwareDirectoriesWindowService(ISnesConnectorService snesConnecto
         {
             snesFiles = snesFiles.Where(x => x.IsFolder).ToList();
         }
+        else
+        {
+            snesFiles = snesFiles.Where(MatchesFilter).ToList();
+        }
+
+        _model.AllPaths = snesFiles.Select(x => x.FullPath).ToList();
         
         return snesFiles.Where(x => x is { ParentName: "" })
             .OrderBy(x => !x.IsFolder)
@@ -271,7 +278,7 @@ public class HardwareDirectoriesWindowService(ISnesConnectorService snesConnecto
             .Select(x => ToHardwareDirectory(x, snesFiles, "/"))
             .ToList();
     }
-
+    
     public HardwareItem ToHardwareDirectory(SnesFile file, List<SnesFile> allFiles, string parentPath)
     {
         if (!parentPath.EndsWith("/"))
@@ -299,6 +306,12 @@ public class HardwareDirectoriesWindowService(ISnesConnectorService snesConnecto
         }
         
         return directory;
+    }
+
+    private bool MatchesFilter(SnesFile file)
+    {
+        return file.IsFolder || _model.AllowedExtensions == null ||
+               _model.AllowedExtensions.Contains(Path.GetExtension(file.FullPath).ToLower());
     }
     
 }

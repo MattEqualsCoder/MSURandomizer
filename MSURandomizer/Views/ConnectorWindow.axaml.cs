@@ -26,9 +26,23 @@ public partial class ConnectorWindow : Window
             DataContext = _model = _service?.InitializeModel() ??  new ConnectorWindowViewModel();
         }
     }
+    
+    public bool ClickedPrimaryButton { get; private set; }
+    
+    public bool ClickedSecondaryButton { get; private set; }
+    
+    public bool DisconnectOnClose { get; private set; }
+    
+    public void UpdateButtons(string primaryButtonText, string? secondaryButtonText = null)
+    {
+        _model.PrimaryButtonText = primaryButtonText;
+        _model.SecondaryButtonText = secondaryButtonText ?? "";
+        _model.DisplaySecondaryButton = !string.IsNullOrEmpty(secondaryButtonText);
+    }
 
     private void AcceptButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        ClickedPrimaryButton = true;
         Close(true);
     }
 
@@ -44,6 +58,16 @@ public partial class ConnectorWindow : Window
 
     private void Window_OnClosing(object? sender, WindowClosingEventArgs e)
     {
+        if (DisconnectOnClose)
+        {
+            _service?.Disconnect();
+        }
         _service?.OnClose();
+    }
+
+    private void AcceptSecondaryButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ClickedSecondaryButton = true;
+        Close(true);
     }
 }

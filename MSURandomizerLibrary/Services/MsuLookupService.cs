@@ -239,7 +239,8 @@ internal class MsuLookupService(
                 prevMsu: fullMsu,
                 isHardwareMsu: true)
             {
-                Settings = msuSettings
+                Settings = msuSettings,
+                LocalMsuForHardwareMsu = fullMsu.Path
             };
         }
         else

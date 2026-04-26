@@ -31,6 +31,7 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     IMsuLookupService msuLookupService,
     IMsuMonitorService msuMonitorService,
     IRomLauncherService romLauncherService,
+    IMsuHardwareService msuHardwareService,
     IRomCopyService romCopyService) : ControlService
 {
     public MsuWindowViewModel Model { get; set; } = new();
@@ -495,6 +496,16 @@ public class MsuWindowService(ILogger<MsuWindowService> logger,
     {
         userOptions.MsuUserOptions.OutputMsuType = Model.SelectedMsuType;
         userOptions.Save();
+    }
+
+    public async Task LoadHardwareMsus(MsuList msuList)
+    {
+        Model.AreMsusLoading = true;
+        msuList.IsLoading = true;
+        var msus = await msuHardwareService.GetMsusFromDevice();
+        UpdateHardwareMode(msuList, msus);
+        Model.AreMsusLoading = false;
+        msuList.IsLoading = false;
     }
 
     private void MsuTypeServiceOnOnMsuTypeLoadComplete(object? sender, EventArgs e)

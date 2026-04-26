@@ -63,6 +63,12 @@ public partial class MsuList : UserControl
     public static readonly StyledProperty<int?> SelectedMsuCountProperty = AvaloniaProperty.Register<MsuList, int?>(
         nameof(SelectedMsuCount));
 
+    public bool IsLoading
+    {
+        get => _model.IsLoading;
+        set => _model.IsLoading = value;
+    }
+    
     public int? SelectedMsuCount
     {
         get => GetValue(SelectedMsuCountProperty);

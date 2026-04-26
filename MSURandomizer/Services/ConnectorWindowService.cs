@@ -48,6 +48,11 @@ public class ConnectorWindowService(ISnesConnectorService snesConnectorService, 
         }
     }
 
+    public void Disconnect()
+    {
+        snesConnectorService.Disconnect();
+    }
+
     public void OnClose()
     {
         snesConnectorService.Connected -= SnesConnectorServiceOnConnected;
