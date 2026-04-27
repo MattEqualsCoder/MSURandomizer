@@ -19,6 +19,12 @@ public class ConnectorWindowService(ISnesConnectorService snesConnectorService, 
         mapper.Map(msuUserOptionsService.MsuUserOptions, _model);
         snesConnectorService.Connected += SnesConnectorServiceOnConnected;
         snesConnectorService.Disconnected += SnesConnectorServiceOnDisconnected;
+
+        if (snesConnectorService.IsConnected)
+        {
+            SnesConnectorServiceOnConnected(this, EventArgs.Empty);
+        }
+        
         return _model;
     }
     
