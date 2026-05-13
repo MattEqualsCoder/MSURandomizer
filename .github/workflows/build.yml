@@ -60,6 +60,20 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         run: '"%programfiles(x86)%/Inno Setup 6/iscc.exe" "setup/MSURandomizer.iss"'
         shell: cmd
+      - name: Sync version from Library to App and rebuild
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          $libContent = Get-Content -Path "MSURandomizerLibrary/MSURandomizerLibrary.csproj" -Raw
+          if ($libContent -match '<Version>(?<version>.*?)</Version>') {
+              $version = $Matches['version']
+              Write-Host "Syncing version $version to MSURandomizer/MSURandomizer.csproj"
+              (Get-Content -Path "MSURandomizer/MSURandomizer.csproj") -replace '<Version>.*?</Version>', "<Version>$version</Version>" | Set-Content -Path "MSURandomizer/MSURandomizer.csproj"
+              dotnet build MSURandomizer/MSURandomizer.csproj -c Release --no-restore -p:PostBuildEvent=
+          } else {
+              Write-Error "Could not find version in MSURandomizerLibrary/MSURandomizerLibrary.csproj"
+              exit 1
+          }
+        shell: pwsh
       - name: Copy Nuget Packages
         if: ${{ github.event_name != 'pull_request' }}
         working-directory: setup
@@ -92,14 +106,23 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
+      - name: Restore dependencies
+        if: ${{ github.event_name == 'pull_request' }}
+        run: dotnet restore
+      - name: Build
+        if: ${{ github.event_name == 'pull_request' }}
+        run: dotnet build --no-restore -p:PostBuildEvent=
       - name: Install PupNet
+        if: ${{ github.event_name != 'pull_request' }}
         run: dotnet tool install -g KuiperZone.PupNet
       - name: Download AppImageTool
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
           wget -P "$HOME/.local/bin" "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod +x "$HOME/.local/bin/appimagetool-x86_64.AppImage"
           appimagetool-x86_64.AppImage --version
       - name: Run PupNet
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
           version_number="${{ needs.build-windows.outputs.version-number }}"
           base_version="${version_number%%-*}"
@@ -163,19 +186,24 @@ jobs:
 
     needs: [build-windows, build-linux]
 
+    if: ${{ github.event_name != 'pull_request' }}
+
     permissions:
       contents: write
 
     steps:
       - uses: actions/download-artifact@v5
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           name: MSURandomizerWindows
           path: out
       - uses: actions/download-artifact@v5
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           name: MSURandomizerLinux
           path: out
       - uses: actions/download-artifact@v5
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           name: MSURandomizerMac
           path: out
@@ -186,6 +214,7 @@ jobs:
           path: "out/*"
           name: MSURandomizer_${{ needs.build-windows.outputs.version-number }}
       - name: Delete old artifacts
+        if: ${{ github.event_name != 'pull_request' }}
         uses: geekyeggo/delete-artifact@v5
         with:
           name: |

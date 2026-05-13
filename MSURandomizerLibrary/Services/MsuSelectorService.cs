@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using MSURandomizerLibrary.Configs;
 using MSURandomizerLibrary.Messenger;
@@ -445,6 +446,8 @@ internal class MsuSelectorService : IMsuSelectorService
             _ = _msuMessageSender.SendMsuGenerated(outputMsu);
         }
         
+        _logger.LogInformation("MSU save {Status}: {Message}", response.Successful ? "successful" : "unsuccessful", response.Message);
+        
         return response;
     }
 
@@ -538,7 +541,12 @@ internal class MsuSelectorService : IMsuSelectorService
         {
             if (OperatingSystem.IsWindows())
             {
-                NativeMethods.CreateHardLink(destination, source, IntPtr.Zero);
+                if (!NativeMethods.CreateHardLink(destination, source, IntPtr.Zero))
+                {
+                    var error = Marshal.GetLastWin32Error();
+                    _logger.LogError("Failed to create hard link for {Destination} to {Source}: Error {Code}", destination, source, error);
+                    return false;
+                }
             }
             else
             {
