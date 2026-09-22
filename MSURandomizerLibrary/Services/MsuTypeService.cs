@@ -134,17 +134,34 @@ internal class MsuTypeService : IMsuTypeService
     
     private void FinalizeConfigs(IEnumerable<MsuTypeConfig> configs)
     {
-        var msuTypeFilter = _msuAppSettings.MsuAppSettings.MsuTypeFilter;
-        var hasMsuTypeFilter = msuTypeFilter.Count > 0;
-        
-        foreach (var config in configs)
+        var configList = configs.ToList();
+        var pendingCopies = configList.Where(x => x.CanCopy).ToHashSet();
+        while (pendingCopies.Count > 0)
         {
-            // Copy tracks from other configs
-            if (config.CanCopy)
+            var ready = pendingCopies.Where(config => config.Copy!.All(copy =>
             {
-                config.ApplyCopiedTracks(configs);
+                var source = configList.FirstOrDefault(x => x.Path == copy.Msu || x.Name == copy.Msu)
+                             ?? throw new InvalidOperationException($"MSU type {config.Name} references missing MSU type {copy.Msu}");
+                return !pendingCopies.Contains(source);
+            })).ToList();
+
+            if (ready.Count == 0)
+            {
+                throw new InvalidOperationException($"Circular MSU type copy detected: {string.Join(", ", pendingCopies.Select(x => x.Name))}");
             }
 
+            foreach (var config in ready)
+            {
+                config.ApplyCopiedTracks(configList);
+                pendingCopies.Remove(config);
+            }
+        }
+
+        var msuTypeFilter = _msuAppSettings.MsuAppSettings.MsuTypeFilter;
+        var hasMsuTypeFilter = msuTypeFilter.Count > 0;
+
+        foreach (var config in configList)
+        {
             var type = ConvertMsuTypeConfig(config);
 
             if (hasMsuTypeFilter && !msuTypeFilter.Contains(type.DisplayName))
@@ -156,7 +173,7 @@ internal class MsuTypeService : IMsuTypeService
             _logger.LogInformation("MSU type {ConfigName} found with {TrackCount} tracks", config.Meta.Name, config.FullTrackList.Count);
         }
         
-        SetupConversions(configs);
+        SetupConversions(configList);
         
         OnMsuTypeLoadComplete?.Invoke(this, EventArgs.Empty);
     }
