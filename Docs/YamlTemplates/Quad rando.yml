@@ -1,0 +1,821 @@
+pack_name: 
+pack_author: 
+pack_version: 
+msu_type: Quad rando
+tracks:
+  opening_theme:
+    track_number: 1
+    name: 
+    artist: 
+    album: 
+    url: 
+  light_world_overworld:
+    track_number: 2
+    name: 
+    artist: 
+    album: 
+    url: 
+  rain_state_overworld:
+    track_number: 3
+    name: 
+    artist: 
+    album: 
+    url: 
+  bunny_overworld:
+    track_number: 4
+    name: 
+    artist: 
+    album: 
+    url: 
+  light_world_lost_woods:
+    track_number: 5
+    name: 
+    artist: 
+    album: 
+    url: 
+  opening_story_credits:
+    track_number: 6
+    name: 
+    artist: 
+    album: 
+    url: 
+  kakariko_village:
+    track_number: 7
+    name: 
+    artist: 
+    album: 
+    url: 
+  mirror_portal:
+    track_number: 8
+    name: 
+    artist: 
+    album: 
+    url: 
+  dark_world_overworld:
+    track_number: 9
+    name: 
+    artist: 
+    album: 
+    url: 
+  pedestal_pull_sequence:
+    track_number: 10
+    name: 
+    artist: 
+    album: 
+    url: 
+  file_selectgame_over:
+    track_number: 11
+    name: 
+    artist: 
+    album: 
+    url: 
+  kakariko_guards_summoned:
+    track_number: 12
+    name: 
+    artist: 
+    album: 
+    url: 
+  dark_death_mountain:
+    track_number: 13
+    name: 
+    artist: 
+    album: 
+    url: 
+  money_making_game:
+    track_number: 14
+    name: 
+    artist: 
+    album: 
+    url: 
+  dark_world_lost_woods:
+    track_number: 15
+    name: 
+    artist: 
+    album: 
+    url: 
+  hyrule_castle:
+    track_number: 16
+    name: 
+    artist: 
+    album: 
+    url: 
+  generic_light_world_dungeon:
+    track_number: 17
+    name: 
+    artist: 
+    album: 
+    url: 
+  cave:
+    track_number: 18
+    name: 
+    artist: 
+    album: 
+    url: 
+  boss_victory:
+    track_number: 19
+    name: 
+    artist: 
+    album: 
+    url: 
+  sanctuary:
+    track_number: 20
+    name: 
+    artist: 
+    album: 
+    url: 
+  generic_boss_battle:
+    track_number: 21
+    name: 
+    artist: 
+    album: 
+    url: 
+  generic_dark_world_dungeon:
+    track_number: 22
+    name: 
+    artist: 
+    album: 
+    url: 
+  shopfortune_teller:
+    track_number: 23
+    name: 
+    artist: 
+    album: 
+    url: 
+  cave_2:
+    track_number: 24
+    name: 
+    artist: 
+    album: 
+    url: 
+  princess_zeldas_rescue:
+    track_number: 25
+    name: 
+    artist: 
+    album: 
+    url: 
+  crystal_get:
+    track_number: 26
+    name: 
+    artist: 
+    album: 
+    url: 
+  fairy_fountain:
+    track_number: 27
+    name: 
+    artist: 
+    album: 
+    url: 
+  agahnims_theme:
+    track_number: 28
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganon_appears:
+    track_number: 29
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganons_theme:
+    track_number: 30
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganon_fight:
+    track_number: 31
+    name: 
+    artist: 
+    album: 
+    url: 
+  triforce_room:
+    track_number: 32
+    name: 
+    artist: 
+    album: 
+    url: 
+  triumphant_return:
+    track_number: 33
+    name: 
+    artist: 
+    album: 
+    url: 
+  credits:
+    track_number: 34
+    name: 
+    artist: 
+    album: 
+    url: 
+  eastern_palace:
+    track_number: 35
+    name: 
+    artist: 
+    album: 
+    url: 
+  desert_palace:
+    track_number: 36
+    name: 
+    artist: 
+    album: 
+    url: 
+  agahnims_tower:
+    track_number: 37
+    name: 
+    artist: 
+    album: 
+    url: 
+  swamp_palace:
+    track_number: 38
+    name: 
+    artist: 
+    album: 
+    url: 
+  palace_of_darkness:
+    track_number: 39
+    name: 
+    artist: 
+    album: 
+    url: 
+  misery_mire:
+    track_number: 40
+    name: 
+    artist: 
+    album: 
+    url: 
+  skull_woods:
+    track_number: 41
+    name: 
+    artist: 
+    album: 
+    url: 
+  ice_palace:
+    track_number: 42
+    name: 
+    artist: 
+    album: 
+    url: 
+  tower_of_hera:
+    track_number: 43
+    name: 
+    artist: 
+    album: 
+    url: 
+  thieves_town:
+    track_number: 44
+    name: 
+    artist: 
+    album: 
+    url: 
+  turtle_rock:
+    track_number: 45
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganons_tower:
+    track_number: 46
+    name: 
+    artist: 
+    album: 
+    url: 
+  eastern_palace_boss:
+    track_number: 47
+    name: 
+    artist: 
+    album: 
+    url: 
+  desert_palace_boss:
+    track_number: 48
+    name: 
+    artist: 
+    album: 
+    url: 
+  agahnims_tower_boss:
+    track_number: 49
+    name: 
+    artist: 
+    album: 
+    url: 
+  swamp_palace_boss:
+    track_number: 50
+    name: 
+    artist: 
+    album: 
+    url: 
+  palace_of_darkness_boss:
+    track_number: 51
+    name: 
+    artist: 
+    album: 
+    url: 
+  misery_mire_boss:
+    track_number: 52
+    name: 
+    artist: 
+    album: 
+    url: 
+  skull_woods_boss:
+    track_number: 53
+    name: 
+    artist: 
+    album: 
+    url: 
+  ice_palace_boss:
+    track_number: 54
+    name: 
+    artist: 
+    album: 
+    url: 
+  tower_of_hera_boss:
+    track_number: 55
+    name: 
+    artist: 
+    album: 
+    url: 
+  thieves_town_boss:
+    track_number: 56
+    name: 
+    artist: 
+    album: 
+    url: 
+  turtle_rock_boss:
+    track_number: 57
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganons_tower_boss:
+    track_number: 58
+    name: 
+    artist: 
+    album: 
+    url: 
+  ganons_tower_2:
+    track_number: 59
+    name: 
+    artist: 
+    album: 
+    url: 
+  light_world_2:
+    track_number: 60
+    name: 
+    artist: 
+    album: 
+    url: 
+  dark_world_2:
+    track_number: 61
+    name: 
+    artist: 
+    album: 
+    url: 
+  smz3_credits:
+    track_number: 99
+    name: 
+    artist: 
+    album: 
+    url: 
+  file_start:
+    track_number: 101
+    name: 
+    artist: 
+    album: 
+    url: 
+  item_acquisition_fanfare:
+    track_number: 102
+    name: 
+    artist: 
+    album: 
+    url: 
+  item_room:
+    track_number: 103
+    name: 
+    artist: 
+    album: 
+    url: 
+  opening_with_intro:
+    track_number: 104
+    name: 
+    artist: 
+    album: 
+    url: 
+  opening_without_intro:
+    track_number: 105
+    name: 
+    artist: 
+    album: 
+    url: 
+  crateria_first_landing_thunder:
+    track_number: 106
+    name: 
+    artist: 
+    album: 
+    url: 
+  crateria_first_landing_no_thunder:
+    track_number: 107
+    name: 
+    artist: 
+    album: 
+    url: 
+  crateria:
+    track_number: 108
+    name: 
+    artist: 
+    album: 
+    url: 
+  crateria_statue_room:
+    track_number: 109
+    name: 
+    artist: 
+    album: 
+    url: 
+  samus_ship:
+    track_number: 110
+    name: 
+    artist: 
+    album: 
+    url: 
+  brinstar_with_vegetation:
+    track_number: 111
+    name: 
+    artist: 
+    album: 
+    url: 
+  brinstar_red_soil:
+    track_number: 112
+    name: 
+    artist: 
+    album: 
+    url: 
+  upper_norfair:
+    track_number: 113
+    name: 
+    artist: 
+    album: 
+    url: 
+  lower_norfair:
+    track_number: 114
+    name: 
+    artist: 
+    album: 
+    url: 
+  upper_maridia:
+    track_number: 115
+    name: 
+    artist: 
+    album: 
+    url: 
+  lower_maridia:
+    track_number: 116
+    name: 
+    artist: 
+    album: 
+    url: 
+  tourian:
+    track_number: 117
+    name: 
+    artist: 
+    album: 
+    url: 
+  mother_brain_battle:
+    track_number: 118
+    name: 
+    artist: 
+    album: 
+    url: 
+  big_boss_battle_1:
+    track_number: 119
+    name: 
+    artist: 
+    album: 
+    url: 
+  evacuation:
+    track_number: 120
+    name: 
+    artist: 
+    album: 
+    url: 
+  mysterious_statue_chamber:
+    track_number: 121
+    name: 
+    artist: 
+    album: 
+    url: 
+  big_boss_battle_2:
+    track_number: 122
+    name: 
+    artist: 
+    album: 
+    url: 
+  tension_hostile_incoming:
+    track_number: 123
+    name: 
+    artist: 
+    album: 
+    url: 
+  plant_miniboss:
+    track_number: 124
+    name: 
+    artist: 
+    album: 
+    url: 
+  ceres_station:
+    track_number: 125
+    name: 
+    artist: 
+    album: 
+    url: 
+  wrecked_ship_power_off:
+    track_number: 126
+    name: 
+    artist: 
+    album: 
+    url: 
+  wrecked_ship_power_on:
+    track_number: 127
+    name: 
+    artist: 
+    album: 
+    url: 
+  theme_of_super_metroid:
+    track_number: 128
+    name: 
+    artist: 
+    album: 
+    url: 
+  death_cry:
+    track_number: 129
+    name: 
+    artist: 
+    album: 
+    url: 
+  ending:
+    track_number: 130
+    name: 
+    artist: 
+    album: 
+    url: 
+  kraid_incoming:
+    track_number: 131
+    name: 
+    artist: 
+    album: 
+    url: 
+  kraid_battle:
+    track_number: 132
+    name: 
+    artist: 
+    album: 
+    url: 
+  phantoon_incoming:
+    track_number: 133
+    name: 
+    artist: 
+    album: 
+    url: 
+  phantoon_battle:
+    track_number: 134
+    name: 
+    artist: 
+    album: 
+    url: 
+  draygon_battle:
+    track_number: 135
+    name: 
+    artist: 
+    album: 
+    url: 
+  ridley_battle:
+    track_number: 136
+    name: 
+    artist: 
+    album: 
+    url: 
+  baby_incoming:
+    track_number: 137
+    name: 
+    artist: 
+    album: 
+    url: 
+  the_baby:
+    track_number: 138
+    name: 
+    artist: 
+    album: 
+    url: 
+  hyper_beam:
+    track_number: 139
+    name: 
+    artist: 
+    album: 
+    url: 
+  game_over:
+    track_number: 140
+    name: 
+    artist: 
+    album: 
+    url: 
+  crateria_storm_without_music:
+    track_number: 141
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_titledemostory:
+    track_number: 201
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_overworld:
+    track_number: 202
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_generic_dungeon:
+    track_number: 203
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_level_9:
+    track_number: 204
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_ganontriforce_sequence:
+    track_number: 205
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_triforce_piecedungeon_clear:
+    track_number: 206
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_zelda_rescued:
+    track_number: 207
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_item_acquisition:
+    track_number: 208
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_ending:
+    track_number: 209
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_game_over:
+    track_number: 210
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_dungeon_1:
+    track_number: 211
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_dungeon_2:
+    track_number: 212
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_dungeon_3:
+    track_number: 213
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_dungeon_4:
+    track_number: 214
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_dungeon_5:
+    track_number: 215
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_dungeon_6:
+    track_number: 216
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_dungeon_7:
+    track_number: 217
+    name: 
+    artist: 
+    album: 
+    url: 
+  zelda_1_dungeon_8:
+    track_number: 218
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_intro:
+    track_number: 301
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_brinstar:
+    track_number: 302
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_norfair:
+    track_number: 303
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_kraid_hideout:
+    track_number: 304
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_ridley_hideout:
+    track_number: 305
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_tourian:
+    track_number: 306
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_item_room:
+    track_number: 307
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_generic_boss:
+    track_number: 308
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_mother_brain:
+    track_number: 309
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_escape:
+    track_number: 310
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_powerup:
+    track_number: 311
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_ending:
+    track_number: 312
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_fadeininterlude:
+    track_number: 313
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_kraid_battle:
+    track_number: 314
+    name: 
+    artist: 
+    album: 
+    url: 
+  metroid_1_ridley_battle:
+    track_number: 315
+    name: 
+    artist: 
+    album: 
+    url: 
