@@ -2343,6 +2343,234 @@
   },
   {
     "meta": {
+      "name": "Quad rando",
+      "path": "snes/quad-rando"
+    },
+    "tracks": {
+      "basic": [
+        {
+          "num": 201,
+          "title": "Zelda 1 - Title/Demo/Story",
+          "fallback": 1,
+          "description": "Title, demo, and story music.  Falls back to ALttP Opening Theme (1)."
+        },
+        {
+          "num": 202,
+          "title": "Zelda 1 - Overworld",
+          "fallback": 2,
+          "description": "Overworld music.  Falls back to ALttP Light World Overworld (2)."
+        },
+        {
+          "num": 203,
+          "title": "Zelda 1 - Generic Dungeon",
+          "fallback": 17,
+          "description": "Generic music for dungeons 1 through 8.  Falls back to ALttP Generic Light World Dungeon (17)."
+        },
+        {
+          "num": 204,
+          "title": "Zelda 1 - Level 9",
+          "fallback": 46,
+          "description": "Level 9 music.  Falls back to ALttP Ganon's Tower (46), then ALttP Generic Dark World Dungeon (22)."
+        },
+        {
+          "num": 205,
+          "title": "Zelda 1 - Ganon/Triforce Sequence",
+          "fallback": 29,
+          "description": "Ganon and Triforce sequence music.  Falls back to ALttP Ganon Appears (29)."
+        },
+        {
+          "num": 206,
+          "title": "Zelda 1 - Triforce Piece/Dungeon Clear",
+          "fallback": 19,
+          "nonlooping": true,
+          "special_track": true,
+          "description": "Triforce piece and dungeon-clear music.  Falls back to ALttP Boss Victory (19)."
+        },
+        {
+          "num": 207,
+          "title": "Zelda 1 - Zelda Rescued",
+          "fallback": 25,
+          "nonlooping": true,
+          "special_track": true,
+          "description": "Zelda rescue music.  Falls back to ALttP Princess Zelda's Rescue (25)."
+        },
+        {
+          "num": 208,
+          "title": "Zelda 1 - Item Acquisition",
+          "nonlooping": true,
+          "special_track": true,
+          "description": "Item-acquisition music. Uses the native engine when absent."
+        },
+        {
+          "num": 209,
+          "title": "Zelda 1 - Ending",
+          "fallback": 34,
+          "nonlooping": true,
+          "description": "Ending music.  Falls back to ALttP Credits (34)."
+        },
+        {
+          "num": 210,
+          "title": "Zelda 1 - Game Over",
+          "nonlooping": true,
+          "special_track": true,
+          "description": "Game-over music. Uses the native engine when absent."
+        },
+        {
+          "num": 301,
+          "title": "Metroid 1 - Intro",
+          "fallback": 104,
+          "description": "Intro music.  Falls back to Super Metroid Opening with intro (104)."
+        },
+        {
+          "num": 302,
+          "title": "Metroid 1 - Brinstar",
+          "fallback": 110,
+          "description": "Brinstar music.  Falls back to Super Metroid Samus' Ship (110)."
+        },
+        {
+          "num": 303,
+          "title": "Metroid 1 - Norfair",
+          "fallback": 112,
+          "description": "Norfair music.  Falls back to Super Metroid Brinstar Red Soil (112)."
+        },
+        {
+          "num": 304,
+          "title": "Metroid 1 - Kraid Hideout",
+          "fallback": 111,
+          "description": "Kraid hideout music.  Falls back to Super Metroid Brinstar with vegetation (111)."
+        },
+        {
+          "num": 305,
+          "title": "Metroid 1 - Ridley Hideout",
+          "fallback": 113,
+          "description": "Ridley hideout music.  Falls back to Super Metroid Upper Norfair (113)."
+        },
+        {
+          "num": 306,
+          "title": "Metroid 1 - Tourian",
+          "fallback": 117,
+          "description": "Tourian music.  Falls back to Super Metroid Tourian (117)."
+        },
+        {
+          "num": 307,
+          "title": "Metroid 1 - Item Room",
+          "fallback": 103,
+          "description": "Item-room music.  Falls back to Super Metroid Item room (103)."
+        },
+        {
+          "num": 308,
+          "title": "Metroid 1 - Generic Boss",
+          "fallback": 119,
+          "description": "Generic boss music.  Falls back to Super Metroid Big Boss Battle 1 (119)."
+        },
+        {
+          "num": 309,
+          "title": "Metroid 1 - Mother Brain",
+          "fallback": 118,
+          "description": "Mother Brain music.  Falls back to Super Metroid Mother Brain Battle (118)."
+        },
+        {
+          "num": 310,
+          "title": "Metroid 1 - Escape",
+          "fallback": 120,
+          "description": "Escape music.  Falls back to Super Metroid Evacuation (120)."
+        },
+        {
+          "num": 311,
+          "title": "Metroid 1 - Power-Up",
+          "fallback": 102,
+          "nonlooping": true,
+          "special_track": true,
+          "description": "Power-up music.  Falls back to Super Metroid Item Acquisition Fanfare (102)."
+        },
+        {
+          "num": 312,
+          "title": "Metroid 1 - Ending",
+          "fallback": 130,
+          "nonlooping": true,
+          "description": "Ending music.  Falls back to Super Metroid Ending (130)."
+        },
+        {
+          "num": 313,
+          "title": "Metroid 1 - Fade-In/Interlude",
+          "fallback": 101,
+          "nonlooping": true,
+          "special_track": true,
+          "description": "Fade-in and interlude music.  Falls back to Super Metroid File Start (101)."
+        }
+      ],
+      "extended": [
+        {
+          "num": 211,
+          "title": "Zelda 1 - Dungeon 1",
+          "fallback": 203,
+          "description": "Dungeon 1 music.  Falls back to Zelda 1 Generic Dungeon (203), ALttP Eastern Palace (35), then ALttP Generic Light World Dungeon (17)."
+        },
+        {
+          "num": 212,
+          "title": "Zelda 1 - Dungeon 2",
+          "fallback": 203,
+          "description": "Dungeon 2 music.  Falls back to Zelda 1 Generic Dungeon (203), ALttP Desert Palace (36), then ALttP Generic Light World Dungeon (17)."
+        },
+        {
+          "num": 213,
+          "title": "Zelda 1 - Dungeon 3",
+          "fallback": 203,
+          "description": "Dungeon 3 music.  Falls back to Zelda 1 Generic Dungeon (203), ALttP Tower of Hera (43), then ALttP Generic Light World Dungeon (17)."
+        },
+        {
+          "num": 214,
+          "title": "Zelda 1 - Dungeon 4",
+          "fallback": 203,
+          "description": "Dungeon 4 music.  Falls back to Zelda 1 Generic Dungeon (203), ALttP Palace of Darkness (39), then ALttP Generic Dark World Dungeon (22)."
+        },
+        {
+          "num": 215,
+          "title": "Zelda 1 - Dungeon 5",
+          "fallback": 203,
+          "description": "Dungeon 5 music.  Falls back to Zelda 1 Generic Dungeon (203), ALttP Swamp Palace (38), then ALttP Generic Dark World Dungeon (22)."
+        },
+        {
+          "num": 216,
+          "title": "Zelda 1 - Dungeon 6",
+          "fallback": 203,
+          "description": "Dungeon 6 music.  Falls back to Zelda 1 Generic Dungeon (203), ALttP Skull Woods (41), then ALttP Generic Dark World Dungeon (22)."
+        },
+        {
+          "num": 217,
+          "title": "Zelda 1 - Dungeon 7",
+          "fallback": 203,
+          "description": "Dungeon 7 music.  Falls back to Zelda 1 Generic Dungeon (203), ALttP Ice Palace (42), then ALttP Generic Dark World Dungeon (22)."
+        },
+        {
+          "num": 218,
+          "title": "Zelda 1 - Dungeon 8",
+          "fallback": 203,
+          "description": "Dungeon 8 music.  Falls back to Zelda 1 Generic Dungeon (203), ALttP Misery Mire (40), then ALttP Generic Dark World Dungeon (22)."
+        },
+        {
+          "num": 314,
+          "title": "Metroid 1 - Kraid Battle",
+          "fallback": 308,
+          "description": "Kraid battle music.  Falls back to Metroid 1 Generic Boss (308), Super Metroid Kraid Battle (132), then Super Metroid Big Boss Battle 2 (122)."
+        },
+        {
+          "num": 315,
+          "title": "Metroid 1 - Ridley Battle",
+          "fallback": 308,
+          "description": "Ridley battle music.  Falls back to Metroid 1 Generic Boss (308), Super Metroid Ridley Battle (136), then Super Metroid Big Boss Battle 1 (119)."
+        }
+      ]
+    },
+    "copy": [
+      {
+        "msu": "snes/z3m3",
+        "modifier": 0
+      }
+    ]
+  },
+  {
+    "meta": {
       "name": "Rock n' Roll Racing",
       "path": "snes/rnrr"
     },

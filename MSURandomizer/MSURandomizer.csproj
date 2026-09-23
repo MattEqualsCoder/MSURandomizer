@@ -5,7 +5,7 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <Version>3.2.1</Version>
+    <Version>3.3.0</Version>
     <ApplicationIcon>MSURandomizerIcon.ico</ApplicationIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>MattEqualsCoder.MSURandomizer.Avalonia</PackageId>
@@ -39,7 +39,7 @@
     <PackageReference Include="MattEqualsCoder.AvaloniaControls" Version="2.0.1" />
     <PackageReference Include="MattEqualsCoder.GitHubReleaseChecker" Version="1.1.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.2" />
-    <PackageReference Include="ReactiveUI.SourceGenerators" Version="2.6.30">
+    <PackageReference Include="ReactiveUI.SourceGenerators" Version="3.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
